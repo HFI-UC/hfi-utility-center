@@ -1,4 +1,5 @@
 import Homeview from "../views/Homeview.vue";
+import ReservationsView from "../views/ReservationsView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -8,6 +9,11 @@ const router = createRouter({
             path: '/',
             name: 'home',
             component: Homeview
+        },
+        {
+            path: '/reservation/create',
+            name: 'reservation',
+            component: ReservationsView
         }
     ]
 })
