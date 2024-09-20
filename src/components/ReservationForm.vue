@@ -216,9 +216,9 @@ const onClickEvent = () => {
         return;
     }
 
-    const { data: response } = useRequest(() => postApplication(reservation.value))
+    const data = postApplication(reservation.value)
 
-    console.log(response)
+    console.log(data)
 
 };
 </script>

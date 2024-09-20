@@ -53,13 +53,15 @@ export async function postApplication(application: ApplicationInfo) {
     const endTime = new Date(
         `${application.date}T${application.endTime}`,
     );
-    const res = await axios.post('/api/addres.php', {
-        room: application.selectedRoom,
-        email: application.email,
-        time: `${startTime.getTime()}-${endTime.getTime()}`,
-        name: application.studentName,
-        reason: application.reason,
-        sid: application.studentId
+
+    const data = new FormData()
+    data.append("room", application.selectedRoom?.toString() as string)
+    data.append("email", application.email)
+    data.append("time", `${startTime.getTime()}-${endTime.getTime()}`)
+    data.append("name", application.studentName)
+    data.append("reason", application.reason)
+    data.append("sid", application.studentId)
+    await axios.post('/api/addres.php', data).then((res) => {
+        return res.data
     })
-    return res.data
 }
