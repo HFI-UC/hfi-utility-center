@@ -4,7 +4,7 @@ import { ref } from "vue";
 import Timeline from "primevue/timeline";
 
 const events = ref([
-    { icon: "pi pi-pen-to-square", color: "blue" },
+    { icon: "pi pi-pen-to-square", color: "var(--p-violet-700)" },
     { icon: "pi pi-cog", color: "grey" },
     { icon: "pi pi-check", color: "grey" },
 ]);
@@ -32,7 +32,7 @@ const events = ref([
 
 <style scoped>
 :deep(.p-timeline-event-connector) {
-    width: 50% !important;
+    width: 5% !important;
 }
 #timeline {
     width: 18rem;
