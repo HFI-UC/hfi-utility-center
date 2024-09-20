@@ -5,7 +5,7 @@
 <template>
     <div class="flex flex-col items-center justify-center" id="home-container">
         <h1 class="flex">HFI Utility Center</h1>
-        <h3 class="flex">Vue Update</h3>
+        <h3 class="flex">Cenozoic</h3>
     </div>
 </template>
 
@@ -34,5 +34,14 @@ h3 {
 }
 #home-container {
     height: 80vh;
+}
+
+@media screen and (max-width: 720px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+    h3 {
+        font-size: 1.25rem;
+    }
 }
 </style>

@@ -35,6 +35,6 @@ const events = ref([
     width: 50% !important;
 }
 #timeline {
-    width: 17rem;
+    width: 18rem;
 }
 </style>

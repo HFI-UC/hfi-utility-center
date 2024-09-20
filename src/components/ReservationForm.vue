@@ -353,4 +353,14 @@ h1 {
 input {
     min-width: 20rem;
 }
+
+@media screen and (max-width: 720px) {
+    #card {
+        width: 25rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+}
 </style>
