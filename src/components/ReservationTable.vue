@@ -49,6 +49,13 @@ const bookingData = computed(() => {
             severity: getSeverity(item.auth),
         });
     }
+    booking.sort((a, b) => {
+        if (a.room === b.room) {
+            return a.time.localeCompare(b.time);
+        } else {
+            return a.room.localeCompare(b.room);
+        }
+    });
     return booking;
 });
 

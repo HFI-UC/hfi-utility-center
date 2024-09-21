@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import { ref } from "vue";
-import router from "./router/router";
 import Menubar from "primevue/menubar";
 import Button from "primevue/button";
 import "./styles.css";
@@ -31,6 +30,10 @@ const items = ref([
 
 const iconClass = ref("pi-sun");
 
+function redirect() {
+    window.location.href = "/Administration.html"
+}
+
 function toggleColorScheme() {
     const root = document.getElementsByTagName("html")[0];
     root.classList.toggle("p-dark");
@@ -46,16 +49,18 @@ function toggleColorScheme() {
             </template>
             <template #end>
                 <Button
-                    @click="router.push('/Administration.html')"
+                    @click="redirect()"
                     style="
                         background-color: var(--p-teal-500);
                         border-color: var(--p-teal-500);
                     "
                 >
                     <i class="pi pi-sign-in"></i>
+                    <span class="text-sm">Login</span>
                 </Button>
                 <Button @click="toggleColorScheme()">
                     <i :class="`pi ${iconClass}`"></i>
+                    <span class="text-sm">Color Mode</span>
                 </Button>
             </template>
         </Menubar>
