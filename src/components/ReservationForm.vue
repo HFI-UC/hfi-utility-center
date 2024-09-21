@@ -183,7 +183,7 @@ const onClickEvent = () => {
         toast.add({
             severity: "error",
             summary: "Error",
-            detail: "Please fill out the blank!",
+            detail: "Please fill out the required field!",
             life: 3000,
         });
         return;
@@ -222,7 +222,7 @@ const onClickEvent = () => {
         return;
     }
 
-    postApplication(reservation.value).then((res) => {
+    postApplication(reservation.value).then((res: {success: boolean, message: string}) => {
         if (res.success) {
             router.push({
                 path: "/reservation/create",
@@ -234,7 +234,7 @@ const onClickEvent = () => {
                 query: { status: "failed", message: res.message },
             });
         }
-    });
+    })
 };
 </script>
 

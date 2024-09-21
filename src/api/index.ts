@@ -61,6 +61,12 @@ export async function postApplication(application: ApplicationInfo) {
     data.append("name", application.studentName)
     data.append("reason", application.reason)
     data.append("sid", application.studentId)
-    const res = await axios.post<{success: boolean, message: string}>('/api/addres.php', data)
-    return res.data
+    try {
+        const res = await axios.post<{ success: boolean; message: string }>('/api/addres.php', data);
+        return res.data;  // 成功时返回响应的数据
+    } catch (err) {
+        if (axios.isAxiosError(err) && err.response) {
+            return err.response.data;
+        }
+    }
 }
