@@ -61,7 +61,6 @@ export async function postApplication(application: ApplicationInfo) {
     data.append("name", application.studentName)
     data.append("reason", application.reason)
     data.append("sid", application.studentId)
-    await axios.post('/api/addres.php', data).then((res) => {
-        return res.data
-    })
+    const res = await axios.post<{success: boolean, message: string}>('/api/addres.php', data)
+    return res.data
 }

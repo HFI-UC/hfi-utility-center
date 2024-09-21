@@ -1,13 +1,23 @@
 <script setup lang="ts">
 import ReservationForm from "../components/ReservationForm.vue";
-import { ref } from "vue";
+import ReservationStatus from "../components/ReservationStatus.vue";
+import { computed } from "vue";
 import Timeline from "primevue/timeline";
 
-const events = ref([
-    { icon: "pi pi-pen-to-square", color: "var(--p-violet-700)" },
-    { icon: "pi pi-cog", color: "grey" },
-    { icon: "pi pi-check", color: "grey" },
-]);
+
+const props = defineProps<{
+    status?: string
+    message?: string
+}>()
+
+const events = computed(() => {
+    let items = [{ icon: "pi pi-pen-to-square", color: "var(--p-violet-700)" },
+    { icon: "pi pi-check", color: "grey" }]
+    if (props.status == "success") items[1].color = "var(--p-green-500)", items[1].icon = "pi pi-check"
+    else if (props.status == "failed") items[1].color = "var(--p-red-500)", items[1].icon = "pi pi-exclamation-triangle"
+    return items
+});
+
 </script>
 
 <template>
@@ -27,7 +37,8 @@ const events = ref([
             </Timeline>
         </div>
     </div>
-    <ReservationForm />
+    <ReservationForm v-if="!props.status"/>
+    <ReservationStatus v-else :status="props.status" :message="props.message"/>
 </template>
 
 <style scoped>

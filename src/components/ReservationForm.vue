@@ -16,8 +16,9 @@ import {
     type ApplicationInfo,
     postApplication,
     fetchPolicy,
-    fetchReservation
+    fetchReservation,
 } from "../api";
+import router from "../router/router";
 
 const { data: policyData } = useRequest((): Promise<Policy> => fetchPolicy(), {
     pollingInterval: 1000000,
@@ -167,15 +168,14 @@ const validatePolicy = (
     });
 };
 
-const selectedRoom = ref("")
+const selectedRoom = ref("");
 
 const onClickEvent = () => {
     if (date.value instanceof Date) {
         reservation.value.date = formatDate(date.value);
     }
     reservation.value.selectedRoom =
-        roomMapping[selectedRoom.value] ||
-        parseInt(selectedRoom.value);
+        roomMapping[selectedRoom.value] || parseInt(selectedRoom.value);
     isCompleted.value = !Object.values(reservation.value).some(
         (value) => value === "" || value == null,
     );
@@ -196,7 +196,13 @@ const onClickEvent = () => {
         `${reservation.value.date}T${reservation.value.endTime}`,
     );
 
-    if (!validateTimeConflict(startTime, endTime, reservation.value.selectedRoom)) {
+    if (
+        !validateTimeConflict(
+            startTime,
+            endTime,
+            reservation.value.selectedRoom,
+        )
+    ) {
         toast.add({
             severity: "error",
             summary: "Error",
@@ -216,10 +222,15 @@ const onClickEvent = () => {
         return;
     }
 
-    const data = postApplication(reservation.value)
-
-    console.log(data)
-
+    postApplication(reservation.value)
+    .then((res) => {
+        if (res.success) {
+            router.push({ path: '/reservation/create', query: { status: "success", message: res.message }})
+        }
+        else {
+            router.push({ path: '/reservation/create', query: { status: "failed", message: res.message }})
+        }
+    })
 };
 </script>
 
@@ -232,8 +243,12 @@ const onClickEvent = () => {
                     <h1>Application Form</h1>
                     <p>Fill out the form to submit a booking request.</p>
 
-                    <div class="m-[10px]" id="form-container">
-                        <FloatLabel class="m-[30px]">
+                    <div
+                        class="flex flex-col m-[10px] items-center justify-center"
+                        id="form-container"
+                    >
+                        <h3>Personal Information</h3>
+                        <FloatLabel class="m-[20px]">
                             <InputText
                                 id="name"
                                 v-model="reservation.studentName"
@@ -244,19 +259,7 @@ const onClickEvent = () => {
                             />
                             <label for="name">Name</label>
                         </FloatLabel>
-                        <FloatLabel class="m-[30px]">
-                            <Select
-                                id="room"
-                                v-model="selectedRoom"
-                                :options="rooms"
-                                :invalid="
-                                    !isCompleted &&
-                                    selectedRoom === ''
-                                "
-                            />
-                            <label for="room">Room</label>
-                        </FloatLabel>
-                        <FloatLabel class="m-[30px]">
+                        <FloatLabel class="m-[20px]">
                             <InputText
                                 id="id"
                                 v-model="reservation.studentId"
@@ -266,7 +269,7 @@ const onClickEvent = () => {
                             />
                             <label for="id">Student ID</label>
                         </FloatLabel>
-                        <FloatLabel class="m-[30px]">
+                        <FloatLabel class="m-[20px]">
                             <InputText
                                 id="name"
                                 v-model="reservation.email"
@@ -276,7 +279,17 @@ const onClickEvent = () => {
                             />
                             <label for="name">E-mail</label>
                         </FloatLabel>
-                        <FloatLabel class="m-[30px]">
+                        <h3>Room Information</h3>
+                        <FloatLabel class="m-[20px]">
+                            <Select
+                                id="room"
+                                v-model="selectedRoom"
+                                :options="rooms"
+                                :invalid="!isCompleted && selectedRoom === ''"
+                            />
+                            <label for="room">Room</label>
+                        </FloatLabel>
+                        <FloatLabel class="m-[20px]">
                             <DatePicker
                                 id="date"
                                 v-model="date"
@@ -288,7 +301,7 @@ const onClickEvent = () => {
                             />
                             <label for="date">Date</label>
                         </FloatLabel>
-                        <FloatLabel class="m-[30px]">
+                        <FloatLabel class="m-[20px]">
                             <Select
                                 id="startTime"
                                 v-model="reservation.startTime"
@@ -299,7 +312,7 @@ const onClickEvent = () => {
                             />
                             <label for="startTime">Start Time</label>
                         </FloatLabel>
-                        <FloatLabel class="m-[30px]">
+                        <FloatLabel class="m-[20px]">
                             <Select
                                 id="endTime"
                                 v-model="reservation.endTime"
@@ -310,7 +323,7 @@ const onClickEvent = () => {
                             />
                             <label for="endTime">End Time</label>
                         </FloatLabel>
-                        <FloatLabel class="m-[30px]">
+                        <FloatLabel class="m-[20px]">
                             <Textarea
                                 id="reason"
                                 v-model="reservation.reason"
@@ -340,6 +353,16 @@ h1 {
     unicode-bidi: isolate;
 }
 
+h3 {
+    font-size: 1.15em;
+    margin-block-start: 2rem;
+    margin-block-end: 3rem;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+}
+
 .p-select,
 .p-datepicker,
 .p-textarea {
@@ -359,8 +382,8 @@ input {
         width: 25rem;
     }
 
-    h3 {
-        font-size: 1.25rem;
+    h1 {
+        font-size: 1.75rem;
     }
 }
 </style>

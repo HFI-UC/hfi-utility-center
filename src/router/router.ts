@@ -13,7 +13,8 @@ const router = createRouter({
         {
             path: '/reservation/create',
             name: 'reservation',
-            component: ReservationsView
+            component: ReservationsView,
+            props: route => ({ status: route.query.status, message: route.query.message })
         }
     ]
 })
