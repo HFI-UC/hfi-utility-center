@@ -63,7 +63,7 @@ export async function postApplication(application: ApplicationInfo) {
     data.append("sid", application.studentId)
     try {
         const res = await axios.post<{ success: boolean; message: string }>('/api/addres.php', data);
-        return res.data;  // 成功时返回响应的数据
+        return res.data;
     } catch (err) {
         if (axios.isAxiosError(err) && err.response) {
             return err.response.data;
