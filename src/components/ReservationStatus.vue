@@ -1,24 +1,37 @@
 <script setup lang="ts">
-import Card from 'primevue/card';
+import Card from "primevue/card";
 const props = defineProps<{
-    status: string
-    message?: string
-}>()
+    status: string;
+    message?: string;
+}>();
 </script>
 
 <template>
     <div class="flex flex-col items-center justify-center">
         <Card id="card">
-        <template #content>
-            <div class="flex flex-col items-center justify-center">
-            <h1 v-if="props.status === 'success'">Success!</h1>
-            <h1 v-else>Something's wrong.</h1>
-            <i v-if="props.status === 'success'" class="pi pi-check m-[2rem]" id="status-icon" style="color: var(--p-green-500)"></i>
-            <i v-else class="pi pi-exclamation-triangle m-[2rem]" id="status-icon" style="color: var(--p-red-500)"></i>
-            <p class="w-[20rem] m-[1rem] text-center">{{ props.message }}</p>
-        </div>
-        </template>
-    </Card></div>
+            <template #content>
+                <div class="flex flex-col items-center justify-center">
+                    <h1 v-if="props.status === 'success'">Success!</h1>
+                    <h1 v-else>Something's wrong.</h1>
+                    <i
+                        v-if="props.status === 'success'"
+                        class="pi pi-check m-[2rem]"
+                        id="status-icon"
+                        style="color: var(--p-green-500)"
+                    ></i>
+                    <i
+                        v-else
+                        class="pi pi-exclamation-triangle m-[2rem]"
+                        id="status-icon"
+                        style="color: var(--p-red-500)"
+                    ></i>
+                    <p class="w-[20rem] m-[1rem] text-center">
+                        {{ props.message }}
+                    </p>
+                </div>
+            </template>
+        </Card>
+    </div>
 </template>
 
 <style scoped>
@@ -51,4 +64,3 @@ h1 {
     }
 }
 </style>
-

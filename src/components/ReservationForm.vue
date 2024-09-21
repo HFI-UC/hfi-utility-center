@@ -222,15 +222,19 @@ const onClickEvent = () => {
         return;
     }
 
-    postApplication(reservation.value)
-    .then((res) => {
+    postApplication(reservation.value).then((res) => {
         if (res.success) {
-            router.push({ path: '/reservation/create', query: { status: "success", message: res.message }})
+            router.push({
+                path: "/reservation/create",
+                query: { status: "success", message: res.message },
+            });
+        } else {
+            router.push({
+                path: "/reservation/create",
+                query: { status: "failed", message: res.message },
+            });
         }
-        else {
-            router.push({ path: '/reservation/create', query: { status: "failed", message: res.message }})
-        }
-    })
+    });
 };
 </script>
 
