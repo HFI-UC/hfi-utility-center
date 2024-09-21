@@ -6,14 +6,51 @@ import Tag from "primevue/tag";
 import { ReservationInfo } from "../api";
 import { fetchReservation } from "../api";
 import { useRequest } from "vue-request";
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { FilterMatchMode } from "@primevue/core/api";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
+import InputText from "primevue/inputtext";
 
 const { data } = useRequest(
     (): Promise<ReservationInfo> => fetchReservation(),
     { pollingInterval: 1000000 },
 );
 
-const bookingData = computed(() => data.value?.data || []);
+const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+const statusMapping: { [key: string]: string } = {
+    non: "Pending",
+    yes: "Approved",
+    no: "Rejected",
+};
+
+const bookingData = computed(() => {
+    if (!data.value) return [];
+    const booking: {
+        name: string;
+        email: string;
+        time: string;
+        date: string;
+        room: string;
+        status: string;
+        severity: string;
+    }[] = [];
+    for (const item of data.value.data) {
+        booking.push({
+            name: item.name,
+            email: item.email,
+            time: formatTime(item.time),
+            date: formatDate(item.time),
+            room: roomMapping[item.room] || item.room.toString(),
+            status: statusMapping[item.auth],
+            severity: getSeverity(item.auth),
+        });
+    }
+    return booking;
+});
 
 const formatDate = (time: string) => {
     const startTime = time.split("-")[0];
@@ -40,7 +77,7 @@ const roomMapping: { [key: number]: string } = {
     106: "Writing Center 2",
 };
 
-const getSeverity = (label: string) => {
+const getSeverity = (label: string): string => {
     switch (label) {
         case "non":
             return "info";
@@ -48,13 +85,9 @@ const getSeverity = (label: string) => {
             return "danger";
         case "yes":
             return "success";
+        default:
+            return "info";
     }
-};
-
-const statusMapping: { [key: string]: string } = {
-    non: "Pending",
-    yes: "Approved",
-    no: "Rejected",
 };
 </script>
 
@@ -63,36 +96,31 @@ const statusMapping: { [key: string]: string } = {
         v-if="data"
         :value="bookingData"
         paginator
+        v-model:filters="filters"
         :rows="10"
         :rowsPerPageOptions="[10, 20, 50]"
     >
-        <template #header> </template>
+        <template #header>
+            <div class="flex justify-start">
+                <IconField>
+                    <InputIcon>
+                        <i class="pi pi-search" />
+                    </InputIcon>
+                    <InputText
+                        v-model="filters['global'].value"
+                        placeholder="Keyword Search"
+                    />
+                </IconField>
+            </div>
+        </template>
         <Column field="name" header="Name"></Column>
         <Column field="email" header="E-mail"></Column>
-        <Column field="date" header="Date">
-            <template #body="slotProps">
-                {{ formatDate(slotProps.data.time) }}
-            </template>
-        </Column>
-        <Column field="time" header="Time">
-            <template #body="slotProps">
-                {{ formatTime(slotProps.data.time) }}
-            </template>
-        </Column>
-        <Column field="room" header="Room">
-            <template #body="slotProps">
-                {{
-                    roomMapping[slotProps.data.room] ||
-                    slotProps.data.room.toString()
-                }}
-            </template>
-        </Column>
+        <Column field="date" header="Date"></Column>
+        <Column field="time" header="Time"></Column>
+        <Column field="room" header="Room"></Column>
         <Column field="status" header="Status">
-            <template #body="slotProps">
-                <Tag
-                    :severity="getSeverity(slotProps.data.auth)"
-                    :value="statusMapping[slotProps.data.auth]"
-                ></Tag>
+            <template #body="{ data }">
+                <Tag :severity="data.severity" :value="data.status"></Tag>
             </template>
         </Column>
     </DataTable>

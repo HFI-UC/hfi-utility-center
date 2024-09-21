@@ -157,7 +157,7 @@ const validatePolicy = (
         const day = startTime.getDay();
         if (
             selectedRoom === parseInt(rule.classroom) &&
-            days.includes((day - 1).toString())
+            days.includes(day.toString())
         ) {
             const [startHour, startMinute] = rule.start_time
                 .split(":")
@@ -175,6 +175,7 @@ const validatePolicy = (
 
 const selectedRoom = ref("");
 const filteredBookingData = ref([] as any);
+const filteredPolicyData = ref([] as any);
 
 watch(
     () => selectedRoom.value,
@@ -186,7 +187,10 @@ watch(
                 item.room === reservation.value.selectedRoom &&
                 item.auth !== "no",
         );
-        console.log(filteredBookingData.value);
+        filteredPolicyData.value = policy.value.filter(
+            (item) =>
+                parseInt(item.classroom) === reservation.value.selectedRoom,
+        );
     },
 );
 
@@ -197,6 +201,24 @@ const formatTableDate = (time: string) => {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
+};
+
+const formatTableDay = (time: string) => {
+    const days = time.split(",");
+    const daysMapping: { [key: string]: string } = {
+        "1": "Mon.",
+        "2": "Tue.",
+        "3": "Wed.",
+        "4": "Thu.",
+        "5": "Fri.",
+        "6": "Sat.",
+        "7": "Sun.",
+    };
+    const convertedDays = [];
+    for (const item of days) {
+        convertedDays.push(daysMapping[item]);
+    }
+    return convertedDays.join(" ");
 };
 
 const formatTableTime = (time: string) => {
@@ -345,7 +367,7 @@ const onClickEvent = () => {
                         >
                             <template #header>
                                 <span class="text-lg font-bold"
-                                    >Reservation Status</span
+                                    >Reservations</span
                                 >
                             </template>
                             <template #empty>
@@ -356,6 +378,32 @@ const onClickEvent = () => {
                                 <template #body="slotProps">
                                     {{
                                         `${formatTableDate(slotProps.data.time)} / ${formatTableTime(slotProps.data.time)}`
+                                    }}
+                                </template>
+                            </Column>
+                        </DataTable>
+                        <DataTable
+                            v-if="reservation.selectedRoom"
+                            :value="filteredPolicyData"
+                            id="datatable"
+                        >
+                            <template #header>
+                                <span class="text-lg font-bold">Policy</span>
+                            </template>
+                            <template #empty>
+                                <p>No available data.</p>
+                            </template>
+                            <Column header="Day(s)">
+                                <template #body="slotProps">
+                                    {{
+                                        `${formatTableDay(slotProps.data.days)}`
+                                    }}
+                                </template>
+                            </Column>
+                            <Column header="Hours">
+                                <template #body="slotProps">
+                                    {{
+                                        `${slotProps.data.start_time.slice(0, 5)} ~ ${slotProps.data.end_time.slice(0, 5)}`
                                     }}
                                 </template>
                             </Column>
