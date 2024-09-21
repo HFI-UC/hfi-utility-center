@@ -27,6 +27,7 @@ const events = computed(() => {
 <template>
     <div class="flex flex-col items-center justify-center">
         <div class="card flex flex-col justify-center" id="timeline">
+            <h1>Application Form</h1>
             <Timeline :value="events" layout="horizontal" align="top">
                 <template #marker="slotProps">
                     <span
@@ -51,5 +52,15 @@ const events = computed(() => {
 }
 #timeline {
     width: 18rem;
+}
+h1 {
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
 }
 </style>

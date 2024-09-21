@@ -16,8 +16,13 @@ const items = ref([
         items: [
             {
                 label: "Application Form",
-                icon: "pi pi-table",
+                icon: "pi pi-pen-to-square",
                 url: "/reservation/create",
+            },
+            {
+                label: "Application Status",
+                icon: "pi pi-table",
+                url: "/reservation/status",
             },
         ],
     },

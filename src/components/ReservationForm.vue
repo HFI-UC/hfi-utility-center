@@ -7,7 +7,9 @@ import Button from "primevue/button";
 import DatePicker from "primevue/datepicker";
 import Card from "primevue/card";
 import Toast from "primevue/toast";
-import { computed, ref, Ref } from "vue";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import { computed, ref, Ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useRequest } from "vue-request";
 import {
@@ -26,7 +28,7 @@ const { data: policyData } = useRequest((): Promise<Policy> => fetchPolicy(), {
 
 const { data: booking } = useRequest(
     (): Promise<ReservationInfo> => fetchReservation(),
-    { pollingInterval: 1000000 },
+    { pollingInterval: 15000 },
 );
 
 const policy = computed(() => policyData.value?.policy || []);
@@ -136,11 +138,14 @@ const validateTimeConflict = (
             endDate = new Date(parseInt(end));
         return (
             selectRoom == booking.room &&
+            booking.auth !== "no" &&
             endDate > startTime &&
             startDate < endTime
         );
     });
 };
+
+const loading = ref(false);
 
 const validatePolicy = (
     startTime: Date,
@@ -169,8 +174,42 @@ const validatePolicy = (
 };
 
 const selectedRoom = ref("");
+const filteredBookingData = ref([] as any);
+
+watch(
+    () => selectedRoom.value,
+    (newValue) => {
+        reservation.value.selectedRoom =
+            roomMapping[newValue] || parseInt(newValue);
+        filteredBookingData.value = bookingData.value.filter(
+            (item) =>
+                item.room === reservation.value.selectedRoom &&
+                item.auth !== "no",
+        );
+        console.log(filteredBookingData.value);
+    },
+);
+
+const formatTableDate = (time: string) => {
+    const startTime = time.split("-")[0];
+    const date = new Date(parseInt(startTime));
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
+
+const formatTableTime = (time: string) => {
+    const [start, end] = time.split("-");
+    const startTime = new Date(parseInt(start));
+    const endTime = new Date(parseInt(end));
+    const formatHour = (date: Date): string =>
+        `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+    return `${formatHour(startTime)} ~ ${formatHour(endTime)}`;
+};
 
 const onClickEvent = () => {
+    loading.value = true;
     if (date.value instanceof Date) {
         reservation.value.date = formatDate(date.value);
     }
@@ -186,6 +225,7 @@ const onClickEvent = () => {
             detail: "Please fill out the required field!",
             life: 3000,
         });
+        loading.value = false;
         return;
     }
 
@@ -209,6 +249,7 @@ const onClickEvent = () => {
             detail: "Selected time is not available! Choose another time instead.",
             life: 3000,
         });
+        loading.value = false;
         return;
     }
 
@@ -219,22 +260,29 @@ const onClickEvent = () => {
             detail: "Selected time does not comply with room policy.",
             life: 3000,
         });
+        loading.value = false;
         return;
     }
 
-    postApplication(reservation.value).then((res: {success: boolean, message: string}) => {
-        if (res.success) {
-            router.push({
-                path: "/reservation/create",
-                query: { status: "success", message: res.message },
-            });
-        } else {
-            router.push({
-                path: "/reservation/create",
-                query: { status: "failed", message: res.message },
-            });
-        }
-    })
+    postApplication(reservation.value).then(
+        (res: { success: boolean; message: string }) => {
+            if (res.success) {
+                loading.value = false;
+                router.push({
+                    path: "/reservation/create",
+                    query: { status: "success", message: res.message },
+                });
+            } else {
+                loading.value = false;
+                toast.add({
+                    severity: "error",
+                    summary: "Error",
+                    detail: res.message,
+                    life: 3000,
+                });
+            }
+        },
+    );
 };
 </script>
 
@@ -244,9 +292,6 @@ const onClickEvent = () => {
         <Card id="card">
             <template #content>
                 <div class="flex flex-col items-center">
-                    <h1>Application Form</h1>
-                    <p>Fill out the form to submit a booking request.</p>
-
                     <div
                         class="flex flex-col m-[10px] items-center justify-center"
                         id="form-container"
@@ -293,6 +338,28 @@ const onClickEvent = () => {
                             />
                             <label for="room">Room</label>
                         </FloatLabel>
+                        <DataTable
+                            v-if="reservation.selectedRoom"
+                            :value="filteredBookingData"
+                            id="datatable"
+                        >
+                            <template #header>
+                                <span class="text-lg font-bold"
+                                    >Reservation Status</span
+                                >
+                            </template>
+                            <template #empty>
+                                <p>No available data.</p>
+                            </template>
+                            <Column field="name" header="Name"></Column>
+                            <Column header="Date / Time">
+                                <template #body="slotProps">
+                                    {{
+                                        `${formatTableDate(slotProps.data.time)} / ${formatTableTime(slotProps.data.time)}`
+                                    }}
+                                </template>
+                            </Column>
+                        </DataTable>
                         <FloatLabel class="m-[20px]">
                             <DatePicker
                                 id="date"
@@ -338,7 +405,12 @@ const onClickEvent = () => {
                             <label for="reason">Reason</label>
                         </FloatLabel>
                     </div>
-                    <Button label="Submit" @click="onClickEvent" />
+                    <Button
+                        icon="pi pi-upload"
+                        label="Submit"
+                        :loading="loading"
+                        @click="onClickEvent"
+                    />
                 </div>
             </template>
         </Card>
@@ -358,7 +430,7 @@ h1 {
 }
 
 h3 {
-    font-size: 1.15em;
+    font-size: 1.5em;
     margin-block-start: 2rem;
     margin-block-end: 3rem;
     margin-inline-start: 0px;
@@ -379,6 +451,11 @@ h3 {
 
 input {
     min-width: 20rem;
+}
+
+#datatable {
+    min-width: 23rem;
+    margin: 20px;
 }
 
 @media screen and (max-width: 720px) {
