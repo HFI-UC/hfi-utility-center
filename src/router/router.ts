@@ -1,5 +1,6 @@
 import Homeview from "../views/Homeview.vue";
 import ApplicationView from "../views/ApplicationView.vue";
+import LoginView from "../views/LoginView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import ReservationView from "../views/ReservationView.vue";
 
@@ -22,6 +23,10 @@ const router = createRouter({
             path: "/reservation/status",
             component: ReservationView,
         },
+        {
+            path: "/admin/login",
+            component: LoginView
+        }
     ],
 });
 

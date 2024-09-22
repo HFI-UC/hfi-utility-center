@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import router from "./router/router";
 import Menubar from "primevue/menubar";
+import { verifyAdmin } from "./api";
 import Button from "primevue/button";
-import "./styles.css";
+import "./styles/styles.css";
 const items = ref([
     {
         label: "Homepage",
@@ -30,15 +32,39 @@ const items = ref([
 
 const iconClass = ref("pi-sun");
 
-function redirect() {
-    window.location.href = "/Administration.html";
-}
-
-function toggleColorScheme() {
+const toggleColorScheme = () => {
     const root = document.getElementsByTagName("html")[0];
     root.classList.toggle("p-dark");
     iconClass.value = iconClass.value === "pi-moon" ? "pi-sun" : "pi-moon";
 }
+
+const isAdmin = ref(false)
+
+const signOut = () => {
+    isAdmin.value = false
+    sessionStorage.removeItem("token")
+    window.location.href = "/"
+}
+
+const signIn = () => {
+    window.location.href = "/admin/login"
+}
+
+onMounted(() => {
+    const token = sessionStorage.getItem("token")
+    if (!token) return
+    verifyAdmin(token)
+    .then((res: { success: boolean, message: string }) => {
+        if (res.success) {
+            isAdmin.value = true
+            items.value.push({
+                label: "Admin",
+                icon: "pi pi-user",
+                url: "/admin/reservations"
+            })
+        }
+    })
+})
 </script>
 
 <template>
@@ -48,8 +74,8 @@ function toggleColorScheme() {
                 <img src="./assets/logo.svg" class="m-1" style="height: 25px" />
             </template>
             <template #end>
-                <Button
-                    @click="redirect()"
+                <Button v-if="!isAdmin"
+                    @click="signIn()"
                     style="
                         background-color: var(--p-teal-500);
                         border-color: var(--p-teal-500);
@@ -57,6 +83,16 @@ function toggleColorScheme() {
                 >
                     <i class="pi pi-sign-in"></i>
                     <span class="text-sm">Login</span>
+                </Button>
+                <Button v-if="isAdmin"
+                    @click="signOut()"
+                    style="
+                        background-color: var(--p-red-500);
+                        border-color: var(--p-red-500);
+                    "
+                >
+                    <i class="pi pi-sign-out"></i>
+                    <span class="text-sm">Logout</span>
                 </Button>
                 <Button @click="toggleColorScheme()">
                     <i :class="`pi ${iconClass}`"></i>
@@ -69,7 +105,7 @@ function toggleColorScheme() {
         <RouterView />
     </div>
     <footer id="footer">
-        <p>Powered by and created by MAKERs'</p>
+        <p>Powered by and created by MAKERs'.</p>
         <p>
             Copyright &copy; 2024 The co-author of HFI Utility Center. All
             rights reserved.
@@ -99,7 +135,7 @@ function toggleColorScheme() {
     background-color: var(--p-violet-600);
 }
 
-#footer > * {
+#footer > p {
     margin: 5px;
 }
 
@@ -114,6 +150,5 @@ function toggleColorScheme() {
 #footer a:hover {
     color: var(--p-highlight-text-color);
     background-color: var(--p-highlight-bg);
-    text-decoration: underline;
 }
 </style>

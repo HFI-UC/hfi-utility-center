@@ -56,7 +56,7 @@ export async function postApplication(application: ApplicationInfo) {
     data.append("reason", application.reason);
     data.append("sid", application.studentId);
     try {
-        const res = await axios.post<{ success: boolean; message: string }>(
+        const res = await axios.post<{ success: boolean, message: string }>(
             "/api/addres.php",
             data,
         );
@@ -66,4 +66,33 @@ export async function postApplication(application: ApplicationInfo) {
             return err.response.data;
         }
     }
+}
+
+export async function postLogin(user: string, password: string, token: string) {
+    const data = new FormData()
+    data.set("username", user)
+    data.set("password", password)
+    data.set("cf_token", token)
+    try {
+        const res = await axios.post<{ success: boolean, message: string, token?: string }>("/api/login.php", data)
+        return res.data
+    } catch (err) {
+        if (axios.isAxiosError(err) && err.response) {
+            return err.response.data
+        }
+    }
+}
+
+export async function verifyAdmin(token: string) {
+    const data = new FormData()
+    data.set("token", token)
+    try {
+        const res = await axios.post<{ success: boolean, message: string }>("/api/verify_admin.php", data)
+        return res.data
+    } catch (err) {
+        if (axios.isAxiosError(err) && err.response) {
+            return err.response.data
+        }
+    }
+    
 }
