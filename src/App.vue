@@ -31,7 +31,7 @@ const items = ref([
 const iconClass = ref("pi-sun");
 
 function redirect() {
-    window.location.href = "/Administration.html"
+    window.location.href = "/Administration.html";
 }
 
 function toggleColorScheme() {
@@ -68,6 +68,19 @@ function toggleColorScheme() {
     <div id="body">
         <RouterView />
     </div>
+    <footer id="footer">
+        <p>Powered by and created by MAKERs'</p>
+        <p>
+            Copyright &copy; 2024 The co-author of HFI Utility Center. All
+            rights reserved.
+        </p>
+        <p>
+            This website is under
+            <a href="https://www.gnu.org/licenses/agpl-3.0.html"
+                >AGPL-3.0 License</a
+            > and open-sourced on <a href="https://github.com/SilianZ/hfi-utility-center"><i class="pi pi-github"></i> GitHub</a>.
+        </p>
+    </footer>
 </template>
 
 <style scoped>
@@ -77,5 +90,30 @@ function toggleColorScheme() {
 .p-button {
     margin-left: 3px;
     margin-right: 3px;
+}
+
+#footer {
+    text-align: center;
+    padding: 2rem;
+    color: white;
+    background-color: var(--p-violet-600);
+}
+
+#footer > * {
+    margin: 5px;
+}
+
+#footer a {
+    color: var(--p-primary-300);
+    text-decoration: none;
+    transition:
+        0.4s color,
+        0.2s background-color ease;
+}
+
+#footer a:hover {
+    color: var(--p-highlight-text-color);
+    background-color: var(--p-highlight-bg);
+    text-decoration: underline;
 }
 </style>
