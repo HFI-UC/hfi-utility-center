@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import { onMounted, ref } from "vue";
-import router from "./router/router";
+import Toast from "primevue/toast";
 import Menubar from "primevue/menubar";
 import { verifyAdmin } from "./api";
 import Button from "primevue/button";
@@ -23,7 +23,7 @@ const items = ref([
             },
             {
                 label: "Application Status",
-                icon: "pi pi-table",
+                icon: "pi pi-chart-bar",
                 url: "/reservation/status",
             },
         ],
@@ -60,7 +60,13 @@ onMounted(() => {
             items.value.push({
                 label: "Admin",
                 icon: "pi pi-user",
-                url: "/admin/reservations"
+                items: [
+                    {
+                        label: "Reservation Management",
+                        icon: "pi pi-list-check",
+                        url: "/admin/reservations",
+                    },
+                ],
             })
         }
     })
@@ -68,6 +74,7 @@ onMounted(() => {
 </script>
 
 <template>
+    <Toast />
     <div>
         <Menubar :model="items" class="menubar">
             <template #start>
@@ -76,20 +83,14 @@ onMounted(() => {
             <template #end>
                 <Button v-if="!isAdmin"
                     @click="signIn()"
-                    style="
-                        background-color: var(--p-teal-500);
-                        border-color: var(--p-teal-500);
-                    "
+                    severity="success"
                 >
                     <i class="pi pi-sign-in"></i>
                     <span class="text-sm">Login</span>
                 </Button>
                 <Button v-if="isAdmin"
                     @click="signOut()"
-                    style="
-                        background-color: var(--p-red-500);
-                        border-color: var(--p-red-500);
-                    "
+                    severity="danger"
                 >
                     <i class="pi pi-sign-out"></i>
                     <span class="text-sm">Logout</span>

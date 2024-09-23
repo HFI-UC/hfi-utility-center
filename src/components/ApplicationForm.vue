@@ -6,7 +6,6 @@ import Textarea from "primevue/textarea";
 import Button from "primevue/button";
 import DatePicker from "primevue/datepicker";
 import Card from "primevue/card";
-import Toast from "primevue/toast";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { computed, ref, Ref, watch } from "vue";
@@ -309,7 +308,6 @@ const onClickEvent = () => {
 </script>
 
 <template>
-    <Toast />
     <div class="flex flex-col items-center justify-center">
         <Card id="card">
             <template #content>
@@ -457,7 +455,7 @@ const onClickEvent = () => {
                         icon="pi pi-upload"
                         label="Submit"
                         :loading="loading"
-                        @click="onClickEvent"
+                        @click="onClickEvent()"
                     />
                 </div>
             </template>

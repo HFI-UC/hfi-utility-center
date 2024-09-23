@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ReservationForm from "../components/ReservationForm.vue";
-import ReservationStatus from "../components/ReservationStatus.vue";
+import ApplicationForm from "../components/ApplicationForm.vue";
+import ApplicationStatus from "../components/ApplicationStatus.vue";
 import { computed } from "vue";
 import Timeline from "primevue/timeline";
 
@@ -42,8 +42,8 @@ const events = computed(() => {
             </Timeline>
         </div>
     </div>
-    <ReservationForm v-if="!props.status" />
-    <ReservationStatus v-else :status="props.status" :message="props.message" />
+    <ApplicationForm v-if="!props.status" />
+    <ApplicationStatus v-else :status="props.status" :message="props.message" />
 </template>
 
 <style scoped>

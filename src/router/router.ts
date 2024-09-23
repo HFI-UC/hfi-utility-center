@@ -1,8 +1,9 @@
 import Homeview from "../views/Homeview.vue";
 import ApplicationView from "../views/ApplicationView.vue";
 import LoginView from "../views/LoginView.vue";
-import { createRouter, createWebHistory } from "vue-router";
+import ReservationsManagementView from "../views/ReservationsManagementView.vue";
 import ReservationView from "../views/ReservationView.vue";
+import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,10 @@ const router = createRouter({
         {
             path: "/admin/login",
             component: LoginView
+        },
+        {
+            path: "/admin/reservations",
+            component: ReservationsManagementView
         }
     ],
 });

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 
 export interface ApplicationInfo {
     studentName: string;
@@ -10,6 +10,7 @@ export interface ApplicationInfo {
     endTime: string;
     reason: string;
 }
+
 
 export interface RoomPolicyInfo {
     classroom: string;
@@ -25,6 +26,7 @@ export interface Policy {
 export interface ReservationInfo {
     success: boolean;
     data: {
+        id?: number;
         name: string;
         email: string;
         time: string;
@@ -95,4 +97,43 @@ export async function verifyAdmin(token: string) {
         }
     }
     
+}
+
+export async function postReservations(token: string) {
+    if (token == "") return { data: [], success: false } as ReservationInfo
+    const data = new FormData()
+    data.set("token", token)
+    const res = await axios.post<ReservationInfo>("/api/getrequests.php", data)
+    return res.data
+}
+
+export async function postAccept(token: string, id: number) {
+    const data = new FormData()
+    data.set("token", token)
+    data.set("Id", id.toString())
+    try {
+        const res = await axios.post<{success: boolean, message: string}>("/api/accept.php", data)
+        return res.data
+    } catch (err) {
+        if (isAxiosError(err) && err.response) {
+            return err.response.data
+        }
+    }
+
+}
+
+export async function postReject(token: string, id: number, reason: string) {
+    const data = new FormData()
+    data.set("token", token)
+    data.set("Id", id.toString())
+    data.set("Reason", reason)
+    try {
+        const res = await axios.post<{success: boolean, message: string}>("/api/reject.php", data)
+        return res.data
+    } catch (err) {
+        if (isAxiosError(err) && err.response) {
+            return err.response.data
+        }
+    }
+
 }

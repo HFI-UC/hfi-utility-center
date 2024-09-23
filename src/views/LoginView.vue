@@ -4,7 +4,6 @@ import VueTurnstile from "vue-turnstile";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
-import Toast from "primevue/toast";
 import { postLogin } from "../api";
 import { useToast } from "primevue/usetoast";
 import Card from "primevue/card";
@@ -51,6 +50,7 @@ const onClickEvent = () => {
             })
             loading.value = false
             sessionStorage.setItem("token", res.token as string)
+            window.location.href = "/admin/reservations"
             return
         } else {
             toast.add({
@@ -67,7 +67,6 @@ const onClickEvent = () => {
 </script>
 
 <template>
-    <Toast />
     <div class="flex flex-col items-center justify-center">
         <h1>Admin Login</h1>
         <Card>
