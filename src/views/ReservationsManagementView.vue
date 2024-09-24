@@ -185,7 +185,7 @@ onMounted(() => {
                     <div v-for="booking in bookingData" id="card">
                         <Card class="m-2">
                             <template #content>
-                                <h3 class="m-2">#{{ booking.id }}</h3>
+                                <h3 class="m-2">Reservation #{{ booking.id }}</h3>
                                 <p class="m-2">
                                     <b class="font-bold">Room: </b
                                     >{{
