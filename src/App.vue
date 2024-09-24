@@ -66,6 +66,11 @@ onMounted(() => {
                         icon: "pi pi-list-check",
                         url: "/admin/reservations",
                     },
+                    {
+                        label: "Policy Settings",
+                        icon: "pi pi-building-columns",
+                        url: "/admin/policy",
+                    },
                 ],
             })
         }

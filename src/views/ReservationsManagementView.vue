@@ -11,13 +11,14 @@ import Button from "primevue/button";
 import Tag from "primevue/tag";
 import Dialog from "primevue/dialog";
 import Select from "primevue/select";
+import FloatLabel from "primevue/floatlabel";
 
 const toast = useToast();
-const isAdmin = ref(false);
 const token = ref("");
 const visible = ref(false);
 const id = ref(-1);
-const reason = ref("")
+const reason = ref("");
+const disabled = ref(false);
 const reasons = ref([
     {
         name: "时间冲突 - 选择的时间段已被其他活动预订",
@@ -38,9 +39,10 @@ const reasons = ref([
     { name: "预约过于频繁 - 同一组织或个人的预约频率过高", code: "8" },
     { name: "特殊活动优先 - 由于特殊活动或紧急情况，优先安排资源", code: "9" },
 ]);
+
 const { data: booking } = useRequest(
     (): Promise<ReservationInfo> => postReservations(token.value),
-    { pollingInterval: 1000 },
+    { pollingInterval: 3000 },
 );
 
 const bookingData = computed(
@@ -66,6 +68,7 @@ const formatTime = (time: string) => {
 };
 
 const onAcceptEvent = () => {
+    disabled.value = true;
     postAccept(token.value, id.value).then(
         (res: { success: boolean; message: string }) => {
             toast.add({
@@ -76,9 +79,24 @@ const onAcceptEvent = () => {
             });
         },
     );
+    disabled.value = false;
 };
 
+const isCompleted = ref(true)
+
 const onRejectEvent = () => {
+    isCompleted.value = true
+    disabled.value = true;
+    if (reason.value == "") {
+        toast.add({
+                severity: "error",
+                summary: "Error",
+                detail: "Please fill out the required field",
+                life: 3000,
+        });
+        isCompleted.value = false
+        return
+    }
     postReject(token.value, id.value, reason.value).then(
         (res: { success: boolean; message: string }) => {
             toast.add({
@@ -89,8 +107,16 @@ const onRejectEvent = () => {
             });
         },
     );
-    visible.value = false
-}
+    disabled.value = false;
+    visible.value = false;
+};
+
+const roomMapping: { [key: number]: string } = {
+    101: "iStudy Meeting Room 1",
+    102: "iStudy Meeting Room 2",
+    103: "Writing Center 1",
+    106: "Writing Center 2",
+};
 
 onMounted(() => {
     token.value = sessionStorage.getItem("token") || "";
@@ -100,7 +126,6 @@ onMounted(() => {
             (res: { success: boolean; message: string }) => res.success,
         )
     ) {
-        isAdmin.value = false;
         toast.add({
             severity: "error",
             summary: "Error",
@@ -120,17 +145,20 @@ onMounted(() => {
             v-model:visible="visible"
             modal
             header="Choose a reject reason"
-            :style="{ width: '40rem' }"
+            :style="{ width: '25rem' }"
         >
-            <div class="flex items-center gap-4 mb-8">
-                <label for="reason" class="font-semibold w-24">Reason</label>
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <FloatLabel>
+                <label for="reason">Reason</label>
                 <Select
                     id="reason"
-                    class="w-[28rem]"
+                    class="w-[22rem]"
                     :options="reasons"
                     optionLabel="name"
+                    optionValue="code"
                     v-model="reason"
-                ></Select>
+                    :invalid="!isCompleted && reason == ''"
+                ></Select></FloatLabel>
             </div>
             <div class="flex justify-end gap-2">
                 <Button
@@ -150,7 +178,9 @@ onMounted(() => {
         <h1>Reservation Management</h1>
         <Card v-if="booking?.success" id="cards-container">
             <template #content>
-                <p v-if="bookingData.length == 0">There are currently no applications.</p>
+                <p v-if="bookingData.length == 0">
+                    There are currently no applications.
+                </p>
                 <div class="flex flex-wrap justify-between">
                     <div v-for="booking in bookingData" id="card">
                         <Card class="m-2">
@@ -158,7 +188,10 @@ onMounted(() => {
                                 <h3 class="m-2">#{{ booking.id }}</h3>
                                 <p class="m-2">
                                     <b class="font-bold">Room: </b
-                                    >{{ booking.room }}
+                                    >{{
+                                        roomMapping[booking.room] ||
+                                        booking.room
+                                    }}
                                 </p>
                                 <p class="m-2">
                                     <b class="font-bold">Name: </b
@@ -197,6 +230,7 @@ onMounted(() => {
                                         "
                                         severity="danger"
                                         class="w-full"
+                                        :disabled="disabled"
                                     />
                                     <Button
                                         icon="pi pi-check"
@@ -232,9 +266,9 @@ h1 {
 }
 
 h3 {
-    font-size: 1.4em;
-    margin-block-start: 0.1em;
-    margin-block-end: 0.1em;
+    font-size: 1.5em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     font-weight: bold;

@@ -13,14 +13,12 @@ export interface ApplicationInfo {
 
 
 export interface RoomPolicyInfo {
+    id?: number
+    unavailable?: boolean
     classroom: string;
     days: string;
     start_time: string;
     end_time: string;
-}
-
-export interface Policy {
-    policy: RoomPolicyInfo[];
 }
 
 export interface ReservationInfo {
@@ -37,7 +35,7 @@ export interface ReservationInfo {
 }
 
 export async function fetchPolicy() {
-    const res = await axios.get<Policy>("/api/fetchPolicy.php");
+    const res = await axios.get<{policy: RoomPolicyInfo[]}>("/api/fetchPolicy.php");
     return res.data;
 }
 
@@ -89,7 +87,7 @@ export async function verifyAdmin(token: string) {
     const data = new FormData()
     data.set("token", token)
     try {
-        const res = await axios.post<{ success: boolean, message: string }>("/api/verify_admin.php", data)
+        const res = await axios.post<{ success: boolean }>("/api/verify_admin.php", data)
         return res.data
     } catch (err) {
         if (axios.isAxiosError(err) && err.response) {
@@ -136,4 +134,49 @@ export async function postReject(token: string, id: number, reason: string) {
         }
     }
 
+}
+
+export async function postPolicy(token: string) {
+    if (token == "") return { policy: [] as RoomPolicyInfo[] }
+    const data = new FormData()
+    data.set("token", token)
+    const res = await axios.post<{policy: RoomPolicyInfo[]}>("/api/getDisabledClassroomDetails.php", data)
+    return res.data
+}
+
+export async function postResume(token: string, id: number) {
+    const data = new FormData()
+    data.set("token", token)
+    data.set("id", id.toString())
+    const res = await axios.post<{success: boolean}>("/api/resumeDisabledClassroom.php", data)
+    return res.data
+}
+
+export async function postPause(token: string, id: number) {
+    const data = new FormData()
+    data.set("token", token)
+    data.set("id", id.toString())
+    const res = await axios.post<{success: boolean}>("/api/pauseDisableClassroom.php", data)
+    return res.data
+}
+
+export async function postDelete(token: string, id: number) {
+    const data = new FormData()
+    data.set("token", token)
+    data.set("id", id.toString())
+    const res = await axios.post<{success: boolean}>("/api/enableClassroom.php", data)
+    return res.data
+}
+
+export async function postAdd(token: string, room: number, days: number[], start_time: Date, end_time: Date) {
+    const startTime = `${start_time.getHours()}:${start_time.getMinutes()}:00`
+    const endTime = `${end_time.getHours()}:${end_time.getMinutes()}:00`
+    const data = new FormData()
+    data.set("token", token)
+    data.set("classroom", room.toString())
+    days.some((item) => {data.append("days[]", item.toString())})
+    data.set("start_time", startTime)
+    data.set("end_time", endTime)
+    const res = await axios.post<{ success: boolean }>("/api/submit_classroom.php", data)
+    return res.data
 }

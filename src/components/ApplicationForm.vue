@@ -12,16 +12,16 @@ import { computed, ref, Ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useRequest } from "vue-request";
 import {
-    type Policy,
     type ReservationInfo,
     type ApplicationInfo,
     postApplication,
     fetchPolicy,
     fetchReservation,
+    type RoomPolicyInfo,
 } from "../api";
 import router from "../router/router";
 
-const { data: policyData } = useRequest((): Promise<Policy> => fetchPolicy(), {
+const { data: policyData } = useRequest((): Promise<{ policy: RoomPolicyInfo[] }> => fetchPolicy(), {
     pollingInterval: 1000000,
 });
 
