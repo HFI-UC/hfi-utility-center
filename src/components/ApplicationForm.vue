@@ -21,9 +21,12 @@ import {
 } from "../api";
 import router from "../router/router";
 
-const { data: policyData } = useRequest((): Promise<{ policy: RoomPolicyInfo[] }> => fetchPolicy(), {
-    pollingInterval: 1000000,
-});
+const { data: policyData } = useRequest(
+    (): Promise<{ policy: RoomPolicyInfo[] }> => fetchPolicy(),
+    {
+        pollingInterval: 1000000,
+    },
+);
 
 const { data: booking } = useRequest(
     (): Promise<ReservationInfo> => fetchReservation(),

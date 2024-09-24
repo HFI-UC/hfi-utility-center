@@ -67,20 +67,24 @@ const minStartDate = computed(() => {
 
 const maxStartDate = computed(() => {
     if (endDate.value) {
-        const time = new Date(endDate.value.getTime());
+        let time = new Date(endDate.value.getTime());
         time.setMinutes(time.getMinutes() - 5);
         return time;
     }
-    return new Date().setHours(23, 59);
+    let time = new Date();
+    time.setHours(23, 59);
+    return time;
 });
 
 const minEndDate = computed(() => {
     if (startDate.value) {
-        const time = new Date(startDate.value.getTime());
+        let time = new Date(startDate.value.getTime());
         time.setMinutes(time.getMinutes() + 5);
         return time;
     }
-    return new Date().setHours(0, 5);
+    let time = new Date();
+    time.setHours(0, 5);
+    return time;
 });
 
 const maxEndDate = computed(() => {
@@ -126,8 +130,11 @@ const onDeleteEvent = () => {
 
 const onAddEvent = () => {
     isValid.value = true;
-    isStartTimeValid.value = startDate.value instanceof Date && startDate.value.getMinutes() % 5 === 0;
-    isEndTimeValid.value = endDate.value instanceof Date && endDate.value.getMinutes() % 5 === 0;
+    isStartTimeValid.value =
+        startDate.value instanceof Date &&
+        startDate.value.getMinutes() % 5 === 0;
+    isEndTimeValid.value =
+        endDate.value instanceof Date && endDate.value.getMinutes() % 5 === 0;
     if (
         selectedDays.value.length == 0 ||
         startDate.value == null ||
@@ -150,16 +157,24 @@ const onAddEvent = () => {
             detail: "The selected time must be a multiple of 5!",
             life: 3000,
         });
+        return;
     }
-    const room = roomMappingToNumber[selectedRoom.value] || parseInt(selectedRoom.value)
-    postAdd(token.value, room, convertedDays.value, startDate.value, endDate.value).then((res: { success: boolean }) => {
+    const room =
+        roomMappingToNumber[selectedRoom.value] || parseInt(selectedRoom.value);
+    postAdd(
+        token.value,
+        room,
+        convertedDays.value,
+        startDate.value,
+        endDate.value,
+    ).then((res: { success: boolean }) => {
         toast.add({
             severity: res.success ? "success" : "error",
             summary: res.success ? "Success" : "Error",
             detail: res.success ? "Success!" : "An error occured.",
             life: 3000,
         });
-        visible.value = false
+        visible.value = false;
     });
 };
 
@@ -264,7 +279,7 @@ onMounted(() => {
                     timeOnly
                     :minDate="minStartDate"
                     :maxDate="maxStartDate"
-                    :invalid="!isStartTimeValid || !isValid && !startDate"
+                    :invalid="!isStartTimeValid || (!isValid && !startDate)"
                 >
                 </DatePicker>
 
@@ -275,7 +290,7 @@ onMounted(() => {
                     timeOnly
                     :minDate="minEndDate"
                     :maxDate="maxEndDate"
-                    :invalid="!isEndTimeValid || !isValid && !endDate"
+                    :invalid="!isEndTimeValid || (!isValid && !endDate)"
                 >
                 </DatePicker>
             </div>
@@ -307,7 +322,7 @@ onMounted(() => {
                 <p v-if="policyData.length == 0">
                     There are currently no policies.
                 </p>
-                <div class="flex flex-wrap justify-between">
+                <div class="flex flex-wrap justify-center">
                     <div v-for="policy in policyData" id="card">
                         <Card class="m-2">
                             <template #content>

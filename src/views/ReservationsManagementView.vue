@@ -82,20 +82,20 @@ const onAcceptEvent = () => {
     disabled.value = false;
 };
 
-const isCompleted = ref(true)
+const isCompleted = ref(true);
 
 const onRejectEvent = () => {
-    isCompleted.value = true
+    isCompleted.value = true;
     disabled.value = true;
     if (reason.value == "") {
         toast.add({
-                severity: "error",
-                summary: "Error",
-                detail: "Please fill out the required field",
-                life: 3000,
+            severity: "error",
+            summary: "Error",
+            detail: "Please fill out the required field",
+            life: 3000,
         });
-        isCompleted.value = false
-        return
+        isCompleted.value = false;
+        return;
     }
     postReject(token.value, id.value, reason.value).then(
         (res: { success: boolean; message: string }) => {
@@ -149,16 +149,17 @@ onMounted(() => {
         >
             <div class="flex items-center justify-center gap-4 mb-8">
                 <FloatLabel>
-                <label for="reason">Reason</label>
-                <Select
-                    id="reason"
-                    class="w-[22rem]"
-                    :options="reasons"
-                    optionLabel="name"
-                    optionValue="code"
-                    v-model="reason"
-                    :invalid="!isCompleted && reason == ''"
-                ></Select></FloatLabel>
+                    <label for="reason">Reason</label>
+                    <Select
+                        id="reason"
+                        class="w-[22rem]"
+                        :options="reasons"
+                        optionLabel="name"
+                        optionValue="code"
+                        v-model="reason"
+                        :invalid="!isCompleted && reason == ''"
+                    ></Select
+                ></FloatLabel>
             </div>
             <div class="flex justify-end gap-2">
                 <Button
@@ -185,7 +186,9 @@ onMounted(() => {
                     <div v-for="booking in bookingData" id="card">
                         <Card class="m-2">
                             <template #content>
-                                <h3 class="m-2">Reservation #{{ booking.id }}</h3>
+                                <h3 class="m-2">
+                                    Reservation #{{ booking.id }}
+                                </h3>
                                 <p class="m-2">
                                     <b class="font-bold">Room: </b
                                     >{{
