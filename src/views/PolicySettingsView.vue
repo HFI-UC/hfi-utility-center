@@ -66,23 +66,21 @@ const minStartDate = computed(() => {
 });
 
 const maxStartDate = computed(() => {
-    let time = new Date();
-    time.setHours(23, 59);
-    if (endDate.value instanceof Date) {
-        time = new Date(endDate.value.getTime());
-        time.setHours(time.getHours(), time.getMinutes() - 5);
+    if (endDate.value) {
+        const time = new Date(endDate.value.getTime());
+        time.setMinutes(time.getMinutes() - 5);
+        return time;
     }
-    return time;
+    return new Date().setHours(23, 59);
 });
 
 const minEndDate = computed(() => {
-    let time = new Date();
-    time.setHours(0, 5);
-    if (startDate.value instanceof Date) {
-        time = new Date(startDate.value.getTime());
-        time.setHours(time.getHours(), time.getMinutes() + 5);
+    if (startDate.value) {
+        const time = new Date(startDate.value.getTime());
+        time.setMinutes(time.getMinutes() + 5);
+        return time;
     }
-    return time;
+    return new Date().setHours(0, 5);
 });
 
 const maxEndDate = computed(() => {
@@ -128,8 +126,8 @@ const onDeleteEvent = () => {
 
 const onAddEvent = () => {
     isValid.value = true;
-    isStartTimeValid.value = true
-    isEndTimeValid.value = true
+    isStartTimeValid.value = startDate.value instanceof Date && startDate.value.getMinutes() % 5 === 0;
+    isEndTimeValid.value = endDate.value instanceof Date && endDate.value.getMinutes() % 5 === 0;
     if (
         selectedDays.value.length == 0 ||
         startDate.value == null ||
@@ -145,14 +143,7 @@ const onAddEvent = () => {
         });
         return;
     }
-    if (startDate.value instanceof Date && startDate.value.getMinutes() % 5 !== 0) {
-        isStartTimeValid.value = false
-    }
-    if (endDate.value instanceof Date && endDate.value.getMinutes() % 5 !== 0) {
-        isEndTimeValid.value = false
-    }
     if (!isStartTimeValid.value || !isEndTimeValid.value) {
-        console.log(isEndTimeValid.value, isStartTimeValid.value)
         toast.add({
             severity: "error",
             summary: "Error",
