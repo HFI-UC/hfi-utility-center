@@ -6,11 +6,15 @@ const visible = ref(true);
 </script>
 
 <template>
-    <Dialog v-model:visible="visible" header="Announcement" modal>
+    <Dialog v-model:visible="visible" header="Announcement" class="w-[25rem]" modal>
         <div class="flex items-center justify-center gap-4 mb-8">
             <p>
-                您当前使用的是测试版网站！如果需要提交申请，请前往
-                <a href="https://hfiuc.org" style="color: var(--p-primary-500);">https://hfiuc.org/</a>！
+                You are using the <b class="font-bold">Beta Version (Cenozoic)</b> of HFI
+                Utility Center! Go to
+                <a href="https://hfiuc.org" style="color: var(--p-primary-500)"
+                    >https://hfiuc.org/</a
+                >
+                if you want to sumbit a room application!
             </p>
         </div>
     </Dialog>

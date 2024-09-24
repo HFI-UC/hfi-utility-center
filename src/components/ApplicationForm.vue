@@ -389,7 +389,7 @@ const onClickEvent = () => {
                             id="datatable"
                         >
                             <template #header>
-                                <span class="text-lg font-bold">Policy</span>
+                                <span class="text-lg font-bold">Unavailable Time</span>
                             </template>
                             <template #empty>
                                 <p>No available data.</p>
