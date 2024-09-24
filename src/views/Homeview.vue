@@ -1,6 +1,19 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Dialog from "primevue/dialog";
+import { ref } from "vue";
+
+const visible = ref(true);
+</script>
 
 <template>
+    <Dialog v-model:visible="visible" header="Announcement" modal>
+        <div class="flex items-center justify-center gap-4 mb-8">
+            <p>
+                您当前使用的是测试版网站！如果需要提交申请，请前往
+                <a href="https://hfiuc.org" style="color: var(--p-primary-500);">https://hfiuc.org/</a>！
+            </p>
+        </div>
+    </Dialog>
     <div class="flex flex-col items-center justify-center" id="home-container">
         <h1 class="flex">HFI Utility Center</h1>
         <h3 class="flex">Cenozoic</h3>
