@@ -1,25 +1,26 @@
 <script setup lang="ts">
 import DataTable from "primevue/datatable";
-import Skeleton from "primevue/skeleton";
 import Column from "primevue/column";
 import Tag from "primevue/tag";
-import { ReservationInfo } from "../api";
-import { fetchReservation } from "../api";
-import { useRequest } from "vue-request";
-import { computed, ref } from "vue";
-import { FilterMatchMode } from "@primevue/core/api";
+import { postReservation, type ReservationInfo } from "../api";
+import { computed, ref, watch, Ref } from "vue";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 
-const { data } = useRequest(
-    (): Promise<ReservationInfo> => fetchReservation(),
-    { pollingInterval: 1000000 },
-);
+const data: Ref<ReservationInfo | null> = ref(null)
 
-const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
+const query = ref("")
+
+watch(
+    () => query.value,
+    (newValue) => {
+        postReservation(newValue)
+        .then((res) => {
+            data.value = res
+        })
+    }
+)
 
 const statusMapping: { [key: string]: string } = {
     non: "Pending",
@@ -100,13 +101,15 @@ const getSeverity = (label: string): string => {
 
 <template>
     <DataTable
-        v-if="data"
         :value="bookingData"
         paginator
-        v-model:filters="filters"
         :rows="10"
         :rowsPerPageOptions="[10, 20, 50]"
     >
+        <template #empty>
+            <p v-if="query !== ''">No available data.</p>
+            <p v-else>Enter a keyword to start your search.</p>
+        </template>
         <template #header>
             <div class="flex justify-start">
                 <IconField>
@@ -114,7 +117,7 @@ const getSeverity = (label: string): string => {
                         <i class="pi pi-search" />
                     </InputIcon>
                     <InputText
-                        v-model="filters['global'].value"
+                        v-model="query"
                         placeholder="Keyword Search"
                     />
                 </IconField>
@@ -131,5 +134,4 @@ const getSeverity = (label: string): string => {
             </template>
         </Column>
     </DataTable>
-    <Skeleton v-else height="650px"></Skeleton>
 </template>

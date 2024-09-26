@@ -12,11 +12,9 @@ import { computed, ref, Ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useRequest } from "vue-request";
 import {
-    type ReservationInfo,
     type ApplicationInfo,
     postApplication,
     fetchPolicy,
-    fetchReservation,
     type RoomPolicyInfo,
 } from "../api";
 import router from "../router/router";
@@ -28,13 +26,7 @@ const { data: policyData } = useRequest(
     },
 );
 
-const { data: booking } = useRequest(
-    (): Promise<ReservationInfo> => fetchReservation(),
-    { pollingInterval: 15000 },
-);
-
 const policy = computed(() => policyData.value?.policy || []);
-const bookingData = computed(() => booking.value?.data || []);
 
 const reservation: Ref<ApplicationInfo> = ref({
     studentName: "",
@@ -129,24 +121,6 @@ const roomMapping: { [key: string]: number } = {
     "Writing Center 2": 106,
 };
 
-const validateTimeConflict = (
-    startTime: Date,
-    endTime: Date,
-    selectRoom: number,
-): boolean => {
-    return !bookingData.value.some((booking) => {
-        const [start, end] = booking.time.split("-");
-        const startDate = new Date(parseInt(start)),
-            endDate = new Date(parseInt(end));
-        return (
-            selectRoom == booking.room &&
-            booking.auth !== "no" &&
-            endDate > startTime &&
-            startDate < endTime
-        );
-    });
-};
-
 const loading = ref(false);
 
 const validatePolicy = (
@@ -184,11 +158,6 @@ watch(
     (newValue) => {
         reservation.value.selectedRoom =
             roomMapping[newValue] || parseInt(newValue);
-        filteredBookingData.value = bookingData.value.filter(
-            (item) =>
-                item.room === reservation.value.selectedRoom &&
-                item.auth !== "no",
-        );
         filteredPolicyData.value = policy.value.filter(
             (item) =>
                 parseInt(item.classroom) === reservation.value.selectedRoom,
@@ -259,23 +228,6 @@ const onClickEvent = () => {
     const endTime = new Date(
         `${reservation.value.date}T${reservation.value.endTime}`,
     );
-
-    if (
-        !validateTimeConflict(
-            startTime,
-            endTime,
-            reservation.value.selectedRoom,
-        )
-    ) {
-        toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Selected time is not available! Choose another time instead.",
-            life: 3000,
-        });
-        loading.value = false;
-        return;
-    }
 
     if (!validatePolicy(startTime, endTime, reservation.value.selectedRoom)) {
         toast.add({

@@ -40,8 +40,10 @@ export async function fetchPolicy() {
     return res.data;
 }
 
-export async function fetchReservation() {
-    const res = await axios.get<ReservationInfo>("/api/getresv.php");
+export async function postReservation(query: string) {
+    const data = new FormData()
+    data.set("query", query)
+    const res = await axios.post<ReservationInfo>("/api/inquiry.php", data);
     return res.data;
 }
 
