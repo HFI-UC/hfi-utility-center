@@ -40,9 +40,14 @@ export async function fetchPolicy() {
     return res.data;
 }
 
-export async function postReservation(query: string) {
+export async function postReservation(query: string | Date) {
     const data = new FormData()
-    data.set("query", query)
+    if (typeof query === 'string') {
+        data.set("query", query)
+    }
+    else {
+        data.set("time", query.getTime().toString())
+    }
     const res = await axios.post<ReservationInfo>("/api/inquiry.php", data);
     return res.data;
 }
@@ -106,7 +111,7 @@ export async function verifyAdmin(token: string) {
     }
 }
 
-export async function postReservations(token: string) {
+export async function postAdminReservation(token: string) {
     if (token == "") return { data: [], success: false } as ReservationInfo;
     const data = new FormData();
     data.set("token", token);

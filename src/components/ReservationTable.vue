@@ -3,24 +3,40 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Tag from "primevue/tag";
 import { postReservation, type ReservationInfo } from "../api";
-import { computed, ref, watch, Ref } from "vue";
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
+import { computed, ref, Ref } from "vue";
 import InputText from "primevue/inputtext";
+import DatePicker from "primevue/datepicker";
+import Button from "primevue/button";
+import SelectButton from "primevue/selectbutton";
 
-const data: Ref<ReservationInfo | null> = ref(null)
+const data: Ref<ReservationInfo | null> = ref(null);
+const queried = ref(false);
+const query = ref("");
+const date: Ref<Date | null> = ref(null);
+const options = ref(["Keyword", "Time"]);
+const searchOption = ref("Keyword");
 
-const query = ref("")
-
-watch(
-    () => query.value,
-    (newValue) => {
-        postReservation(newValue)
-        .then((res) => {
-            data.value = res
-        })
+const onSearch = () => {
+    queried.value = true;
+    if (searchOption.value == "Time") {
+        if (date.value) {
+            date.value.setSeconds(0, 0);
+            postReservation(date.value).then((res) => {
+                data.value = res;
+            });
+        } else {
+            data.value = { success: false, data: [] };
+        }
+    } else {
+        if (query.value == "") {
+            data.value = { success: false, data: [] };
+            return;
+        }
+        postReservation(query.value).then((res) => {
+            data.value = res;
+        });
     }
-)
+};
 
 const statusMapping: { [key: string]: string } = {
     non: "Pending",
@@ -107,20 +123,46 @@ const getSeverity = (label: string): string => {
         :rowsPerPageOptions="[10, 20, 50]"
     >
         <template #empty>
-            <p v-if="query !== ''">No available data.</p>
+            <p
+                v-if="
+                    (searchOption == 'Keyword' && query !== '') ||
+                    (searchOption == 'Time' &&
+                        date &&
+                        data?.data.length == 0 &&
+                        queried)
+                "
+            >
+                No available data.
+            </p>
             <p v-else>Enter a keyword to start your search.</p>
         </template>
         <template #header>
-            <div class="flex justify-start">
-                <IconField>
-                    <InputIcon>
-                        <i class="pi pi-search" />
-                    </InputIcon>
+            <div class="flex flex-col gap-3">
+                <SelectButton
+                    v-model="searchOption"
+                    class="h-[40px]"
+                    :options="options"
+                    aria-labelledby="basic"
+                />
+                <div class="flex justify-start gap-3">
                     <InputText
+                        v-if="searchOption == 'Keyword'"
                         v-model="query"
                         placeholder="Keyword Search"
                     />
-                </IconField>
+                    <DatePicker
+                        v-else
+                        showTime
+                        v-model="date"
+                        placeholder="Search with Time"
+                        dateFormat="yy/mm/dd"
+                    />
+                    <Button
+                        @click="onSearch()"
+                        label="Search"
+                        icon="pi pi-search"
+                    ></Button>
+                </div>
             </div>
         </template>
         <Column field="name" header="Name"></Column>

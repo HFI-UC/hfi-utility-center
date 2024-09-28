@@ -3,7 +3,7 @@ import { useToast } from "primevue/usetoast";
 import { onMounted, ref, computed } from "vue";
 import { postAccept, postReject, verifyAdmin } from "../api";
 import { useRequest } from "vue-request";
-import { ReservationInfo, postReservations } from "../api";
+import { ReservationInfo, postAdminReservation } from "../api";
 import router from "../router/router";
 import Card from "primevue/card";
 import Skeleton from "primevue/skeleton";
@@ -41,7 +41,7 @@ const reasons = ref([
 ]);
 
 const { data: booking } = useRequest(
-    (): Promise<ReservationInfo> => postReservations(token.value),
+    (): Promise<ReservationInfo> => postAdminReservation(token.value),
     { pollingInterval: 3000 },
 );
 

@@ -10,7 +10,6 @@ const app = createApp(App);
 app.use(router);
 app.use(ToastService);
 app.use(PrimeVue, {
-    ripple: true,
     theme: {
         preset: Vio,
         options: {

@@ -15,6 +15,7 @@ import {
     type ApplicationInfo,
     postApplication,
     fetchPolicy,
+    postReservation,
     type RoomPolicyInfo,
 } from "../api";
 import router from "../router/router";
@@ -162,6 +163,7 @@ watch(
             (item) =>
                 parseInt(item.classroom) === reservation.value.selectedRoom,
         );
+        postReservation(reservation.value.selectedRoom.toString()).then((res) => filteredBookingData.value = res.data)
     },
 );
 

@@ -22,7 +22,7 @@ const items = ref([
                 url: "/reservation/create",
             },
             {
-                label: "Application Status",
+                label: "Reservation Status",
                 icon: "pi pi-chart-bar",
                 url: "/reservation/status",
             },
@@ -80,7 +80,6 @@ onMounted(() => {
 
 <template>
     <Toast />
-
     <div>
         <Menubar :model="items" class="menubar">
             <template #start>
@@ -139,7 +138,7 @@ onMounted(() => {
     text-align: center;
     padding: 2rem;
     color: white;
-    background-color: var(--p-violet-600);
+    background-color: var(--p-zinc-600);
 }
 
 #footer > p {
