@@ -157,4 +157,10 @@ onMounted(() => {
     color: var(--p-highlight-text-color);
     background-color: var(--p-highlight-bg);
 }
+
+@media screen and (max-width: 720px) {
+    #body {
+        padding: 20px;
+    }
+}
 </style>
