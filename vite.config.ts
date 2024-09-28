@@ -30,6 +30,10 @@ export default defineConfig({
                         "primevue/datepicker",
                         "primevue/usetoast",
                         "primevue/inputtext",
+                        "primevue/column",
+                        "primevue/textarea",
+                        "primevue/datatable",
+                        "primevue/selectbutton"
                     ],
                     vue: ["vue", "vue-request", "vue-turnstile"],
                     axios: ["axios"],
