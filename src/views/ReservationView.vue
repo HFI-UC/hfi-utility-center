@@ -1,13 +1,34 @@
 <script setup lang="ts">
 import ReservationTable from "../components/ReservationTable.vue";
+import AdminReservationTable from "../components/AdminReservationTable.vue";
 import Card from "primevue/card";
+import { ref, onMounted } from "vue";
+import { verifyAdmin } from "../api";
+
+const isAdmin = ref(false)
+const token = ref("")
+onMounted(() => {
+    token.value = sessionStorage.getItem("token") || "";
+    if (
+        !token.value ||
+        !verifyAdmin(token.value).then(
+            (res: { success: boolean; message: string }) => res.success,
+        )
+    ) {
+        isAdmin.value = false
+    }
+    else {
+        isAdmin.value = true
+    }
+});
 </script>
 
 <template>
     <h1>Reservation Status</h1>
     <Card>
         <template #content>
-            <ReservationTable />
+            <ReservationTable v-if="!isAdmin" />
+            <AdminReservationTable v-else />
         </template>
     </Card>
 </template>

@@ -251,12 +251,9 @@ const onClickEvent = () => {
                     query: { status: "success", message: res.message },
                 });
             } else {
-                loading.value = false;
-                toast.add({
-                    severity: "error",
-                    summary: "Error",
-                    detail: res.message,
-                    life: 3000,
+                router.push({
+                    path: "/reservation/create",
+                    query: { status: "error", message: res.message },
                 });
             }
         },

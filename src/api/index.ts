@@ -29,6 +29,9 @@ export interface ReservationInfo {
         time: string;
         reason: string;
         room: number;
+        sid?: number;
+        addTime?: string;
+        operator?: string;
         auth: string;
     }[];
 }
@@ -40,13 +43,18 @@ export async function fetchPolicy() {
     return res.data;
 }
 
-export async function postReservation(query: string | Date) {
+export async function postReservation(query: string | Date, token?: string) {
     const data = new FormData()
     if (typeof query === 'string') {
         data.set("query", query)
     }
     else {
         data.set("time", query.getTime().toString())
+    }
+    if (token) {
+        data.set("token", token)
+        const res = await axios.post<ReservationInfo>("/api/adminSearch.php", data); 
+        return res.data
     }
     const res = await axios.post<ReservationInfo>("/api/inquiry.php", data);
     return res.data;
@@ -101,6 +109,23 @@ export async function verifyAdmin(token: string) {
     try {
         const res = await axios.post<{ success: boolean }>(
             "/api/verify_admin.php",
+            data,
+        );
+        return res.data;
+    } catch (err) {
+        if (axios.isAxiosError(err) && err.response) {
+            return err.response.data;
+        }
+    }
+}
+
+export async function getAction(token: string, action: string) {
+    const data = new FormData();
+    data.set("token", token);
+    data.set("action", action)
+    try {
+        const res = await axios.post<{ success: boolean, message: string }>(
+            "/api/approval_action.php",
             data,
         );
         return res.data;

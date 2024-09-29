@@ -3,6 +3,7 @@ import ApplicationView from "../views/ApplicationView.vue";
 import LoginView from "../views/LoginView.vue";
 import ReservationsManagementView from "../views/ReservationsManagementView.vue";
 import ReservationView from "../views/ReservationView.vue";
+import ReservationActionsView from "../views/ReservationActionsView.vue";
 import PolicySettingsView from "../views/PolicySettingsView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -32,6 +33,14 @@ const router = createRouter({
         {
             path: "/admin/reservations",
             component: ReservationsManagementView
+        },
+        {
+            path: "/admin/approval",
+            component: ReservationActionsView,
+            props: (route) => ({
+                token: route.query.token,
+                action: route.query.action
+            })
         },
         {
             path: "/admin/policy",

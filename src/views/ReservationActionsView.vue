@@ -1,15 +1,63 @@
 <script setup lang="ts">
 import Card from "primevue/card";
+import { useToast } from "primevue/usetoast";
+import { onMounted, ref } from "vue";
+import router from "../router/router";
+import { getAction } from "../api";
 const props = defineProps<{
-    message?: string;
-    status?: string;
+    token?: string;
+    action?: string;
 }>();
+
+const toast = useToast();
+const status = ref("pending");
+const message = ref("");
+const token = props.token;
+const isValid = ref(false)
+const action = props.action;
+onMounted(() => {
+    if (!token || !action) {
+        toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Invalid argument.",
+            life: 2000,
+        });
+        setTimeout(() => {
+            router.go(-1);
+        }, 3000);
+        return
+    }
+    isValid.value = true
+    console.log(token)
+    getAction(token, action).then(
+        (res: { success: boolean; message: string }) => {
+            status.value = res.success ? "success" : "error";
+            message.value = res.message;
+        },
+    );
+});
 </script>
 
 <template>
     <div class="flex flex-col items-center justify-center">
-        <Card id="card">
+        <h1>Reservation Approval</h1>
+        <Card id="card" v-if="isValid">
             <template #content>
+                <div
+                    v-if="status == 'pending'"
+                    class="flex flex-col items-center justify-center"
+                >
+                    <h3>Pending...</h3>
+                    <i
+                        class="pi pi-spin pi-spinner m-[2rem]"
+                        id="status-icon"
+                        style="color: var(--p-gray-500)"
+                    ></i>
+                    <p class="w-[20rem] m-[1rem] text-center">
+                        {{ message }}
+                    </p>
+                </div>
                 <div
                     v-if="status == 'success'"
                     class="flex flex-col items-center justify-center"
@@ -21,7 +69,7 @@ const props = defineProps<{
                         style="color: var(--p-green-500)"
                     ></i>
                     <p class="w-[20rem] m-[1rem] text-center">
-                        {{ props.message }}
+                        {{ message }}
                     </p>
                 </div>
                 <div
@@ -35,7 +83,7 @@ const props = defineProps<{
                         style="color: var(--p-red-500)"
                     ></i>
                     <p class="w-[20rem] m-[1rem] text-center">
-                        {{ props.message }}
+                        {{ message }}
                     </p>
                 </div>
             </template>
