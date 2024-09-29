@@ -4,7 +4,7 @@ import PrimeVue from "primevue/config";
 import router from "./router/router";
 import "primeicons/primeicons.css";
 import ToastService from "primevue/toastservice";
-import { Vio } from "./styles/theme"
+import { Vio } from "./styles/theme";
 
 const app = createApp(App);
 app.use(router);

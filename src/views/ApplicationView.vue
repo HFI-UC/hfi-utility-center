@@ -6,7 +6,6 @@ const props = defineProps<{
     status?: string;
     message?: string;
 }>();
-
 </script>
 
 <template>

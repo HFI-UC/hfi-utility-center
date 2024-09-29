@@ -44,17 +44,19 @@ export async function fetchPolicy() {
 }
 
 export async function postReservation(query: string | Date, token?: string) {
-    const data = new FormData()
-    if (typeof query === 'string') {
-        data.set("query", query)
-    }
-    else {
-        data.set("time", query.getTime().toString())
+    const data = new FormData();
+    if (typeof query === "string") {
+        data.set("query", query);
+    } else {
+        data.set("time", query.getTime().toString());
     }
     if (token) {
-        data.set("token", token)
-        const res = await axios.post<ReservationInfo>("/api/adminSearch.php", data); 
-        return res.data
+        data.set("token", token);
+        const res = await axios.post<ReservationInfo>(
+            "/api/adminSearch.php",
+            data,
+        );
+        return res.data;
     }
     const res = await axios.post<ReservationInfo>("/api/inquiry.php", data);
     return res.data;
@@ -122,12 +124,13 @@ export async function verifyAdmin(token: string) {
 export async function getAction(token: string, action: string) {
     const data = new FormData();
     data.set("token", token);
-    data.set("action", action)
+    data.set("action", action);
     try {
-        const res = await axios.post<{ success: boolean, message: string }>(
+        const res = await axios.post<{ success: boolean; message: string }>(
             "/api/approval_action.php",
             data,
         );
+        console.log(res.data);
         return res.data;
     } catch (err) {
         if (axios.isAxiosError(err) && err.response) {

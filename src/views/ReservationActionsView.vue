@@ -13,7 +13,7 @@ const toast = useToast();
 const status = ref("pending");
 const message = ref("");
 const token = props.token;
-const isValid = ref(false)
+const isValid = ref(false);
 const action = props.action;
 onMounted(() => {
     if (!token || !action) {
@@ -26,10 +26,10 @@ onMounted(() => {
         setTimeout(() => {
             router.go(-1);
         }, 3000);
-        return
+        return;
     }
-    isValid.value = true
-    console.log(token)
+    isValid.value = true;
+    console.log(token);
     getAction(token, action).then(
         (res: { success: boolean; message: string }) => {
             status.value = res.success ? "success" : "error";

@@ -5,8 +5,8 @@ import Card from "primevue/card";
 import { ref, onMounted } from "vue";
 import { verifyAdmin } from "../api";
 
-const isAdmin = ref(false)
-const token = ref("")
+const isAdmin = ref(false);
+const token = ref("");
 onMounted(() => {
     token.value = sessionStorage.getItem("token") || "";
     if (
@@ -15,10 +15,9 @@ onMounted(() => {
             (res: { success: boolean; message: string }) => res.success,
         )
     ) {
-        isAdmin.value = false
-    }
-    else {
-        isAdmin.value = true
+        isAdmin.value = false;
+    } else {
+        isAdmin.value = true;
     }
 });
 </script>

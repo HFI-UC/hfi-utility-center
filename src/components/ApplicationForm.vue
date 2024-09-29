@@ -163,7 +163,9 @@ watch(
             (item) =>
                 parseInt(item.classroom) === reservation.value.selectedRoom,
         );
-        postReservation(reservation.value.selectedRoom.toString()).then((res) => filteredBookingData.value = res.data)
+        postReservation(reservation.value.selectedRoom.toString()).then(
+            (res) => (filteredBookingData.value = res.data),
+        );
     },
 );
 
@@ -340,7 +342,9 @@ const onClickEvent = () => {
                             id="datatable"
                         >
                             <template #header>
-                                <span class="text-lg font-bold">Unavailable Time</span>
+                                <span class="text-lg font-bold"
+                                    >Unavailable Time</span
+                                >
                             </template>
                             <template #empty>
                                 <p>No available data.</p>

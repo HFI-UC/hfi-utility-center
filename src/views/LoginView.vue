@@ -9,25 +9,25 @@ import { useToast } from "primevue/usetoast";
 import Card from "primevue/card";
 
 const cf_token = ref("");
-const user = ref("")
-const password = ref("")
-const toast = useToast()
-const isCompleted = ref(true)
-const loading = ref(false)
+const user = ref("");
+const password = ref("");
+const toast = useToast();
+const isCompleted = ref(true);
+const loading = ref(false);
 
 const onClickEvent = () => {
-    isCompleted.value = true
-    loading.value = true
-    if (user.value == "" || password.value == "" ) {
+    isCompleted.value = true;
+    loading.value = true;
+    if (user.value == "" || password.value == "") {
         toast.add({
             severity: "error",
             summary: "Error",
             detail: "Please fill out the required field!",
-            life: 3000
-        })
-        isCompleted.value = false
-        loading.value = false
-        return
+            life: 3000,
+        });
+        isCompleted.value = false;
+        loading.value = false;
+        return;
     }
     // if (token.value == "") {
     //     toast.add({
@@ -39,31 +39,32 @@ const onClickEvent = () => {
     //     loading.value = false
     //     return
     // }
-    postLogin(user.value, password.value, cf_token.value)
-    .then((res: { success: boolean, message: string, token?: string }) => {
-        if (res.success) {
-            toast.add({
-                severity: "success",
-                summary: "Success",
-                detail: res.message,
-                life: 3000
-            })
-            loading.value = false
-            sessionStorage.setItem("token", res.token as string)
-            window.location.href = "/admin/reservations"
-            return
-        } else {
-            toast.add({
-                severity: "error",
-                summary: "Error",
-                detail: res.message,
-                life: 3000
-            })
-            loading.value = false
-            return
-        }
-    })
-}
+    postLogin(user.value, password.value, cf_token.value).then(
+        (res: { success: boolean; message: string; token?: string }) => {
+            if (res.success) {
+                toast.add({
+                    severity: "success",
+                    summary: "Success",
+                    detail: res.message,
+                    life: 3000,
+                });
+                loading.value = false;
+                sessionStorage.setItem("token", res.token as string);
+                window.location.href = "/admin/reservations";
+                return;
+            } else {
+                toast.add({
+                    severity: "error",
+                    summary: "Error",
+                    detail: res.message,
+                    life: 3000,
+                });
+                loading.value = false;
+                return;
+            }
+        },
+    );
+};
 </script>
 
 <template>
@@ -73,11 +74,20 @@ const onClickEvent = () => {
             <template #content>
                 <div class="flex flex-col items-center">
                     <FloatLabel class="m-[20px]">
-                        <InputText id="user" v-model="user" :invalid="user == '' && !isCompleted"></InputText>
+                        <InputText
+                            id="user"
+                            v-model="user"
+                            :invalid="user == '' && !isCompleted"
+                        ></InputText>
                         <label for="user">Username</label>
                     </FloatLabel>
                     <FloatLabel class="m-[20px]">
-                        <InputText id="password" v-model="password" :invalid="password == '' && !isCompleted" type="password"></InputText>
+                        <InputText
+                            id="password"
+                            v-model="password"
+                            :invalid="password == '' && !isCompleted"
+                            type="password"
+                        ></InputText>
                         <label for="password">Password</label>
                     </FloatLabel>
                     <VueTurnstile
@@ -85,7 +95,12 @@ const onClickEvent = () => {
                         v-model="cf_token"
                         site-key="0x4AAAAAAAiw3hAxhw1fzq4B"
                     ></VueTurnstile>
-                    <Button icon="pi pi-sign-in" @click="onClickEvent()" label="Login" :loading="loading"></Button>
+                    <Button
+                        icon="pi pi-sign-in"
+                        @click="onClickEvent()"
+                        label="Login"
+                        :loading="loading"
+                    ></Button>
                 </div>
             </template>
         </Card>

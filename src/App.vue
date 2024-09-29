@@ -36,27 +36,26 @@ const toggleColorScheme = () => {
     const root = document.getElementsByTagName("html")[0];
     root.classList.toggle("p-dark");
     iconClass.value = iconClass.value === "pi-moon" ? "pi-sun" : "pi-moon";
-}
+};
 
-const isAdmin = ref(false)
+const isAdmin = ref(false);
 
 const signOut = () => {
-    isAdmin.value = false
-    sessionStorage.removeItem("token")
-    window.location.href = "/"
-}
+    isAdmin.value = false;
+    sessionStorage.removeItem("token");
+    window.location.href = "/";
+};
 
 const signIn = () => {
-    window.location.href = "/admin/login"
-}
+    window.location.href = "/admin/login";
+};
 
 onMounted(() => {
-    const token = sessionStorage.getItem("token")
-    if (!token) return
-    verifyAdmin(token)
-    .then((res: { success: boolean, message: string }) => {
+    const token = sessionStorage.getItem("token");
+    if (!token) return;
+    verifyAdmin(token).then((res: { success: boolean; message: string }) => {
         if (res.success) {
-            isAdmin.value = true
+            isAdmin.value = true;
             items.value.push({
                 label: "Admin",
                 icon: "pi pi-user",
@@ -72,10 +71,10 @@ onMounted(() => {
                         url: "/admin/policy",
                     },
                 ],
-            })
+            });
         }
-    })
-})
+    });
+});
 </script>
 
 <template>
@@ -86,17 +85,11 @@ onMounted(() => {
                 <img src="./assets/logo.svg" class="m-1" style="height: 25px" />
             </template>
             <template #end>
-                <Button v-if="!isAdmin"
-                    @click="signIn()"
-                    severity="success"
-                >
+                <Button v-if="!isAdmin" @click="signIn()" severity="success">
                     <i class="pi pi-sign-in"></i>
                     <span class="text-sm">Login</span>
                 </Button>
-                <Button v-if="isAdmin"
-                    @click="signOut()"
-                    severity="danger"
-                >
+                <Button v-if="isAdmin" @click="signOut()" severity="danger">
                     <i class="pi pi-sign-out"></i>
                     <span class="text-sm">Logout</span>
                 </Button>
@@ -120,7 +113,11 @@ onMounted(() => {
             This website is under
             <a href="https://www.gnu.org/licenses/agpl-3.0.html"
                 >AGPL-3.0 License</a
-            > and open-sourced on <a href="https://github.com/SilianZ/hfi-utility-center"><i class="pi pi-github"></i> GitHub</a>.
+            >
+            and open-sourced on
+            <a href="https://github.com/SilianZ/hfi-utility-center"
+                ><i class="pi pi-github"></i> GitHub</a
+            >.
         </p>
     </footer>
 </template>

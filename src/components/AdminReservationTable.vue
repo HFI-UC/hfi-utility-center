@@ -15,7 +15,7 @@ const query = ref("");
 const date: Ref<Date | null> = ref(null);
 const options = ref(["Keyword", "Time"]);
 const searchOption = ref("Keyword");
-const token = ref("")
+const token = ref("");
 
 const onSearch = () => {
     queried.value = true;
@@ -41,7 +41,7 @@ const onSearch = () => {
 
 onMounted(() => {
     token.value = sessionStorage.getItem("token") || "";
-})
+});
 
 const statusMapping: { [key: string]: string } = {
     non: "Pending",
@@ -52,10 +52,10 @@ const statusMapping: { [key: string]: string } = {
 const bookingData = computed(() => {
     if (!data.value) return [];
     const booking: {
-        id: string
-        sid: number
-        addTime: string
-        operator: string
+        id: string;
+        sid: number;
+        addTime: string;
+        operator: string;
         name: string;
         email: string;
         time: string;

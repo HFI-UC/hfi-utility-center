@@ -28,24 +28,24 @@ const router = createRouter({
         },
         {
             path: "/admin/login",
-            component: LoginView
+            component: LoginView,
         },
         {
             path: "/admin/reservations",
-            component: ReservationsManagementView
+            component: ReservationsManagementView,
         },
         {
             path: "/admin/approval",
             component: ReservationActionsView,
             props: (route) => ({
                 token: route.query.token,
-                action: route.query.action
-            })
+                action: route.query.action,
+            }),
         },
         {
             path: "/admin/policy",
-            component: PolicySettingsView
-        }
+            component: PolicySettingsView,
+        },
     ],
 });
 

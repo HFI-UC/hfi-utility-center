@@ -6,11 +6,17 @@ const visible = ref(true);
 </script>
 
 <template>
-    <Dialog v-model:visible="visible" header="Announcement" class="w-[25rem]" modal>
+    <Dialog
+        v-model:visible="visible"
+        header="Announcement"
+        class="w-[25rem]"
+        modal
+    >
         <div class="flex items-center justify-center gap-4 mb-8">
             <p>
-                You are using the <b class="font-bold">Beta Version (Cenozoic)</b> of HFI
-                Utility Center! Go to
+                You are using the
+                <b class="font-bold">Beta Version (Cenozoic)</b> of HFI Utility
+                Center! Go to
                 <a href="https://hfiuc.org" style="color: var(--p-primary-500)"
                     >https://hfiuc.org/</a
                 >
