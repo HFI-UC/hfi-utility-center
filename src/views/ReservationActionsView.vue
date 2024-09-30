@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import router from "../router/router";
 import { getAction } from "../api";
 const props = defineProps<{
@@ -12,8 +12,18 @@ const props = defineProps<{
 const toast = useToast();
 const status = ref("pending");
 const message = ref("");
+const data = ref();
+const color = computed(() =>
+    action == "approve" ? "text-green-500" : "text-red-500",
+);
 const token = props.token;
 const isValid = ref(false);
+const roomMapping: { [key: number]: string } = {
+    101: "iStudy Meeting Room 1",
+    102: "iStudy Meeting Room 2",
+    103: "Writing Center 1",
+    106: "Writing Center 2",
+};
 const action = props.action;
 onMounted(() => {
     if (!token || !action) {
@@ -30,10 +40,21 @@ onMounted(() => {
     }
     isValid.value = true;
     console.log(token);
+    console.log(color.value);
     getAction(token, action).then(
-        (res: { success: boolean; message: string }) => {
+        (res: {
+            success: boolean;
+            data?: {
+                addTime: string;
+                email: string;
+                reason: string;
+                room: number;
+            };
+            message?: string;
+        }) => {
+            message.value = res.message || "";
+            data.value = res.data;
             status.value = res.success ? "success" : "error";
-            message.value = res.message;
         },
     );
 });
@@ -54,9 +75,7 @@ onMounted(() => {
                         id="status-icon"
                         style="color: var(--p-gray-500)"
                     ></i>
-                    <p class="w-[20rem] m-[1rem] text-center">
-                        {{ message }}
-                    </p>
+                    <p class="w-[20rem] m-[1rem] text-center"></p>
                 </div>
                 <div
                     v-if="status == 'success'"
@@ -68,9 +87,35 @@ onMounted(() => {
                         id="status-icon"
                         style="color: var(--p-green-500)"
                     ></i>
-                    <p class="w-[20rem] m-[1rem] text-center">
-                        {{ message }}
-                    </p>
+                    <span
+                        v-if="data"
+                        class="w-[20rem] m-[1rem] flex flex-col text-center"
+                    >
+                        <p class="m-[5px]">
+                            The reservation has been
+                            <b :class="`font-bold ${color}`">{{
+                                action == "approve" ? "approved" : "rejected"
+                            }}</b
+                            >.
+                        </p>
+                        <br />
+                        <p class="m-[5px]">
+                            <b class="font-bold">Add Time: </b
+                            >{{ data.addTime }}
+                        </p>
+                        <p class="m-[5px]">
+                            <b class="font-bold">E-mail: </b>{{ data.email }}
+                        </p>
+                        <p class="m-[5px]">
+                            <b class="font-bold">Reason: </b>{{ data.reason }}
+                        </p>
+                        <p class="m-[5px]">
+                            <b class="font-bold">Room: </b
+                            >{{
+                                roomMapping[data.room] || data.room.toString()
+                            }}
+                        </p>
+                    </span>
                 </div>
                 <div
                     v-if="status == 'error'"

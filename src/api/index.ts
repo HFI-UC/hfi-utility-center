@@ -126,10 +126,16 @@ export async function getAction(token: string, action: string) {
     data.set("token", token);
     data.set("action", action);
     try {
-        const res = await axios.post<{ success: boolean; message: string }>(
-            "/api/approval_action.php",
-            data,
-        );
+        const res = await axios.post<{
+            success: boolean;
+            data?: {
+                addTime: string;
+                email: string;
+                reason: string;
+                room: number;
+            };
+            message?: string;
+        }>("/api/approval_action.php", data);
         console.log(res.data);
         return res.data;
     } catch (err) {

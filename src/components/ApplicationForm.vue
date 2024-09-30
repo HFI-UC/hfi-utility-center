@@ -159,12 +159,11 @@ watch(
     (newValue) => {
         reservation.value.selectedRoom =
             roomMapping[newValue] || parseInt(newValue);
-        filteredPolicyData.value = policy.value.filter(
-            (item) =>
-                parseInt(item.classroom) === reservation.value.selectedRoom,
-        );
         postReservation(reservation.value.selectedRoom.toString()).then(
-            (res) => (filteredBookingData.value = res.data),
+            (res) =>
+                (filteredBookingData.value = res.data.filter(
+                    (item) => item.auth !== "no",
+                )),
         );
     },
 );
