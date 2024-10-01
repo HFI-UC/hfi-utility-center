@@ -53,6 +53,7 @@ const bookingData = computed(() => {
         date: string;
         room: string;
         status: string;
+        reason: string;
         severity: string;
     }[] = [];
     for (const item of data.value.data) {
@@ -63,6 +64,7 @@ const bookingData = computed(() => {
             date: formatDate(item.time),
             room: roomMapping[item.room] || item.room.toString(),
             status: statusMapping[item.auth],
+            reason: item.reason,
             severity: getSeverity(item.auth),
         });
     }
@@ -170,6 +172,7 @@ const getSeverity = (label: string): string => {
         <Column field="date" header="Date"></Column>
         <Column field="time" header="Time"></Column>
         <Column field="room" header="Room"></Column>
+        <Column field="reason" header="Reason"></Column>
         <Column field="status" header="Status">
             <template #body="{ data }">
                 <Tag :severity="data.severity" :value="data.status"></Tag>
