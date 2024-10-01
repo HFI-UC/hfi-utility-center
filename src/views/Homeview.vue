@@ -1,29 +1,4 @@
-<script setup lang="ts">
-import Dialog from "primevue/dialog";
-import { ref } from "vue";
-
-const visible = ref(true);
-</script>
-
 <template>
-    <Dialog
-        v-model:visible="visible"
-        header="Announcement"
-        class="w-[25rem]"
-        modal
-    >
-        <div class="flex items-center justify-center gap-4 mb-8">
-            <p>
-                You are using the
-                <b class="font-bold">Beta Version (Cenozoic)</b> of HFI Utility
-                Center! Go to
-                <a href="https://hfiuc.org" style="color: var(--p-primary-500)"
-                    >https://hfiuc.org/</a
-                >
-                if you want to sumbit a room application!
-            </p>
-        </div>
-    </Dialog>
     <div class="flex flex-col items-center justify-center" id="home-container">
         <h1 class="flex">HFI Utility Center</h1>
         <h3 class="flex">Cenozoic</h3>
