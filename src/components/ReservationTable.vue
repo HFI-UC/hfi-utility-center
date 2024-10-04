@@ -127,11 +127,10 @@ const getSeverity = (label: string): string => {
         <template #empty>
             <p
                 v-if="
-                    (searchOption == 'Keyword' && query !== '') ||
-                    (searchOption == 'Time' &&
-                        date &&
-                        data?.data.length == 0 &&
-                        queried)
+                    ((searchOption == 'Keyword' && query !== '') ||
+                        (searchOption == 'Time' && data)) &&
+                    data?.data.length == 0 &&
+                    queried
                 "
             >
                 No available data.

@@ -159,6 +159,7 @@ watch(
     (newValue) => {
         reservation.value.selectedRoom =
             roomMapping[newValue] || parseInt(newValue);
+        filteredPolicyData.value = policy.value.filter((item) => item.classroom == reservation.value.selectedRoom?.toString())
         postReservation(reservation.value.selectedRoom.toString()).then(
             (res) =>
                 (filteredBookingData.value = res.data.filter(
