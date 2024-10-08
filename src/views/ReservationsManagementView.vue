@@ -197,7 +197,7 @@ onMounted(() => {
                                     }}
                                 </p>
                                 <p class="m-2">
-                                    <b class="font-bold">Name: </b
+                                    <b class="font-bold">Name / Class: </b
                                     >{{ booking.name }}
                                 </p>
                                 <p class="m-2">

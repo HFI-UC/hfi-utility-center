@@ -1,7 +1,7 @@
 {
   "name": "hfi-utility-center",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@primevue/themes": "^4.0.7",
     "axios": "^1.7.7",
+    "cos-nodejs-sdk-v5": "^2.14.6",
     "postcss-load-config": "^6.0.1",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.7",

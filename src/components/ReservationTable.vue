@@ -166,7 +166,7 @@ const getSeverity = (label: string): string => {
                 </div>
             </div>
         </template>
-        <Column field="name" header="Name"></Column>
+        <Column field="name" header="Name / Class"></Column>
         <Column field="email" header="E-mail"></Column>
         <Column field="date" header="Date"></Column>
         <Column field="time" header="Time"></Column>

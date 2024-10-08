@@ -40,22 +40,37 @@ const reservation: Ref<ApplicationInfo> = ref({
     reason: "",
 });
 
+const selectedCampus = ref("");
+
+const campus = ref(["Shipai Campus", "Knowledge City Campus"]);
+
+const classes = ref([]);
+
+const selectedClass = ref("");
 const rooms = ref([
-    "iStudy Meeting Room 1",
-    "iStudy Meeting Room 2",
-    "606",
-    "605",
-    "603",
-    "602",
-    "601",
-    "206",
-    "105",
-    "104",
-    "Writing Center 1",
-    "Writing Center 2",
-    "514",
-    "524",
+    [
+        "iStudy Meeting Room 1",
+        "iStudy Meeting Room 2",
+        "606",
+        "605",
+        "603",
+        "602",
+        "601",
+        "206",
+        "105",
+        "104",
+        "Writing Center 1",
+        "Writing Center 2",
+    ],
+    ["512", "524"],
 ]);
+
+const roomsOption = computed(() => {
+    if (selectedCampus.value == "") return [];
+    return selectedCampus.value == "Shipai Campus"
+        ? rooms.value[0]
+        : rooms.value[1];
+});
 
 const minDate = ref(new Date());
 const maxDate = computed(() => {
@@ -87,7 +102,11 @@ const generateTimeOptions = (
         start.setMinutes(start.getMinutes() + interval.value);
     }
 
-    return options;
+    return options.filter((item) => {
+        if (!date.value || !reservation.value.selectedRoom) return true;
+        const time = new Date(`${reservation.value.date}T${item}`);
+        return validatePolicy(time, reservation.value.selectedRoom);
+    });
 };
 
 const startTimeOptions = computed(() => generateTimeOptions(6, 30, 21, 15));
@@ -124,14 +143,10 @@ const roomMapping: { [key: string]: number } = {
 
 const loading = ref(false);
 
-const validatePolicy = (
-    startTime: Date,
-    endTime: Date,
-    selectedRoom: number,
-): boolean => {
+const validatePolicy = (time: Date, selectedRoom: number): boolean => {
     return !policy.value.some((rule) => {
         const days = rule.days.split(",");
-        const day = startTime.getDay();
+        const day = time.getDay();
         if (
             selectedRoom === parseInt(rule.classroom) &&
             days.includes(day.toString())
@@ -140,11 +155,11 @@ const validatePolicy = (
                 .split(":")
                 .map(Number);
             const [endHour, endMinute] = rule.end_time.split(":").map(Number);
-            const policyStartDate = new Date(startTime.getTime());
+            const policyStartDate = new Date(time.getTime());
             policyStartDate.setHours(startHour, startMinute);
-            const policyEndDate = new Date(startTime.getTime());
+            const policyEndDate = new Date(time.getTime());
             policyEndDate.setHours(endHour, endMinute);
-            return policyEndDate > startTime && policyStartDate < endTime;
+            return policyEndDate >= time && policyStartDate <= time;
         }
         return false;
     });
@@ -159,7 +174,10 @@ watch(
     (newValue) => {
         reservation.value.selectedRoom =
             roomMapping[newValue] || parseInt(newValue);
-        filteredPolicyData.value = policy.value.filter((item) => item.classroom == reservation.value.selectedRoom?.toString())
+        filteredPolicyData.value = policy.value.filter(
+            (item) =>
+                item.classroom == reservation.value.selectedRoom?.toString(),
+        );
         postReservation(reservation.value.selectedRoom.toString()).then(
             (res) =>
                 (filteredBookingData.value = res.data.filter(
@@ -205,13 +223,17 @@ const formatTableTime = (time: string) => {
     return `${formatHour(startTime)} ~ ${formatHour(endTime)}`;
 };
 
+watch(
+    () => date.value,
+    () => {
+        if (date.value) {
+            reservation.value.date = formatDate(date.value);
+        }
+    },
+);
+
 const onClickEvent = () => {
     loading.value = true;
-    if (date.value instanceof Date) {
-        reservation.value.date = formatDate(date.value);
-    }
-    reservation.value.selectedRoom =
-        roomMapping[selectedRoom.value] || parseInt(selectedRoom.value);
     isCompleted.value = !Object.values(reservation.value).some(
         (value) => value === "" || value == null,
     );
@@ -220,24 +242,6 @@ const onClickEvent = () => {
             severity: "error",
             summary: "Error",
             detail: "Please fill out the required field!",
-            life: 3000,
-        });
-        loading.value = false;
-        return;
-    }
-
-    const startTime = new Date(
-        `${reservation.value.date}T${reservation.value.startTime}`,
-    );
-    const endTime = new Date(
-        `${reservation.value.date}T${reservation.value.endTime}`,
-    );
-
-    if (!validatePolicy(startTime, endTime, reservation.value.selectedRoom)) {
-        toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Selected time does not comply with room policy.",
             life: 3000,
         });
         loading.value = false;
@@ -307,9 +311,18 @@ const onClickEvent = () => {
                         <h3>Room Information</h3>
                         <FloatLabel class="m-[20px]">
                             <Select
+                                id="campus"
+                                v-model="selectedCampus"
+                                :options="campus"
+                                :invalid="!isCompleted && selectedCampus === ''"
+                            />
+                            <label for="campus">Campus</label>
+                        </FloatLabel>
+                        <FloatLabel class="m-[20px]">
+                            <Select
                                 id="room"
                                 v-model="selectedRoom"
-                                :options="rooms"
+                                :options="roomsOption"
                                 :invalid="!isCompleted && selectedRoom === ''"
                             />
                             <label for="room">Room</label>
@@ -445,16 +458,13 @@ h3 {
 
 .p-select,
 .p-datepicker,
-.p-textarea {
+.p-textarea,
+input {
     min-width: 20rem;
 }
 
 #card {
     width: 28rem;
-}
-
-input {
-    min-width: 20rem;
 }
 
 #datatable {
@@ -464,7 +474,16 @@ input {
 
 @media screen and (max-width: 720px) {
     #card {
-        width: 25rem;
+        width: calc(100% - 1.5rem);
+    }
+    h3 {
+        font-size: 1.45rem;
+    }
+    .p-select,
+    .p-datepicker,
+    .p-textarea,
+    input {
+        min-width: 16rem;
     }
 
     h1 {

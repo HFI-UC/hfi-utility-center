@@ -26,7 +26,7 @@ const toast = useToast();
 const id = ref(-1);
 const { data: policy } = useRequest(
     (): Promise<{ policy: RoomPolicyInfo[] }> => postPolicy(token.value),
-    { pollingInterval: 1000 },
+    { pollingInterval: 15000 },
 );
 
 const rooms = ref([
