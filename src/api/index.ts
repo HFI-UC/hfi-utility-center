@@ -1,6 +1,7 @@
 import axios, { isAxiosError } from "axios";
 
 export interface ApplicationInfo {
+    class: string;
     studentName: string;
     selectedRoom: number | null;
     studentId: string;
@@ -9,6 +10,7 @@ export interface ApplicationInfo {
     startTime: string;
     endTime: string;
     reason: string;
+    selectedCampus: string;
 }
 
 export interface RoomPolicyInfo {
@@ -43,12 +45,26 @@ export async function fetchPolicy() {
     return res.data;
 }
 
-export async function postReservation(query: string | Date, token?: string) {
+export async function postReservation({
+    query = undefined,
+    room = undefined,
+    token = undefined,
+    time = undefined,
+}: {
+    query?: string;
+    room?: string;
+    token?: string;
+    time?: Date;
+}) {
     const data = new FormData();
-    if (typeof query === "string") {
+    if (query) {
         data.set("query", query);
-    } else {
-        data.set("time", query.getTime().toString());
+    }
+    if (time) {
+        data.set("time", time.getTime().toString());
+    }
+    if (room) {
+        data.set("room", room);
     }
     if (token) {
         data.set("token", token);
@@ -70,7 +86,7 @@ export async function postApplication(application: ApplicationInfo) {
     data.append("room", application.selectedRoom?.toString() as string);
     data.append("email", application.email);
     data.append("time", `${startTime.getTime()}-${endTime.getTime()}`);
-    data.append("name", application.studentName);
+    data.append("name", `${application.studentName} / ${application.class}`);
     data.append("reason", application.reason);
     data.append("sid", application.studentId);
     try {

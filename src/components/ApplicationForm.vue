@@ -30,6 +30,7 @@ const { data: policyData } = useRequest(
 const policy = computed(() => policyData.value?.policy || []);
 
 const reservation: Ref<ApplicationInfo> = ref({
+    class: "",
     studentName: "",
     selectedRoom: null,
     studentId: "",
@@ -38,15 +39,44 @@ const reservation: Ref<ApplicationInfo> = ref({
     startTime: "",
     endTime: "",
     reason: "",
+    selectedCampus: "",
 });
-
-const selectedCampus = ref("");
 
 const campus = ref(["Shipai Campus", "Knowledge City Campus"]);
 
-const classes = ref([]);
+const classes = ref([
+    {
+        label: "Shipai Campus",
+        items: [
+            "Demis",
+            "Yann",
+            "Rana",
+            "Kate",
+            "Geoffrey",
+            "Andrew",
+            "Feifei",
+            "Calatrava",
+            "Wright",
+            "Hadid",
+            "Mies",
+            "Gaudi",
+        ],
+    },
+    {
+        label: "Knowledge City Campus",
+        items: [
+            "Bendura",
+            "Gibson",
+            "Loftus",
+            "Seligman",
+            "Ainsworth",
+            "Maslow",
+            "Piaget",
+            "Skinner",
+        ],
+    },
+]);
 
-const selectedClass = ref("");
 const rooms = ref([
     [
         "iStudy Meeting Room 1",
@@ -66,8 +96,8 @@ const rooms = ref([
 ]);
 
 const roomsOption = computed(() => {
-    if (selectedCampus.value == "") return [];
-    return selectedCampus.value == "Shipai Campus"
+    if (reservation.value.selectedCampus == "") return [];
+    return reservation.value.selectedCampus == "Shipai Campus"
         ? rooms.value[0]
         : rooms.value[1];
 });
@@ -178,7 +208,7 @@ watch(
             (item) =>
                 item.classroom == reservation.value.selectedRoom?.toString(),
         );
-        postReservation(reservation.value.selectedRoom.toString()).then(
+        postReservation({room: reservation.value.selectedRoom.toString()}).then(
             (res) =>
                 (filteredBookingData.value = res.data.filter(
                     (item) => item.auth !== "no",
@@ -289,6 +319,26 @@ const onClickEvent = () => {
                             <label for="name">Name</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
+                            <Select
+                                id="class"
+                                v-model="reservation.class"
+                                optionGroupLabel="label"
+                                optionGroupChildren="items"
+                                filter
+                                :options="classes"
+                                :invalid="
+                                    !isCompleted && reservation.class === ''
+                                "
+                            >
+                                <template #optiongroup="slotProps">
+                                    <div class="flex items-center">
+                                        <div>{{ slotProps.option.label }}</div>
+                                    </div>
+                                </template>
+                            </Select>
+                            <label for="room">Class</label>
+                        </FloatLabel>
+                        <FloatLabel class="m-[20px]">
                             <InputText
                                 id="id"
                                 v-model="reservation.studentId"
@@ -312,9 +362,12 @@ const onClickEvent = () => {
                         <FloatLabel class="m-[20px]">
                             <Select
                                 id="campus"
-                                v-model="selectedCampus"
+                                v-model="reservation.selectedCampus"
                                 :options="campus"
-                                :invalid="!isCompleted && selectedCampus === ''"
+                                :invalid="
+                                    !isCompleted &&
+                                    reservation.selectedCampus === ''
+                                "
                             />
                             <label for="campus">Campus</label>
                         </FloatLabel>
@@ -340,7 +393,11 @@ const onClickEvent = () => {
                             <template #empty>
                                 <p>No available data.</p>
                             </template>
-                            <Column field="name" header="Name"></Column>
+                            <Column header="Name">
+                                <template #body="slotProps">
+                                    {{ slotProps.data.name.split(" / ")[0] }}
+                                </template>
+                            </Column>
                             <Column header="Date / Time">
                                 <template #body="slotProps">
                                     {{

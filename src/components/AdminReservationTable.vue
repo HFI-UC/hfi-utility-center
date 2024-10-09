@@ -7,13 +7,40 @@ import { computed, onMounted, ref, Ref } from "vue";
 import InputText from "primevue/inputtext";
 import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
+import Select from "primevue/select";
 import SelectButton from "primevue/selectbutton";
 
 const data: Ref<ReservationInfo | null> = ref(null);
 const queried = ref(false);
 const query = ref("");
 const date: Ref<Date | null> = ref(null);
-const options = ref(["Keyword", "Time"]);
+const room = ref("");
+const options = ref(["Keyword", "Time", "Room"]);
+const rooms = ref([
+    "iStudy Meeting Room 1",
+    "iStudy Meeting Room 2",
+    "606",
+    "605",
+    "603",
+    "602",
+    "601",
+    "206",
+    "105",
+    "104",
+    "Writing Center 1",
+    "Writing Center 2",
+    "512",
+    "513",
+    "514",
+    "524",
+]);
+
+const roomMappingToNumber: { [key: string]: number } = {
+    "iStudy Meeting Room 1": 101,
+    "iStudy Meeting Room 2": 102,
+    "Writing Center 1": 103,
+    "Writing Center 2": 106,
+};
 const searchOption = ref("Keyword");
 const token = ref("");
 
@@ -22,18 +49,28 @@ const onSearch = () => {
     if (searchOption.value == "Time") {
         if (date.value) {
             date.value.setSeconds(0, 0);
-            postReservation(date.value, token.value).then((res) => {
+            postReservation({ time: date.value, token: token.value}).then((res) => {
                 data.value = res;
             });
         } else {
             data.value = { success: false, data: [] };
         }
+    } else if (searchOption.value == "Room") {
+        if (room.value == "") {
+            data.value = { success: false, data: [] };
+            return;
+        }
+        postReservation({
+            room: (roomMappingToNumber[room.value] || room.value).toString(),
+        }).then((res) => {
+            data.value = res;
+        });
     } else {
         if (query.value == "") {
             data.value = { success: false, data: [] };
             return;
         }
-        postReservation(query.value, token.value).then((res) => {
+        postReservation({ query: query.value, token: token.value}).then((res) => {
             data.value = res;
         });
     }
@@ -74,7 +111,7 @@ const bookingData = computed(() => {
             email: item.email,
             time: formatTime(item.time),
             date: formatDate(item.time),
-            room: roomMapping[item.room] || item.room.toString(),
+            room: roomMappingToString[item.room] || item.room.toString(),
             status: statusMapping[item.auth],
             severity: getSeverity(item.auth),
         });
@@ -107,7 +144,7 @@ const formatTime = (time: string) => {
     return `${formatHour(startTime)} ~ ${formatHour(endTime)}`;
 };
 
-const roomMapping: { [key: number]: string } = {
+const roomMappingToString: { [key: number]: string } = {
     101: "iStudy Meeting Room 1",
     102: "iStudy Meeting Room 2",
     103: "Writing Center 1",
@@ -158,17 +195,28 @@ const getSeverity = (label: string): string => {
                     aria-labelledby="basic"
                 />
                 <div class="flex justify-start gap-3">
-                    <InputText
-                        v-if="searchOption == 'Keyword'"
-                        v-model="query"
-                        placeholder="Keyword Search"
+                    <Select
+                        v-if="searchOption == 'Room'"
+                        v-model="room"
+                        v-tooltip.bottom="'Search with room.'"
+                        placeholder="Room"
+                        :options="rooms"
                     />
                     <DatePicker
-                        v-else
+                        v-else-if="searchOption == 'Time'"
                         showTime
+                        v-tooltip.bottom="
+                            'Search with time. The search will show results before and after three hours.'
+                        "
                         v-model="date"
-                        placeholder="Search with Time"
+                        placeholder="Time"
                         dateFormat="yy/mm/dd"
+                    />
+                    <InputText
+                        v-else
+                        v-model="query"
+                        v-tooltip.bottom="'Search with keyword.'"
+                        placeholder="Keyword"
                     />
                     <Button
                         @click="onSearch()"
@@ -180,7 +228,7 @@ const getSeverity = (label: string): string => {
         </template>
         <Column field="id" header="ID"></Column>
         <Column field="sid" header="Student ID"></Column>
-        <Column field="name" header="Name"></Column>
+        <Column field="name" header="Name / Class"></Column>
         <Column field="email" header="E-mail"></Column>
         <Column field="date" header="Date"></Column>
         <Column field="time" header="Time"></Column>
@@ -194,3 +242,20 @@ const getSeverity = (label: string): string => {
         </Column>
     </DataTable>
 </template>
+
+<style scoped>
+.p-inputtext,
+.p-datepicker,
+.p-select,
+input {
+    min-width: 15rem;
+}
+@media screen and (max-width: 720px) {
+    .p-inputtext,
+    .p-datepicker,
+    .p-select,
+    input {
+        min-width: 10rem;
+    }
+}
+</style>

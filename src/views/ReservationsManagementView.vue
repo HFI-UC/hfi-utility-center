@@ -228,7 +228,8 @@ onMounted(() => {
                                         icon="pi pi-times"
                                         label="Reject"
                                         @click="
-                                            (visible = true),
+                                            (reason = ''),
+                                                (visible = true),
                                                 (id = booking.id as number)
                                         "
                                         severity="danger"
