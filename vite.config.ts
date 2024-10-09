@@ -33,7 +33,12 @@ export default defineConfig({
                         "primevue/column",
                         "primevue/textarea",
                         "primevue/datatable",
-                        "primevue/selectbutton"
+                        "primevue/selectbutton",
+                        "primevue/tooltip",
+                        "primevue/toastservice",
+                        "primevue/config",
+                        "@primevue/themes",
+                        "@primevue/themes/aura"
                     ],
                     vue: ["vue", "vue-request", "vue-turnstile"],
                     axios: ["axios"],

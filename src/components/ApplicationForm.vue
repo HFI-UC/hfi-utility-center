@@ -525,7 +525,7 @@ input {
 }
 
 #datatable {
-    min-width: 23rem;
+    min-width: 20rem;
     margin: 20px;
 }
 
@@ -540,6 +540,10 @@ input {
     .p-datepicker,
     .p-textarea,
     input {
+        min-width: 16rem;
+    }
+
+    #datatable {
         min-width: 16rem;
     }
 
