@@ -128,6 +128,7 @@ onMounted(() => {
                         style="color: var(--p-red-500)"
                     ></i>
                     <p class="w-[20rem] m-[1rem] text-center">
+                        We are trying to fix this problem.
                         {{ message }}
                     </p>
                 </div>
