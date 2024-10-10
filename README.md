@@ -39,9 +39,3 @@ npm run dev
 ```sh
 npm run build
 ```
-
-### 使用 [ESLint](https://eslint.org/) 进行代码检查
-
-```sh
-npm run lint
-```
