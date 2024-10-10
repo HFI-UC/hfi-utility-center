@@ -6,6 +6,7 @@ import ReservationView from "../views/ReservationView.vue";
 import ReservationActionsView from "../views/ReservationActionsView.vue";
 import PolicySettingsView from "../views/PolicySettingsView.vue";
 import { createRouter, createWebHistory } from "vue-router";
+import NotFoundView from "../views/NotFoundView.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -46,6 +47,10 @@ const router = createRouter({
             path: "/admin/policy",
             component: PolicySettingsView,
         },
+        {
+            path: "/:pathMatch(.*)",
+            component: NotFoundView
+        }
     ],
 });
 
