@@ -208,7 +208,9 @@ watch(
             (item) =>
                 item.classroom == reservation.value.selectedRoom?.toString(),
         );
-        postReservation({room: reservation.value.selectedRoom.toString()}).then(
+        postReservation({
+            room: reservation.value.selectedRoom.toString(),
+        }).then(
             (res) =>
                 (filteredBookingData.value = res.data.filter(
                     (item) => item.auth !== "no",

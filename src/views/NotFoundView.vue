@@ -1,12 +1,12 @@
 <script setup>
-import router from '../router/router';
+import router from "../router/router";
 
-setTimeout(() => router.go(-1), 3000)
+setTimeout(() => router.go(-1), 3000);
 </script>
 <template>
     <div class="flex flex-col items-center justify-center">
         <h1 class="text-center">404 Not Found</h1>
-        <img src="https://http.cat/404">
+        <img src="https://http.cat/404" />
     </div>
 </template>
 
@@ -23,6 +23,6 @@ h1 {
 }
 
 img {
-    width: 30%
+    width: 30%;
 }
 </style>

@@ -49,8 +49,8 @@ const router = createRouter({
         },
         {
             path: "/:pathMatch(.*)",
-            component: NotFoundView
-        }
+            component: NotFoundView,
+        },
     ],
 });
 

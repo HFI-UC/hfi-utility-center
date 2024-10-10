@@ -48,9 +48,11 @@ const onSearch = () => {
     if (searchOption.value == "Time") {
         if (date.value) {
             date.value.setSeconds(0, 0);
-            postReservation({ time: date.value, token: token.value }).then((res) => {
-                data.value = res;
-            });
+            postReservation({ time: date.value, token: token.value }).then(
+                (res) => {
+                    data.value = res;
+                },
+            );
         } else {
             data.value = { success: false, data: [] };
         }
@@ -61,7 +63,7 @@ const onSearch = () => {
         }
         postReservation({
             room: (roomMappingToNumber[room.value] || room.value).toString(),
-            token: token.value
+            token: token.value,
         }).then((res) => {
             data.value = res;
         });
@@ -70,9 +72,11 @@ const onSearch = () => {
             data.value = { success: false, data: [] };
             return;
         }
-        postReservation({ query: query.value, token: token.value }).then((res) => {
-            data.value = res;
-        });
+        postReservation({ query: query.value, token: token.value }).then(
+            (res) => {
+                data.value = res;
+            },
+        );
     }
 };
 
@@ -97,7 +101,7 @@ const bookingData = computed(() => {
         email: string;
         time: string;
         date: string;
-        reason: string
+        reason: string;
         room: string;
         status: string;
         severity: string;

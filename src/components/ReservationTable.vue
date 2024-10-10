@@ -48,7 +48,7 @@ const onSearch = () => {
     if (searchOption.value == "Time") {
         if (date.value) {
             date.value.setSeconds(0, 0);
-            postReservation({time: date.value}).then((res) => {
+            postReservation({ time: date.value }).then((res) => {
                 data.value = res;
             });
         } else {
@@ -69,7 +69,7 @@ const onSearch = () => {
             data.value = { success: false, data: [] };
             return;
         }
-        postReservation({query: query.value}).then((res) => {
+        postReservation({ query: query.value }).then((res) => {
             data.value = res;
         });
     }
