@@ -26,7 +26,6 @@ const rooms = ref([
     "601",
     "206",
     "105",
-    "104",
     "Writing Center 1",
     "Writing Center 2",
     "512",
@@ -49,7 +48,7 @@ const onSearch = () => {
     if (searchOption.value == "Time") {
         if (date.value) {
             date.value.setSeconds(0, 0);
-            postReservation({ time: date.value, token: token.value}).then((res) => {
+            postReservation({ time: date.value, token: token.value }).then((res) => {
                 data.value = res;
             });
         } else {
@@ -62,6 +61,7 @@ const onSearch = () => {
         }
         postReservation({
             room: (roomMappingToNumber[room.value] || room.value).toString(),
+            token: token.value
         }).then((res) => {
             data.value = res;
         });
@@ -70,7 +70,7 @@ const onSearch = () => {
             data.value = { success: false, data: [] };
             return;
         }
-        postReservation({ query: query.value, token: token.value}).then((res) => {
+        postReservation({ query: query.value, token: token.value }).then((res) => {
             data.value = res;
         });
     }
@@ -97,6 +97,7 @@ const bookingData = computed(() => {
         email: string;
         time: string;
         date: string;
+        reason: string
         room: string;
         status: string;
         severity: string;
@@ -111,6 +112,7 @@ const bookingData = computed(() => {
             email: item.email,
             time: formatTime(item.time),
             date: formatDate(item.time),
+            reason: item.reason,
             room: roomMappingToString[item.room] || item.room.toString(),
             status: statusMapping[item.auth],
             severity: getSeverity(item.auth),
@@ -233,6 +235,7 @@ const getSeverity = (label: string): string => {
         <Column field="date" header="Date"></Column>
         <Column field="time" header="Time"></Column>
         <Column field="room" header="Room"></Column>
+        <Column field="reason" header="Reason"></Column>
         <Column field="operator" header="Operator"></Column>
         <Column field="addTime" header="Add Time"></Column>
         <Column field="status" header="Status">
