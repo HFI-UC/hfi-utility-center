@@ -31,6 +31,7 @@
     "tailwindcss": "^3.4.12",
     "typescript": "^5.5.3",
     "vite": "^5.4.1",
+    "vite-plugin-sitemap": "^0.7.1",
     "vue-tsc": "^2.0.29"
   }
 }
