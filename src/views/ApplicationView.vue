@@ -10,9 +10,7 @@ const props = defineProps<{
 
 <template>
     <div class="flex flex-col items-center justify-center">
-        <div class="card flex flex-col justify-center" id="timeline">
-            <h1>Application Form</h1>
-        </div>
+        <h1 class="card flex flex-col justify-center text-center">Application Form</h1>
     </div>
     <ApplicationForm v-if="!props.status" />
     <ApplicationStatus v-else :status="props.status" :message="props.message" />
@@ -27,7 +25,6 @@ h1 {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     font-weight: bold;
-    text-align: center;
     unicode-bidi: isolate;
 }
 </style>

@@ -1,4 +1,5 @@
 import axios, { isAxiosError } from "axios";
+import COS, { Credentials } from "cos-js-sdk-v5";
 
 export interface ApplicationInfo {
     class: string;
@@ -11,6 +12,7 @@ export interface ApplicationInfo {
     endTime: string;
     reason: string;
     selectedCampus: string;
+    isAgreed: boolean;
 }
 
 export interface RoomPolicyInfo {
@@ -270,4 +272,37 @@ export async function postAdd(
         data,
     );
     return res.data;
+}
+
+function generateCosKey(ext: string = ""): string {
+    return `file/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}_${String(Math.floor(Math.random() * 1e6)).padStart(6, "0")}${ext ? "." + ext : ""}`;
+}
+
+export async function uploadCOS(file: File) {
+    const cosKey = generateCosKey(file.name.split(".").pop());
+    console.log(cosKey);
+    const cos = new COS({
+        getAuthorization: async (options, callback) => {
+            const data = new FormData();
+            data.append("file-name", options.Key);
+            data.append("cosKey", cosKey);
+
+            const {
+                credentials: { SessionToken: SecurityToken, ...rest },
+            } = (
+                await axios.post<{
+                    credentials: Credentials & { SessionToken: string };
+                }>("/api/keygen.php", data)
+            ).data;
+
+            callback({ SecurityToken, ...rest });
+        },
+    });
+    console.log(1);
+    cos.uploadFile({
+        Bucket: "repair-1304562386",
+        Region: "ap-guangzhou",
+        Key: cosKey,
+        Body: await file.arrayBuffer(),
+    }).then(() => console.log("success"));
 }

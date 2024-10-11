@@ -12,7 +12,7 @@
   "dependencies": {
     "@primevue/themes": "^4.0.7",
     "axios": "^1.7.7",
-    "cos-nodejs-sdk-v5": "^2.14.6",
+    "cos-js-sdk-v5": "^1.8.4",
     "postcss-load-config": "^6.0.1",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.7",

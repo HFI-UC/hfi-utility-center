@@ -11,6 +11,8 @@ import Column from "primevue/column";
 import { computed, ref, Ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useRequest } from "vue-request";
+import Dialog from "primevue/dialog";
+import Checkbox from "primevue/checkbox";
 import {
     type ApplicationInfo,
     postApplication,
@@ -40,7 +42,10 @@ const reservation: Ref<ApplicationInfo> = ref({
     endTime: "",
     reason: "",
     selectedCampus: "",
+    isAgreed: false,
 });
+
+const visible = ref(false);
 
 const campus = ref(["Shipai Campus", "Knowledge City Campus"]);
 
@@ -267,7 +272,7 @@ watch(
 const onClickEvent = () => {
     loading.value = true;
     isCompleted.value = !Object.values(reservation.value).some(
-        (value) => value === "" || value == null,
+        (value) => value === "" || value == null || value == false,
     );
     if (!isCompleted.value) {
         toast.add({
@@ -297,9 +302,57 @@ const onClickEvent = () => {
         },
     );
 };
+
+const rules = [
+    [
+        "English",
+        [
+            "◆ Please do not bring food and drinks into the study area to eat or drink. Students are responsible for keeping the study room clean and tidy.",
+            "◆ Students should take care of their personal belongings (e.g., wallets, cell phones, computers). Please keep your valuables with you or lock them in a safe place. When leaving the classroom, please take your valuables with you; the school is not obligated to keep them.",
+            "◆ After leaving the public area, students should take their personal belongings with them. The Administration Office will clean up the sanitation of the venue on a regular basis, and the school will not bear any responsibility for any loss.",
+            "◆ Students should consciously maintain the cleanliness of the classroom and public order.",
+            "◆ Please take care of and reasonably use the teaching equipment. If you find any problem or loss, please contact the Administration Office as soon as possible; if the equipment is lost due to students' reasons or if students are malicious or damage the teaching equipment, students should be responsible for the compensation.",
+            "◆ When students leave the classroom, they should make sure that all electrical equipment (e.g. air-conditioners, fans, lights) are turned off and the remote control panel is returned to its designated location.",
+            "◆ Students are not allowed to move the teaching equipment without permission.",
+            "◆ Please do not occupy seats in any way. If students need to leave their seats, they should consciously take their personal belongings with them; or receive desktop books into their bags and place them on the side underneath the desks and chairs so that they do not interfere with other students' use of the seats; the teacher on duty will conduct regular inspections, and once occupancy of a seat is detected, the items occupying the seat will be removed or taken away in order to vacate the seat for other students.",
+            "◆ Pay attention to public morality and personal image, do not lie down on benches or sofas.",
+            "◆ Do not make loud noises in public places. Also, please put your cell phone on silent mode and consciously go outside to receive phone calls.",
+            "◆ Prohibit the use of private power supply and high power electrical appliances, and do not move fire-fighting facilities without authorization.",
+            "◆ No matters unrelated to study (including but not limited to mobile phone/computer electronic games (software APP), chess and cards, watching variety shows/films, etc.) are allowed in the study area at any time. Violation of the above requirements and regulations will be taken into account in the actual situation and will be enforced in accordance with the 'Regulations on the Management of Student Violations'.",
+        ],
+    ],
+    [
+        "简体中文",
+        [
+            "◆ 请勿携带食品和饮料进入自习区域饮食，学生有责任保持自习室干净整洁。",
+            "◆ 学生应保管好个人物品（如钱包、手机、电脑），请将贵重物品随身携带或锁在安全的地方。离开教室时，请带走贵重物品，学校不承担保管义务。",
+            "◆ 离开公共区域后，学生应将个人物品随身带走，行政办会定期清理场地卫生，如有遗失，学校不承担任何责任。",
+            "◆ 学生需自觉维护好课室保洁、公共秩序。",
+            "◆ 请爱护并合理使用教学设备，如果发现有问题或遗失，请尽快联系行政办；如果因学生原因造成设备遗失或学生恶意、损坏教学设备，学生应负责赔偿。",
+            "◆ 学生离开教室时，应确保所有电器设备（如空调、风扇、灯）被关闭，并且遥控板被归还到指定位置。",
+            "◆ 未经允许，学生不可以移动教学设备。",
+            "◆ 请勿以任何方式占座，学生若需离开座位，请自觉将个人物品带离；或将桌面的书本收到书包里，放置在桌椅下方的侧边，不影响其它同学使用座位；值班老师将定期巡查，一旦发现有占座现象，占座物品将被移开或收走，以腾出座位给其他同学。",
+            "◆ 注意公德和个人形象，勿在长椅或沙发上躺卧。",
+            "◆ 公共场合不得大声喧哗，同时请将手机调为静音状态，自觉到室外接打电话。",
+            "◆ 禁止私拉电源和使用高功率电器，未经批准请勿挪动消防设施。",
+            "◆ 任何时段，自习区域不得进行与学习无关的事项（包括但不限于手机/电脑等电子游戏（软件APP）、棋牌、观看综艺/影视等）违反以上要求及规定，将结合实际情况，按照《学生违规管理条例》执行。",
+        ],
+    ],
+];
 </script>
 
 <template>
+    <Dialog
+        v-model:visible="visible"
+        modal
+        header="Classroom Regulations"
+        class="w-[25rem]"
+    >
+        <div v-for="i in rules" class="mb-8">
+            <p class="font-bold mb-4">{{ i[0] }}</p>
+            <p v-for="j in i[1]" class="mb-3">{{ j }}</p>
+        </div>
+    </Dialog>
     <div class="flex flex-col items-center justify-center">
         <Card id="card">
             <template #content>
@@ -480,6 +533,20 @@ const onClickEvent = () => {
                             />
                             <label for="reason">Reason</label>
                         </FloatLabel>
+                        <div class="flex items-center m-[20px]">
+                            <Checkbox
+                                v-model="reservation.isAgreed"
+                                id="check"
+                                :invalid="!isCompleted && !reservation.isAgreed"
+                                :binary="true"
+                            />
+                            <label for="check" class="ml-2">
+                                I will follow the
+                                <a @click="visible = true"
+                                    >Classroom Regulations</a
+                                >.
+                            </label>
+                        </div>
                     </div>
                     <Button
                         icon="pi pi-upload"
@@ -529,6 +596,19 @@ input {
 #datatable {
     min-width: 20rem;
     margin: 20px;
+}
+
+a {
+    color: var(--p-primary-600);
+    text-decoration: none;
+    transition:
+        0.4s color,
+        0.2s background-color ease;
+}
+
+a:hover {
+    color: var(--p-highlight-text-color);
+    background-color: var(--p-highlight-bg);
 }
 
 @media screen and (max-width: 720px) {

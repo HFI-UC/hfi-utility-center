@@ -105,13 +105,11 @@ const bookingData = computed(() => {
             severity: getSeverity(item.auth),
         });
     }
-    booking.sort((a, b) => {
-        if (a.room === b.room) {
-            return a.time.localeCompare(b.time);
-        } else {
-            return a.room.localeCompare(b.room);
-        }
-    });
+    booking.sort((a, b) =>
+        a.date === b.date
+            ? b.time.localeCompare(a.time)
+            : b.date.localeCompare(a.date),
+    );
     return booking;
 });
 
