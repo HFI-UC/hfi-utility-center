@@ -15,6 +15,14 @@ export interface ApplicationInfo {
     isAgreed: boolean;
 }
 
+export interface MaintenanceInfo {
+    studentName: string
+    summary: string
+    detail: string
+    addTime?: number
+    status?: string
+}
+
 export interface RoomPolicyInfo {
     id?: number;
     unavailable?: boolean;
@@ -278,9 +286,10 @@ function generateCosKey(ext: string = ""): string {
     return `file/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}_${String(Math.floor(Math.random() * 1e6)).padStart(6, "0")}${ext ? "." + ext : ""}`;
 }
 
-export async function uploadCOS(file: File) {
+export async function uploadCOS(
+    file: File,
+): Promise<{ success: boolean; message: string }> {
     const cosKey = generateCosKey(file.name.split(".").pop());
-    console.log(cosKey);
     const cos = new COS({
         getAuthorization: async (options, callback) => {
             const data = new FormData();
@@ -298,11 +307,19 @@ export async function uploadCOS(file: File) {
             callback({ SecurityToken, ...rest });
         },
     });
-    console.log(1);
     cos.uploadFile({
         Bucket: "repair-1304562386",
         Region: "ap-guangzhou",
         Key: cosKey,
         Body: await file.arrayBuffer(),
-    }).then(() => console.log("success"));
+    }).catch((err) => {
+        return {
+            success: false,
+            message: err,
+        };
+    });
+    return {
+        success: true,
+        message: "Successfully uploaded the image!"
+    };
 }

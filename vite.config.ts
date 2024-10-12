@@ -8,7 +8,7 @@ const dynamicRoutes = [
     "/admin/login",
     "/admin/reservations",
     "/admin/approval",
-    "/admin/policy"
+    "/admin/policy",
 ]
 
 // https://vitejs.dev/config/
@@ -52,6 +52,7 @@ export default defineConfig({
                     ],
                     vue: ["vue", "vue-request", "vue-turnstile"],
                     axios: ["axios"],
+                    cos: ["cos-js-sdk-v5"]
                 },
             },
         },
