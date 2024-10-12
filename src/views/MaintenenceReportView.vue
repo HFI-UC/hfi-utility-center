@@ -7,6 +7,7 @@ import { uploadCOS } from "../api";
 import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
+import Select from "primevue/select";
 import Textarea from "primevue/textarea";
 import { MaintenanceInfo } from "../api";
 
@@ -16,6 +17,10 @@ const isCompleted = ref(true);
 const src: Ref<null | string> = ref(null);
 const file: Ref<null | File> = ref(null);
 const toast = useToast();
+const campus = ref([
+    "Shipai Campus",
+    "Knowledge City Campus"
+])
 
 const onFileSelect = (event: FileUploadSelectEvent) => {
     file.value = event.files[0];
@@ -29,7 +34,11 @@ const onFileSelect = (event: FileUploadSelectEvent) => {
 
 const maintenance: Ref<MaintenanceInfo> = ref({
     studentName: "",
-    summary: "",
+    subject: "",
+    location: "",
+    campus: "",
+    email: "",
+    filePath: "",
     detail: "",
 });
 
@@ -64,6 +73,11 @@ const onClickEvent = () => {
             detail: res.message,
             life: 3000,
         });
+        if (!res.success) {
+            loading.value = false
+            return;
+        }
+        maintenance.value.filePath = res.filePath
     });
 };
 </script>
@@ -101,22 +115,54 @@ const onClickEvent = () => {
                 <InputText
                     id="studentName"
                     v-model="maintenance.studentName"
+                    v-tooltip.bottom="'Your Chinese name and English name (e.g. 山姆 Sam).'"
                     :invalid="!isCompleted && maintenance.studentName == ''"
                 />
                 <label for="studentName">Name</label>
             </FloatLabel>
             <FloatLabel class="m-[20px]">
                 <InputText
-                    id="summary"
-                    v-model="maintenance.summary"
-                    :invalid="!isCompleted && maintenance.summary == ''"
+                    id="email"
+                    v-model="maintenance.email"
+                    v-tooltip.bottom="'Your e-mail (e.g. sam.xulf2024@gdhfi.com).'"
+                    :invalid="!isCompleted && maintenance.email == ''"
                 />
-                <label for="summary">Summary</label>
+                <label for="email">E-mail</label>
+            </FloatLabel>
+            <FloatLabel class="m-[20px]">
+                <Select
+                    id="campus"
+                    v-model="maintenance.campus"
+                    v-tooltip.bottom="'The campus where the maintenance was reported.'"
+                    :options="campus"
+                    :invalid="!isCompleted && maintenance.campus == ''"
+                />
+                <label for="campus">Campus</label>
+            </FloatLabel>
+           
+            <FloatLabel class="m-[20px]">
+                <InputText
+                    id="subject"
+                    v-model="maintenance.subject"
+                    v-tooltip.bottom="'The subject of your report (e.g. AC Doesn\'t Work).'"
+                    :invalid="!isCompleted && maintenance.subject == ''"
+                />
+                <label for="subject">Subject</label>
+            </FloatLabel>
+            <FloatLabel class="m-[20px]">
+                <Textarea
+                    id="location"
+                    v-model="maintenance.location"
+                    v-tooltip.bottom="'The location you want to report for maintenance (e.g. The classroom).'"
+                    :invalid="!isCompleted && maintenance.location == ''"
+                />
+                <label for="location">Location</label>
             </FloatLabel>
             <FloatLabel class="m-[20px]">
                 <Textarea
                     id="detail"
                     v-model="maintenance.detail"
+                    v-tooltip.bottom="'The details of your report (e.g. We can not turn on the AC).'"
                     :invalid="!isCompleted && maintenance.detail == ''"
                 />
                 <label for="detail">Detail</label>

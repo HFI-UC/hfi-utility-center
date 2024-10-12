@@ -366,6 +366,9 @@ const rules = [
                             <InputText
                                 id="name"
                                 v-model="reservation.studentName"
+                                v-tooltip.bottom="
+                                    'Your Chinese name and English name (e.g. 山姆 Sam).'
+                                "
                                 :invalid="
                                     !isCompleted &&
                                     reservation.studentName === ''
@@ -377,6 +380,7 @@ const rules = [
                             <Select
                                 id="class"
                                 v-model="reservation.class"
+                                v-tooltip.bottom="'Your class.'"
                                 optionGroupLabel="label"
                                 optionGroupChildren="items"
                                 filter
@@ -397,6 +401,9 @@ const rules = [
                             <InputText
                                 id="id"
                                 v-model="reservation.studentId"
+                                v-tooltip.bottom="
+                                    'Your student ID (e.g. GJ12345678).'
+                                "
                                 :invalid="
                                     !isCompleted && reservation.studentId === ''
                                 "
@@ -407,6 +414,9 @@ const rules = [
                             <InputText
                                 id="name"
                                 v-model="reservation.email"
+                                v-tooltip.bottom="
+                                    'Your e-mail (e.g. sam.xulf2024@gdhfi.com).'
+                                "
                                 :invalid="
                                     !isCompleted && reservation.email === ''
                                 "
@@ -418,6 +428,9 @@ const rules = [
                             <Select
                                 id="campus"
                                 v-model="reservation.selectedCampus"
+                                v-tooltip.bottom="
+                                    'Campus to which you are applying.'
+                                "
                                 :options="campus"
                                 :invalid="
                                     !isCompleted &&
@@ -429,6 +442,9 @@ const rules = [
                         <FloatLabel class="m-[20px]">
                             <Select
                                 id="room"
+                                v-tooltip.bottom="
+                                    'Room to which you are applying.'
+                                "
                                 v-model="selectedRoom"
                                 :options="roomsOption"
                                 :invalid="!isCompleted && selectedRoom === ''"
@@ -493,6 +509,7 @@ const rules = [
                             <DatePicker
                                 id="date"
                                 v-model="date"
+                                v-tooltip.bottom="'Date of reservation.'"
                                 date-format="yy/mm/dd"
                                 :min-date="minDate"
                                 :max-date="maxDate"
@@ -503,6 +520,7 @@ const rules = [
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Select
+                                v-tooltip.bottom="'Start time of reservation.'"
                                 id="startTime"
                                 v-model="reservation.startTime"
                                 :options="startTimeOptions"
@@ -516,6 +534,7 @@ const rules = [
                             <Select
                                 id="endTime"
                                 v-model="reservation.endTime"
+                                v-tooltip.bottom="'End time of reservation.'"
                                 :options="endTimeOptions"
                                 :invalid="
                                     !isCompleted && reservation.endTime === ''
@@ -527,6 +546,9 @@ const rules = [
                             <Textarea
                                 id="reason"
                                 v-model="reservation.reason"
+                                v-tooltip.bottom="
+                                    'Reason of reservation (e.g. I wanna practise my TOEFL test).'
+                                "
                                 :invalid="
                                     !isCompleted && reservation.reason === ''
                                 "
@@ -537,6 +559,9 @@ const rules = [
                             <Checkbox
                                 v-model="reservation.isAgreed"
                                 id="check"
+                                v-tooltip.bottom="
+                                    'You will need to follow the rules of the classroom to make an application.'
+                                "
                                 :invalid="!isCompleted && !reservation.isAgreed"
                                 :binary="true"
                             />

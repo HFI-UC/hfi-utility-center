@@ -17,8 +17,12 @@ export interface ApplicationInfo {
 
 export interface MaintenanceInfo {
     studentName: string
-    summary: string
+    subject: string
     detail: string
+    location: string
+    email: string
+    campus: string
+    filePath: string
     addTime?: number
     status?: string
 }
@@ -288,7 +292,7 @@ function generateCosKey(ext: string = ""): string {
 
 export async function uploadCOS(
     file: File,
-): Promise<{ success: boolean; message: string }> {
+): Promise<{ success: boolean; message: string; filePath: string }> {
     const cosKey = generateCosKey(file.name.split(".").pop());
     const cos = new COS({
         getAuthorization: async (options, callback) => {
@@ -316,10 +320,12 @@ export async function uploadCOS(
         return {
             success: false,
             message: err,
+            filePath: cosKey
         };
     });
     return {
         success: true,
-        message: "Successfully uploaded the image!"
+        message: "Successfully uploaded the image!",
+        filePath: cosKey
     };
 }
