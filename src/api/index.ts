@@ -16,15 +16,15 @@ export interface ApplicationInfo {
 }
 
 export interface MaintenanceInfo {
-    studentName: string
-    subject: string
-    detail: string
-    location: string
-    email: string
-    campus: string
-    filePath: string
-    addTime?: number
-    status?: string
+    studentName: string;
+    subject: string;
+    detail: string;
+    location: string;
+    email: string;
+    campus: string;
+    filePath: string;
+    addTime?: number;
+    status?: string;
 }
 
 export interface RoomPolicyInfo {
@@ -320,12 +320,12 @@ export async function uploadCOS(
         return {
             success: false,
             message: err,
-            filePath: cosKey
+            filePath: cosKey,
         };
     });
     return {
         success: true,
         message: "Successfully uploaded the image!",
-        filePath: cosKey
+        filePath: cosKey,
     };
 }

@@ -9,7 +9,7 @@ import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 import Select from "primevue/select";
 import Textarea from "primevue/textarea";
-import Message from 'primevue/message';
+import Message from "primevue/message";
 import { MaintenanceInfo } from "../api";
 
 const visible = ref(true);
@@ -18,10 +18,7 @@ const isCompleted = ref(true);
 const src: Ref<null | string> = ref(null);
 const file: Ref<null | File> = ref(null);
 const toast = useToast();
-const campus = ref([
-    "Shipai Campus",
-    "Knowledge City Campus"
-])
+const campus = ref(["Shipai Campus", "Knowledge City Campus"]);
 
 const onFileSelect = (event: FileUploadSelectEvent) => {
     file.value = event.files[0];
@@ -75,10 +72,10 @@ const onClickEvent = () => {
             life: 3000,
         });
         if (!res.success) {
-            loading.value = false
+            loading.value = false;
             return;
         }
-        maintenance.value.filePath = res.filePath
+        maintenance.value.filePath = res.filePath;
     });
 };
 </script>
@@ -117,7 +114,9 @@ const onClickEvent = () => {
                 <InputText
                     id="studentName"
                     v-model="maintenance.studentName"
-                    v-tooltip.bottom="'Your Chinese name and English name (e.g. 山姆 Sam).'"
+                    v-tooltip.bottom="
+                        'Your Chinese name and English name (e.g. 山姆 Sam).'
+                    "
                     :invalid="!isCompleted && maintenance.studentName == ''"
                 />
                 <label for="studentName">Name</label>
@@ -126,7 +125,9 @@ const onClickEvent = () => {
                 <InputText
                     id="email"
                     v-model="maintenance.email"
-                    v-tooltip.bottom="'Your e-mail (e.g. sam.xulf2024@gdhfi.com).'"
+                    v-tooltip.bottom="
+                        'Your e-mail (e.g. sam.xulf2024@gdhfi.com).'
+                    "
                     :invalid="!isCompleted && maintenance.email == ''"
                 />
                 <label for="email">E-mail</label>
@@ -135,18 +136,22 @@ const onClickEvent = () => {
                 <Select
                     id="campus"
                     v-model="maintenance.campus"
-                    v-tooltip.bottom="'The campus where the maintenance was reported.'"
+                    v-tooltip.bottom="
+                        'The campus where the maintenance was reported.'
+                    "
                     :options="campus"
                     :invalid="!isCompleted && maintenance.campus == ''"
                 />
                 <label for="campus">Campus</label>
             </FloatLabel>
-           
+
             <FloatLabel class="m-[20px]">
                 <InputText
                     id="subject"
                     v-model="maintenance.subject"
-                    v-tooltip.bottom="'The subject of your report (e.g. AC Doesn\'t Work).'"
+                    v-tooltip.bottom="
+                        'The subject of your report (e.g. AC Doesn\'t Work).'
+                    "
                     :invalid="!isCompleted && maintenance.subject == ''"
                 />
                 <label for="subject">Subject</label>
@@ -155,7 +160,9 @@ const onClickEvent = () => {
                 <Textarea
                     id="location"
                     v-model="maintenance.location"
-                    v-tooltip.bottom="'The location you want to report for maintenance (e.g. The classroom).'"
+                    v-tooltip.bottom="
+                        'The location you want to report for maintenance (e.g. The classroom).'
+                    "
                     :invalid="!isCompleted && maintenance.location == ''"
                 />
                 <label for="location">Location</label>
@@ -164,7 +171,9 @@ const onClickEvent = () => {
                 <Textarea
                     id="detail"
                     v-model="maintenance.detail"
-                    v-tooltip.bottom="'The details of your report (e.g. We can not turn on the AC).'"
+                    v-tooltip.bottom="
+                        'The details of your report (e.g. We can not turn on the AC).'
+                    "
                     :invalid="!isCompleted && maintenance.detail == ''"
                 />
                 <label for="detail">Detail</label>
@@ -208,6 +217,6 @@ h1 {
 }
 
 p {
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
 }
 </style>

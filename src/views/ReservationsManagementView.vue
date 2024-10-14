@@ -186,41 +186,43 @@ onMounted(() => {
                     <div v-for="booking in bookingData" id="card">
                         <Card class="m-2">
                             <template #content>
-                            <div class="ms-4 me-4">
-                                <h3>
-                                    Reservation #{{ booking.id }}
-                                </h3>
-                                <p class="mb-2">
-                                    <b class="font-bold">Room: </b
-                                    >{{
-                                        roomMapping[booking.room] ||
-                                        booking.room
-                                    }}
-                                </p>
-                                <p class="mb-2">
-                                    <b class="font-bold">Name / Class: </b
-                                    >{{ booking.name }}
-                                </p>
-                                <p class="mb-2">
-                                    <b class="font-bold">E-mail: </b
-                                    >{{ booking.email }}
-                                </p>
-                                <p class="mb-2">
-                                    <b class="font-bold">Date: </b
-                                    >{{ formatDate(booking.time) }}
-                                </p>
-                                <p class="mb-2">
-                                    <b class="font-bold">Time: </b
-                                    >{{ formatTime(booking.time) }}
-                                </p>
-                                <p class="mb-2">
-                                    <b class="font-bold">Reason: </b
-                                    >{{ booking.reason }}
-                                </p>
-                                <p class="mb-2">
-                                    <b class="font-bold">Status: </b
-                                    ><Tag severity="info" value="Pending"></Tag>
-                                </p></div>
+                                <div class="ms-4 me-4">
+                                    <h3>Reservation #{{ booking.id }}</h3>
+                                    <p class="mb-2">
+                                        <b class="font-bold">Room: </b
+                                        >{{
+                                            roomMapping[booking.room] ||
+                                            booking.room
+                                        }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <b class="font-bold">Name / Class: </b
+                                        >{{ booking.name }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <b class="font-bold">E-mail: </b
+                                        >{{ booking.email }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <b class="font-bold">Date: </b
+                                        >{{ formatDate(booking.time) }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <b class="font-bold">Time: </b
+                                        >{{ formatTime(booking.time) }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <b class="font-bold">Reason: </b
+                                        >{{ booking.reason }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <b class="font-bold">Status: </b
+                                        ><Tag
+                                            severity="info"
+                                            value="Pending"
+                                        ></Tag>
+                                    </p>
+                                </div>
                             </template>
                             <template #footer>
                                 <div class="m-4 flex gap-4">

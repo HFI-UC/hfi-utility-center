@@ -50,7 +50,7 @@ const router = createRouter({
         },
         {
             path: "/maintenance",
-            component: MaintenenceReportView
+            component: MaintenenceReportView,
         },
         {
             path: "/:pathMatch(.*)",

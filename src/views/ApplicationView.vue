@@ -10,7 +10,9 @@ const props = defineProps<{
 
 <template>
     <div class="flex flex-col items-center justify-center">
-        <h1 class="card flex flex-col justify-center text-center">Application Form</h1>
+        <h1 class="card flex flex-col justify-center text-center">
+            Application Form
+        </h1>
     </div>
     <ApplicationForm v-if="!props.status" />
     <ApplicationStatus v-else :status="props.status" :message="props.message" />
