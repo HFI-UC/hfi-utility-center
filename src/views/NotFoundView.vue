@@ -24,7 +24,7 @@ setTimeout(() => router.go(-1), 5000);
         <br />
         <p class="text-center text-lg mb-2">抱歉，出错了，但我们做对了。</p>
         <p class="text-center text-lg mb-2">
-            您看起来丢失了，别担心，我们正在返回轨道
+            您看起来丢失了，别担心，我们正在返回轨道。
         </p>
         <p class="text-center text-lg mb-2">将在 5 秒钟后返回上一页。</p>
     </div>
