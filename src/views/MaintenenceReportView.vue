@@ -9,6 +9,7 @@ import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 import Select from "primevue/select";
 import Textarea from "primevue/textarea";
+import Message from 'primevue/message';
 import { MaintenanceInfo } from "../api";
 
 const visible = ref(true);
@@ -84,6 +85,7 @@ const onClickEvent = () => {
 
 <template>
     <h1>Maintenance Report</h1>
+    <Message severity="warn">This page is still in development.</Message>
     <Dialog
         v-model:visible="visible"
         modal
@@ -105,7 +107,7 @@ const onClickEvent = () => {
             <img
                 v-if="src"
                 :src="src"
-                class="shadow-md rounded-xl w-full sm:w-32 m-3"
+                class="shadow-md rounded-xl w-full sm:w-64 m-3"
             />
             <p v-if="file" class="m-3">{{ file.name }}</p>
         </div>
@@ -203,5 +205,9 @@ h1 {
     margin-inline-end: 0px;
     font-weight: bold;
     unicode-bidi: isolate;
+}
+
+p {
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
 }
 </style>
