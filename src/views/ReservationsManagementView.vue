@@ -177,14 +177,13 @@ onMounted(() => {
             </div>
         </Dialog>
         <h1>Reservation Management</h1>
-        <Card v-if="booking?.success" id="cards-container">
-            <template #content>
+        <div v-if="booking?.success" id="cards-container">
                 <p v-if="bookingData.length == 0">
                     There are currently no applications.
                 </p>
-                <div class="flex flex-wrap justify-between">
+                <div class="flex flex-wrap justify-between gap-[1rem]">
                     <div v-for="booking in bookingData" id="card">
-                        <Card class="m-2">
+                        <Card>
                             <template #content>
                                 <div class="ms-4 me-4">
                                     <h3>Reservation #{{ booking.id }}</h3>
@@ -254,9 +253,8 @@ onMounted(() => {
                         </Card>
                     </div>
                 </div>
-            </template>
-        </Card>
-        <Skeleton v-else height="650px"></Skeleton>
+            </div>
+        <Skeleton v-else height="650px" style="border-radius: 0.75rem"></Skeleton>
     </div>
 </template>
 
@@ -282,7 +280,11 @@ h3 {
     unicode-bidi: isolate;
 }
 #card {
-    width: 50%;
+    width: calc(50% - 0.8rem);
+}
+
+button{
+    border-radius: 0.5rem
 }
 
 #cards-container {

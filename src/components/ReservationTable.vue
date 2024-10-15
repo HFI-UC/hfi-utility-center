@@ -227,17 +227,18 @@ const getSeverity = (label: string): string => {
 </template>
 
 <style scoped>
-.p-inputtext,
-.p-datepicker,
-.p-select,
-input {
+:deep(.p-inputtext),
+.p-select {
     min-width: 15rem;
+    border-radius: 0.5rem !important;
+}
+
+button {
+    border-radius: 0.5rem;
 }
 @media screen and (max-width: 720px) {
-    .p-inputtext,
-    .p-datepicker,
-    .p-select,
-    input {
+    :deep(.p-inputtext),
+    .p-select {
         min-width: 10rem;
     }
 }

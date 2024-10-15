@@ -1,11 +1,11 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import Dialog from "primevue/dialog";
 import { ref } from "vue";
 const visible = ref(true);
-</script>
+</script> -->
 
 <template>
-    <Dialog
+    <!-- <Dialog
         v-model:visible="visible"
         header="Announcement"
         class="w-[25rem]"
@@ -22,7 +22,7 @@ const visible = ref(true);
                 if you want to sumbit a room application!
             </p>
         </div>
-    </Dialog>
+    </Dialog> -->
     <div class="flex flex-col items-center justify-center" id="home-container">
         <h1 class="text-center">HFI Utility Center</h1>
         <h3 class="text-center">by MAKERs'</h3>

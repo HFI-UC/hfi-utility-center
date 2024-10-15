@@ -565,7 +565,7 @@ const rules = [
                                 :invalid="!isCompleted && !reservation.isAgreed"
                                 :binary="true"
                             />
-                            <label for="check" class="ml-2">
+                            <label for="check" class="ml-2 text-sm">
                                 I will follow the
                                 <a @click="visible = true"
                                     >Classroom Regulations</a
@@ -607,10 +607,10 @@ h3 {
     unicode-bidi: isolate;
 }
 
+:deep(.p-inputtext),
 .p-select,
-.p-datepicker,
-.p-textarea,
-input {
+.p-textarea {
+    border-radius: 0.5rem !important;
     min-width: 20rem;
 }
 
@@ -621,6 +621,10 @@ input {
 #datatable {
     min-width: 20rem;
     margin: 20px;
+}
+
+button {
+    border-radius: 0.5rem;
 }
 
 a {
@@ -643,10 +647,9 @@ a:hover {
     h3 {
         font-size: 1.45rem;
     }
+    :deep(.p-inputtext),
     .p-select,
-    .p-datepicker,
-    .p-textarea,
-    input {
+    .p-textarea {
         min-width: 16rem;
     }
 

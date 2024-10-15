@@ -198,11 +198,16 @@ const onClickEvent = () => {
 </template>
 
 <style scoped>
+:deep(.p-inputtext),
 .p-select,
-.p-datepicker,
-.p-textarea,
-input {
+.p-textarea {
+    border-radius: 0.5rem !important;
     min-width: 17rem;
+}
+
+button,
+:deep(.p-button) {
+    border-radius: 0.5rem
 }
 
 h1 {

@@ -119,7 +119,12 @@ h1 {
     unicode-bidi: isolate;
 }
 
-:deep(input) {
-    min-width: 20rem !important;
+:deep(.p-inputtext) {
+    border-radius: 0.5rem !important;
+    min-width: 20rem;
+}
+
+button {
+    border-radius: 0.5rem
 }
 </style>

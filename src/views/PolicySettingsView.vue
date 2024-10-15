@@ -25,7 +25,7 @@ const token = ref("");
 const toast = useToast();
 const id = ref(-1);
 const { data: policy } = useRequest(
-    (): Promise<{ policy: RoomPolicyInfo[] }> => postPolicy(token.value),
+    (): Promise<{ success: boolean, policy: RoomPolicyInfo[] }> => postPolicy(token.value),
     { pollingInterval: 3000 },
 );
 
@@ -311,10 +311,9 @@ onMounted(() => {
             </div>
         </Dialog>
         <h1>Policy Settings</h1>
-        <Card v-if="policyData.length !== 0" id="cards-container">
-            <template #content>
+        <div v-if="policy?.success" id="cards-container">
                 <Button
-                    class="m-2"
+                    class="mt-2 mb-4"
                     icon="pi pi-plus"
                     label="Add a new policy"
                     @click="visible = true"
@@ -322,19 +321,19 @@ onMounted(() => {
                 <p v-if="policyData.length == 0">
                     There are currently no policies.
                 </p>
-                <div class="flex flex-wrap justify-center">
+                <div class="flex flex-wrap justify-between gap-[1rem]">
                     <div v-for="policy in policyData" id="card">
-                        <Card class="m-2">
+                        <Card>
                             <template #content>
-                                <div class="h-[13rem]">
-                                    <h3 class="m-4">
+                                <div class="h-[11rem] ms-4 me-4">
+                                    <h3 class="mt-4 mb-4">
                                         {{
                                             roomMappingToString[
                                                 parseInt(policy.classroom)
                                             ] || policy.classroom
                                         }}
                                     </h3>
-                                    <p class="m-4 gap-4">
+                                    <p class="mb-4 gap-4">
                                         <b class="font-bold">Status: </b
                                         ><Tag
                                             :severity="
@@ -349,11 +348,11 @@ onMounted(() => {
                                             "
                                         ></Tag>
                                     </p>
-                                    <p class="m-4">
+                                    <p class="mb-4">
                                         <b class="text-bold">Day(s): </b
                                         >{{ formatDays(policy.days) }}
                                     </p>
-                                    <p class="m-4">
+                                    <p class="mb-4">
                                         <b class="text-bold">Time: </b
                                         >{{
                                             `${policy.start_time.slice(0, 5)} ~ ${policy.end_time.slice(0, 5)}`
@@ -362,7 +361,7 @@ onMounted(() => {
                                 </div></template
                             >
                             <template #footer>
-                                <div class="flex gap-4 mt-1">
+                                <div class="m-4 flex gap-4">
                                     <Button
                                         outlined
                                         icon="pi pi-trash"
@@ -401,9 +400,8 @@ onMounted(() => {
                         </Card>
                     </div>
                 </div>
-            </template>
-        </Card>
-        <Skeleton v-else height="650px"></Skeleton>
+        </div>
+        <Skeleton v-else height="650px" style="border-radius: 0.75rem"></Skeleton>
     </div>
 </template>
 
@@ -419,10 +417,6 @@ h1 {
     unicode-bidi: isolate;
 }
 
-#card {
-    width: 33%;
-}
-
 h3 {
     font-size: 1.4em;
     margin-block-start: 0.67em;
@@ -433,15 +427,17 @@ h3 {
     unicode-bidi: isolate;
 }
 
+button{
+    border-radius: 0.5rem
+}
+
 #cards-container {
     min-height: 650px;
 }
 
-@media screen and (max-width: 930px) {
     #card {
-        width: 50%;
+        width: calc(50% - 0.8rem);
     }
-}
 
 @media screen and (max-width: 720px) {
     #card {

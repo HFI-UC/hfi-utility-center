@@ -30,12 +30,14 @@ const items = ref([
     },
 ]);
 
-const iconClass = ref("pi-sun");
+const iconClass = ref("pi-sun")
 
 const toggleColorScheme = () => {
+    let color = localStorage.getItem("color") == "white" ? "dark" : "white"
+    localStorage.setItem("color", color)
     const root = document.getElementsByTagName("html")[0];
     root.classList.toggle("p-dark");
-    iconClass.value = iconClass.value === "pi-moon" ? "pi-sun" : "pi-moon";
+    iconClass.value = color == "white" ? "pi-sun" : "pi-moon"
 };
 
 const isAdmin = ref(false);
@@ -51,6 +53,12 @@ const signIn = () => {
 };
 
 onMounted(() => {
+    const color = localStorage.getItem("color")
+    if (color == "dark") {
+        const root = document.getElementsByTagName("html")[0];
+        root.classList.toggle("p-dark");
+        iconClass.value = "pi-moon"
+    }
     const token = sessionStorage.getItem("token");
     if (!token) return;
     verifyAdmin(token).then((res: { success: boolean; message: string }) => {
@@ -80,7 +88,7 @@ onMounted(() => {
 <template>
     <Toast />
     <div>
-        <Menubar :model="items" class="menubar">
+        <Menubar :model="items">
             <template #start>
                 <img src="./assets/logo.svg" class="m-1" style="height: 25px" />
             </template>
@@ -104,7 +112,7 @@ onMounted(() => {
         <RouterView />
     </div>
     <footer id="footer">
-        <p>Powered by and created by MAKERs'.</p>
+        <p>Powered by and created by MAKERs' with ♥.</p>
         <p>
             Copyright &copy; 2024 The co-author of HFI Utility Center. All
             rights reserved.
@@ -136,6 +144,14 @@ onMounted(() => {
     padding: 2rem;
     color: white;
     background-color: var(--p-zinc-600);
+}
+
+button {
+    border-radius: 0.5rem;
+}
+
+:deep(.p-menubar) {
+    border-radius: 0.75rem;
 }
 
 #footer > p {
