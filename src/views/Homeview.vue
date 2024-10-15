@@ -1,8 +1,10 @@
-<!-- <script setup lang="ts">
-import Dialog from "primevue/dialog";
-import { ref } from "vue";
-const visible = ref(true);
-</script> -->
+<script setup lang="ts">
+// import Dialog from "primevue/dialog";
+// import { ref } from "vue";
+// const visible = ref(true);
+import router from "../router/router";
+import Button from "primevue/button";
+</script>
 
 <template>
     <!-- <Dialog
@@ -26,6 +28,19 @@ const visible = ref(true);
     <div class="flex flex-col items-center justify-center" id="home-container">
         <h1 class="text-center">HFI Utility Center</h1>
         <h3 class="text-center">by MAKERs'</h3>
+        <div class="mt-[4rem] flex gap-4">
+            <Button
+                label="Application Form"
+                icon="pi pi-pen-to-square"
+                @click="router.push('/reservation/create')"
+            ></Button>
+            <Button
+                label="Reservation Status"
+                icon="pi pi-chart-bar"
+                severity="secondary"
+                @click="router.push('/reservation/status')"
+            ></Button>
+        </div>
     </div>
 </template>
 
@@ -44,7 +59,7 @@ h1 {
     unicode-bidi: isolate;
 }
 h3 {
-    font-size: 2.5em;
+    font-size: 1.8em;
     margin-block-start: 0.1em;
     margin-block-end: 0.1em;
     margin-inline-start: 0px;
@@ -56,12 +71,20 @@ h3 {
     height: 80vh;
 }
 
+button {
+    border-radius: 0.5rem;
+}
+
 @media screen and (max-width: 720px) {
     h1 {
-        font-size: 2.5rem;
+        font-size: 2.3rem;
+    }
+
+    :deep(.p-button-label) {
+        font-size: 15px;
     }
     h3 {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
 }
 </style>
