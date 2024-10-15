@@ -555,7 +555,7 @@ const rules = [
                             />
                             <label for="reason">Reason</label>
                         </FloatLabel>
-                        <div class="flex items-center m-[20px]">
+                        <div class="flex items-center mt-[20px] mb-[20px]">
                             <Checkbox
                                 v-model="reservation.isAgreed"
                                 id="check"
