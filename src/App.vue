@@ -53,8 +53,13 @@ const signIn = () => {
 };
 
 onMounted(() => {
-    const color = localStorage.getItem("color");
+    const color =
+        localStorage.getItem("color") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light");
     if (color == "dark") {
+        localStorage.setItem("color", color);
         const root = document.getElementsByTagName("html")[0];
         root.classList.toggle("p-dark");
         iconClass.value = "pi-moon";

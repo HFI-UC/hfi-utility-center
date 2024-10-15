@@ -43,6 +43,7 @@ export default defineConfig({
                         "primevue/column",
                         "primevue/textarea",
                         "primevue/datatable",
+                        "primevue/message",
                         "primevue/selectbutton",
                         "primevue/tooltip",
                         "primevue/toastservice",
