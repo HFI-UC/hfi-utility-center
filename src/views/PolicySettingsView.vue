@@ -25,7 +25,8 @@ const token = ref("");
 const toast = useToast();
 const id = ref(-1);
 const { data: policy } = useRequest(
-    (): Promise<{ success: boolean, policy: RoomPolicyInfo[] }> => postPolicy(token.value),
+    (): Promise<{ success: boolean; policy: RoomPolicyInfo[] }> =>
+        postPolicy(token.value),
     { pollingInterval: 3000 },
 );
 
@@ -312,96 +313,100 @@ onMounted(() => {
         </Dialog>
         <h1>Policy Settings</h1>
         <div v-if="policy?.success" id="cards-container">
-                <Button
-                    class="mt-2 mb-4"
-                    icon="pi pi-plus"
-                    label="Add a new policy"
-                    @click="visible = true"
-                ></Button>
-                <p v-if="policyData.length == 0">
-                    There are currently no policies.
-                </p>
-                <div class="flex flex-wrap justify-between gap-[1rem]">
-                    <div v-for="policy in policyData" id="card">
-                        <Card>
-                            <template #content>
-                                <div class="h-[11rem] ms-4 me-4">
-                                    <h3 class="mt-4 mb-4">
-                                        {{
-                                            roomMappingToString[
-                                                parseInt(policy.classroom)
-                                            ] || policy.classroom
-                                        }}
-                                    </h3>
-                                    <p class="mb-4 gap-4">
-                                        <b class="font-bold">Status: </b
-                                        ><Tag
-                                            :severity="
-                                                getSeverity(
-                                                    policy.unavailable as boolean,
-                                                )
-                                            "
-                                            :value="
-                                                getTag(
-                                                    policy.unavailable as boolean,
-                                                )
-                                            "
-                                        ></Tag>
-                                    </p>
-                                    <p class="mb-4">
-                                        <b class="text-bold">Day(s): </b
-                                        >{{ formatDays(policy.days) }}
-                                    </p>
-                                    <p class="mb-4">
-                                        <b class="text-bold">Time: </b
-                                        >{{
-                                            `${policy.start_time.slice(0, 5)} ~ ${policy.end_time.slice(0, 5)}`
-                                        }}
-                                    </p>
-                                </div></template
-                            >
-                            <template #footer>
-                                <div class="m-4 flex gap-4">
-                                    <Button
-                                        outlined
-                                        icon="pi pi-trash"
-                                        label="Delete"
-                                        severity="danger"
-                                        class="w-full"
-                                        @click="
-                                            (id = policy.id as number),
-                                                onDeleteEvent()
+            <Button
+                class="mt-2 mb-4"
+                icon="pi pi-plus"
+                label="Add a new policy"
+                @click="visible = true"
+            ></Button>
+            <p v-if="policyData.length == 0">
+                There are currently no policies.
+            </p>
+            <div class="flex flex-wrap justify-between gap-[1rem]">
+                <div v-for="policy in policyData" id="card">
+                    <Card>
+                        <template #content>
+                            <div class="h-[11rem] ms-4 me-4">
+                                <h3 class="mt-4 mb-4">
+                                    {{
+                                        roomMappingToString[
+                                            parseInt(policy.classroom)
+                                        ] || policy.classroom
+                                    }}
+                                </h3>
+                                <p class="mb-4 gap-4">
+                                    <b class="font-bold">Status: </b
+                                    ><Tag
+                                        :severity="
+                                            getSeverity(
+                                                policy.unavailable as boolean,
+                                            )
                                         "
-                                    />
-                                    <Button
-                                        v-if="!policy.unavailable"
-                                        icon="pi pi-play"
-                                        severity="success"
-                                        label="Resume"
-                                        class="w-full"
-                                        @click="
-                                            (id = policy.id as number),
-                                                onResumeEvent()
+                                        :value="
+                                            getTag(
+                                                policy.unavailable as boolean,
+                                            )
                                         "
-                                    ></Button>
-                                    <Button
-                                        v-if="policy.unavailable"
-                                        icon="pi pi-pause"
-                                        severity="danger"
-                                        label="Stop"
-                                        class="w-full"
-                                        @click="
-                                            (id = policy.id as number),
-                                                onPauseEvent()
-                                        "
-                                    ></Button>
-                                </div>
-                            </template>
-                        </Card>
-                    </div>
+                                    ></Tag>
+                                </p>
+                                <p class="mb-4">
+                                    <b class="text-bold">Day(s): </b
+                                    >{{ formatDays(policy.days) }}
+                                </p>
+                                <p class="mb-4">
+                                    <b class="text-bold">Time: </b
+                                    >{{
+                                        `${policy.start_time.slice(0, 5)} ~ ${policy.end_time.slice(0, 5)}`
+                                    }}
+                                </p>
+                            </div></template
+                        >
+                        <template #footer>
+                            <div class="m-4 flex gap-4">
+                                <Button
+                                    outlined
+                                    icon="pi pi-trash"
+                                    label="Delete"
+                                    severity="danger"
+                                    class="w-full"
+                                    @click="
+                                        (id = policy.id as number),
+                                            onDeleteEvent()
+                                    "
+                                />
+                                <Button
+                                    v-if="!policy.unavailable"
+                                    icon="pi pi-play"
+                                    severity="success"
+                                    label="Resume"
+                                    class="w-full"
+                                    @click="
+                                        (id = policy.id as number),
+                                            onResumeEvent()
+                                    "
+                                ></Button>
+                                <Button
+                                    v-if="policy.unavailable"
+                                    icon="pi pi-pause"
+                                    severity="danger"
+                                    label="Stop"
+                                    class="w-full"
+                                    @click="
+                                        (id = policy.id as number),
+                                            onPauseEvent()
+                                    "
+                                ></Button>
+                            </div>
+                        </template>
+                    </Card>
                 </div>
+            </div>
         </div>
-        <Skeleton v-else height="650px" style="border-radius: 0.75rem"></Skeleton>
+        <Skeleton
+            v-else
+            height="650px"
+            style="border-radius: 0.75rem"
+        ></Skeleton>
     </div>
 </template>
 
@@ -427,17 +432,17 @@ h3 {
     unicode-bidi: isolate;
 }
 
-button{
-    border-radius: 0.5rem
+button {
+    border-radius: 0.5rem;
 }
 
 #cards-container {
     min-height: 650px;
 }
 
-    #card {
-        width: calc(50% - 0.8rem);
-    }
+#card {
+    width: calc(50% - 0.8rem);
+}
 
 @media screen and (max-width: 720px) {
     #card {

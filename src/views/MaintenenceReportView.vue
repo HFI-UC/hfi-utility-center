@@ -207,7 +207,7 @@ const onClickEvent = () => {
 
 button,
 :deep(.p-button) {
-    border-radius: 0.5rem
+    border-radius: 0.5rem;
 }
 
 h1 {

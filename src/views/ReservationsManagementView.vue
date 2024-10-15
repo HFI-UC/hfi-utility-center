@@ -178,83 +178,84 @@ onMounted(() => {
         </Dialog>
         <h1>Reservation Management</h1>
         <div v-if="booking?.success" id="cards-container">
-                <p v-if="bookingData.length == 0">
-                    There are currently no applications.
-                </p>
-                <div class="flex flex-wrap justify-between gap-[1rem]">
-                    <div v-for="booking in bookingData" id="card">
-                        <Card>
-                            <template #content>
-                                <div class="ms-4 me-4">
-                                    <h3>Reservation #{{ booking.id }}</h3>
-                                    <p class="mb-2">
-                                        <b class="font-bold">Room: </b
-                                        >{{
-                                            roomMapping[booking.room] ||
-                                            booking.room
-                                        }}
-                                    </p>
-                                    <p class="mb-2">
-                                        <b class="font-bold">Name / Class: </b
-                                        >{{ booking.name }}
-                                    </p>
-                                    <p class="mb-2">
-                                        <b class="font-bold">E-mail: </b
-                                        >{{ booking.email }}
-                                    </p>
-                                    <p class="mb-2">
-                                        <b class="font-bold">Date: </b
-                                        >{{ formatDate(booking.time) }}
-                                    </p>
-                                    <p class="mb-2">
-                                        <b class="font-bold">Time: </b
-                                        >{{ formatTime(booking.time) }}
-                                    </p>
-                                    <p class="mb-2">
-                                        <b class="font-bold">Reason: </b
-                                        >{{ booking.reason }}
-                                    </p>
-                                    <p class="mb-2">
-                                        <b class="font-bold">Status: </b
-                                        ><Tag
-                                            severity="info"
-                                            value="Pending"
-                                        ></Tag>
-                                    </p>
-                                </div>
-                            </template>
-                            <template #footer>
-                                <div class="m-4 flex gap-4">
-                                    <Button
-                                        outlined
-                                        icon="pi pi-times"
-                                        label="Reject"
-                                        @click="
-                                            (reason = ''),
-                                                (visible = true),
-                                                (id = booking.id as number)
-                                        "
-                                        severity="danger"
-                                        class="w-full"
-                                        :disabled="disabled"
-                                    />
-                                    <Button
-                                        icon="pi pi-check"
-                                        severity="success"
-                                        label="Pass"
-                                        class="w-full"
-                                        @click="
-                                            (id = booking.id as number),
-                                                onAcceptEvent()
-                                        "
-                                    ></Button>
-                                </div>
-                            </template>
-                        </Card>
-                    </div>
+            <p v-if="bookingData.length == 0">
+                There are currently no applications.
+            </p>
+            <div class="flex flex-wrap justify-between gap-[1rem]">
+                <div v-for="booking in bookingData" id="card">
+                    <Card>
+                        <template #content>
+                            <div class="ms-4 me-4">
+                                <h3>Reservation #{{ booking.id }}</h3>
+                                <p class="mb-2">
+                                    <b class="font-bold">Room: </b
+                                    >{{
+                                        roomMapping[booking.room] ||
+                                        booking.room
+                                    }}
+                                </p>
+                                <p class="mb-2">
+                                    <b class="font-bold">Name / Class: </b
+                                    >{{ booking.name }}
+                                </p>
+                                <p class="mb-2">
+                                    <b class="font-bold">E-mail: </b
+                                    >{{ booking.email }}
+                                </p>
+                                <p class="mb-2">
+                                    <b class="font-bold">Date: </b
+                                    >{{ formatDate(booking.time) }}
+                                </p>
+                                <p class="mb-2">
+                                    <b class="font-bold">Time: </b
+                                    >{{ formatTime(booking.time) }}
+                                </p>
+                                <p class="mb-2">
+                                    <b class="font-bold">Reason: </b
+                                    >{{ booking.reason }}
+                                </p>
+                                <p class="mb-2">
+                                    <b class="font-bold">Status: </b
+                                    ><Tag severity="info" value="Pending"></Tag>
+                                </p>
+                            </div>
+                        </template>
+                        <template #footer>
+                            <div class="m-4 flex gap-4">
+                                <Button
+                                    outlined
+                                    icon="pi pi-times"
+                                    label="Reject"
+                                    @click="
+                                        (reason = ''),
+                                            (visible = true),
+                                            (id = booking.id as number)
+                                    "
+                                    severity="danger"
+                                    class="w-full"
+                                    :disabled="disabled"
+                                />
+                                <Button
+                                    icon="pi pi-check"
+                                    severity="success"
+                                    label="Pass"
+                                    class="w-full"
+                                    @click="
+                                        (id = booking.id as number),
+                                            onAcceptEvent()
+                                    "
+                                ></Button>
+                            </div>
+                        </template>
+                    </Card>
                 </div>
             </div>
-        <Skeleton v-else height="650px" style="border-radius: 0.75rem"></Skeleton>
+        </div>
+        <Skeleton
+            v-else
+            height="650px"
+            style="border-radius: 0.75rem"
+        ></Skeleton>
     </div>
 </template>
 
@@ -283,8 +284,8 @@ h3 {
     width: calc(50% - 0.8rem);
 }
 
-button{
-    border-radius: 0.5rem
+button {
+    border-radius: 0.5rem;
 }
 
 #cards-container {

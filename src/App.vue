@@ -30,14 +30,14 @@ const items = ref([
     },
 ]);
 
-const iconClass = ref("pi-sun")
+const iconClass = ref("pi-sun");
 
 const toggleColorScheme = () => {
-    let color = localStorage.getItem("color") == "white" ? "dark" : "white"
-    localStorage.setItem("color", color)
+    let color = localStorage.getItem("color") == "white" ? "dark" : "white";
+    localStorage.setItem("color", color);
     const root = document.getElementsByTagName("html")[0];
     root.classList.toggle("p-dark");
-    iconClass.value = color == "white" ? "pi-sun" : "pi-moon"
+    iconClass.value = color == "white" ? "pi-sun" : "pi-moon";
 };
 
 const isAdmin = ref(false);
@@ -53,11 +53,11 @@ const signIn = () => {
 };
 
 onMounted(() => {
-    const color = localStorage.getItem("color")
+    const color = localStorage.getItem("color");
     if (color == "dark") {
         const root = document.getElementsByTagName("html")[0];
         root.classList.toggle("p-dark");
-        iconClass.value = "pi-moon"
+        iconClass.value = "pi-moon";
     }
     const token = sessionStorage.getItem("token");
     if (!token) return;

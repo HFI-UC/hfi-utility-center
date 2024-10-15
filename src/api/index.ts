@@ -222,10 +222,10 @@ export async function postPolicy(token: string) {
     if (token == "") return { success: false, policy: [] as RoomPolicyInfo[] };
     const data = new FormData();
     data.set("token", token);
-    const res = await axios.post<{ success: boolean, policy: RoomPolicyInfo[] }>(
-        "/api/getDisabledClassroomDetails.php",
-        data,
-    );
+    const res = await axios.post<{
+        success: boolean;
+        policy: RoomPolicyInfo[];
+    }>("/api/getDisabledClassroomDetails.php", data);
     return res.data;
 }
 

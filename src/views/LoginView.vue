@@ -125,6 +125,6 @@ h1 {
 }
 
 button {
-    border-radius: 0.5rem
+    border-radius: 0.5rem;
 }
 </style>
