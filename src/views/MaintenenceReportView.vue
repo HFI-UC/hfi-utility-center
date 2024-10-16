@@ -31,7 +31,10 @@ const { data } = useRequest(
 
 const first = ref(0);
 const maintenanceData = computed(
-    () => data.value?.data.splice(first.value, first.value + 10).filter((item) => item.status == 0) || [],
+    () =>
+        data.value?.data
+            .splice(first.value, first.value + 10)
+            .filter((item) => item.status == 0) || [],
 );
 const loading = ref(false);
 const isCompleted = ref(true);
@@ -40,17 +43,9 @@ const file: Ref<null | File> = ref(null);
 const toast = useToast();
 const campus = ref(["Shipai Campus", "Knowledge City Campus"]);
 
-const status = [
-    "Pending",
-    "Approved",
-    "Rejected"
-]
+const status = ["Pending", "Approved", "Rejected"];
 
-const severity = [
-    "info",
-    "success",
-    "error"
-]
+const severity = ["info", "success", "error"];
 
 const onFileSelect = (event: FileUploadSelectEvent) => {
     file.value = event.files[0];
@@ -293,7 +288,14 @@ const onClickEvent = async () => {
                             </p>
                             <p class="mb-2">
                                 <b>Status: </b>
-                                <Tag :value="status[maintenance.status as number]" :severity="severity[maintenance.status as number]"></Tag>
+                                <Tag
+                                    :value="
+                                        status[maintenance.status as number]
+                                    "
+                                    :severity="
+                                        severity[maintenance.status as number]
+                                    "
+                                ></Tag>
                             </p>
                         </div>
                     </template>

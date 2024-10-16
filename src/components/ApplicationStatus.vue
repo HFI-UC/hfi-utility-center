@@ -35,7 +35,9 @@ const props = defineProps<{
                         style="color: var(--p-red-500)"
                     ></i>
                     <p class="w-[20rem] m-[1rem] text-center">
-                        <span v-if="props.message == ''">We are trying to fix this problem.</span>
+                        <span v-if="props.message == ''"
+                            >We are trying to fix this problem.</span
+                        >
                         {{ props.message }}
                     </p>
                 </div>

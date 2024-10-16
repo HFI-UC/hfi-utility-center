@@ -195,24 +195,19 @@ onMounted(() => {
                                     }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>Name / Class: </b
-                                    >{{ booking.name }}
+                                    <b>Name / Class: </b>{{ booking.name }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>E-mail: </b
-                                    >{{ booking.email }}
+                                    <b>E-mail: </b>{{ booking.email }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>Date: </b
-                                    >{{ formatDate(booking.time) }}
+                                    <b>Date: </b>{{ formatDate(booking.time) }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>Time: </b
-                                    >{{ formatTime(booking.time) }}
+                                    <b>Time: </b>{{ formatTime(booking.time) }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>Reason: </b
-                                    >{{ booking.reason }}
+                                    <b>Reason: </b>{{ booking.reason }}
                                 </p>
                                 <p class="mb-2">
                                     <b>Status: </b

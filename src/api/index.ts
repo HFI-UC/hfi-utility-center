@@ -16,7 +16,7 @@ export interface ApplicationInfo {
 }
 
 export interface MaintenanceInfo {
-    id?: number
+    id?: number;
     studentName: string;
     subject: string;
     detail: string;
@@ -336,11 +336,11 @@ export async function uploadCOS(
     });
 }
 
-export async function getCOS(filePath: string) {
-    
-}
+export async function getCOS(filePath: string) {}
 
-export async function postMaintenance(maintenance: MaintenanceInfo): Promise<{ success: boolean; message: string }> {
+export async function postMaintenance(
+    maintenance: MaintenanceInfo,
+): Promise<{ success: boolean; message: string }> {
     const data = new FormData();
     data.set("studentName", maintenance.studentName);
     data.set("subject", maintenance.subject);
@@ -361,20 +361,25 @@ export async function postMaintenance(maintenance: MaintenanceInfo): Promise<{ s
         } else {
             return {
                 success: false,
-                message: "Error."
-            }
+                message: "Error.",
+            };
         }
     }
 }
 
 export async function getMaintenance(token?: string) {
     if (token) {
-        const data = new FormData()
-        data.set("token", token)
-        const res = await axios.post<{ success: boolean, data: MaintenanceInfo[] }>("/api/get_repair.php", data)
-        return res.data
+        const data = new FormData();
+        data.set("token", token);
+        const res = await axios.post<{
+            success: boolean;
+            data: MaintenanceInfo[];
+        }>("/api/get_repair.php", data);
+        return res.data;
     }
 
-    const res = await axios.get<{ success: boolean, data: MaintenanceInfo[] }>("/api/inquiry_repair.php")
-    return res.data
+    const res = await axios.get<{ success: boolean; data: MaintenanceInfo[] }>(
+        "/api/inquiry_repair.php",
+    );
+    return res.data;
 }

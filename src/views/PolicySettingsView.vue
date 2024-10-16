@@ -350,8 +350,7 @@ onMounted(() => {
                                     ></Tag>
                                 </p>
                                 <p class="mb-4">
-                                    <b>Day(s): </b
-                                    >{{ formatDays(policy.days) }}
+                                    <b>Day(s): </b>{{ formatDays(policy.days) }}
                                 </p>
                                 <p class="mb-4">
                                     <b>Time: </b

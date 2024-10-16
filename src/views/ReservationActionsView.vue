@@ -98,15 +98,10 @@ onMounted(() => {
                         </p>
                         <br />
                         <p class="m-[5px]">
-                            <b>Add Time: </b
-                            >{{ data.addTime }}
+                            <b>Add Time: </b>{{ data.addTime }}
                         </p>
-                        <p class="m-[5px]">
-                            <b>E-mail: </b>{{ data.email }}
-                        </p>
-                        <p class="m-[5px]">
-                            <b>Reason: </b>{{ data.reason }}
-                        </p>
+                        <p class="m-[5px]"><b>E-mail: </b>{{ data.email }}</p>
+                        <p class="m-[5px]"><b>Reason: </b>{{ data.reason }}</p>
                         <p class="m-[5px]">
                             <b>Room: </b
                             >{{
