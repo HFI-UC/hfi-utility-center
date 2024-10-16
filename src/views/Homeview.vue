@@ -28,7 +28,7 @@ import Button from "primevue/button";
     <div class="flex flex-col items-center justify-center" id="home-container">
         <h1 class="text-center">HFI Utility Center</h1>
         <h3 class="text-center">by MAKERs'</h3>
-        <div class="mt-[4rem] flex gap-4">
+        <div class="mt-[4rem] flex flex-wrap gap-4 items-center justify-center">
             <Button
                 label="Application Form"
                 icon="pi pi-pen-to-square"
@@ -78,10 +78,6 @@ button {
 @media screen and (max-width: 720px) {
     h1 {
         font-size: 2.3rem;
-    }
-
-    :deep(.p-button-label) {
-        font-size: 15px;
     }
     h3 {
         font-size: 1.1rem;

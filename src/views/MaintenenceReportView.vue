@@ -3,7 +3,7 @@ import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
 import FileUpload, { FileUploadSelectEvent } from "primevue/fileupload";
 import { ref, Ref } from "vue";
-import { uploadCOS } from "../api";
+import { generateCosKey, postMaintenance, uploadCOS } from "../api";
 import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
@@ -51,6 +51,7 @@ const onClickEvent = () => {
         loading.value = false;
         return;
     }
+    maintenance.value.filePath = generateCosKey(file.value.name.split(".").pop())
     isCompleted.value = !Object.values(maintenance.value).some(
         (value) => value === "",
     );
@@ -64,7 +65,7 @@ const onClickEvent = () => {
         loading.value = false;
         return;
     }
-    uploadCOS(file.value).then((res) => {
+    uploadCOS(file.value, maintenance.value.filePath).then((res) => {
         toast.add({
             severity: res.success ? "success" : "error",
             summary: res.success ? "Success" : "Error",
@@ -77,6 +78,7 @@ const onClickEvent = () => {
         }
         maintenance.value.filePath = res.filePath;
     });
+    postMaintenance(maintenance.value)
 };
 </script>
 

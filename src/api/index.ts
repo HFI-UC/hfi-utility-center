@@ -286,14 +286,14 @@ export async function postAdd(
     return res.data;
 }
 
-function generateCosKey(ext: string = ""): string {
+export function generateCosKey(ext: string = ""): string {
     return `file/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}_${String(Math.floor(Math.random() * 1e6)).padStart(6, "0")}${ext ? "." + ext : ""}`;
 }
 
 export async function uploadCOS(
     file: File,
+    cosKey: string
 ): Promise<{ success: boolean; message: string; filePath: string }> {
-    const cosKey = generateCosKey(file.name.split(".").pop());
     const cos = new COS({
         getAuthorization: async (options, callback) => {
             const data = new FormData();
@@ -311,7 +311,7 @@ export async function uploadCOS(
             callback({ SecurityToken, ...rest });
         },
     });
-    cos.uploadFile({
+    await cos.uploadFile({
         Bucket: "repair-1304562386",
         Region: "ap-guangzhou",
         Key: cosKey,
@@ -328,4 +328,24 @@ export async function uploadCOS(
         message: "Successfully uploaded the image!",
         filePath: cosKey,
     };
+}
+
+export async function postMaintenance(maintenance: MaintenanceInfo) {
+    const data = new FormData()
+    data.set("studentName", maintenance.studentName)
+    data.set("subject", maintenance.subject)
+    data.set("detail", maintenance.detail)
+    data.set("campus", maintenance.campus)
+    data.set("filePath", maintenance.filePath)
+    data.set("location", maintenance.location)
+    data.set("email", maintenance.email)
+    try {
+        const res = await axios.post<{success: boolean}>("/api/submit_repair.php", data)
+        console.log(res.data)
+        return res.data
+    } catch (err) {
+        if (isAxiosError(err) && err.response) {
+            return err.response.data
+        }
+    }
 }
