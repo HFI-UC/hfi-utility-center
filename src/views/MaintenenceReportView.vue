@@ -9,6 +9,7 @@ import {
     postMaintenance,
     uploadCOS,
 } from "../api";
+import Skeleton from "primevue/skeleton";
 import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
@@ -129,7 +130,7 @@ const onClickEvent = async () => {
         filePath: "",
         detail: "",
     };
-    src.value = file.value = null
+    src.value = file.value = null;
 };
 </script>
 
@@ -265,7 +266,11 @@ const onClickEvent = async () => {
                         <div class="ms-4 me-4">
                             <h3>Maintenance #{{ maintenance.id }}</h3>
                             <h4>{{ maintenance.subject }}</h4>
-                            <Image :src="maintenance.filePath" class="w-full h-[20rem] items-center justify-center mt-4 mb-6" preview></Image>
+                            <Image
+                                :src="maintenance.filePath"
+                                class="w-full h-[20rem] items-center justify-center mt-4 mb-6"
+                                preview
+                            ></Image>
                             <p class="mb-2">
                                 <b>Location: </b>
                                 {{ maintenance.location }}
@@ -301,6 +306,7 @@ const onClickEvent = async () => {
             :totalRecords="maintenanceData.length"
         ></Paginator>
     </div>
+    <Skeleton v-else height="650px" style="border-radius: 0.75rem"></Skeleton>
 </template>
 
 <style scoped>
@@ -344,6 +350,10 @@ h3 {
 
 :deep(.p-image-preview-mask) {
     border-radius: 0.5rem;
+}
+
+:deep(img) {
+    max-height: 20rem;
 }
 
 h4 {
