@@ -188,34 +188,34 @@ onMounted(() => {
                             <div class="ms-4 me-4">
                                 <h3>Reservation #{{ booking.id }}</h3>
                                 <p class="mb-2">
-                                    <b class="font-bold">Room: </b
+                                    <b>Room: </b
                                     >{{
                                         roomMapping[booking.room] ||
                                         booking.room
                                     }}
                                 </p>
                                 <p class="mb-2">
-                                    <b class="font-bold">Name / Class: </b
+                                    <b>Name / Class: </b
                                     >{{ booking.name }}
                                 </p>
                                 <p class="mb-2">
-                                    <b class="font-bold">E-mail: </b
+                                    <b>E-mail: </b
                                     >{{ booking.email }}
                                 </p>
                                 <p class="mb-2">
-                                    <b class="font-bold">Date: </b
+                                    <b>Date: </b
                                     >{{ formatDate(booking.time) }}
                                 </p>
                                 <p class="mb-2">
-                                    <b class="font-bold">Time: </b
+                                    <b>Time: </b
                                     >{{ formatTime(booking.time) }}
                                 </p>
                                 <p class="mb-2">
-                                    <b class="font-bold">Reason: </b
+                                    <b>Reason: </b
                                     >{{ booking.reason }}
                                 </p>
                                 <p class="mb-2">
-                                    <b class="font-bold">Status: </b
+                                    <b>Status: </b
                                     ><Tag severity="info" value="Pending"></Tag>
                                 </p>
                             </div>
@@ -291,7 +291,9 @@ button {
 #cards-container {
     min-height: 650px;
 }
-
+b {
+    font-weight: bold;
+}
 @media screen and (max-width: 720px) {
     #card {
         width: 100%;

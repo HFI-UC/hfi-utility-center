@@ -16,6 +16,7 @@ export interface ApplicationInfo {
 }
 
 export interface MaintenanceInfo {
+    id?: number
     studentName: string;
     subject: string;
     detail: string;
@@ -24,7 +25,7 @@ export interface MaintenanceInfo {
     campus: string;
     filePath: string;
     addTime?: number;
-    status?: string;
+    status?: number;
 }
 
 export interface RoomPolicyInfo {
@@ -166,7 +167,6 @@ export async function getAction(token: string, action: string) {
             };
             message?: string;
         }>("/api/approval_action.php", data);
-        console.log(res.data);
         return res.data;
     } catch (err) {
         if (axios.isAxiosError(err) && err.response) {
@@ -292,8 +292,8 @@ export function generateCosKey(ext: string = ""): string {
 
 export async function uploadCOS(
     file: File,
-    cosKey: string
-): Promise<{ success: boolean; message: string; filePath: string }> {
+    cosKey: string,
+): Promise<{ success: boolean; message: string }> {
     const cos = new COS({
         getAuthorization: async (options, callback) => {
             const data = new FormData();
@@ -311,41 +311,70 @@ export async function uploadCOS(
             callback({ SecurityToken, ...rest });
         },
     });
-    await cos.uploadFile({
-        Bucket: "repair-1304562386",
-        Region: "ap-guangzhou",
-        Key: cosKey,
-        Body: await file.arrayBuffer(),
-    }).catch((err) => {
-        return {
-            success: false,
-            message: err,
-            filePath: cosKey,
-        };
+    return new Promise(async (resolve) => {
+        cos.uploadFile(
+            {
+                Bucket: "repair-1304562386",
+                Region: "ap-guangzhou",
+                Key: cosKey,
+                Body: await file.arrayBuffer(),
+            },
+            (err, data) => {
+                if (err) {
+                    resolve({
+                        success: false,
+                        message: err.message,
+                    });
+                } else {
+                    resolve({
+                        success: true,
+                        message: JSON.stringify(data),
+                    });
+                }
+            },
+        );
     });
-    return {
-        success: true,
-        message: "Successfully uploaded the image!",
-        filePath: cosKey,
-    };
 }
 
-export async function postMaintenance(maintenance: MaintenanceInfo) {
-    const data = new FormData()
-    data.set("studentName", maintenance.studentName)
-    data.set("subject", maintenance.subject)
-    data.set("detail", maintenance.detail)
-    data.set("campus", maintenance.campus)
-    data.set("filePath", maintenance.filePath)
-    data.set("location", maintenance.location)
-    data.set("email", maintenance.email)
+export async function getCOS(filePath: string) {
+    
+}
+
+export async function postMaintenance(maintenance: MaintenanceInfo): Promise<{ success: boolean; message: string }> {
+    const data = new FormData();
+    data.set("studentName", maintenance.studentName);
+    data.set("subject", maintenance.subject);
+    data.set("detail", maintenance.detail);
+    data.set("campus", maintenance.campus);
+    data.set("filePath", maintenance.filePath);
+    data.set("location", maintenance.location);
+    data.set("email", maintenance.email);
     try {
-        const res = await axios.post<{success: boolean}>("/api/submit_repair.php", data)
-        console.log(res.data)
-        return res.data
+        const res = await axios.post<{ success: boolean; message: string }>(
+            "/api/submit_repair.php",
+            data,
+        );
+        return res.data;
     } catch (err) {
         if (isAxiosError(err) && err.response) {
-            return err.response.data
+            return err.response.data as { success: boolean; message: string };
+        } else {
+            return {
+                success: false,
+                message: "Error."
+            }
         }
     }
+}
+
+export async function getMaintenance(token?: string) {
+    if (token) {
+        const data = new FormData()
+        data.set("token", token)
+        const res = await axios.post<{ success: boolean, data: MaintenanceInfo[] }>("/api/get_repair.php", data)
+        return res.data
+    }
+
+    const res = await axios.get<{ success: boolean, data: MaintenanceInfo[] }>("/api/inquiry_repair.php")
+    return res.data
 }

@@ -16,7 +16,7 @@ import Button from "primevue/button";
         <div class="flex items-center justify-center gap-4 mb-8">
             <p>
                 You are using the
-                <b class="font-bold">Beta Version (Cenozoic)</b> of HFI Utility
+                <b>Beta Version (Cenozoic)</b> of HFI Utility
                 Center! Go to
                 <a href="https://hfiuc.org" style="color: var(--p-primary-500)"
                     >https://hfiuc.org/</a
@@ -73,6 +73,10 @@ h3 {
 
 button {
     border-radius: 0.5rem;
+}
+
+b {
+    font-weight: bold;
 }
 
 @media screen and (max-width: 720px) {

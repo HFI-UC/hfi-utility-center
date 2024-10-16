@@ -39,8 +39,6 @@ onMounted(() => {
         return;
     }
     isValid.value = true;
-    console.log(token);
-    console.log(color.value);
     getAction(token, action).then(
         (res: {
             success: boolean;
@@ -100,17 +98,17 @@ onMounted(() => {
                         </p>
                         <br />
                         <p class="m-[5px]">
-                            <b class="font-bold">Add Time: </b
+                            <b>Add Time: </b
                             >{{ data.addTime }}
                         </p>
                         <p class="m-[5px]">
-                            <b class="font-bold">E-mail: </b>{{ data.email }}
+                            <b>E-mail: </b>{{ data.email }}
                         </p>
                         <p class="m-[5px]">
-                            <b class="font-bold">Reason: </b>{{ data.reason }}
+                            <b>Reason: </b>{{ data.reason }}
                         </p>
                         <p class="m-[5px]">
-                            <b class="font-bold">Room: </b
+                            <b>Room: </b
                             >{{
                                 roomMapping[data.room] || data.room.toString()
                             }}
@@ -145,7 +143,9 @@ onMounted(() => {
 #status-icon {
     font-size: 8rem;
 }
-
+b {
+    font-weight: bold;
+}
 h1 {
     display: block;
     font-size: 2em;

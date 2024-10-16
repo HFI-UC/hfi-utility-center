@@ -335,7 +335,7 @@ onMounted(() => {
                                     }}
                                 </h3>
                                 <p class="mb-4 gap-4">
-                                    <b class="font-bold">Status: </b
+                                    <b>Status: </b
                                     ><Tag
                                         :severity="
                                             getSeverity(
@@ -350,11 +350,11 @@ onMounted(() => {
                                     ></Tag>
                                 </p>
                                 <p class="mb-4">
-                                    <b class="text-bold">Day(s): </b
+                                    <b>Day(s): </b
                                     >{{ formatDays(policy.days) }}
                                 </p>
                                 <p class="mb-4">
-                                    <b class="text-bold">Time: </b
+                                    <b>Time: </b
                                     >{{
                                         `${policy.start_time.slice(0, 5)} ~ ${policy.end_time.slice(0, 5)}`
                                     }}
@@ -439,7 +439,9 @@ button {
 #cards-container {
     min-height: 650px;
 }
-
+b {
+    font-weight: bold;
+}
 #card {
     width: calc(50% - 0.8rem);
 }
