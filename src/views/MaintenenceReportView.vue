@@ -17,16 +17,16 @@ import Textarea from "primevue/textarea";
 import Message from "primevue/message";
 import Paginator from "primevue/paginator";
 import Tag from "primevue/tag";
+import Image from "primevue/image";
 import Card from "primevue/card";
 import { MaintenanceInfo } from "../api";
 import { useRequest } from "vue-request";
 
 const visible = ref(false);
-const token = ref();
 const { data } = useRequest(
     (): Promise<{ success: boolean; data: MaintenanceInfo[] }> =>
-        getMaintenance(token.value),
-    { pollingInterval: 15000 },
+        getMaintenance(),
+    { pollingInterval: 30000 },
 );
 
 const first = ref(0);
@@ -36,6 +36,7 @@ const maintenanceData = computed(
             .splice(first.value, first.value + 10)
             .filter((item) => item.status == 0) || [],
 );
+
 const loading = ref(false);
 const isCompleted = ref(true);
 const src: Ref<null | string> = ref(null);
@@ -99,13 +100,6 @@ const onClickEvent = async () => {
         maintenance.value.filePath,
     );
 
-    toast.add({
-        severity: uploadResult.success ? "success" : "error",
-        summary: uploadResult.success ? "Success" : "Error",
-        detail: uploadResult.message,
-        life: 3000,
-    });
-
     if (!uploadResult.success) {
         loading.value = false;
         return;
@@ -135,6 +129,7 @@ const onClickEvent = async () => {
         filePath: "",
         detail: "",
     };
+    src.value = file.value = null
 };
 </script>
 
@@ -144,7 +139,7 @@ const onClickEvent = async () => {
         <Message severity="warn">This page is still in development.</Message>
         <Button
             label="Report for maintenance"
-            class="mt-3 mb-3"
+            class="mt-8 mb-4"
             icon="pi pi-plus"
             @click="visible = true"
         ></Button>
@@ -261,19 +256,16 @@ const onClickEvent = async () => {
             </div>
         </Dialog>
         <p v-if="maintenanceData.length == 0">
-            There are currently no applications.
+            There are currently no maintenance reports.
         </p>
-        <div class="flex flex-wrap justify-between gap-[1rem] mb-4">
+        <div class="flex flex-wrap justify-between gap-[1rem] mb-8">
             <div v-for="maintenance in maintenanceData" id="card">
                 <Card>
                     <template #content>
                         <div class="ms-4 me-4">
                             <h3>Maintenance #{{ maintenance.id }}</h3>
                             <h4>{{ maintenance.subject }}</h4>
-                            <!-- <img
-                                :src="getImageSrc(maintenance.filePath)"
-                                class="shadow-md rounded-xl w-full sm:w-64 mt-3 mb-3"
-                            /> -->
+                            <Image :src="maintenance.filePath" class="w-full h-[20rem] items-center justify-center mt-4 mb-6" preview></Image>
                             <p class="mb-2">
                                 <b>Location: </b>
                                 {{ maintenance.location }}
@@ -320,7 +312,8 @@ const onClickEvent = async () => {
 }
 
 button,
-:deep(.p-button) {
+:deep(.p-button),
+:deep(.p-image) {
     border-radius: 0.5rem;
 }
 
@@ -349,8 +342,12 @@ h3 {
     unicode-bidi: isolate;
 }
 
+:deep(.p-image-preview-mask) {
+    border-radius: 0.5rem;
+}
+
 h4 {
-    font-size: 1.2em;
+    font-size: 1.3em;
     margin-block-start: 0.67em;
     margin-block-end: 0.67em;
     margin-inline-start: 0px;

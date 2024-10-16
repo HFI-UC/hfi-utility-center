@@ -336,7 +336,12 @@ export async function uploadCOS(
     });
 }
 
-export async function getCOS(filePath: string) {}
+export async function getCOS(filePath: string) {
+    const data = new FormData()
+    data.set("file_key", filePath)
+    const res = await axios.post<string>("/api/cos_preview_url_gen.php", data)
+    return res.data
+}
 
 export async function postMaintenance(
     maintenance: MaintenanceInfo,
@@ -368,18 +373,15 @@ export async function postMaintenance(
 }
 
 export async function getMaintenance(token?: string) {
-    if (token) {
-        const data = new FormData();
-        data.set("token", token);
-        const res = await axios.post<{
-            success: boolean;
-            data: MaintenanceInfo[];
-        }>("/api/get_repair.php", data);
-        return res.data;
-    }
-
-    const res = await axios.get<{ success: boolean; data: MaintenanceInfo[] }>(
-        "/api/inquiry_repair.php",
+    const res = token
+        ? await axios.post<{ success: boolean; data: MaintenanceInfo[] }>("/api/get_repair.php", new URLSearchParams({ token }))
+        : await axios.get<{ success: boolean; data: MaintenanceInfo[] }>("/api/inquiry_repair.php");
+    const { data } = res
+    data.data = await Promise.all(
+        data.data.map(async (item) => ({
+            ...item,
+            filePath: await getCOS(item.filePath),
+        }))
     );
-    return res.data;
+    return data;
 }
