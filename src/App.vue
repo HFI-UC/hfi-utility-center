@@ -28,6 +28,11 @@ const items = ref([
             },
         ],
     },
+    {
+        label: "Maintenance Report",
+        icon: "pi pi-wrench",
+        url: "/maintenance",
+    },
 ]);
 
 const iconClass = ref("pi-sun");

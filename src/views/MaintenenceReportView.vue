@@ -11,6 +11,8 @@ import {
     uploadCOS,
     verifyAdmin,
 } from "../api";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
 import Skeleton from "primevue/skeleton";
 import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
@@ -32,12 +34,26 @@ const { data } = useRequest(() => getMaintenance(token.value));
 
 const first = ref(0);
 const proccessedId: Ref<number[]> = ref([]);
-const rawMaintenanceData = computed(() => data.value?.data || []);
+const filteredMaintenanceData = computed(
+    () =>
+        data.value?.data
+            .filter((item) => ![2, 3].includes(item.status as number))
+            .filter((item) => !proccessedId.value.includes(item.id as number))
+            .filter((item) => {
+                const regex = new RegExp(query.value, "i");
+                return (
+                    query.value === "" ||
+                    item.subject.match(regex) ||
+                    item.detail.match(regex) ||
+                    item.id?.toString().match(regex) ||
+                    item.location.match(regex) ||
+                    item.studentName.match(regex) ||
+                    item.email.match(regex)
+                );
+            }) || [],
+);
 const maintenanceData = computed(() =>
-    rawMaintenanceData.value
-        .slice(first.value, first.value + 10)
-        .filter(item => ![2, 3].includes(item.status as number))
-        .filter(item => !proccessedId.value.includes(item.id as number)),
+    filteredMaintenanceData.value.slice(first.value, first.value + 10),
 );
 
 const loading = ref(false);
@@ -45,9 +61,9 @@ const src = ref<null | string>(null);
 const file = ref<null | File>(null);
 const toast = useToast();
 const campus = ref(["Shipai Campus", "Knowledge City Campus"]);
-const status = ["Pending", "Approved", "Rejected", "Duplicated"];
+const status = ["Pending", "Approved", "Unscheduled", "Duplicated"];
 const severity = ["info", "success", "error", "primary"];
-
+const query = ref("");
 const maintenance: Ref<MaintenanceInfo> = ref({
     studentName: "",
     subject: "",
@@ -75,23 +91,25 @@ onMounted(async () => {
 });
 
 const onActionEvent = (maintenance: MaintenanceInfo, action: number) => {
-    postMaintenanceAction(token.value, maintenance.id as number, action).then((res) => {
-        toast.add({
-            severity: res.success ? "success" : "error",
-            summary: res.success ? "Success" : "Error",
-            detail: res.message,
-            life: 3000,
-        });
-        if (res.success) {
-            proccessedId.value.push(maintenance.id as number);
-        }
-    });
+    postMaintenanceAction(token.value, maintenance.id as number, action).then(
+        (res) => {
+            toast.add({
+                severity: res.success ? "success" : "error",
+                summary: res.success ? "Success" : "Error",
+                detail: res.message,
+                life: 3000,
+            });
+            if (res.success) {
+                proccessedId.value.push(maintenance.id as number);
+            }
+        },
+    );
 };
 
-const isCompleted = ref(true)
+const isCompleted = ref(true);
 
 const onClickEvent = async () => {
-    isCompleted.value = true
+    isCompleted.value = true;
     if (!file.value) {
         toast.add({
             severity: "error",
@@ -156,19 +174,24 @@ const resetForm = () => {
     src.value = file.value = null;
     loading.value = false;
 };
-
 </script>
 
 <template>
     <h1>Maintenance Report</h1>
     <div v-if="data?.success">
-        <Message severity="warn">This page is still in development.</Message>
+        <Message severity="info">This page is still in development.</Message>
         <Button
             label="Report for maintenance"
             class="mt-8 mb-4"
             icon="pi pi-plus"
             @click="visible = true"
         ></Button>
+        <div class="justify-left mt-4 mb-4">
+            <IconField>
+                <InputIcon class="pi pi-search"></InputIcon>
+                <InputText placeholder="Search" v-model="query"></InputText>
+            </IconField>
+        </div>
         <Dialog
             v-model:visible="visible"
             modal
@@ -288,7 +311,7 @@ const resetForm = () => {
             <div v-for="maintenance in maintenanceData" id="card">
                 <Card>
                     <template #content>
-                        <div class="ms-4 me-4 h-[42rem]">
+                        <div class="ms-4 me-4 min-h-[40rem]">
                             <h3>Maintenance #{{ maintenance.id }}</h3>
                             <h4>{{ maintenance.subject }}</h4>
                             <Image
@@ -330,18 +353,21 @@ const resetForm = () => {
                         </div>
                     </template>
                     <template #footer v-if="isAdmin">
+                        <div class="justify-left">
+                            <p class="ms-4 font-bold">Mark as</p>
+                        </div>
                         <div class="m-4 flex gap-4" id="buttons">
                             <Button
                                 class="w-full"
-                                label="Duplicate"
-                                severity="secondary"
+                                label="Duplicated"
+                                severity="warn"
                                 icon="pi pi-clone"
                                 @click="onActionEvent(maintenance, 3)"
                             >
                             </Button>
                             <Button
                                 class="w-full"
-                                label="Reject"
+                                label="Unscheduled"
                                 severity="danger"
                                 icon="pi pi-times"
                                 @click="onActionEvent(maintenance, 2)"
@@ -349,7 +375,7 @@ const resetForm = () => {
                             </Button>
                             <Button
                                 class="w-full"
-                                label="Approve"
+                                label="Approved"
                                 severity="success"
                                 icon="pi pi-check"
                                 @click="onActionEvent(maintenance, 1)"
@@ -361,11 +387,11 @@ const resetForm = () => {
             </div>
         </div>
         <Paginator
-            v-if="rawMaintenanceData.length !== 0"
+            v-if="filteredMaintenanceData.length !== 0"
             class="justify-center"
             v-model:first="first"
             :rows="10"
-            :totalRecords="rawMaintenanceData.length"
+            :totalRecords="filteredMaintenanceData.length"
         ></Paginator>
     </div>
     <Skeleton v-else height="650px" style="border-radius: 0.75rem"></Skeleton>

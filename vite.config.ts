@@ -48,6 +48,10 @@ export default defineConfig({
                         "primevue/tooltip",
                         "primevue/toastservice",
                         "primevue/config",
+                        "primevue/paginator",
+                        "primevue/image",
+                        "primevue/iconfield",
+                        "primevue/inputicon",
                         "@primevue/themes",
                         "@primevue/themes/aura"
                     ],
