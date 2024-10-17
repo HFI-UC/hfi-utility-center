@@ -52,7 +52,7 @@ const signIn = () => {
     window.location.href = "/admin/login";
 };
 
-onMounted(() => {
+onMounted(async () => {
     const color =
         localStorage.getItem("color") ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -66,27 +66,25 @@ onMounted(() => {
     }
     const token = sessionStorage.getItem("token");
     if (!token) return;
-    verifyAdmin(token).then((res: { success: boolean; message: string }) => {
-        if (res.success) {
-            isAdmin.value = true;
-            items.value.push({
-                label: "Admin",
-                icon: "pi pi-user",
-                items: [
-                    {
-                        label: "Reservation Management",
-                        icon: "pi pi-list-check",
-                        url: "/admin/reservations",
-                    },
-                    {
-                        label: "Policy Settings",
-                        icon: "pi pi-building-columns",
-                        url: "/admin/policy",
-                    },
-                ],
-            });
-        }
-    });
+    if (await verifyAdmin(token)) {
+        isAdmin.value = true;
+        items.value.push({
+            label: "Admin",
+            icon: "pi pi-user",
+            items: [
+                {
+                    label: "Reservation Management",
+                    icon: "pi pi-list-check",
+                    url: "/admin/reservations",
+                },
+                {
+                    label: "Policy Settings",
+                    icon: "pi pi-building-columns",
+                    url: "/admin/policy",
+                },
+            ],
+        });
+    }
 });
 </script>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref, computed } from "vue";
-import { postAccept, postReject, verifyAdmin } from "../api";
+import { postReservationAccept, postReservationReject, verifyAdmin } from "../api";
 import { useRequest } from "vue-request";
 import { ReservationInfo, postAdminReservation } from "../api";
 import router from "../router/router";
@@ -69,7 +69,7 @@ const formatTime = (time: string) => {
 
 const onAcceptEvent = () => {
     disabled.value = true;
-    postAccept(token.value, id.value).then(
+    postReservationAccept(token.value, id.value).then(
         (res: { success: boolean; message: string }) => {
             toast.add({
                 severity: res.success ? "success" : "error",
@@ -97,7 +97,7 @@ const onRejectEvent = () => {
         isCompleted.value = false;
         return;
     }
-    postReject(token.value, id.value, reason.value).then(
+    postReservationReject(token.value, id.value, reason.value).then(
         (res: { success: boolean; message: string }) => {
             toast.add({
                 severity: res.success ? "success" : "error",
@@ -118,14 +118,9 @@ const roomMapping: { [key: number]: string } = {
     106: "Writing Center 2",
 };
 
-onMounted(() => {
+onMounted(async () => {
     token.value = sessionStorage.getItem("token") || "";
-    if (
-        !token.value ||
-        !verifyAdmin(token.value).then(
-            (res: { success: boolean; message: string }) => res.success,
-        )
-    ) {
+    if (!token.value || !(await verifyAdmin(token.value))) {
         toast.add({
             severity: "error",
             summary: "Error",

@@ -2,12 +2,14 @@
 import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
 import FileUpload, { FileUploadSelectEvent } from "primevue/fileupload";
-import { ref, Ref, computed } from "vue";
+import { ref, Ref, computed, onMounted } from "vue";
 import {
     generateCosKey,
     getMaintenance,
     postMaintenance,
+    postMaintenanceAction,
     uploadCOS,
+    verifyAdmin,
 } from "../api";
 import Skeleton from "primevue/skeleton";
 import InputText from "primevue/inputtext";
@@ -24,40 +26,27 @@ import { MaintenanceInfo } from "../api";
 import { useRequest } from "vue-request";
 
 const visible = ref(false);
-const { data } = useRequest(
-    (): Promise<{ success: boolean; data: MaintenanceInfo[] }> =>
-        getMaintenance(),
-    { pollingInterval: 30000 },
-);
+const token = ref(sessionStorage.getItem("token") || "");
+const isAdmin = ref(false);
+const { data } = useRequest(() => getMaintenance(token.value));
 
 const first = ref(0);
-const maintenanceData = computed(
-    () =>
-        data.value?.data
-            .splice(first.value, first.value + 10)
-            .filter((item) => item.status == 0) || [],
+const proccessedId: Ref<number[]> = ref([]);
+const rawMaintenanceData = computed(() => data.value?.data || []);
+const maintenanceData = computed(() =>
+    rawMaintenanceData.value
+        .slice(first.value, first.value + 10)
+        .filter(item => ![2, 3].includes(item.status as number))
+        .filter(item => !proccessedId.value.includes(item.id as number)),
 );
 
 const loading = ref(false);
-const isCompleted = ref(true);
-const src: Ref<null | string> = ref(null);
-const file: Ref<null | File> = ref(null);
+const src = ref<null | string>(null);
+const file = ref<null | File>(null);
 const toast = useToast();
 const campus = ref(["Shipai Campus", "Knowledge City Campus"]);
-
-const status = ["Pending", "Approved", "Rejected"];
-
-const severity = ["info", "success", "error"];
-
-const onFileSelect = (event: FileUploadSelectEvent) => {
-    file.value = event.files[0];
-    if (!file.value) return;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        src.value = e.target?.result as string;
-    };
-    reader.readAsDataURL(file.value);
-};
+const status = ["Pending", "Approved", "Rejected", "Duplicated"];
+const severity = ["info", "success", "error", "primary"];
 
 const maintenance: Ref<MaintenanceInfo> = ref({
     studentName: "",
@@ -69,20 +58,54 @@ const maintenance: Ref<MaintenanceInfo> = ref({
     detail: "",
 });
 
+const onFileSelect = (event: FileUploadSelectEvent) => {
+    file.value = event.files[0];
+    if (!file.value) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        src.value = e.target?.result as string;
+    };
+    reader.readAsDataURL(file.value);
+};
+
+onMounted(async () => {
+    if (token.value && (await verifyAdmin(token.value))) {
+        isAdmin.value = true;
+    }
+});
+
+const onActionEvent = (maintenance: MaintenanceInfo, action: number) => {
+    postMaintenanceAction(token.value, maintenance.id as number, action).then((res) => {
+        toast.add({
+            severity: res.success ? "success" : "error",
+            summary: res.success ? "Success" : "Error",
+            detail: res.message,
+            life: 3000,
+        });
+        if (res.success) {
+            proccessedId.value.push(maintenance.id as number);
+        }
+    });
+};
+
+const isCompleted = ref(true)
+
 const onClickEvent = async () => {
-    loading.value = true;
+    isCompleted.value = true
     if (!file.value) {
         toast.add({
             severity: "error",
             summary: "Error",
             detail: "Please choose a photo to upload!",
         });
-        loading.value = false;
         return;
     }
-    maintenance.value.filePath = generateCosKey(
-        file.value.name.split(".").pop(),
-    );
+
+    loading.value = true;
+
+    const filePath = generateCosKey(file.value.name.split(".").pop());
+    maintenance.value.filePath = filePath;
+
     isCompleted.value = !Object.values(maintenance.value).some(
         (value) => value === "",
     );
@@ -96,18 +119,14 @@ const onClickEvent = async () => {
         loading.value = false;
         return;
     }
-    const uploadResult = await uploadCOS(
-        file.value,
-        maintenance.value.filePath,
-    );
 
+    const uploadResult = await uploadCOS(file.value, filePath);
     if (!uploadResult.success) {
         loading.value = false;
         return;
     }
 
     const maintenanceResult = await postMaintenance(maintenance.value);
-
     if (!maintenanceResult.success) {
         loading.value = false;
         return;
@@ -119,7 +138,11 @@ const onClickEvent = async () => {
         detail: maintenanceResult.message,
         life: 3000,
     });
-    loading.value = false;
+
+    resetForm();
+};
+
+const resetForm = () => {
     visible.value = false;
     maintenance.value = {
         studentName: "",
@@ -131,7 +154,9 @@ const onClickEvent = async () => {
         detail: "",
     };
     src.value = file.value = null;
+    loading.value = false;
 };
+
 </script>
 
 <template>
@@ -263,7 +288,7 @@ const onClickEvent = async () => {
             <div v-for="maintenance in maintenanceData" id="card">
                 <Card>
                     <template #content>
-                        <div class="ms-4 me-4">
+                        <div class="ms-4 me-4 h-[42rem]">
                             <h3>Maintenance #{{ maintenance.id }}</h3>
                             <h4>{{ maintenance.subject }}</h4>
                             <Image
@@ -271,6 +296,14 @@ const onClickEvent = async () => {
                                 class="w-full h-[20rem] items-center justify-center mt-4 mb-6"
                                 preview
                             ></Image>
+                            <p class="mb-2" v-if="isAdmin">
+                                <b>Name: </b>
+                                {{ maintenance.studentName }}
+                            </p>
+                            <p class="mb-2" v-if="isAdmin">
+                                <b>E-mail: </b>
+                                {{ maintenance.email }}
+                            </p>
                             <p class="mb-2">
                                 <b>Location: </b>
                                 {{ maintenance.location }}
@@ -296,14 +329,43 @@ const onClickEvent = async () => {
                             </p>
                         </div>
                     </template>
+                    <template #footer v-if="isAdmin">
+                        <div class="m-4 flex gap-4" id="buttons">
+                            <Button
+                                class="w-full"
+                                label="Duplicate"
+                                severity="secondary"
+                                icon="pi pi-clone"
+                                @click="onActionEvent(maintenance, 3)"
+                            >
+                            </Button>
+                            <Button
+                                class="w-full"
+                                label="Reject"
+                                severity="danger"
+                                icon="pi pi-times"
+                                @click="onActionEvent(maintenance, 2)"
+                            >
+                            </Button>
+                            <Button
+                                class="w-full"
+                                label="Approve"
+                                severity="success"
+                                icon="pi pi-check"
+                                @click="onActionEvent(maintenance, 1)"
+                            >
+                            </Button>
+                        </div>
+                    </template>
                 </Card>
             </div>
         </div>
         <Paginator
-            v-if="maintenanceData.length !== 0"
+            v-if="rawMaintenanceData.length !== 0"
             class="justify-center"
+            v-model:first="first"
             :rows="10"
-            :totalRecords="maintenanceData.length"
+            :totalRecords="rawMaintenanceData.length"
         ></Paginator>
     </div>
     <Skeleton v-else height="650px" style="border-radius: 0.75rem"></Skeleton>
@@ -321,6 +383,10 @@ button,
 :deep(.p-button),
 :deep(.p-image) {
     border-radius: 0.5rem;
+}
+
+#buttons {
+    flex-wrap: nowrap;
 }
 
 h1 {
@@ -377,6 +443,9 @@ h4 {
 @media screen and (max-width: 720px) {
     #card {
         width: 100%;
+    }
+    #buttons {
+        flex-wrap: wrap;
     }
 }
 </style>

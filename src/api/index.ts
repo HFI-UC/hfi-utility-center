@@ -136,7 +136,7 @@ export async function postLogin(user: string, password: string, token: string) {
     }
 }
 
-export async function verifyAdmin(token: string) {
+export async function verifyAdmin(token: string): Promise<boolean> {
     const data = new FormData();
     data.set("token", token);
     try {
@@ -144,11 +144,12 @@ export async function verifyAdmin(token: string) {
             "/api/verify_admin.php",
             data,
         );
-        return res.data;
+        return res.data.success;
     } catch (err) {
         if (axios.isAxiosError(err) && err.response) {
-            return err.response.data;
+            return err.response.data.success;
         }
+        return false;
     }
 }
 
@@ -183,7 +184,7 @@ export async function postAdminReservation(token: string) {
     return res.data;
 }
 
-export async function postAccept(token: string, id: number) {
+export async function postReservationAccept(token: string, id: number) {
     const data = new FormData();
     data.set("token", token);
     data.set("Id", id.toString());
@@ -200,7 +201,7 @@ export async function postAccept(token: string, id: number) {
     }
 }
 
-export async function postReject(token: string, id: number, reason: string) {
+export async function postReservationReject(token: string, id: number, reason: string) {
     const data = new FormData();
     data.set("token", token);
     data.set("Id", id.toString());
@@ -229,7 +230,7 @@ export async function postPolicy(token: string) {
     return res.data;
 }
 
-export async function postResume(token: string, id: number) {
+export async function postPolicyResume(token: string, id: number) {
     const data = new FormData();
     data.set("token", token);
     data.set("id", id.toString());
@@ -240,7 +241,7 @@ export async function postResume(token: string, id: number) {
     return res.data;
 }
 
-export async function postPause(token: string, id: number) {
+export async function postPolicyPause(token: string, id: number) {
     const data = new FormData();
     data.set("token", token);
     data.set("id", id.toString());
@@ -251,7 +252,7 @@ export async function postPause(token: string, id: number) {
     return res.data;
 }
 
-export async function postDelete(token: string, id: number) {
+export async function postPolicyDelete(token: string, id: number) {
     const data = new FormData();
     data.set("token", token);
     data.set("id", id.toString());
@@ -262,7 +263,7 @@ export async function postDelete(token: string, id: number) {
     return res.data;
 }
 
-export async function postAdd(
+export async function postPolicyAdd(
     token: string,
     room: number,
     days: number[],
@@ -337,10 +338,10 @@ export async function uploadCOS(
 }
 
 export async function getCOS(filePath: string) {
-    const data = new FormData()
-    data.set("file_key", filePath)
-    const res = await axios.post<string>("/api/cos_preview_url_gen.php", data)
-    return res.data
+    const data = new FormData();
+    data.set("file_key", filePath);
+    const res = await axios.post<string>("/api/cos_preview_url_gen.php", data);
+    return res.data;
 }
 
 export async function postMaintenance(
@@ -371,17 +372,39 @@ export async function postMaintenance(
         }
     }
 }
+function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-export async function getMaintenance(token?: string) {
-    const res = token
-        ? await axios.post<{ success: boolean; data: MaintenanceInfo[] }>("/api/get_repair.php", new URLSearchParams({ token }))
-        : await axios.get<{ success: boolean; data: MaintenanceInfo[] }>("/api/inquiry_repair.php");
-    const { data } = res
+export async function getMaintenance(token: string) {
+    console.log(token);
+    const res =
+        token == ""
+            ? await axios.get<{ success: boolean; data: MaintenanceInfo[] }>(
+                  "/api/inquiry_repair.php",
+              )
+            : await axios.post<{ success: boolean; data: MaintenanceInfo[] }>(
+                  "/api/get_repair.php",
+                  new URLSearchParams({ token }),
+              );
+    const { data } = res;
     data.data = await Promise.all(
-        data.data.map(async (item) => ({
-            ...item,
-            filePath: await getCOS(item.filePath),
-        }))
+        data.data.map(async (item, index) => {
+            await delay(index * 100);
+            return {
+                ...item,
+                filePath: await getCOS(item.filePath),
+            };
+        }),
     );
     return data;
+}
+
+export async function postMaintenanceAction(token: string, id: number, action: number) {
+    const data = new FormData()
+    data.set("token", token)
+    data.set("id", id.toString())
+    data.set("action", action.toString())
+    const res = await axios.post<{ success: boolean, message: string}>("/api/process_repair.php", data)
+    return res.data
 }

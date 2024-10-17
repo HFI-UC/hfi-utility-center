@@ -6,10 +6,10 @@ import {
     RoomPolicyInfo,
     verifyAdmin,
     postPolicy,
-    postResume,
-    postPause,
-    postDelete,
-    postAdd,
+    postPolicyResume,
+    postPolicyPause,
+    postPolicyDelete,
+    postPolicyAdd,
 } from "../api";
 import { useRequest } from "vue-request";
 import Card from "primevue/card";
@@ -97,7 +97,7 @@ const maxEndDate = computed(() => {
 const policyData = computed(() => policy.value?.policy || []);
 
 const onResumeEvent = () => {
-    postResume(token.value, id.value).then((res: { success: boolean }) => {
+    postPolicyResume(token.value, id.value).then((res: { success: boolean }) => {
         toast.add({
             severity: res.success ? "success" : "error",
             summary: res.success ? "Success" : "Error",
@@ -108,7 +108,7 @@ const onResumeEvent = () => {
 };
 
 const onPauseEvent = () => {
-    postPause(token.value, id.value).then((res: { success: boolean }) => {
+    postPolicyPause(token.value, id.value).then((res: { success: boolean }) => {
         toast.add({
             severity: res.success ? "success" : "error",
             summary: res.success ? "Success" : "Error",
@@ -119,7 +119,7 @@ const onPauseEvent = () => {
 };
 
 const onDeleteEvent = () => {
-    postDelete(token.value, id.value).then((res: { success: boolean }) => {
+    postPolicyDelete(token.value, id.value).then((res: { success: boolean }) => {
         toast.add({
             severity: res.success ? "success" : "error",
             summary: res.success ? "Success" : "Error",
@@ -162,7 +162,7 @@ const onAddEvent = () => {
     }
     const room =
         roomMappingToNumber[selectedRoom.value] || parseInt(selectedRoom.value);
-    postAdd(
+    postPolicyAdd(
         token.value,
         room,
         convertedDays.value,
@@ -225,14 +225,13 @@ const getSeverity = (status: boolean) => (status ? "success" : "danger");
 const getTag = (status: boolean) => (status ? "Active" : "Inactive");
 const visible = ref();
 
-onMounted(() => {
+onMounted(async () => {
     token.value = sessionStorage.getItem("token") || "";
     if (
         !token.value ||
-        !verifyAdmin(token.value).then(
-            (res: { success: boolean; message: string }) => res.success,
-        )
+        !(await verifyAdmin(token.value))
     ) {
+        token.value = ""
         toast.add({
             severity: "error",
             summary: "Error",

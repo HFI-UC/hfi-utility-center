@@ -7,13 +7,11 @@ import { verifyAdmin } from "../api";
 
 const isAdmin = ref(false);
 const token = ref("");
-onMounted(() => {
+onMounted(async () => {
     token.value = sessionStorage.getItem("token") || "";
     if (
         !token.value ||
-        !verifyAdmin(token.value).then(
-            (res: { success: boolean; message: string }) => res.success,
-        )
+        !(await verifyAdmin(token.value))
     ) {
         isAdmin.value = false;
     } else {
