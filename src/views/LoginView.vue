@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import VueTurnstile from "vue-turnstile";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -14,6 +14,10 @@ const password = ref("");
 const toast = useToast();
 const isCompleted = ref(true);
 const loading = ref(false);
+
+onMounted(() => {
+    if (sessionStorage.getItem("token")) window.location.href = "/"
+})
 
 const onClickEvent = () => {
     isCompleted.value = true;
@@ -50,7 +54,7 @@ const onClickEvent = () => {
                 });
                 loading.value = false;
                 sessionStorage.setItem("token", res.token as string);
-                window.location.href = "/admin/reservations";
+                window.location.href = "/";
                 return;
             } else {
                 toast.add({
