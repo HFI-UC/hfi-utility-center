@@ -331,7 +331,9 @@ const rules = computed(() =>
                         class="flex flex-col m-[10px] items-center justify-center"
                         id="form-container"
                     >
-                        <h3 class="text-center">{{ $t("application.personal_info") }}</h3>
+                        <h3 class="text-center">
+                            {{ $t("application.personal_info") }}
+                        </h3>
                         <FloatLabel class="m-[20px]">
                             <InputText
                                 id="name"
@@ -344,7 +346,9 @@ const rules = computed(() =>
                                     reservation.studentName === ''
                                 "
                             />
-                            <label for="name">{{ $t("application.name") }}</label>
+                            <label for="name">{{
+                                $t("application.name")
+                            }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Select
@@ -365,7 +369,9 @@ const rules = computed(() =>
                                     </div>
                                 </template>
                             </Select>
-                            <label for="class">{{ $t("application.class") }}</label>
+                            <label for="class">{{
+                                $t("application.class")
+                            }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <InputText
@@ -391,9 +397,13 @@ const rules = computed(() =>
                                     !isCompleted && reservation.email === ''
                                 "
                             />
-                            <label for="email">{{ $t("application.email") }}</label>
+                            <label for="email">{{
+                                $t("application.email")
+                            }}</label>
                         </FloatLabel>
-                        <h3 class="text-center">{{ $t("application.room_info") }}</h3>
+                        <h3 class="text-center">
+                            {{ $t("application.room_info") }}
+                        </h3>
                         <FloatLabel class="m-[20px]">
                             <Select
                                 id="campus"
@@ -407,7 +417,9 @@ const rules = computed(() =>
                                     reservation.selectedCampus === ''
                                 "
                             />
-                            <label for="campus">{{ $t("application.campus") }}</label>
+                            <label for="campus">{{
+                                $t("application.campus")
+                            }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Select
@@ -419,7 +431,9 @@ const rules = computed(() =>
                                 :options="roomsOption"
                                 :invalid="!isCompleted && selectedRoom === ''"
                             />
-                            <label for="room">{{ $t("application.room") }}</label>
+                            <label for="room">{{
+                                $t("application.room")
+                            }}</label>
                         </FloatLabel>
                         <DataTable
                             v-if="reservation.selectedRoom"
@@ -486,7 +500,9 @@ const rules = computed(() =>
                                 :manual-input="false"
                                 :invalid="!isCompleted && date === null"
                             />
-                            <label for="date">{{ $t("application.date") }}</label>
+                            <label for="date">{{
+                                $t("application.date")
+                            }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Select
@@ -498,7 +514,9 @@ const rules = computed(() =>
                                     !isCompleted && reservation.startTime === ''
                                 "
                             />
-                            <label for="startTime">{{ $t("application.start_time") }}</label>
+                            <label for="startTime">{{
+                                $t("application.start_time")
+                            }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Select
@@ -510,7 +528,9 @@ const rules = computed(() =>
                                     !isCompleted && reservation.endTime === ''
                                 "
                             />
-                            <label for="endTime">{{ $t("application.end_time") }}</label>
+                            <label for="endTime">{{
+                                $t("application.end_time")
+                            }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Textarea
@@ -523,7 +543,9 @@ const rules = computed(() =>
                                     !isCompleted && reservation.reason === ''
                                 "
                             />
-                            <label for="reason">{{ $t("application.reason") }}</label>
+                            <label for="reason">{{
+                                $t("application.reason")
+                            }}</label>
                         </FloatLabel>
                         <div class="flex items-center mt-[20px] mb-[20px]">
                             <Checkbox
@@ -536,10 +558,14 @@ const rules = computed(() =>
                                 :binary="true"
                             />
                             <label for="check" class="ml-2 text-sm">
-                                <i18n-t keypath="application.checkbox" scope="global">
-                                    <a @click="visible = true"
-                                    >{{ $t('application.rule.rule')}}</a
-                                >.
+                                <i18n-t
+                                    keypath="application.checkbox"
+                                    scope="global"
+                                >
+                                    <a @click="visible = true">{{
+                                        $t("application.rule.rule")
+                                    }}</a
+                                    >.
                                 </i18n-t>
                             </label>
                         </div>

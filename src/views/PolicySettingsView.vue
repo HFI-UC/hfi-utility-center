@@ -96,14 +96,16 @@ const maxEndDate = computed(() => {
 const policyData = computed(() => policy.value?.policy || []);
 
 const onResumeEvent = () => {
-    postPolicyResume(token.value, id.value).then((res: { success: boolean }) => {
-        toast.add({
-            severity: res.success ? "success" : "error",
-            summary: res.success ? "Success" : "Error",
-            detail: res.success ? "Success!" : "An error occured.",
-            life: 3000,
-        });
-    });
+    postPolicyResume(token.value, id.value).then(
+        (res: { success: boolean }) => {
+            toast.add({
+                severity: res.success ? "success" : "error",
+                summary: res.success ? "Success" : "Error",
+                detail: res.success ? "Success!" : "An error occured.",
+                life: 3000,
+            });
+        },
+    );
 };
 
 const onPauseEvent = () => {
@@ -118,14 +120,16 @@ const onPauseEvent = () => {
 };
 
 const onDeleteEvent = () => {
-    postPolicyDelete(token.value, id.value).then((res: { success: boolean }) => {
-        toast.add({
-            severity: res.success ? "success" : "error",
-            summary: res.success ? "Success" : "Error",
-            detail: res.success ? "Success!" : "An error occured.",
-            life: 3000,
-        });
-    });
+    postPolicyDelete(token.value, id.value).then(
+        (res: { success: boolean }) => {
+            toast.add({
+                severity: res.success ? "success" : "error",
+                summary: res.success ? "Success" : "Error",
+                detail: res.success ? "Success!" : "An error occured.",
+                life: 3000,
+            });
+        },
+    );
 };
 
 const onAddEvent = () => {
@@ -226,11 +230,8 @@ const visible = ref();
 
 onMounted(async () => {
     token.value = sessionStorage.getItem("token") || "";
-    if (
-        !token.value ||
-        !(await verifyAdmin(token.value))
-    ) {
-        token.value = ""
+    if (!token.value || !(await verifyAdmin(token.value))) {
+        token.value = "";
         toast.add({
             severity: "error",
             summary: "Error",

@@ -87,7 +87,7 @@ watch(
 
 onMounted(async () => {
     selectedLocale.value = localStorage.getItem("locale") || "en_us";
-    console.log(selectedLocale.value)
+    console.log(selectedLocale.value);
     const color =
         localStorage.getItem("color") ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -173,8 +173,12 @@ onMounted(async () => {
             {{ $t("footer.line2") }}
         </p>
         <i18n-t tag="p" keypath="footer.line3" scope="global">
-            <a href="https://www.gnu.org/licenses/agpl-3.0.html">{{ $t("footer.license") }}</a>
-            <a href="https://github.com/SilianZ/hfi-utility-center"><i class="pi pi-github"></i> GitHub</a>
+            <a href="https://www.gnu.org/licenses/agpl-3.0.html">{{
+                $t("footer.license")
+            }}</a>
+            <a href="https://github.com/SilianZ/hfi-utility-center"
+                ><i class="pi pi-github"></i> GitHub</a
+            >
         </i18n-t>
     </footer>
 </template>

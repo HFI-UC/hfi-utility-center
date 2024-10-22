@@ -16,8 +16,8 @@ const isCompleted = ref(true);
 const loading = ref(false);
 
 onMounted(() => {
-    if (sessionStorage.getItem("token")) window.location.href = "/"
-})
+    if (sessionStorage.getItem("token")) window.location.href = "/";
+});
 
 const onClickEvent = () => {
     isCompleted.value = true;

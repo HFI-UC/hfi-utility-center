@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref, computed } from "vue";
-import { postReservationAccept, postReservationReject, verifyAdmin } from "../api";
+import {
+    postReservationAccept,
+    postReservationReject,
+    verifyAdmin,
+} from "../api";
 import { useRequest } from "vue-request";
 import { ReservationInfo, postAdminReservation } from "../api";
 import router from "../router/router";

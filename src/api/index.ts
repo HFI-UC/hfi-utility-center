@@ -201,7 +201,11 @@ export async function postReservationAccept(token: string, id: number) {
     }
 }
 
-export async function postReservationReject(token: string, id: number, reason: string) {
+export async function postReservationReject(
+    token: string,
+    id: number,
+    reason: string,
+) {
     const data = new FormData();
     data.set("token", token);
     data.set("Id", id.toString());
@@ -400,11 +404,18 @@ export async function getMaintenance(token: string) {
     return data;
 }
 
-export async function postMaintenanceAction(token: string, id: number, action: number) {
-    const data = new FormData()
-    data.set("token", token)
-    data.set("id", id.toString())
-    data.set("action", action.toString())
-    const res = await axios.post<{ success: boolean, message: string}>("/api/process_repair.php", data)
-    return res.data
+export async function postMaintenanceAction(
+    token: string,
+    id: number,
+    action: number,
+) {
+    const data = new FormData();
+    data.set("token", token);
+    data.set("id", id.toString());
+    data.set("action", action.toString());
+    const res = await axios.post<{ success: boolean; message: string }>(
+        "/api/process_repair.php",
+        data,
+    );
+    return res.data;
 }

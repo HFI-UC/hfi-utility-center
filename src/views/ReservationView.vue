@@ -9,10 +9,7 @@ const isAdmin = ref(false);
 const token = ref("");
 onMounted(async () => {
     token.value = sessionStorage.getItem("token") || "";
-    if (
-        !token.value ||
-        !(await verifyAdmin(token.value))
-    ) {
+    if (!token.value || !(await verifyAdmin(token.value))) {
         isAdmin.value = false;
     } else {
         isAdmin.value = true;

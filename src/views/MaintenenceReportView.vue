@@ -97,7 +97,7 @@ const onActionEvent = (maintenance: MaintenanceInfo, action: number) => {
                 life: 2000,
             });
             if (res.success) {
-                setTimeout(() => window.location.reload(), 2000)
+                setTimeout(() => window.location.reload(), 2000);
             }
         },
     );
