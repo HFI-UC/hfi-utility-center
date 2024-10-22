@@ -24,43 +24,4 @@ export default defineConfig({
             },
         },
     },
-    build: {
-        rollupOptions: {
-            output: {
-                manualChunks: {
-                    primevue: [
-                        "primevue/button",
-                        "primevue/tag",
-                        "primevue/dialog",
-                        "primevue/select",
-                        "primevue/floatlabel",
-                        "primevue/skeleton",
-                        "primevue/card",
-                        "primevue/toast",
-                        "primevue/multiselect",
-                        "primevue/datepicker",
-                        "primevue/usetoast",
-                        "primevue/inputtext",
-                        "primevue/column",
-                        "primevue/textarea",
-                        "primevue/datatable",
-                        "primevue/message",
-                        "primevue/selectbutton",
-                        "primevue/tooltip",
-                        "primevue/toastservice",
-                        "primevue/config",
-                        "primevue/paginator",
-                        "primevue/image",
-                        "primevue/iconfield",
-                        "primevue/inputicon",
-                        "@primevue/themes",
-                        "@primevue/themes/aura"
-                    ],
-                    vue: ["vue", "vue-request", "vue-turnstile"],
-                    axios: ["axios"],
-                    cos: ["cos-js-sdk-v5"]
-                },
-            },
-        },
-    },
 });

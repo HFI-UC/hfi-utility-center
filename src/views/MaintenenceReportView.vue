@@ -19,7 +19,6 @@ import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 import Select from "primevue/select";
 import Textarea from "primevue/textarea";
-import Message from "primevue/message";
 import Paginator from "primevue/paginator";
 import Tag from "primevue/tag";
 import Image from "primevue/image";
@@ -33,12 +32,10 @@ const isAdmin = ref(false);
 const { data } = useRequest(() => getMaintenance(token.value));
 
 const first = ref(0);
-const proccessedId: Ref<number[]> = ref([]);
 const filteredMaintenanceData = computed(
     () =>
         data.value?.data
             .filter((item) => ![2, 3].includes(item.status as number))
-            .filter((item) => !proccessedId.value.includes(item.id as number))
             .filter((item) => {
                 const regex = new RegExp(query.value, "i");
                 return (
@@ -97,10 +94,10 @@ const onActionEvent = (maintenance: MaintenanceInfo, action: number) => {
                 severity: res.success ? "success" : "error",
                 summary: res.success ? "Success" : "Error",
                 detail: res.message,
-                life: 3000,
+                life: 2000,
             });
             if (res.success) {
-                proccessedId.value.push(maintenance.id as number);
+                setTimeout(() => window.location.reload(), 2000)
             }
         },
     );
@@ -179,7 +176,6 @@ const resetForm = () => {
 <template>
     <h1>Maintenance Report</h1>
     <div v-if="data?.success">
-        <Message severity="info">This page is still in development.</Message>
         <Button
             label="Report for maintenance"
             class="mt-8 mb-4"

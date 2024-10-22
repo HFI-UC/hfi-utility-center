@@ -11,7 +11,7 @@ const props = defineProps<{
 <template>
     <div class="flex flex-col items-center justify-center">
         <h1 class="card flex flex-col justify-center text-center">
-            Application Form
+            {{ $t("application.application") }}
         </h1>
     </div>
     <ApplicationForm v-if="!props.status" />

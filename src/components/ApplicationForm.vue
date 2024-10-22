@@ -21,6 +21,7 @@ import {
     type RoomPolicyInfo,
 } from "../api";
 import router from "../router/router";
+import { useI18n } from "vue-i18n";
 
 const { data: policyData } = useRequest(
     (): Promise<{ policy: RoomPolicyInfo[] }> => fetchPolicy(),
@@ -30,6 +31,8 @@ const { data: policyData } = useRequest(
 );
 
 const policy = computed(() => policyData.value?.policy || []);
+
+const { t } = useI18n();
 
 const reservation: Ref<ApplicationInfo> = ref({
     class: "",
@@ -47,11 +50,11 @@ const reservation: Ref<ApplicationInfo> = ref({
 
 const visible = ref(false);
 
-const campus = ref(["Shipai Campus", "Knowledge City Campus"]);
+const campus = computed(() => [t("campus.shipai"), t("campus.knowledgecity")]);
 
-const classes = ref([
+const classes = computed(() => [
     {
-        label: "Shipai Campus",
+        label: t("campus.shipai"),
         items: [
             "Demis",
             "Yann",
@@ -68,7 +71,7 @@ const classes = ref([
         ],
     },
     {
-        label: "Knowledge City Campus",
+        label: t("campus.knowledgecity"),
         items: [
             "Bendura",
             "Gibson",
@@ -79,6 +82,10 @@ const classes = ref([
             "Piaget",
             "Skinner",
         ],
+    },
+    {
+        label: t("campus.office"),
+        items: ["Teachers"],
     },
 ]);
 
@@ -93,7 +100,6 @@ const rooms = ref([
         "601",
         "206",
         "105",
-        "104",
         "Writing Center 1",
         "Writing Center 2",
     ],
@@ -102,7 +108,7 @@ const rooms = ref([
 
 const roomsOption = computed(() => {
     if (reservation.value.selectedCampus == "") return [];
-    return reservation.value.selectedCampus == "Shipai Campus"
+    return reservation.value.selectedCampus == t("campus.shipai")
         ? rooms.value[0]
         : rooms.value[1];
 });
@@ -277,8 +283,8 @@ const onClickEvent = () => {
     if (!isCompleted.value) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill out the required field!",
+            summary: t("toast.error"),
+            detail: t("toast.required_field"),
             life: 3000,
         });
         loading.value = false;
@@ -303,55 +309,19 @@ const onClickEvent = () => {
     );
 };
 
-const rules = [
-    [
-        "English",
-        [
-            "◆ Do not bring food and drinks into the study area. Students are responsible for keeping the study room clean and tidy.",
-            "◆ Students should take good care of their personal belongings (such as wallets, phones, and computers). Valuable items should be carried or locked in a secure place. When leaving the classroom, students should take their valuable items with them, as the school does not assume any responsibility for their safekeeping.",
-            "◆ After leaving public areas, students should take their personal belongings with them. The administrative office will periodically clean the area, and the school will not be responsible for any lost items.",
-            "◆ Students should consciously maintain the cleanliness of the classroom and public order.",
-            "◆ Please take care of and use the teaching equipment responsibly. If any problems or losses are discovered, contact the administrative office as soon as possible. If a student causes equipment loss or maliciously damages the equipment, the student will be responsible for compensation.",
-            "◆ When students leave the classroom, they should ensure that all electrical equipment (such as air conditioners, fans, and lights) is turned off, and the remote control is returned to the designated location.",
-            "◆ Students are not allowed to move teaching equipment without permission.",
-            "◆ Do not reserve seats in any way. If students need to leave their seats, they should take their personal belongings with them, or place their books in their bags and put them under the desk without affecting other students' use of the seat. The duty teacher will periodically inspect the area, and any reserved items found will be removed or taken away to make the seat available for others.",
-            "◆ Be mindful of public decency and personal image, and do not lie down on benches or sofas.",
-            "◆ Do not speak loudly in public places, and set your phone to silent mode. Please go outside to make phone calls.",
-            "◆ It is forbidden to pull power sources privately or use high-powered electrical appliances. Do not move fire safety equipment without permission.",
-            "◆ At any time, the study area must not be used for non-study-related activities (including but not limited to video games on phones/computers, board games, watching variety shows or movies, etc.). Violation of these rules will be handled according to the 'Student Violation Management Regulations' based on the actual situation.",
-        ],
-    ],
-    [
-        "简体中文",
-        [
-            "◆ 请勿携带食品和饮料进入自习区域饮食，学生有责任保持自习室干净整洁。",
-            "◆ 学生应保管好个人物品（如钱包、手机、电脑），请将贵重物品随身携带或锁在安全的地方。离开教室时，请带走贵重物品，学校不承担保管义务。",
-            "◆ 离开公共区域后，学生应将个人物品随身带走，行政办会定期清理场地卫生，如有遗失，学校不承担任何责任。",
-            "◆ 学生需自觉维护好课室保洁、公共秩序。",
-            "◆ 请爱护并合理使用教学设备，如果发现有问题或遗失，请尽快联系行政办；如果因学生原因造成设备遗失或学生恶意、损坏教学设备，学生应负责赔偿。",
-            "◆ 学生离开教室时，应确保所有电器设备（如空调、风扇、灯）被关闭，并且遥控板被归还到指定位置。",
-            "◆ 未经允许，学生不可以移动教学设备。",
-            "◆ 请勿以任何方式占座，学生若需离开座位，请自觉将个人物品带离；或将桌面的书本收到书包里，放置在桌椅下方的侧边，不影响其它同学使用座位；值班老师将定期巡查，一旦发现有占座现象，占座物品将被移开或收走，以腾出座位给其他同学。",
-            "◆ 注意公德和个人形象，勿在长椅或沙发上躺卧。",
-            "◆ 公共场合不得大声喧哗，同时请将手机调为静音状态，自觉到室外接打电话。",
-            "◆ 禁止私拉电源和使用高功率电器，未经批准请勿挪动消防设施。",
-            "◆ 任何时段，自习区域不得进行与学习无关的事项（包括但不限于手机/电脑等电子游戏（软件APP）、棋牌、观看综艺/影视等）违反以上要求及规定，将结合实际情况，按照《学生违规管理条例》执行。",
-        ],
-    ],
-];
+const rules = computed(() =>
+    Array.from({ length: 12 }, (_, i) => t(`application.rule.${i + 1}`)),
+);
 </script>
 
 <template>
     <Dialog
         v-model:visible="visible"
         modal
-        header="Classroom Regulations"
+        :header="$t('application.rule.rule')"
         class="w-[25rem]"
     >
-        <div v-for="i in rules" class="mb-8">
-            <p class="font-bold mb-4">{{ i[0] }}</p>
-            <p v-for="j in i[1]" class="mb-3">{{ j }}</p>
-        </div>
+        <p v-for="i in rules" class="mb-3">{{ i }}</p>
     </Dialog>
     <div class="flex flex-col items-center justify-center">
         <Card id="card">
@@ -361,7 +331,7 @@ const rules = [
                         class="flex flex-col m-[10px] items-center justify-center"
                         id="form-container"
                     >
-                        <h3>Personal Information</h3>
+                        <h3 class="text-center">{{ $t("application.personal_info") }}</h3>
                         <FloatLabel class="m-[20px]">
                             <InputText
                                 id="name"
@@ -374,7 +344,7 @@ const rules = [
                                     reservation.studentName === ''
                                 "
                             />
-                            <label for="name">Name</label>
+                            <label for="name">{{ $t("application.name") }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Select
@@ -395,7 +365,7 @@ const rules = [
                                     </div>
                                 </template>
                             </Select>
-                            <label for="room">Class</label>
+                            <label for="class">{{ $t("application.class") }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <InputText
@@ -408,11 +378,11 @@ const rules = [
                                     !isCompleted && reservation.studentId === ''
                                 "
                             />
-                            <label for="id">Student ID</label>
+                            <label for="id">{{ $t("application.id") }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <InputText
-                                id="name"
+                                id="email"
                                 v-model="reservation.email"
                                 v-tooltip.bottom="
                                     'Your e-mail (e.g. sam.xulf2024@gdhfi.com).'
@@ -421,9 +391,9 @@ const rules = [
                                     !isCompleted && reservation.email === ''
                                 "
                             />
-                            <label for="name">E-mail</label>
+                            <label for="email">{{ $t("application.email") }}</label>
                         </FloatLabel>
-                        <h3>Room Information</h3>
+                        <h3 class="text-center">{{ $t("application.room_info") }}</h3>
                         <FloatLabel class="m-[20px]">
                             <Select
                                 id="campus"
@@ -437,7 +407,7 @@ const rules = [
                                     reservation.selectedCampus === ''
                                 "
                             />
-                            <label for="campus">Campus</label>
+                            <label for="campus">{{ $t("application.campus") }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Select
@@ -449,7 +419,7 @@ const rules = [
                                 :options="roomsOption"
                                 :invalid="!isCompleted && selectedRoom === ''"
                             />
-                            <label for="room">Room</label>
+                            <label for="room">{{ $t("application.room") }}</label>
                         </FloatLabel>
                         <DataTable
                             v-if="reservation.selectedRoom"
@@ -516,7 +486,7 @@ const rules = [
                                 :manual-input="false"
                                 :invalid="!isCompleted && date === null"
                             />
-                            <label for="date">Date</label>
+                            <label for="date">{{ $t("application.date") }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Select
@@ -528,7 +498,7 @@ const rules = [
                                     !isCompleted && reservation.startTime === ''
                                 "
                             />
-                            <label for="startTime">Start Time</label>
+                            <label for="startTime">{{ $t("application.start_time") }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Select
@@ -540,7 +510,7 @@ const rules = [
                                     !isCompleted && reservation.endTime === ''
                                 "
                             />
-                            <label for="endTime">End Time</label>
+                            <label for="endTime">{{ $t("application.end_time") }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Textarea
@@ -553,7 +523,7 @@ const rules = [
                                     !isCompleted && reservation.reason === ''
                                 "
                             />
-                            <label for="reason">Reason</label>
+                            <label for="reason">{{ $t("application.reason") }}</label>
                         </FloatLabel>
                         <div class="flex items-center mt-[20px] mb-[20px]">
                             <Checkbox
@@ -566,16 +536,17 @@ const rules = [
                                 :binary="true"
                             />
                             <label for="check" class="ml-2 text-sm">
-                                I will follow the
-                                <a @click="visible = true"
-                                    >Classroom Regulations</a
+                                <i18n-t keypath="application.checkbox" scope="global">
+                                    <a @click="visible = true"
+                                    >{{ $t('application.rule.rule')}}</a
                                 >.
+                                </i18n-t>
                             </label>
                         </div>
                     </div>
                     <Button
                         icon="pi pi-upload"
-                        label="Submit"
+                        :label="$t('application.submit')"
                         :loading="loading"
                         @click="onClickEvent()"
                     />

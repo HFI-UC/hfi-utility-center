@@ -26,16 +26,16 @@ import Button from "primevue/button";
         </div>
     </Dialog> -->
     <div class="flex flex-col items-center justify-center" id="home-container">
-        <h1 class="text-center">HFI Utility Center</h1>
-        <h3 class="text-center">by MAKERs'</h3>
+        <h1 class="text-center">{{ $t("home.title") }}</h1>
+        <h3 class="text-center">{{ $t("home.subtitle") }}</h3>
         <div class="mt-[4rem] flex flex-wrap gap-4 items-center justify-center">
             <Button
-                label="Application Form"
+                :label="$t('home.button.form')"
                 icon="pi pi-pen-to-square"
                 @click="router.push('/reservation/create')"
             ></Button>
             <Button
-                label="Reservation Status"
+                :label="$t('home.button.status')"
                 icon="pi pi-chart-bar"
                 severity="secondary"
                 @click="router.push('/reservation/status')"

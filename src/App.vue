@@ -1,35 +1,45 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import Toast from "primevue/toast";
 import Menubar from "primevue/menubar";
 import { verifyAdmin } from "./api";
 import Button from "primevue/button";
+import Select from "primevue/select";
 import "./styles/styles.css";
-const items = ref([
+import { useI18n } from "vue-i18n";
+
+const { t, locale } = useI18n();
+
+const changeLocale = (lang: string) => {
+    localStorage.setItem("locale", lang);
+    locale.value = lang;
+};
+
+const items = computed(() => [
     {
-        label: "Homepage",
+        label: t("menubar.homepage"),
         icon: "pi pi-home",
         url: "/",
     },
     {
-        label: "Reservation",
+        label: t("menubar.reservation.reservation"),
         icon: "pi pi-calendar-clock",
         items: [
             {
-                label: "Application Form",
+                label: t("menubar.reservation.form"),
                 icon: "pi pi-pen-to-square",
                 url: "/reservation/create",
             },
             {
-                label: "Reservation Status",
+                label: t("menubar.reservation.status"),
                 icon: "pi pi-chart-bar",
                 url: "/reservation/status",
             },
         ],
     },
     {
-        label: "Maintenance Report",
+        label: t("menubar.maintenance"),
         icon: "pi pi-wrench",
         url: "/maintenance",
     },
@@ -45,6 +55,19 @@ const toggleColorScheme = () => {
     iconClass.value = color == "white" ? "pi-sun" : "pi-moon";
 };
 
+const localeOptions = ref([
+    {
+        key: "简体中文",
+        code: "zh_cn",
+    },
+    {
+        key: "English",
+        code: "en_us",
+    },
+]);
+
+const selectedLocale = ref("");
+
 const isAdmin = ref(false);
 
 const signOut = () => {
@@ -57,7 +80,14 @@ const signIn = () => {
     window.location.href = "/admin/login";
 };
 
+watch(
+    () => selectedLocale.value,
+    (newLocale) => changeLocale(newLocale),
+);
+
 onMounted(async () => {
+    selectedLocale.value = localStorage.getItem("locale") || "en_us";
+    console.log(selectedLocale.value)
     const color =
         localStorage.getItem("color") ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -74,16 +104,16 @@ onMounted(async () => {
     if (await verifyAdmin(token)) {
         isAdmin.value = true;
         items.value.push({
-            label: "Admin",
+            label: t("menubar.admin.admin"),
             icon: "pi pi-user",
             items: [
                 {
-                    label: "Reservation Management",
+                    label: t("menubar.admin.reservation"),
                     icon: "pi pi-list-check",
                     url: "/admin/reservations",
                 },
                 {
-                    label: "Policy Settings",
+                    label: t("menubar.admin.policy"),
                     icon: "pi pi-building-columns",
                     url: "/admin/policy",
                 },
@@ -101,17 +131,35 @@ onMounted(async () => {
                 <img src="./assets/logo.svg" class="m-1" style="height: 25px" />
             </template>
             <template #end>
-                <Button v-if="!isAdmin" @click="signIn()" severity="success">
-                    <i class="pi pi-sign-in"></i>
-                    <span class="text-sm">Login</span>
+                <Select
+                    :options="localeOptions"
+                    v-model="selectedLocale"
+                    optionValue="code"
+                    optionLabel="key"
+                >
+                    <template #dropdownicon>
+                        <i class="pi pi-globe" />
+                    </template>
+                </Select>
+                <Button
+                    v-if="!isAdmin"
+                    @click="signIn()"
+                    severity="success"
+                    class="ms-2 me-2"
+                    icon="pi pi-sign-in"
+                    :label="$t('menubar.login')"
+                >
                 </Button>
-                <Button v-if="isAdmin" @click="signOut()" severity="danger">
-                    <i class="pi pi-sign-out"></i>
-                    <span class="text-sm">Logout</span>
+                <Button
+                    v-if="isAdmin"
+                    @click="signOut()"
+                    severity="danger"
+                    class="ms-2 me-2"
+                    icon="pi pi-sign-out"
+                    :label="$t('menubar.logout')"
+                >
                 </Button>
-                <Button @click="toggleColorScheme()">
-                    <i :class="`pi ${iconClass}`"></i>
-                    <span class="text-sm">Color Mode</span>
+                <Button @click="toggleColorScheme()" :icon="`pi ${iconClass}`">
                 </Button>
             </template>
         </Menubar>
@@ -120,31 +168,20 @@ onMounted(async () => {
         <RouterView />
     </div>
     <footer id="footer">
-        <p>Powered by and created by MAKERs' with ♥.</p>
+        <p>{{ $t("footer.line1") }}</p>
         <p>
-            Copyright &copy; 2024 The co-author of HFI Utility Center. All
-            rights reserved.
+            {{ $t("footer.line2") }}
         </p>
-        <p>
-            This website is under
-            <a href="https://www.gnu.org/licenses/agpl-3.0.html"
-                >AGPL-3.0 License</a
-            >
-            and open-sourced on
-            <a href="https://github.com/SilianZ/hfi-utility-center"
-                ><i class="pi pi-github"></i> GitHub</a
-            >.
-        </p>
+        <i18n-t tag="p" keypath="footer.line3" scope="global">
+            <a href="https://www.gnu.org/licenses/agpl-3.0.html">{{ $t("footer.license") }}</a>
+            <a href="https://github.com/SilianZ/hfi-utility-center"><i class="pi pi-github"></i> GitHub</a>
+        </i18n-t>
     </footer>
 </template>
 
 <style scoped>
 #body {
     padding: 1rem 2rem 4rem 2rem;
-}
-.p-button {
-    margin-left: 3px;
-    margin-right: 3px;
 }
 
 #footer {
@@ -154,8 +191,10 @@ onMounted(async () => {
     background-color: var(--p-zinc-600);
 }
 
-button {
+button,
+.p-select {
     border-radius: 0.5rem;
+    height: 40px;
 }
 
 :deep(.p-menubar) {

@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import router from "../router/router";
 
+const time = ref(5)
 setTimeout(() => router.go(-1), 5000);
+setInterval(() => time.value--, 1000);
 </script>
 
 <template>
@@ -16,17 +19,17 @@ setTimeout(() => router.go(-1), 5000);
             Sorry, something went wrong, but we are making it right.
         </p>
         <p class="text-center text-md mb-2">
-            You seem lost, don't worry, we are getting back on track.
+            You seem lost. Don't worry, heads up, sit back and relax. We are getting back on track.
         </p>
         <p class="text-center text-md mb-2">
-            You will return to the previous page in 5 seconds.
+            Cool! You will roll back to the previous page in {{ time }} seconds.
         </p>
         <br />
         <p class="text-center text-md mb-2">抱歉，出错了，但我们做对了。</p>
         <p class="text-center text-md mb-2">
-            您看起来丢失了，别担心，我们正在返回轨道。
+            您看起来丢失了，别担心，头抬起，坐和放宽。我们正在返回轨道。
         </p>
-        <p class="text-center text-md mb-2">将在 5 秒钟后返回上一页。</p>
+        <p class="text-center text-md mb-2">凉！你将在 {{ time }} 秒钟后被滚回。</p>
     </div>
 </template>
 

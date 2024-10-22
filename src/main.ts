@@ -6,8 +6,21 @@ import "primeicons/primeicons.css";
 import ToastService from "primevue/toastservice";
 import Tooltip from "primevue/tooltip";
 import { Vio } from "./styles/theme";
+import { createI18n } from "vue-i18n";
+import en_us from "./assets/i18n/en_us.json";
+import zh_cn from "./assets/i18n/zh_cn.json";
+
 
 const app = createApp(App);
+const i18n = createI18n({
+    locale: localStorage.getItem("lang") || "en_us",
+    fallbackLocale: "en_us",
+    messages: {
+        en_us,
+        zh_cn
+    }
+})
+app.use(i18n)
 app.use(router);
 app.use(ToastService);
 app.use(PrimeVue, {
