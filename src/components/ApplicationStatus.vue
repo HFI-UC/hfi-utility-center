@@ -14,7 +14,7 @@ const props = defineProps<{
                     v-if="status == 'success'"
                     class="flex flex-col items-center justify-center"
                 >
-                    <h3>Success!</h3>
+                    <h3>{{ $t("application.success") }}</h3>
                     <i
                         class="pi pi-check m-[2rem]"
                         id="status-icon"
@@ -28,16 +28,16 @@ const props = defineProps<{
                     v-if="status == 'error'"
                     class="flex flex-col items-center justify-center"
                 >
-                    <h3>Something went wrong.</h3>
+                    <h3>{{ $t("application.error") }}</h3>
                     <i
                         class="pi pi-times m-[2rem]"
                         id="status-icon"
                         style="color: var(--p-red-500)"
                     ></i>
                     <p class="w-[20rem] m-[1rem] text-center">
-                        <span v-if="props.message == ''"
-                            >We are trying to fix this problem.</span
-                        >
+                        <span v-if="props.message == ''">{{
+                            $t("reservation.fix_problem")
+                        }}</span>
                         {{ props.message }}
                     </p>
                 </div>

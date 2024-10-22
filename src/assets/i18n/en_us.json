@@ -68,6 +68,31 @@
         "end_time": "End Time",
         "reason": "Reason",
         "checkbox": "I will follow the {0}.",
-        "submit": "Submit"
+        "submit": "Submit",
+        "tooltip": {
+            "name": "Your Chinese name and English name (e.g. 山姆 Sam).",
+            "class": "Your class.",
+            "id": "Your student ID (e.g. GJ12345678).",
+            "email": "Your e-mail (e.g. sam.xulf2024@gdhfi.com).",
+            "campus": "Campus to which you are applying.",
+            "room": "Room to which you are applying.",
+            "date": "Date of reservation.",
+            "start_time": "Start time of reservation.",
+            "end_time": "End time of reservation.",
+            "reason": "Reason of reservation (e.g. I wanna practise my TOEFL test).",
+            "checkbox": "You will need to follow the rules of the classroom to make an application."
+        },
+        "table": {
+            "reservations": "Reservations",
+            "empty": "No available data.",
+            "name": "Name",
+            "time": "Date / Time",
+            "unavailable": "Unavailable Time",
+            "days": "Day(s)",
+            "hours": "Hours"
+        },
+        "success": "Success!",
+        "error": "Something went wrong.",
+        "fix_problem": "We are trying to fix this problem."
     }
 }

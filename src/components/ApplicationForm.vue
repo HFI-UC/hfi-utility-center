@@ -339,7 +339,7 @@ const rules = computed(() =>
                                 id="name"
                                 v-model="reservation.studentName"
                                 v-tooltip.bottom="
-                                    'Your Chinese name and English name (e.g. 山姆 Sam).'
+                                    $t('application.tooltip.name')
                                 "
                                 :invalid="
                                     !isCompleted &&
@@ -354,7 +354,9 @@ const rules = computed(() =>
                             <Select
                                 id="class"
                                 v-model="reservation.class"
-                                v-tooltip.bottom="'Your class.'"
+                                v-tooltip.bottom="
+                                    $t('application.tooltip.class')
+                                "
                                 optionGroupLabel="label"
                                 optionGroupChildren="items"
                                 filter
@@ -377,9 +379,7 @@ const rules = computed(() =>
                             <InputText
                                 id="id"
                                 v-model="reservation.studentId"
-                                v-tooltip.bottom="
-                                    'Your student ID (e.g. GJ12345678).'
-                                "
+                                v-tooltip.bottom="$t('application.tooltip.id')"
                                 :invalid="
                                     !isCompleted && reservation.studentId === ''
                                 "
@@ -391,7 +391,7 @@ const rules = computed(() =>
                                 id="email"
                                 v-model="reservation.email"
                                 v-tooltip.bottom="
-                                    'Your e-mail (e.g. sam.xulf2024@gdhfi.com).'
+                                    $t('application.tooltip.email')
                                 "
                                 :invalid="
                                     !isCompleted && reservation.email === ''
@@ -409,7 +409,7 @@ const rules = computed(() =>
                                 id="campus"
                                 v-model="reservation.selectedCampus"
                                 v-tooltip.bottom="
-                                    'Campus to which you are applying.'
+                                    $t('application.tooltip.campus')
                                 "
                                 :options="campus"
                                 :invalid="
@@ -425,7 +425,7 @@ const rules = computed(() =>
                             <Select
                                 id="room"
                                 v-tooltip.bottom="
-                                    'Room to which you are applying.'
+                                    $t('application.tooltip.room')
                                 "
                                 v-model="selectedRoom"
                                 :options="roomsOption"
@@ -441,19 +441,19 @@ const rules = computed(() =>
                             id="datatable"
                         >
                             <template #header>
-                                <span class="text-lg font-bold"
-                                    >Reservations</span
-                                >
+                                <span class="text-lg font-bold">{{
+                                    $t("application.table.reservations")
+                                }}</span>
                             </template>
                             <template #empty>
-                                <p>No available data.</p>
+                                <p>{{ $t("application.table.empty") }}</p>
                             </template>
-                            <Column header="Name">
+                            <Column :header="$t('application.table.name')">
                                 <template #body="slotProps">
                                     {{ slotProps.data.name.split(" / ")[0] }}
                                 </template>
                             </Column>
-                            <Column header="Date / Time">
+                            <Column :header="$t('application.table.time')">
                                 <template #body="slotProps">
                                     {{
                                         `${formatTableDate(slotProps.data.time)} / ${formatTableTime(slotProps.data.time)}`
@@ -467,21 +467,21 @@ const rules = computed(() =>
                             id="datatable"
                         >
                             <template #header>
-                                <span class="text-lg font-bold"
-                                    >Unavailable Time</span
-                                >
+                                <span class="text-lg font-bold">{{
+                                    $t("application.table.unavailable")
+                                }}</span>
                             </template>
                             <template #empty>
-                                <p>No available data.</p>
+                                <p>{{ $t("application.table.empty") }}</p>
                             </template>
-                            <Column header="Day(s)">
+                            <Column :header="$t('application.table.days')">
                                 <template #body="slotProps">
                                     {{
                                         `${formatTableDay(slotProps.data.days)}`
                                     }}
                                 </template>
                             </Column>
-                            <Column header="Hours">
+                            <Column :header="$t('application.table.hours')">
                                 <template #body="slotProps">
                                     {{
                                         `${slotProps.data.start_time.slice(0, 5)} ~ ${slotProps.data.end_time.slice(0, 5)}`
@@ -493,7 +493,9 @@ const rules = computed(() =>
                             <DatePicker
                                 id="date"
                                 v-model="date"
-                                v-tooltip.bottom="'Date of reservation.'"
+                                v-tooltip.bottom="
+                                    $t('application.tooltip.date')
+                                "
                                 date-format="yy/mm/dd"
                                 :min-date="minDate"
                                 :max-date="maxDate"
@@ -506,7 +508,9 @@ const rules = computed(() =>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
                             <Select
-                                v-tooltip.bottom="'Start time of reservation.'"
+                                v-tooltip.bottom="
+                                    $t('application.tooltip.start_time')
+                                "
                                 id="startTime"
                                 v-model="reservation.startTime"
                                 :options="startTimeOptions"
@@ -522,7 +526,9 @@ const rules = computed(() =>
                             <Select
                                 id="endTime"
                                 v-model="reservation.endTime"
-                                v-tooltip.bottom="'End time of reservation.'"
+                                v-tooltip.bottom="
+                                    $t('application.tooltip.end_time')
+                                "
                                 :options="endTimeOptions"
                                 :invalid="
                                     !isCompleted && reservation.endTime === ''
@@ -537,7 +543,7 @@ const rules = computed(() =>
                                 id="reason"
                                 v-model="reservation.reason"
                                 v-tooltip.bottom="
-                                    'Reason of reservation (e.g. I wanna practise my TOEFL test).'
+                                    $t('application.tooltip.reason')
                                 "
                                 :invalid="
                                     !isCompleted && reservation.reason === ''
@@ -552,7 +558,7 @@ const rules = computed(() =>
                                 v-model="reservation.isAgreed"
                                 id="check"
                                 v-tooltip.bottom="
-                                    'You will need to follow the rules of the classroom to make an application.'
+                                    $t('application.tooltip.checkbox')
                                 "
                                 :invalid="!isCompleted && !reservation.isAgreed"
                                 :binary="true"
