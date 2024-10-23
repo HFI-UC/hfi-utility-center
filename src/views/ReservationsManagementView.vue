@@ -21,7 +21,7 @@ import { useI18n } from "vue-i18n";
 const toast = useToast();
 const token = ref("");
 const visible = ref(false);
-const { t } = useI18n()
+const { t } = useI18n();
 const id = ref(-1);
 const reason = ref("");
 const disabled = ref(false);
@@ -150,7 +150,9 @@ onMounted(async () => {
         >
             <div class="flex items-center justify-center gap-4 mb-8">
                 <FloatLabel>
-                    <label for="reason">{{ $t("reservation.reject.reason") }}</label>
+                    <label for="reason">{{
+                        $t("reservation.reject.reason")
+                    }}</label>
                     <Select
                         id="reason"
                         class="w-[22rem]"
@@ -187,7 +189,13 @@ onMounted(async () => {
                     <Card>
                         <template #content>
                             <div class="ms-4 me-4">
-                                <h3>{{ $t("reservation.card.header", [booking.id]) }}</h3>
+                                <h3>
+                                    {{
+                                        $t("reservation.card.header", [
+                                            booking.id,
+                                        ])
+                                    }}
+                                </h3>
                                 <p class="mb-2">
                                     <b>{{ $t("reservation.card.room") }}</b
                                     >{{
@@ -196,23 +204,31 @@ onMounted(async () => {
                                     }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>{{ $t("reservation.card.name") }}</b>{{ booking.name }}
+                                    <b>{{ $t("reservation.card.name") }}</b
+                                    >{{ booking.name }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>{{ $t("reservation.card.email") }}</b>{{ booking.email }}
+                                    <b>{{ $t("reservation.card.email") }}</b
+                                    >{{ booking.email }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>{{ $t("reservation.card.date") }}</b>{{ formatDate(booking.time) }}
+                                    <b>{{ $t("reservation.card.date") }}</b
+                                    >{{ formatDate(booking.time) }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>{{ $t("reservation.card.time") }}</b>{{ formatTime(booking.time) }}
+                                    <b>{{ $t("reservation.card.time") }}</b
+                                    >{{ formatTime(booking.time) }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>{{ $t("reservation.card.reason") }}</b>{{ booking.reason }}
+                                    <b>{{ $t("reservation.card.reason") }}</b
+                                    >{{ booking.reason }}
                                 </p>
                                 <p class="mb-2">
                                     <b>{{ $t("reservation.card.status") }}</b
-                                    ><Tag severity="info" :value="$t('reservation.card.pending')"></Tag>
+                                    ><Tag
+                                        severity="info"
+                                        :value="$t('reservation.card.pending')"
+                                    ></Tag>
                                 </p>
                             </div>
                         </template>

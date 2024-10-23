@@ -195,7 +195,7 @@ const getSeverity = (label: string): string => {
                     ((searchOption == t('status.option.keyword') &&
                         query !== '') ||
                         (searchOption == t('status.option.time') && data)) &&
-                        data?.data.length == 0 &&
+                    data?.data.length == 0 &&
                     queried
                 "
             >
@@ -249,7 +249,10 @@ const getSeverity = (label: string): string => {
         <Column field="time" :header="$t('status.column.time')"></Column>
         <Column field="room" :header="$t('status.column.room')"></Column>
         <Column field="reason" :header="$t('status.column.name')"></Column>
-        <Column field="operator" :header="$t('status.column.operator')"></Column>
+        <Column
+            field="operator"
+            :header="$t('status.column.operator')"
+        ></Column>
         <Column field="addTime" :header="$t('status.column.add_time')"></Column>
         <Column field="status" :header="$t('status.column.status')">
             <template #body="{ data }">

@@ -112,7 +112,7 @@
         },
         "table": {
             "search": "搜索",
-            "empty":"无可用数据。",
+            "empty": "无可用数据。",
             "enter_keyword": "输入关键词来开始搜索。"
         },
         "column": {

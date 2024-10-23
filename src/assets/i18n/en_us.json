@@ -112,7 +112,7 @@
         },
         "table": {
             "search": "Search",
-            "empty":"No available data.",
+            "empty": "No available data.",
             "enter_keyword": "Enter a keyword to start your search."
         },
         "column": {

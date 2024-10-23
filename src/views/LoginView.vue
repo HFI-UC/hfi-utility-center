@@ -12,7 +12,7 @@ import { useI18n } from "vue-i18n";
 const cf_token = ref("");
 const user = ref("");
 const password = ref("");
-const { t } = useI18n()
+const { t } = useI18n();
 const toast = useToast();
 const isCompleted = ref(true);
 const loading = ref(false);

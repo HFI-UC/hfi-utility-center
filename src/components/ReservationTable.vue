@@ -205,7 +205,9 @@ const getSeverity = (label: string): string => {
                     <DatePicker
                         v-else-if="searchOption == $t('status.option.time')"
                         showTime
-                        v-tooltip.bottom="`${$t('status.tooltip.time')}${$t('status.tooltip.result')}`"
+                        v-tooltip.bottom="
+                            `${$t('status.tooltip.time')}${$t('status.tooltip.result')}`
+                        "
                         v-model="date"
                         :placeholder="$t('status.option.time')"
                         dateFormat="yy/mm/dd"
