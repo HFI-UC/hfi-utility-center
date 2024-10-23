@@ -45,7 +45,6 @@ const items = computed(() => {
             url: "/maintenance",
         },
     ];
-    console.log(isAdmin.value);
     if (isAdmin.value) {
         data.push({
             label: t("menubar.admin.admin"),

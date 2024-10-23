@@ -3,19 +3,25 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Tag from "primevue/tag";
 import { postReservation, type ReservationInfo } from "../api";
-import { computed, ref, Ref } from "vue";
+import { computed, ref, Ref, watch } from "vue";
 import InputText from "primevue/inputtext";
 import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
 import Select from "primevue/select";
 import SelectButton from "primevue/selectbutton";
+import { useI18n } from "vue-i18n";
 
 const data: Ref<ReservationInfo | null> = ref(null);
 const queried = ref(false);
 const query = ref("");
 const date: Ref<Date | null> = ref(null);
 const room = ref("");
-const options = ref(["Keyword", "Time", "Room"]);
+const { t, locale } = useI18n();
+const options = computed(() => [
+    t("status.option.keyword"),
+    t("status.option.time"),
+    t("status.option.room"),
+]);
 const rooms = ref([
     "iStudy Meeting Room 1",
     "iStudy Meeting Room 2",
@@ -41,11 +47,18 @@ const roomMappingToNumber: { [key: string]: number } = {
     "Writing Center 2": 106,
 };
 
-const searchOption = ref("Keyword");
+const searchOption = ref(t("status.option.keyword"));
+
+watch(
+    () => locale.value,
+    () => {
+        searchOption.value = t("status.option.keyword");
+    },
+);
 
 const onSearch = () => {
     queried.value = true;
-    if (searchOption.value == "Time") {
+    if (searchOption.value == t("status.option.time")) {
         if (date.value) {
             date.value.setSeconds(0, 0);
             postReservation({ time: date.value }).then((res) => {
@@ -54,7 +67,7 @@ const onSearch = () => {
         } else {
             data.value = { success: false, data: [] };
         }
-    } else if (searchOption.value == "Room") {
+    } else if (searchOption.value == t("status.option.room")) {
         if (room.value == "") {
             data.value = { success: false, data: [] };
             return;
@@ -75,11 +88,11 @@ const onSearch = () => {
     }
 };
 
-const statusMapping: { [key: string]: string } = {
-    non: "Pending",
-    yes: "Approved",
-    no: "Rejected",
-};
+const statusMapping: Ref<{ [key: string]: string }> = computed(() => ({
+    non: t("status.tag.pending"),
+    yes: t("status.tag.approved"),
+    no: t("status.tag.rejected"),
+}));
 
 const bookingData = computed(() => {
     if (!data.value) return [];
@@ -100,7 +113,7 @@ const bookingData = computed(() => {
             time: formatTime(item.time),
             date: formatDate(item.time),
             room: roomMappingToString[item.room] || item.room.toString(),
-            status: statusMapping[item.auth],
+            status: statusMapping.value[item.auth],
             reason: item.reason,
             severity: getSeverity(item.auth),
         });
@@ -162,15 +175,16 @@ const getSeverity = (label: string): string => {
         <template #empty>
             <p
                 v-if="
-                    ((searchOption == 'Keyword' && query !== '') ||
-                        (searchOption == 'Time' && data)) &&
+                    ((searchOption == t('status.option.keyword') &&
+                        query !== '') ||
+                        (searchOption == t('status.option.time') && data)) &&
                     data?.data.length == 0 &&
                     queried
                 "
             >
-                No available data.
+                {{ $t("status.table.empty") }}
             </p>
-            <p v-else>Enter a keyword to start your search.</p>
+            <p v-else>{{ $t("status.table.enter_keyword") }}</p>
         </template>
         <template #header>
             <div class="flex flex-col gap-3">
@@ -182,43 +196,41 @@ const getSeverity = (label: string): string => {
                 />
                 <div class="flex justify-start gap-3">
                     <Select
-                        v-if="searchOption == 'Room'"
+                        v-if="searchOption == $t('status.option.room')"
                         v-model="room"
-                        v-tooltip.bottom="'Search with room.'"
-                        placeholder="Room"
+                        v-tooltip.bottom="$t('status.tooltip.room')"
+                        :placeholder="$t('status.option.room')"
                         :options="rooms"
                     />
                     <DatePicker
-                        v-else-if="searchOption == 'Time'"
+                        v-else-if="searchOption == $t('status.option.time')"
                         showTime
-                        v-tooltip.bottom="
-                            'Search with time. The search will show results before and after three hours.'
-                        "
+                        v-tooltip.bottom="`${$t('status.tooltip.time')}${$t('status.tooltip.result')}`"
                         v-model="date"
-                        placeholder="Time"
+                        :placeholder="$t('status.option.time')"
                         dateFormat="yy/mm/dd"
                     />
                     <InputText
                         v-else
                         v-model="query"
-                        v-tooltip.bottom="'Search with keyword.'"
-                        placeholder="Keyword"
+                        v-tooltip.bottom="$t('status.tooltip.keyword')"
+                        :placeholder="$t('status.option.keyword')"
                     />
                     <Button
                         @click="onSearch()"
-                        label="Search"
+                        :label="$t('status.table.search')"
                         icon="pi pi-search"
                     ></Button>
                 </div>
             </div>
         </template>
-        <Column field="name" header="Name / Class"></Column>
-        <Column field="email" header="E-mail"></Column>
-        <Column field="date" header="Date"></Column>
-        <Column field="time" header="Time"></Column>
-        <Column field="room" header="Room"></Column>
-        <Column field="reason" header="Reason"></Column>
-        <Column field="status" header="Status">
+        <Column field="name" :header="$t('status.column.name')"></Column>
+        <Column field="email" :header="$t('status.column.email')"></Column>
+        <Column field="date" :header="$t('status.column.date')"></Column>
+        <Column field="time" :header="$t('status.column.time')"></Column>
+        <Column field="room" :header="$t('status.column.room')"></Column>
+        <Column field="reason" :header="$t('status.column.name')"></Column>
+        <Column field="status" :header="$t('status.column.status')">
             <template #body="{ data }">
                 <Tag :severity="data.severity" :value="data.status"></Tag>
             </template>

@@ -18,7 +18,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <h1>Reservation Status</h1>
+    <h1>{{ $t("status.status") }}</h1>
     <Card>
         <template #content>
             <ReservationTable v-if="!isAdmin" />

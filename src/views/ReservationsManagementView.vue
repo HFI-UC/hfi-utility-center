@@ -16,10 +16,12 @@ import Tag from "primevue/tag";
 import Dialog from "primevue/dialog";
 import Select from "primevue/select";
 import FloatLabel from "primevue/floatlabel";
+import { useI18n } from "vue-i18n";
 
 const toast = useToast();
 const token = ref("");
 const visible = ref(false);
+const { t } = useI18n()
 const id = ref(-1);
 const reason = ref("");
 const disabled = ref(false);
@@ -77,7 +79,7 @@ const onAcceptEvent = () => {
         (res: { success: boolean; message: string }) => {
             toast.add({
                 severity: res.success ? "success" : "error",
-                summary: res.success ? "Success" : "Error",
+                summary: res.success ? t("toast.success") : t("toast.error"),
                 detail: res.message,
                 life: 3000,
             });
@@ -95,7 +97,7 @@ const onRejectEvent = () => {
         toast.add({
             severity: "error",
             summary: "Error",
-            detail: "Please fill out the required field",
+            detail: t("toast.required_field"),
             life: 3000,
         });
         isCompleted.value = false;
@@ -105,7 +107,7 @@ const onRejectEvent = () => {
         (res: { success: boolean; message: string }) => {
             toast.add({
                 severity: res.success ? "success" : "error",
-                summary: res.success ? "Success" : "Error",
+                summary: res.success ? t("toast.success") : t("toast.error"),
                 detail: res.message,
                 life: 3000,
             });
@@ -127,8 +129,8 @@ onMounted(async () => {
     if (!token.value || !(await verifyAdmin(token.value))) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please login first!",
+            summary: t("toast.error"),
+            detail: t("toast.login_first"),
             life: 2000,
         });
         setTimeout(() => {
@@ -143,12 +145,12 @@ onMounted(async () => {
         <Dialog
             v-model:visible="visible"
             modal
-            header="Choose a reject reason"
+            :header="$t('reservation.reject.header')"
             :style="{ width: '25rem' }"
         >
             <div class="flex items-center justify-center gap-4 mb-8">
                 <FloatLabel>
-                    <label for="reason">Reason</label>
+                    <label for="reason">{{ $t("reservation.reject.reason") }}</label>
                     <Select
                         id="reason"
                         class="w-[22rem]"
@@ -163,54 +165,54 @@ onMounted(async () => {
             <div class="flex justify-end gap-2">
                 <Button
                     type="button"
-                    label="Cancel"
+                    :label="$t('reservation.reject.cancel')"
                     severity="secondary"
                     @click="visible = false"
                 ></Button>
                 <Button
                     type="button"
-                    label="Reject"
+                    :label="$t('reservation.reject.reject')"
                     severity="danger"
                     @click="onRejectEvent()"
                 ></Button>
             </div>
         </Dialog>
-        <h1>Reservation Management</h1>
+        <h1>{{ $t("reservation.reservation") }}</h1>
         <div v-if="booking?.success" id="cards-container">
             <p v-if="bookingData.length == 0">
-                There are currently no applications.
+                {{ $t("reservation.empty") }}
             </p>
             <div class="flex flex-wrap justify-between gap-[1rem]">
                 <div v-for="booking in bookingData" id="card">
                     <Card>
                         <template #content>
                             <div class="ms-4 me-4">
-                                <h3>Reservation #{{ booking.id }}</h3>
+                                <h3>{{ $t("reservation.card.header", [booking.id]) }}</h3>
                                 <p class="mb-2">
-                                    <b>Room: </b
+                                    <b>{{ $t("reservation.card.room") }}</b
                                     >{{
                                         roomMapping[booking.room] ||
                                         booking.room
                                     }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>Name / Class: </b>{{ booking.name }}
+                                    <b>{{ $t("reservation.card.name") }}</b>{{ booking.name }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>E-mail: </b>{{ booking.email }}
+                                    <b>{{ $t("reservation.card.email") }}</b>{{ booking.email }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>Date: </b>{{ formatDate(booking.time) }}
+                                    <b>{{ $t("reservation.card.date") }}</b>{{ formatDate(booking.time) }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>Time: </b>{{ formatTime(booking.time) }}
+                                    <b>{{ $t("reservation.card.time") }}</b>{{ formatTime(booking.time) }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>Reason: </b>{{ booking.reason }}
+                                    <b>{{ $t("reservation.card.reason") }}</b>{{ booking.reason }}
                                 </p>
                                 <p class="mb-2">
-                                    <b>Status: </b
-                                    ><Tag severity="info" value="Pending"></Tag>
+                                    <b>{{ $t("reservation.card.status") }}</b
+                                    ><Tag severity="info" :value="$t('reservation.card.pending')"></Tag>
                                 </p>
                             </div>
                         </template>
@@ -219,7 +221,7 @@ onMounted(async () => {
                                 <Button
                                     outlined
                                     icon="pi pi-times"
-                                    label="Reject"
+                                    :label="$t('reservation.reject.reject')"
                                     @click="
                                         (reason = ''),
                                             (visible = true),
@@ -232,7 +234,7 @@ onMounted(async () => {
                                 <Button
                                     icon="pi pi-check"
                                     severity="success"
-                                    label="Pass"
+                                    :label="$t('reservation.pass')"
                                     class="w-full"
                                     @click="
                                         (id = booking.id as number),

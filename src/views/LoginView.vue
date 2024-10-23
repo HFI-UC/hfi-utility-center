@@ -7,10 +7,12 @@ import FloatLabel from "primevue/floatlabel";
 import { postLogin } from "../api";
 import { useToast } from "primevue/usetoast";
 import Card from "primevue/card";
+import { useI18n } from "vue-i18n";
 
 const cf_token = ref("");
 const user = ref("");
 const password = ref("");
+const { t } = useI18n()
 const toast = useToast();
 const isCompleted = ref(true);
 const loading = ref(false);
@@ -25,30 +27,30 @@ const onClickEvent = () => {
     if (user.value == "" || password.value == "") {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill out the required field!",
+            summary: t("toast.error"),
+            detail: t("toast.required_field"),
             life: 3000,
         });
         isCompleted.value = false;
         loading.value = false;
         return;
     }
-    // if (cf_token.value == "") {
-    //     toast.add({
-    //         severity: "error",
-    //         summary: "Error",
-    //         detail: "Please verify that you are not a robot.",
-    //         life: 3000,
-    //     });
-    //     loading.value = false;
-    //     return;
-    // }
+    if (cf_token.value == "") {
+        toast.add({
+            severity: "error",
+            summary: t("toast.error"),
+            detail: t("toast.robot"),
+            life: 3000,
+        });
+        loading.value = false;
+        return;
+    }
     postLogin(user.value, password.value, cf_token.value).then(
         (res: { success: boolean; message: string; token?: string }) => {
             if (res.success) {
                 toast.add({
                     severity: "success",
-                    summary: "Success",
+                    summary: t("toast.success"),
                     detail: res.message,
                     life: 3000,
                 });
@@ -59,7 +61,7 @@ const onClickEvent = () => {
             } else {
                 toast.add({
                     severity: "error",
-                    summary: "Error",
+                    summary: t("toast.error"),
                     detail: res.message,
                     life: 3000,
                 });
@@ -73,7 +75,7 @@ const onClickEvent = () => {
 
 <template>
     <div class="flex flex-col items-center justify-center">
-        <h1>Admin Login</h1>
+        <h1>{{ $t("login.header") }}</h1>
         <Card>
             <template #content>
                 <div class="flex flex-col items-center">
@@ -83,7 +85,7 @@ const onClickEvent = () => {
                             v-model="user"
                             :invalid="user == '' && !isCompleted"
                         ></InputText>
-                        <label for="user">Username</label>
+                        <label for="user">{{ $t("login.username") }}</label>
                     </FloatLabel>
                     <FloatLabel class="m-[20px]">
                         <InputText
@@ -92,7 +94,7 @@ const onClickEvent = () => {
                             :invalid="password == '' && !isCompleted"
                             type="password"
                         ></InputText>
-                        <label for="password">Password</label>
+                        <label for="password">{{ $t("login.password") }}</label>
                     </FloatLabel>
                     <VueTurnstile
                         class="m-[20px]"
@@ -102,7 +104,7 @@ const onClickEvent = () => {
                     <Button
                         icon="pi pi-sign-in"
                         @click="onClickEvent()"
-                        label="Login"
+                        :label="$t('login.login')"
                         :loading="loading"
                     ></Button>
                 </div>

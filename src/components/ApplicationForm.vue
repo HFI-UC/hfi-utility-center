@@ -32,7 +32,7 @@ const { data: policyData } = useRequest(
 
 const policy = computed(() => policyData.value?.policy || []);
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const reservation: Ref<ApplicationInfo> = ref({
     class: "",
@@ -47,6 +47,13 @@ const reservation: Ref<ApplicationInfo> = ref({
     selectedCampus: "",
     isAgreed: false,
 });
+
+watch(
+    () => locale.value,
+    () => {
+        reservation.value.selectedCampus = selectedRoom.value = "";
+    },
+);
 
 const visible = ref(false);
 
