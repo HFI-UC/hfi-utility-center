@@ -10,6 +10,8 @@ import { createI18n } from "vue-i18n";
 import en_us from "./assets/i18n/en_us.json";
 import zh_cn from "./assets/i18n/zh_cn.json";
 import zh_ms from "./assets/i18n/zh_ms.json";
+import ja_jp from "./assets/i18n/ja_jp.json";
+import ko_kr from "./assets/i18n/ko_kr.json";
 
 const app = createApp(App);
 const i18n = createI18n({
@@ -18,6 +20,8 @@ const i18n = createI18n({
         en_us,
         zh_cn,
         zh_ms,
+        ja_jp,
+        ko_kr,
     },
 });
 app.use(i18n);
