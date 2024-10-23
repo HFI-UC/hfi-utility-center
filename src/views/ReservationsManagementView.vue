@@ -51,9 +51,7 @@ const { data: booking } = useRequest(
     { pollingInterval: 3000 },
 );
 
-const bookingData = computed(
-    () => booking.value?.data.filter((item) => item.auth == "non") || [],
-);
+const bookingData = computed(() => booking.value?.data || []);
 
 const formatDate = (time: string) => {
     const startTime = time.split("-")[0];

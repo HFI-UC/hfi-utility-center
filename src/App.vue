@@ -85,6 +85,10 @@ const localeOptions = ref([
         key: "English",
         code: "en_us",
     },
+    {
+        key: "微软中文",
+        code: "zh_ms",
+    },
 ]);
 
 const selectedLocale = ref("");
@@ -140,6 +144,7 @@ onMounted(async () => {
                     v-model="selectedLocale"
                     optionValue="code"
                     optionLabel="key"
+                    :style="{ width: '9rem' }"
                 >
                     <template #dropdownicon>
                         <i class="pi pi-globe" />
@@ -201,10 +206,6 @@ button,
 .p-select {
     border-radius: 0.5rem;
     height: 40px;
-}
-
-:deep(.p-select) {
-    min-width: 1rem;
 }
 
 :deep(.p-menubar) {
