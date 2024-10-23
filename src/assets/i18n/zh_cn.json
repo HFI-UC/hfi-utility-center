@@ -37,6 +37,10 @@
         "success": "成功",
         "login_first": "请先登录！",
         "robot": "请通过人机验证。",
+        "error_occured": "An error occured.",
+        "success_msg": "Success!",
+        "multiple": "The selected time must be a multiple of 5!",
+        "choose_photo": "Please choose a photo to upload!",
         "required_field": "请填写必需字段！"
     },
     "application": {
