@@ -2,7 +2,7 @@
 import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
 import FileUpload, { FileUploadSelectEvent } from "primevue/fileupload";
-import { ref, Ref, computed, onMounted } from "vue";
+import { ref, Ref, computed, onMounted, watch } from "vue";
 import {
     generateCosKey,
     getMaintenance,
@@ -25,12 +25,13 @@ import Image from "primevue/image";
 import Card from "primevue/card";
 import { MaintenanceInfo } from "../api";
 import { useRequest } from "vue-request";
+import { useI18n } from "vue-i18n";
 
 const visible = ref(false);
 const token = ref(sessionStorage.getItem("token") || "");
 const isAdmin = ref(false);
 const { data } = useRequest(() => getMaintenance(token.value));
-
+const { t, locale } = useI18n();
 const first = ref(0);
 const filteredMaintenanceData = computed(
     () =>
@@ -57,8 +58,16 @@ const loading = ref(false);
 const src = ref<null | string>(null);
 const file = ref<null | File>(null);
 const toast = useToast();
-const campus = ref(["Shipai Campus", "Knowledge City Campus"]);
-const status = ["Pending", "Approved", "Unscheduled", "Duplicated"];
+const campus = computed(() => [
+    t("maintenance.campus.shipai"),
+    t("maintenance.campus.knowledgecity"),
+]);
+const status = computed(() => [
+    t("maintenance.status.pending"),
+    t("maintenance.status.approved"),
+    t("maintenance.status.unscheduled"),
+    t("maintenance.status.duplicated"),
+]);
 const severity = ["info", "success", "error", "primary"];
 const query = ref("");
 const maintenance: Ref<MaintenanceInfo> = ref({
@@ -70,6 +79,13 @@ const maintenance: Ref<MaintenanceInfo> = ref({
     filePath: "",
     detail: "",
 });
+
+watch(
+    () => locale.value,
+    () => {
+        maintenance.value.campus = "";
+    },
+);
 
 const onFileSelect = (event: FileUploadSelectEvent) => {
     file.value = event.files[0];
@@ -92,7 +108,7 @@ const onActionEvent = (maintenance: MaintenanceInfo, action: number) => {
         (res) => {
             toast.add({
                 severity: res.success ? "success" : "error",
-                summary: res.success ? "Success" : "Error",
+                summary: res.success ? t("toast.success") : t("toast.error"),
                 detail: res.message,
                 life: 2000,
             });
@@ -110,8 +126,8 @@ const onClickEvent = async () => {
     if (!file.value) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please choose a photo to upload!",
+            summary: t("toast.error"),
+            detail: t("toast.choose_photo"),
         });
         return;
     }
@@ -127,8 +143,8 @@ const onClickEvent = async () => {
     if (!isCompleted.value) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill out the required field!",
+            summary: t("toast.error"),
+            detail: t("toast.required_field"),
             life: 3000,
         });
         loading.value = false;
@@ -149,7 +165,9 @@ const onClickEvent = async () => {
 
     toast.add({
         severity: maintenanceResult.success ? "success" : "error",
-        summary: maintenanceResult.success ? "Success" : "Error",
+        summary: maintenanceResult.success
+            ? t("toast.success")
+            : t("toast.error"),
         detail: maintenanceResult.message,
         life: 3000,
     });
@@ -174,27 +192,31 @@ const resetForm = () => {
 </script>
 
 <template>
-    <h1>Maintenance Report</h1>
+    <h1>{{ $t("maintenance.maintenance") }}</h1>
     <div v-if="data?.success">
         <Button
-            label="Report for maintenance"
-            class="mt-8 mb-4"
+            :label="$t('maintenance.new_maintenance.header')"
             icon="pi pi-plus"
             @click="visible = true"
         ></Button>
         <div class="justify-left mt-4 mb-4">
             <IconField>
                 <InputIcon class="pi pi-search"></InputIcon>
-                <InputText placeholder="Search" v-model="query"></InputText>
+                <InputText
+                    :placeholder="$t('maintenance.search')"
+                    v-model="query"
+                ></InputText>
             </IconField>
         </div>
         <Dialog
             v-model:visible="visible"
             modal
             class="w-[25rem]"
-            header="Report for Maintenance"
+            :header="$t('maintenance.new_maintenance.header')"
         >
-            <p class="font-bold m-4">1. Choose a photo</p>
+            <p class="font-bold m-4">
+                {{ $t("maintenance.new_maintenance.choose_photo") }}
+            </p>
             <div class="flex flex-col items-center align-center">
                 <div class="flex">
                     <FileUpload
@@ -203,6 +225,7 @@ const resetForm = () => {
                         accept="image/*"
                         customUpload
                         auto
+                        :chooseLabel="$t('maintenance.new_maintenance.choose')"
                         class="m-3"
                     ></FileUpload>
                 </div>
@@ -213,87 +236,93 @@ const resetForm = () => {
                 />
                 <p v-if="file" id="name" class="m-3">{{ file.name }}</p>
             </div>
-            <p class="font-bold m-4">2. Fill out the form</p>
+            <p class="font-bold m-4">
+                {{ $t("maintenance.new_maintenance.fill_out") }}
+            </p>
             <div class="flex flex-col items-center align-center">
                 <FloatLabel class="m-[20px]">
                     <InputText
                         id="studentName"
                         v-model="maintenance.studentName"
-                        v-tooltip.bottom="
-                            'Your Chinese name and English name (e.g. 山姆 Sam).'
-                        "
+                        v-tooltip.bottom="$t('maintenance.tooltip.name')"
                         :invalid="!isCompleted && maintenance.studentName == ''"
                     />
-                    <label for="studentName">Name</label>
+                    <label for="studentName">{{
+                        $t("maintenance.new_maintenance.name")
+                    }}</label>
                 </FloatLabel>
                 <FloatLabel class="m-[20px]">
                     <InputText
                         id="email"
                         v-model="maintenance.email"
                         v-tooltip.bottom="
-                            'Your e-mail (e.g. sam.xulf2024@gdhfi.com).'
+                            $t('maintenance.tooltip.email', [
+                                'sam.xulf2024@gdhfi.com',
+                            ])
                         "
                         :invalid="!isCompleted && maintenance.email == ''"
                     />
-                    <label for="email">E-mail</label>
+                    <label for="email">{{
+                        $t("maintenance.new_maintenance.email")
+                    }}</label>
                 </FloatLabel>
                 <FloatLabel class="m-[20px]">
                     <Select
                         id="campus"
                         v-model="maintenance.campus"
-                        v-tooltip.bottom="
-                            'The campus where the maintenance was reported.'
-                        "
+                        v-tooltip.bottom="$t('maintenance.tooltip.campus')"
                         :options="campus"
                         :invalid="!isCompleted && maintenance.campus == ''"
                     />
-                    <label for="campus">Campus</label>
+                    <label for="campus">{{
+                        $t("maintenance.new_maintenance.campus")
+                    }}</label>
                 </FloatLabel>
 
                 <FloatLabel class="m-[20px]">
                     <InputText
                         id="subject"
                         v-model="maintenance.subject"
-                        v-tooltip.bottom="
-                            'The subject of your report (e.g. AC Doesn\'t Work).'
-                        "
+                        v-tooltip.bottom="$t('maintenance.tooltip.subject')"
                         :invalid="!isCompleted && maintenance.subject == ''"
                     />
-                    <label for="subject">Subject</label>
+                    <label for="subject">{{
+                        $t("maintenance.new_maintenance.subject")
+                    }}</label>
                 </FloatLabel>
                 <FloatLabel class="m-[20px]">
                     <Textarea
                         id="location"
                         v-model="maintenance.location"
-                        v-tooltip.bottom="
-                            'The location you want to report for maintenance (e.g. The classroom).'
-                        "
+                        v-tooltip.bottom="$t('maintenance.tooltip.location')"
                         :invalid="!isCompleted && maintenance.location == ''"
                     />
-                    <label for="location">Location</label>
+                    <label for="location">{{
+                        $t("maintenance.new_maintenance.location")
+                    }}</label>
                 </FloatLabel>
                 <FloatLabel class="m-[20px]">
                     <Textarea
                         id="detail"
                         v-model="maintenance.detail"
-                        v-tooltip.bottom="
-                            'The details of your report (e.g. We can not turn on the AC).'
-                        "
+                        v-tooltip.bottom="$t('maintenance.tooltip.detail')"
                         :invalid="!isCompleted && maintenance.detail == ''"
                     />
-                    <label for="detail">Detail</label>
+                    <label for="detail">{{
+                        $t("maintenance.new_maintenance.detail")
+                    }}</label>
                 </FloatLabel>
             </div>
             <div class="flex justify-end gap-2 m-3">
                 <Button
                     type="button"
-                    label="Cancel"
+                    :label="$t('maintenance.new_maintenance.cancel')"
                     severity="secondary"
                     @click="visible = false"
                 ></Button>
                 <Button
                     type="button"
-                    label="Submit"
+                    :label="$t('maintenance.new_maintenance.submit')"
                     :loading="loading"
                     icon="pi pi-plus"
                     @click="onClickEvent()"
@@ -301,42 +330,48 @@ const resetForm = () => {
             </div>
         </Dialog>
         <p v-if="maintenanceData.length == 0">
-            There are currently no maintenance reports.
+            {{ $t("maintenance.empty") }}
         </p>
         <div class="flex flex-wrap justify-between gap-[1rem] mb-8">
             <div v-for="maintenance in maintenanceData" id="card">
                 <Card>
                     <template #content>
                         <div class="ms-4 me-4 min-h-[40rem]">
-                            <h3>Maintenance #{{ maintenance.id }}</h3>
+                            <h3>
+                                {{
+                                    $t("maintenance.card.header", [
+                                        maintenance.id,
+                                    ])
+                                }}
+                            </h3>
                             <h4>{{ maintenance.subject }}</h4>
                             <Image
                                 :src="maintenance.filePath"
                                 class="w-full h-[20rem] items-center justify-center mt-4 mb-6"
                                 preview
                             ></Image>
-                            <p class="mb-2" v-if="isAdmin">
-                                <b>Name: </b>
+                            <p class="mb-3" v-if="isAdmin">
+                                <b>{{ $t("maintenance.card.name") }}</b>
                                 {{ maintenance.studentName }}
                             </p>
-                            <p class="mb-2" v-if="isAdmin">
-                                <b>E-mail: </b>
+                            <p class="mb-3" v-if="isAdmin">
+                                <b>{{ $t("maintenance.card.email") }}</b>
                                 {{ maintenance.email }}
                             </p>
-                            <p class="mb-2">
-                                <b>Location: </b>
+                            <p class="mb-3">
+                                <b>{{ $t("maintenance.card.location") }}</b>
                                 {{ maintenance.location }}
                             </p>
-                            <p class="mb-2">
-                                <b>Campus: </b>
+                            <p class="mb-3">
+                                <b>{{ $t("maintenance.card.campus") }}</b>
                                 {{ maintenance.campus }}
                             </p>
-                            <p class="mb-2">
-                                <b>Detail: </b>
+                            <p class="mb-3">
+                                <b>{{ $t("maintenance.card.detail") }}</b>
                                 {{ maintenance.detail }}
                             </p>
-                            <p class="mb-2">
-                                <b>Status: </b>
+                            <p class="mb-3">
+                                <b>{{ $t("maintenance.card.status") }}</b>
                                 <Tag
                                     :value="
                                         status[maintenance.status as number]
@@ -350,12 +385,14 @@ const resetForm = () => {
                     </template>
                     <template #footer v-if="isAdmin">
                         <div class="justify-left">
-                            <p class="ms-4 font-bold">Mark as</p>
+                            <p class="ms-4 font-bold">
+                                {{ $t("maintenance.card.mark_as") }}
+                            </p>
                         </div>
                         <div class="m-4 flex gap-4" id="buttons">
                             <Button
                                 class="w-full"
-                                label="Duplicated"
+                                :label="$t('maintenance.status.duplicated')"
                                 severity="warn"
                                 icon="pi pi-clone"
                                 @click="onActionEvent(maintenance, 3)"
@@ -363,7 +400,7 @@ const resetForm = () => {
                             </Button>
                             <Button
                                 class="w-full"
-                                label="Unscheduled"
+                                :label="$t('maintenance.status.unscheduled')"
                                 severity="danger"
                                 icon="pi pi-times"
                                 @click="onActionEvent(maintenance, 2)"
@@ -371,7 +408,7 @@ const resetForm = () => {
                             </Button>
                             <Button
                                 class="w-full"
-                                label="Approved"
+                                :label="$t('maintenance.status.approved')"
                                 severity="success"
                                 icon="pi pi-check"
                                 @click="onActionEvent(maintenance, 1)"

@@ -19,9 +19,7 @@
             "admin": "Admin",
             "reservation": "Reservation Management",
             "policy": "Policy Settings"
-        },
-        "login": "Login",
-        "logout": "Logout"
+        }
     },
     "footer": {
         "license": "GNU AGPL-3.0 License",
@@ -39,6 +37,10 @@
         "success": "Success",
         "login_first": "Please login first!",
         "robot": "Please verify that you are not a robot.",
+        "error_occured": "An error occured.",
+        "success_msg": "Success!",
+        "multiple": "The selected time must be a multiple of 5!",
+        "choose_photo": "Please choose a photo to upload!",
         "required_field": "Please fill out the required field!"
     },
     "application": {
@@ -162,5 +164,77 @@
         "username": "Username",
         "password": "Password",
         "login": "Login"
+    },
+    "policy": {
+        "policy": "Policy Settings",
+        "tag": {
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "new_policy": {
+            "header": "Add a new policy",
+            "room": "Room",
+            "days": "Day(s)",
+            "start_time": "Start Time",
+            "end_time": "End Time",
+            "cancel": "Cancel",
+            "add": "Add"
+        },
+        "empty": "There are currently no policies.",
+        "card": {
+            "status": "Status: ",
+            "days": "Day(s): ",
+            "time": "Time: ",
+            "delete": "Delete",
+            "resume": "Resume",
+            "stop": "Stop"
+        }
+    },
+    "maintenance": {
+        "campus": {
+            "shipai": "Shipai Campus",
+            "knowledgecity": "Knowledge City Campus"
+        },
+        "status": {
+            "pending": "Pending",
+            "approved": "Approved",
+            "unscheduled": "Unscheduled",
+            "duplicated": "Duplicated"
+        },
+        "maintenance": "Maintenance Report",
+        "new_maintenance": {
+            "header": "Report for Maintenance",
+            "choose_photo": "1. Choose a photo",
+            "choose": "Choose",
+            "fill_out": "2. Fill out the form",
+            "name": "Name",
+            "email": "E-mail",
+            "campus": "Campus",
+            "subject": "Subject",
+            "location": "Location",
+            "detail": "Detail",
+            "cancel": "Cancel",
+            "submit": "Submit"
+        },
+        "empty": "There are currently no maintenance reports.",
+        "card": {
+            "header": "Maintenance #{0}",
+            "name": "Name: ",
+            "email": "E-mail: ",
+            "location": "Location: ",
+            "campus": "Campus: ",
+            "detail": "Detail: ",
+            "status": "Status: ",
+            "mark_as": "Mark as"
+        },
+        "search": "Search",
+        "tooltip": {
+            "name": "Your Chinese name and English name (e.g. 山姆 Sam).",
+            "email": "Your e-mail (e.g. {0}).",
+            "campus": "The campus where the maintenance was reported.",
+            "subject": "The subject of your report (e.g. AC Doesn't Work).",
+            "location": "The location you want to report for maintenance (e.g. The classroom).",
+            "detail": "The details of your report (e.g. We can not turn on the AC)."
+        }
     }
 }

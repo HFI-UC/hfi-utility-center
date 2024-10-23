@@ -151,7 +151,6 @@ onMounted(async () => {
                     severity="success"
                     class="ms-2 me-2"
                     icon="pi pi-sign-in"
-                    :label="$t('menubar.login')"
                 >
                 </Button>
                 <Button
@@ -160,7 +159,6 @@ onMounted(async () => {
                     severity="danger"
                     class="ms-2 me-2"
                     icon="pi pi-sign-out"
-                    :label="$t('menubar.logout')"
                 >
                 </Button>
                 <Button @click="toggleColorScheme()" :icon="`pi ${iconClass}`">
@@ -203,6 +201,10 @@ button,
 .p-select {
     border-radius: 0.5rem;
     height: 40px;
+}
+
+:deep(.p-select) {
+    min-width: 1rem;
 }
 
 :deep(.p-menubar) {

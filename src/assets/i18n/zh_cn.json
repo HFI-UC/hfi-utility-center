@@ -19,9 +19,7 @@
             "admin": "管理员功能",
             "reservation": "预约管理",
             "policy": "政策管理"
-        },
-        "login": "登录",
-        "logout": "登出"
+        }
     },
     "footer": {
         "license": "GNU Affero 通用公共许可证 3.0",
@@ -162,5 +160,77 @@
         "username": "用户名",
         "password": "密码",
         "login": "登录"
+    },
+    "policy": {
+        "policy": "政策管理",
+        "tag": {
+            "active": "启用",
+            "inactive": "禁用"
+        },
+        "new_policy": {
+            "header": "新增政策",
+            "room": "课室",
+            "days": "天",
+            "start_time": "开始时间",
+            "end_time": "结束时间",
+            "cancel": "取消",
+            "add": "新增"
+        },
+        "empty": "当前没有政策。",
+        "card": {
+            "status": "状态：",
+            "days": "天：",
+            "time": "时间：",
+            "delete": "删除",
+            "resume": "启用",
+            "stop": "禁用"
+        }
+    },
+    "maintenance": {
+        "campus": {
+            "shipai": "石牌校区",
+            "knowledgecity": "知识城校区"
+        },
+        "status": {
+            "pending": "处理中",
+            "approved": "已处理",
+            "unscheduled": "未计划",
+            "duplicated": "重复"
+        },
+        "maintenance": "报修",
+        "new_maintenance": {
+            "header": "新报修",
+            "choose_photo": "1. 选择一张照片",
+            "choose": "选择",
+            "fill_out": "2. 填写表单",
+            "name": "姓名",
+            "email": "邮箱",
+            "campus": "校区",
+            "subject": "主题",
+            "location": "地点",
+            "detail": "详细信息",
+            "cancel": "取消",
+            "submit": "提交"
+        },
+        "empty": "当前没有报修。",
+        "card": {
+            "header": "报修 #{0}",
+            "name": "姓名：",
+            "email": "邮箱：",
+            "location": "地点：",
+            "campus": "校区：",
+            "detail": "详细信息：",
+            "status": "状态：",
+            "mark_as": "标记为"
+        },
+        "search": "搜索",
+        "tooltip": {
+            "name": "你的中文名和英文名（例：山姆 Sam）。",
+            "email": "你的邮箱（例：{0}）。",
+            "campus": "要保修的校区。",
+            "subject": "报修的主题（例：空调坏了）。",
+            "location": "报修的地点（例：教室）。",
+            "detail": "报修的详细信息（例：我们打不开空调）。"
+        }
     }
 }

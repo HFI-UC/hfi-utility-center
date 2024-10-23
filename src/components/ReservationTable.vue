@@ -231,7 +231,7 @@ const getSeverity = (label: string): string => {
         <Column field="date" :header="$t('status.column.date')"></Column>
         <Column field="time" :header="$t('status.column.time')"></Column>
         <Column field="room" :header="$t('status.column.room')"></Column>
-        <Column field="reason" :header="$t('status.column.name')"></Column>
+        <Column field="reason" :header="$t('status.column.reason')"></Column>
         <Column field="status" :header="$t('status.column.status')">
             <template #body="{ data }">
                 <Tag :severity="data.severity" :value="data.status"></Tag>

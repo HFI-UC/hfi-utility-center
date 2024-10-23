@@ -20,9 +20,11 @@ import MultiSelect from "primevue/multiselect";
 import Select from "primevue/select";
 import Skeleton from "primevue/skeleton";
 import DatePicker from "primevue/datepicker";
+import { useI18n } from "vue-i18n";
 
 const token = ref("");
 const toast = useToast();
+const { t } = useI18n();
 const id = ref(-1);
 const { data: policy } = useRequest(
     (): Promise<{ success: boolean; policy: RoomPolicyInfo[] }> =>
@@ -100,8 +102,10 @@ const onResumeEvent = () => {
         (res: { success: boolean }) => {
             toast.add({
                 severity: res.success ? "success" : "error",
-                summary: res.success ? "Success" : "Error",
-                detail: res.success ? "Success!" : "An error occured.",
+                summary: res.success ? t("toast.success") : t("toast.error"),
+                detail: res.success
+                    ? t("toast.success_msg")
+                    : t("toast.error_occured"),
                 life: 3000,
             });
         },
@@ -112,8 +116,10 @@ const onPauseEvent = () => {
     postPolicyPause(token.value, id.value).then((res: { success: boolean }) => {
         toast.add({
             severity: res.success ? "success" : "error",
-            summary: res.success ? "Success" : "Error",
-            detail: res.success ? "Success!" : "An error occured.",
+            summary: res.success ? t("toast.success") : t("toast.error"),
+            detail: res.success
+                ? t("toast.success_msg")
+                : t("toast.error_occured"),
             life: 3000,
         });
     });
@@ -124,8 +130,10 @@ const onDeleteEvent = () => {
         (res: { success: boolean }) => {
             toast.add({
                 severity: res.success ? "success" : "error",
-                summary: res.success ? "Success" : "Error",
-                detail: res.success ? "Success!" : "An error occured.",
+                summary: res.success ? t("toast.success") : t("toast.error"),
+                detail: res.success
+                    ? t("toast.success_msg")
+                    : t("toast.error_occured"),
                 life: 3000,
             });
         },
@@ -148,8 +156,8 @@ const onAddEvent = () => {
         isValid.value = false;
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill out the required field!",
+            summary: t("toast.error"),
+            detail: t("toast.required_field"),
             life: 3000,
         });
         return;
@@ -157,8 +165,8 @@ const onAddEvent = () => {
     if (!isStartTimeValid.value || !isEndTimeValid.value) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "The selected time must be a multiple of 5!",
+            summary: t("toast.error"),
+            detail: t("toast.multiple"),
             life: 3000,
         });
         return;
@@ -174,8 +182,10 @@ const onAddEvent = () => {
     ).then((res: { success: boolean }) => {
         toast.add({
             severity: res.success ? "success" : "error",
-            summary: res.success ? "Success" : "Error",
-            detail: res.success ? "Success!" : "An error occured.",
+            summary: res.success ? t("toast.success") : t("toast.error"),
+            detail: res.success
+                ? t("toast.success_msg")
+                : t("toast.error_occured"),
             life: 3000,
         });
         visible.value = false;
@@ -225,7 +235,8 @@ const roomMappingToNumber: { [key: string]: number } = {
 };
 
 const getSeverity = (status: boolean) => (status ? "success" : "danger");
-const getTag = (status: boolean) => (status ? "Active" : "Inactive");
+const getTag = (status: boolean) =>
+    status ? t("policy.tag.active") : t("policy.tag.inactive");
 const visible = ref();
 
 onMounted(async () => {
@@ -234,8 +245,8 @@ onMounted(async () => {
         token.value = "";
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please login first!",
+            summary: t("toast.error"),
+            detail: t("toast.login_first"),
             life: 2000,
         });
         setTimeout(() => {
@@ -250,7 +261,7 @@ onMounted(async () => {
         <Dialog
             v-model:visible="visible"
             modal
-            header="Add a new policy"
+            :header="$t('policy.new_policy.header')"
             :style="{ width: '25rem' }"
         >
             <div class="flex flex-col items-center justify-center">
@@ -259,7 +270,7 @@ onMounted(async () => {
                     class="w-[22rem] m-3"
                     :options="rooms"
                     v-model="selectedRoom"
-                    placeholder="Room"
+                    :placeholder="$t('policy.new_policy.room')"
                     :invalid="!isValid && selectedRoom == ''"
                 ></Select>
 
@@ -268,14 +279,14 @@ onMounted(async () => {
                     class="w-[22rem] m-3"
                     :options="days"
                     v-model="selectedDays"
-                    placeholder="Day(s)"
+                    :placeholder="$t('policy.new_policy.days')"
                     :invalid="!isValid && selectedDays.length == 0"
                 ></MultiSelect>
 
                 <DatePicker
                     class="w-[22rem] m-3"
                     v-model="startDate"
-                    placeholder="Start time"
+                    :placeholder="$t('policy.new_policy.start_time')"
                     timeOnly
                     :minDate="minStartDate"
                     :maxDate="maxStartDate"
@@ -286,7 +297,7 @@ onMounted(async () => {
                 <DatePicker
                     class="w-[22rem] m-3"
                     v-model="endDate"
-                    placeholder="End time"
+                    :placeholder="$t('policy.new_policy.end_time')"
                     timeOnly
                     :minDate="minEndDate"
                     :maxDate="maxEndDate"
@@ -297,29 +308,29 @@ onMounted(async () => {
             <div class="flex justify-end gap-2 m-3">
                 <Button
                     type="button"
-                    label="Cancel"
+                    :label="$t('policy.new_policy.cancel')"
                     severity="secondary"
                     @click="visible = false"
                 ></Button>
                 <Button
                     type="button"
-                    label="Add"
+                    :label="$t('policy.new_policy.add')"
                     :loading="loading"
                     icon="pi pi-plus"
                     @click="onAddEvent()"
                 ></Button>
             </div>
         </Dialog>
-        <h1>Policy Settings</h1>
+        <h1>{{ $t("policy.policy") }}</h1>
         <div v-if="policy?.success" id="cards-container">
             <Button
                 class="mt-2 mb-4"
                 icon="pi pi-plus"
-                label="Add a new policy"
+                :label="$t('policy.new_policy.header')"
                 @click="visible = true"
             ></Button>
             <p v-if="policyData.length == 0">
-                There are currently no policies.
+                {{ $t("policy.empty") }}
             </p>
             <div class="flex flex-wrap justify-between gap-[1rem]">
                 <div v-for="policy in policyData" id="card">
@@ -334,7 +345,7 @@ onMounted(async () => {
                                     }}
                                 </h3>
                                 <p class="mb-4 gap-4">
-                                    <b>Status: </b
+                                    <b>{{ $t("policy.card.status") }}</b
                                     ><Tag
                                         :severity="
                                             getSeverity(
@@ -349,10 +360,11 @@ onMounted(async () => {
                                     ></Tag>
                                 </p>
                                 <p class="mb-4">
-                                    <b>Day(s): </b>{{ formatDays(policy.days) }}
+                                    <b>{{ $t("policy.card.days") }}</b
+                                    >{{ formatDays(policy.days) }}
                                 </p>
                                 <p class="mb-4">
-                                    <b>Time: </b
+                                    <b>{{ $t("policy.card.time") }}</b
                                     >{{
                                         `${policy.start_time.slice(0, 5)} ~ ${policy.end_time.slice(0, 5)}`
                                     }}
@@ -364,7 +376,7 @@ onMounted(async () => {
                                 <Button
                                     outlined
                                     icon="pi pi-trash"
-                                    label="Delete"
+                                    :label="$t('policy.card.delete')"
                                     severity="danger"
                                     class="w-full"
                                     @click="
@@ -376,7 +388,7 @@ onMounted(async () => {
                                     v-if="!policy.unavailable"
                                     icon="pi pi-play"
                                     severity="success"
-                                    label="Resume"
+                                    :label="$t('policy.card.resume')"
                                     class="w-full"
                                     @click="
                                         (id = policy.id as number),
@@ -387,7 +399,7 @@ onMounted(async () => {
                                     v-if="policy.unavailable"
                                     icon="pi pi-pause"
                                     severity="danger"
-                                    label="Stop"
+                                    :label="$t('policy.card.stop')"
                                     class="w-full"
                                     @click="
                                         (id = policy.id as number),
