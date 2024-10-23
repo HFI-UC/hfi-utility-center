@@ -86,7 +86,7 @@ const localeOptions = ref([
         code: "en_us",
     },
     {
-        key: "微软中文",
+        key: "微软中文（不建议）",
         code: "zh_ms",
     },
 ]);
