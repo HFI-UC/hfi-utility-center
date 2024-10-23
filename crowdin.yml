@@ -1,0 +1,3 @@
+files:
+  - source: /src/assets/i18n/en_us.json
+    translation: /src/assets/i18n/%language%.%file_extension%
