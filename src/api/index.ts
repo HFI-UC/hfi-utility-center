@@ -381,7 +381,6 @@ function delay(ms: number) {
 }
 
 export async function getMaintenance(token: string) {
-    console.log(token);
     const res =
         token == ""
             ? await axios.get<{ success: boolean; data: MaintenanceInfo[] }>(

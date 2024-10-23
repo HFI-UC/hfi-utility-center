@@ -73,7 +73,7 @@
             "name": "Your Chinese name and English name (e.g. 山姆 Sam).",
             "class": "Your class.",
             "id": "Your student ID (e.g. GJ12345678).",
-            "email": "Your e-mail (e.g. sam.xulf2024@gdhfi.com).",
+            "email": "Your e-mail (e.g. {0}).",
             "campus": "Campus to which you are applying.",
             "room": "Room to which you are applying.",
             "date": "Date of reservation.",

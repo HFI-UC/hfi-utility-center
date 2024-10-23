@@ -33,16 +33,16 @@ const onClickEvent = () => {
         loading.value = false;
         return;
     }
-    if (cf_token.value == "") {
-        toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: "Please verify that you are not a robot.",
-            life: 3000,
-        });
-        loading.value = false;
-        return;
-    }
+    // if (cf_token.value == "") {
+    //     toast.add({
+    //         severity: "error",
+    //         summary: "Error",
+    //         detail: "Please verify that you are not a robot.",
+    //         life: 3000,
+    //     });
+    //     loading.value = false;
+    //     return;
+    // }
     postLogin(user.value, password.value, cf_token.value).then(
         (res: { success: boolean; message: string; token?: string }) => {
             if (res.success) {

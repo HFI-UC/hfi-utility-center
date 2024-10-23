@@ -9,12 +9,10 @@ import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
 import Select from "primevue/select";
 import SelectButton from "primevue/selectbutton";
-import { useI18n } from "vue-i18n";
 
 const data: Ref<ReservationInfo | null> = ref(null);
 const queried = ref(false);
 const query = ref("");
-const { t } = useI18n();
 const date: Ref<Date | null> = ref(null);
 const room = ref("");
 const options = ref(["Keyword", "Time", "Room"]);

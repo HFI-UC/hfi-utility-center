@@ -391,7 +391,9 @@ const rules = computed(() =>
                                 id="email"
                                 v-model="reservation.email"
                                 v-tooltip.bottom="
-                                    $t('application.tooltip.email')
+                                    $t('application.tooltip.email', [
+                                        'sam.xulf2024@gdhfi.com',
+                                    ])
                                 "
                                 :invalid="
                                     !isCompleted && reservation.email === ''

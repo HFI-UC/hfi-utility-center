@@ -16,34 +16,56 @@ const changeLocale = (lang: string) => {
     locale.value = lang;
 };
 
-const items = computed(() => [
-    {
-        label: t("menubar.homepage"),
-        icon: "pi pi-home",
-        url: "/",
-    },
-    {
-        label: t("menubar.reservation.reservation"),
-        icon: "pi pi-calendar-clock",
-        items: [
-            {
-                label: t("menubar.reservation.form"),
-                icon: "pi pi-pen-to-square",
-                url: "/reservation/create",
-            },
-            {
-                label: t("menubar.reservation.status"),
-                icon: "pi pi-chart-bar",
-                url: "/reservation/status",
-            },
-        ],
-    },
-    {
-        label: t("menubar.maintenance"),
-        icon: "pi pi-wrench",
-        url: "/maintenance",
-    },
-]);
+const items = computed(() => {
+    const data: any = [
+        {
+            label: t("menubar.homepage"),
+            icon: "pi pi-home",
+            url: "/",
+        },
+        {
+            label: t("menubar.reservation.reservation"),
+            icon: "pi pi-calendar-clock",
+            items: [
+                {
+                    label: t("menubar.reservation.form"),
+                    icon: "pi pi-pen-to-square",
+                    url: "/reservation/create",
+                },
+                {
+                    label: t("menubar.reservation.status"),
+                    icon: "pi pi-chart-bar",
+                    url: "/reservation/status",
+                },
+            ],
+        },
+        {
+            label: t("menubar.maintenance"),
+            icon: "pi pi-wrench",
+            url: "/maintenance",
+        },
+    ];
+    console.log(isAdmin.value);
+    if (isAdmin.value) {
+        data.push({
+            label: t("menubar.admin.admin"),
+            icon: "pi pi-user",
+            items: [
+                {
+                    label: t("menubar.admin.reservation"),
+                    icon: "pi pi-list-check",
+                    url: "/admin/reservations",
+                },
+                {
+                    label: t("menubar.admin.policy"),
+                    icon: "pi pi-building-columns",
+                    url: "/admin/policy",
+                },
+            ],
+        });
+    }
+    return data;
+});
 
 const iconClass = ref("pi-sun");
 
@@ -87,7 +109,6 @@ watch(
 
 onMounted(async () => {
     selectedLocale.value = localStorage.getItem("locale") || "en_us";
-    console.log(selectedLocale.value);
     const color =
         localStorage.getItem("color") ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -103,22 +124,6 @@ onMounted(async () => {
     if (!token) return;
     if (await verifyAdmin(token)) {
         isAdmin.value = true;
-        items.value.push({
-            label: t("menubar.admin.admin"),
-            icon: "pi pi-user",
-            items: [
-                {
-                    label: t("menubar.admin.reservation"),
-                    icon: "pi pi-list-check",
-                    url: "/admin/reservations",
-                },
-                {
-                    label: t("menubar.admin.policy"),
-                    icon: "pi pi-building-columns",
-                    url: "/admin/policy",
-                },
-            ],
-        });
     }
 });
 </script>
