@@ -72,7 +72,7 @@
         "start_time": "开始时间",
         "end_time": "结束时间",
         "reason": "理由",
-        "checkbox": "我会遵守{0}。",
+        "checkbox": "我会遵守 {0}.",
         "submit": "交",
         "tooltip": {
             "name": "你的中英文名 (例：山姆 Sam)。",
@@ -145,7 +145,7 @@
             "cancel": "取消"
         },
         "reservation": "预约管理",
-        "empty": "暂时无预约。",
+        "empty": "暂时无预约",
         "card": {
             "header": "预约 #{0}",
             "room": "房：",
@@ -180,7 +180,7 @@
             "cancel": "取消",
             "add": "加"
         },
-        "empty": "暂时无预约。",
+        "empty": "暂时无预约",
         "card": {
             "status": "状态：",
             "days": "星期：",
@@ -216,7 +216,7 @@
             "cancel": "取消",
             "submit": "提价"
         },
-        "empty": "暂无报修提交。",
+        "empty": "暂无报修提交",
         "card": {
             "header": "报修 #{0}",
             "name": "名：",
