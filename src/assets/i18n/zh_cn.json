@@ -155,7 +155,11 @@
             "time": "时间：",
             "reason": "原因：",
             "status": "状态：",
-            "pending": "审核中"
+            "tag": {
+                "pending": "Pending",
+                "approved": "Approved",
+                "rejected": "Rejected"
+            }
         },
         "pass": "通过"
     },
