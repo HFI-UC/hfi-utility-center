@@ -155,7 +155,11 @@
             "time": "Time: ",
             "reason": "Reason: ",
             "status": "Status: ",
-            "pending": "Pending"
+            "tag": {
+                "pending": "Pending",
+                "approved": "Approved",
+                "rejected": "Rejected"
+            }
         },
         "pass": "Pass"
     },
