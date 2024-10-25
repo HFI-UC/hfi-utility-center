@@ -15,6 +15,7 @@ import ko_kr from "./assets/i18n/ko_kr.json";
 
 const app = createApp(App);
 const i18n = createI18n({
+    locale: localStorage.getItem("locale") || "en_us",
     fallbackLocale: "en_us",
     messages: {
         en_us,

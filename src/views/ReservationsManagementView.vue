@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, Ref, computed } from "vue";
 import {
     postReservationAccept,
     postReservationReject,
@@ -51,7 +51,7 @@ const { data: booking } = useRequest(
     { pollingInterval: 3000 },
 );
 
-const bookingData = computed(() => booking.value?.data || []);
+const bookingData = computed(() => booking.value?.data.filter((item) => item.auth !== "no") || []);
 
 const formatDate = (time: string) => {
     const startTime = time.split("-")[0];
@@ -114,6 +114,18 @@ const onRejectEvent = () => {
     disabled.value = false;
     visible.value = false;
 };
+
+const status: Ref<{ [key: string]: string}> = computed(() => ({
+    non: t("reservation.card.tag.pending"),
+    no: t("reservation.card.tag.rejected"),
+    yes: t("reservation.card.tag.approved")
+}))
+
+const severity: { [key: string]: string}= {
+    non: "info",
+    no: "error",
+    yes: "success"
+}
 
 const roomMapping: { [key: number]: string } = {
     101: "iStudy Meeting Room 1",
@@ -224,8 +236,8 @@ onMounted(async () => {
                                 <p class="mb-2">
                                     <b>{{ $t("reservation.card.status") }}</b
                                     ><Tag
-                                        severity="info"
-                                        :value="$t('reservation.card.pending')"
+                                        :severity="severity[booking.auth]"
+                                        :value="status[booking.auth]"
                                     ></Tag>
                                 </p>
                             </div>
