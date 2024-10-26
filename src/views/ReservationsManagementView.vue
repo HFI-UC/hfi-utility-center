@@ -51,7 +51,9 @@ const { data: booking } = useRequest(
     { pollingInterval: 3000 },
 );
 
-const bookingData = computed(() => booking.value?.data.filter((item) => item.auth !== "no") || []);
+const bookingData = computed(
+    () => booking.value?.data.filter((item) => item.auth !== "no") || [],
+);
 
 const formatDate = (time: string) => {
     const startTime = time.split("-")[0];
@@ -115,17 +117,17 @@ const onRejectEvent = () => {
     visible.value = false;
 };
 
-const status: Ref<{ [key: string]: string}> = computed(() => ({
+const status: Ref<{ [key: string]: string }> = computed(() => ({
     non: t("reservation.card.tag.pending"),
     no: t("reservation.card.tag.rejected"),
-    yes: t("reservation.card.tag.approved")
-}))
+    yes: t("reservation.card.tag.approved"),
+}));
 
-const severity: { [key: string]: string}= {
+const severity: { [key: string]: string } = {
     non: "info",
     no: "error",
-    yes: "success"
-}
+    yes: "success",
+};
 
 const roomMapping: { [key: number]: string } = {
     101: "iStudy Meeting Room 1",

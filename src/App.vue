@@ -9,6 +9,8 @@ import Select from "primevue/select";
 import "./styles/styles.css";
 import { useI18n } from "vue-i18n";
 
+const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 5);
+
 const { t, locale } = useI18n();
 
 const changeLocale = (lang: string) => {
@@ -188,6 +190,7 @@ onMounted(async () => {
             {{ $t("footer.line2") }}
         </p>
         <i18n-t tag="p" keypath="footer.line3" scope="global">
+            <span><i class="pi pi-sitemap"></i> {{ sha }}</span>
             <a href="https://www.gnu.org/licenses/agpl-3.0.html">{{
                 $t("footer.license")
             }}</a>
