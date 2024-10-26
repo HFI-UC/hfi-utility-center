@@ -1,7 +1,10 @@
 import axios, { isAxiosError } from "axios";
 import COS, { Credentials } from "cos-js-sdk-v5";
 
-axios.defaults.baseURL = process.env.VERCEL_ENV == "production" ? "https://api.hfiuc.org" : "http://120.24.212.59/"
+axios.defaults.baseURL =
+    process.env.VERCEL_ENV == "production"
+        ? "https://api.hfiuc.org"
+        : "http://120.24.212.59/";
 
 export interface ApplicationInfo {
     class: string;

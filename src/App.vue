@@ -9,7 +9,7 @@ import Select from "primevue/select";
 import "./styles/styles.css";
 import { useI18n } from "vue-i18n";
 
-const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 5)
+const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 5);
 
 const { t, locale } = useI18n();
 
