@@ -25,7 +25,7 @@
         "license": "GNU AGPL-3.0 License",
         "line1": "Powered by and created by MAKERs' with ♥.",
         "line2": "Copyright © 2024 The co-author of HFI Utility Center. All rights reserved.",
-        "line3": "This website is under {0} and open-sourced on {1}."
+        "line3": "Build {0}. This website is under {1} and open-sourced on {2}."
     },
     "campus": {
         "shipai": "Shipai Campus",
