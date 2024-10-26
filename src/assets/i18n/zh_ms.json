@@ -156,9 +156,9 @@
             "reason": "理由：",
             "status": "状态：",
             "tag": {
-                "pending": "Pending",
-                "approved": "Approved",
-                "rejected": "Rejected"
+                "pending": "悬而未决",
+                "approved": "板上钉钉",
+                "rejected": "有疾而终"
             }
         },
         "pass": "过"
