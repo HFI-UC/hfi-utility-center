@@ -155,7 +155,11 @@
             "time": "时：",
             "reason": "理由：",
             "status": "状态：",
-            "pending": "待定"
+            "tag": {
+                "pending": "悬而未决",
+                "approved": "板上钉钉",
+                "rejected": "有疾而终"
+            }
         },
         "pass": "过"
     },
