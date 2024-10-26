@@ -23,9 +23,9 @@
     },
     "footer": {
         "license": "戈努 Affero 通用公共驾驶证 3.0",
-        "line1": "由创客们和 ♥ 驱动并制造。",
+        "line1": "Powered by {0} and created by MAKERs' with ♥.",
         "line2": "版权所有 © 2024 净水器工具中心的共同作者。保留所有权利。",
-        "line3": "Build {0}. This website is under {1} and open-sourced on {2}."
+        "line3": "构建 {0}。本网站基于 {1}，并在 {2} 上开源。"
     },
     "campus": {
         "shipai": "石牌校园",
