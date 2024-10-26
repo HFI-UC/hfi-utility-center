@@ -190,7 +190,7 @@ onMounted(async () => {
             {{ $t("footer.line2") }}
         </p>
         <i18n-t tag="p" keypath="footer.line3" scope="global">
-            <span>{{ sha }}</span>
+            <span><i class="pi pi-sitemap"></i> {{ sha }}</span>
             <a href="https://www.gnu.org/licenses/agpl-3.0.html">{{
                 $t("footer.license")
             }}</a>
