@@ -1,244 +1,244 @@
 {
     "home": {
         "title": "HFI Utility Center",
-        "subtitle": "由 MAKERs' 制作",
+        "subtitle": "by MAKERs'",
         "button": {
-            "form": "创建一个预约",
-            "status": "预约详情"
+            "form": "Application Form",
+            "status": "Reservation Status"
         }
     },
     "menubar": {
-        "homepage": "主页",
+        "homepage": "Homepage",
         "reservation": {
-            "reservation": "预约管理",
-            "form": "创建一个预约",
-            "status": "预约详情"
+            "reservation": "Reservation",
+            "form": "Application Form",
+            "status": "Reservation Status"
         },
-        "maintenance": "报修",
+        "maintenance": "Maintenance Report",
         "admin": {
-            "admin": "管理员功能",
-            "reservation": "预约管理",
-            "policy": "政策管理"
+            "admin": "Admin",
+            "reservation": "Reservation Management",
+            "policy": "Policy Settings"
         }
     },
     "footer": {
-        "license": "GNU Affero 通用公共许可证 3.0",
-        "line1": "由 MAKERs' 用 ♥ 提供和编写。",
-        "line2": "版权所有 © 2024 HFI Utility Center 的所有协作者。保留所有权利。",
-        "line3": "本网站基于 {0}，并在 {1} 上开源。"
+        "license": "GNU AGPL-3.0 License",
+        "line1": "Powered by and created by MAKERs' with ♥.",
+        "line2": "Copyright © 2024 The co-author of HFI Utility Center. All rights reserved.",
+        "line3": "This website is under {0} and open-sourced on {1}."
     },
     "campus": {
-        "shipai": "石牌校区",
-        "knowledgecity": "知识城校区",
-        "office": "办公室"
+        "shipai": "Shipai Campus",
+        "knowledgecity": "Knowledge City Campus",
+        "office": "Office"
     },
     "toast": {
-        "error": "错误",
-        "success": "成功",
-        "login_first": "请先登录！",
-        "robot": "请通过人机验证。",
-        "error_occured": "出错了。",
-        "success_msg": "成功！",
-        "multiple": "所选的时间必须是 5 的倍数！",
-        "choose_photo": "请选择一张图片上传！",
-        "required_field": "请填写必需字段！"
+        "error": "Error",
+        "success": "Success",
+        "login_first": "Please login first!",
+        "robot": "Please verify that you are not a robot.",
+        "error_occured": "An error occured.",
+        "success_msg": "Success!",
+        "multiple": "The selected time must be a multiple of 5!",
+        "choose_photo": "Please choose a photo to upload!",
+        "required_field": "Please fill out the required field!"
     },
     "application": {
         "rule": {
-            "rule": "课室使用规则",
-            "1": "◆ 请勿携带食品和饮料进入自习区域饮食，学生有责任保持自习室干净整洁。",
-            "2": "◆ 学生应保管好个人物品（如钱包、手机、电脑），请将贵重物品随身携带或锁在安全的地方。离开课室时，请带走贵重物品，学校不承担保管义务。",
-            "3": "◆ 离开公共区域后，学生应将个人物品随身带走，行政办会定期清理场地卫生，如有遗失，学校不承担任何责任。",
-            "4": "◆ 学生需自觉维护好课室保洁、公共秩序。",
-            "5": "◆ 请爱护并合理使用教学设备，如果发现有问题或遗失，请尽快联系行政办；如果因学生原因造成设备遗失或学生恶意、损坏教学设备，学生应负责赔偿。",
-            "6": "◆ 学生离开课室时，应确保所有电器设备（如空调、风扇、灯）被关闭，并且遥控板被归还到指定位置。",
-            "7": "◆ 未经允许，学生不可以移动教学设备。",
-            "8": "◆ 请勿以任何方式占座，学生若需离开座位，请自觉将个人物品带离；或将桌面的书本收到书包里，放置在桌椅下方的侧边，不影响其它同学使用座位；值班老师将定期巡查，一旦发现有占座现象，占座物品将被移开或收走，以腾出座位给其他同学。",
-            "9": "◆ 注意公德和个人形象，勿在长椅或沙发上躺卧。",
-            "10": "◆ 公共场合不得大声喧哗，同时请将手机调为静音状态，自觉到室外接打电话。",
-            "11": "◆ 禁止私拉电源和使用高功率电器，未经批准请勿挪动消防设施。",
-            "12": "◆ 任何时段，自习区域不得进行与学习无关的事项（包括但不限于手机/电脑等电子游戏（APP）、棋牌、观看综艺/影视等）违反以上要求及规定，将结合实际情况，按照《学生违规管理条例》执行。"
+            "rule": "Classroom Regulations",
+            "1": "◆ Do not bring food and drinks into the study area. Students are responsible for keeping the study room clean and tidy.",
+            "2": "◆ Students should take good care of their personal belongings (such as wallets, phones, and computers). Valuable items should be carried or locked in a secure place. When leaving the classroom, students should take their valuable items with them, as the school does not assume any responsibility for their safekeeping.",
+            "3": "◆ After leaving public areas, students should take their personal belongings with them. The administrative office will periodically clean the area, and the school will not be responsible for any lost items.",
+            "4": "◆ Students should consciously maintain the cleanliness of the classroom and public order.",
+            "5": "◆ Please take care of and use the teaching equipment responsibly. If any problems or losses are discovered, contact the administrative office as soon as possible. If a student causes equipment loss or maliciously damages the equipment, the student will be responsible for compensation.",
+            "6": "◆ When students leave the classroom, they should ensure that all electrical equipment (such as air conditioners, fans, and lights) is turned off, and the remote control is returned to the designated location.",
+            "7": "◆ Students are not allowed to move teaching equipment without permission.",
+            "8": "◆ Do not reserve seats in any way. If students need to leave their seats, they should take their personal belongings with them, or place their books in their bags and put them under the desk without affecting other students' use of the seat. The duty teacher will periodically inspect the area, and any reserved items found will be removed or taken away to make the seat available for others.",
+            "9": "◆ Be mindful of public decency and personal image, and do not lie down on benches or sofas.",
+            "10": "◆ Do not speak loudly in public places, and set your phone to silent mode. Please go outside to make phone calls.",
+            "11": "◆ It is forbidden to pull power sources privately or use high-powered electrical appliances. Do not move fire safety equipment without permission.",
+            "12": "◆ At any time, the study area must not be used for non-study-related activities (including but not limited to video games on phones/computers, board games, watching variety shows or movies, etc.). Violation of these rules will be handled according to the 'Student Violation Management Regulations' based on the actual situation."
         },
-        "application": "创建一个预约",
-        "personal_info": "个人信息",
-        "name": "姓名",
-        "class": "班级",
-        "campus": "校区",
-        "id": "学号",
-        "email": "邮箱",
-        "room_info": "课室信息",
-        "room": "课室",
-        "date": "日期",
-        "start_time": "开始时间",
-        "end_time": "结束时间",
-        "reason": "原因",
-        "checkbox": "我会遵守{0}。",
-        "submit": "提交",
+        "application": "Application Form",
+        "personal_info": "Personal Information",
+        "name": "Name",
+        "class": "Class",
+        "campus": "Campus",
+        "id": "Student ID",
+        "email": "E-mail",
+        "room_info": "Room Information",
+        "room": "Room",
+        "date": "Date",
+        "start_time": "Start Time",
+        "end_time": "End Time",
+        "reason": "Reason",
+        "checkbox": "I will follow the {0}.",
+        "submit": "Submit",
         "tooltip": {
-            "name": "你的中文名和英文名（例：山姆 Sam）。",
-            "class": "你的班级。",
-            "id": "你的学号（例：GJ12345678）。",
-            "email": "你的邮箱（例：{0}）。",
-            "campus": "你要申请的校区。",
-            "room": "你要申请的课室。",
-            "date": "预约的日期。",
-            "start_time": "预约的开始时间。",
-            "end_time": "预约的结束时间。",
-            "reason": "预约的原因（例：我想要准备我的 TOEFL 考试）。",
-            "checkbox": "想要提交一个申请，你需要遵守这个规则。"
+            "name": "Your Chinese name and English name (e.g. 山姆 Sam).",
+            "class": "Your class.",
+            "id": "Your student ID (e.g. GJ12345678).",
+            "email": "Your e-mail (e.g. {0}).",
+            "campus": "Campus to which you are applying.",
+            "room": "Room to which you are applying.",
+            "date": "Date of reservation.",
+            "start_time": "Start time of reservation.",
+            "end_time": "End time of reservation.",
+            "reason": "Reason of reservation (e.g. I wanna practise my TOEFL test).",
+            "checkbox": "You will need to follow the rules of the classroom to make an application."
         },
         "table": {
-            "reservations": "预约列表",
-            "empty": "无可用数据。",
-            "name": "姓名",
-            "time": "日期 / 时间",
-            "unavailable": "不可用时段",
-            "days": "天",
-            "hours": "小时"
+            "reservations": "Reservations",
+            "empty": "No available data.",
+            "name": "Name",
+            "time": "Date / Time",
+            "unavailable": "Unavailable Time",
+            "days": "Day(s)",
+            "hours": "Hours"
         },
-        "success": "成功！",
-        "error": "出错了。",
-        "fix_problem": "我们在尝试修复这个问题。"
+        "success": "Success!",
+        "error": "Something went wrong.",
+        "fix_problem": "We are trying to fix this problem."
     },
     "status": {
-        "status": "预约详情",
+        "status": "Reservation Status",
         "option": {
-            "keyword": "关键词",
-            "time": "时间",
-            "room": "课室"
+            "keyword": "Keyword",
+            "time": "Time",
+            "room": "Room"
         },
         "tag": {
-            "pending": "审核中",
-            "approved": "已通过",
-            "rejected": "已打回"
+            "pending": "Pending",
+            "approved": "Approved",
+            "rejected": "Rejected"
         },
         "table": {
-            "search": "搜索",
-            "empty": "无可用数据。",
-            "enter_keyword": "输入关键词来开始搜索。"
+            "search": "Search",
+            "empty": "No available data.",
+            "enter_keyword": "Enter a keyword to start your search."
         },
         "column": {
-            "name": "姓名 / 班级",
-            "email": "邮箱",
-            "date": "日期",
-            "time": "时间",
-            "room": "房间",
-            "reason": "原因",
-            "status": "状态",
+            "name": "Name / Class",
+            "email": "E-mail",
+            "date": "Date",
+            "time": "Time",
+            "room": "Room",
+            "reason": "Reason",
+            "status": "Status",
             "id": "ID",
-            "sid": "学号",
-            "operator": "操作者",
-            "add_time": "新建时间"
+            "sid": "Student ID",
+            "operator": "Operator",
+            "add_time": "Add Time"
         },
         "tooltip": {
-            "room": "根据课室搜索",
-            "time": "根据时间搜索。",
-            "result": "搜索会返回三小时前后的结果。",
-            "keyword": "根据关键词搜索。"
+            "room": "Search with room.",
+            "time": "Search with time.",
+            "result": " The search will show results before and after three hours.",
+            "keyword": "Search with keyword."
         }
     },
     "reservation": {
         "reject": {
-            "reject": "打回",
-            "reason": "原因",
-            "header": "选择一个打回原因",
-            "cancel": "取消"
+            "reject": "Reject",
+            "reason": "Reason",
+            "header": "Choose a reject reason",
+            "cancel": "Cancel"
         },
-        "reservation": "预约管理",
-        "empty": "当前没有未审核的预约。",
+        "reservation": "Reservation Management",
+        "empty": "There are currently no applications.",
         "card": {
-            "header": "预约 #{0}",
-            "room": "课室：",
-            "name": "姓名 / 班级：",
-            "email": "邮箱：",
-            "date": "日期：",
-            "time": "时间：",
-            "reason": "原因：",
-            "status": "状态：",
+            "header": "Reservation #{0}",
+            "room": "Room: ",
+            "name": "Name / Class: ",
+            "email": "E-mail: ",
+            "date": "Date: ",
+            "time": "Time: ",
+            "reason": "Reason: ",
+            "status": "Status: ",
             "tag": {
-                "pending": "审核中",
-                "approved": "已通过",
-                "rejected": "已打回"
+                "pending": "Pending",
+                "approved": "Approved",
+                "rejected": "Rejected"
             }
         },
-        "pass": "通过"
+        "pass": "Pass"
     },
     "login": {
-        "header": "管理员登录",
-        "username": "用户名",
-        "password": "密码",
-        "login": "登录"
+        "header": "Admin Login",
+        "username": "Username",
+        "password": "Password",
+        "login": "Login"
     },
     "policy": {
-        "policy": "政策管理",
+        "policy": "Policy Settings",
         "tag": {
-            "active": "启用",
-            "inactive": "禁用"
+            "active": "Active",
+            "inactive": "Inactive"
         },
         "new_policy": {
-            "header": "新增政策",
-            "room": "课室",
-            "days": "天",
-            "start_time": "开始时间",
-            "end_time": "结束时间",
-            "cancel": "取消",
-            "add": "新增"
+            "header": "Add a new policy",
+            "room": "Room",
+            "days": "Day(s)",
+            "start_time": "Start Time",
+            "end_time": "End Time",
+            "cancel": "Cancel",
+            "add": "Add"
         },
-        "empty": "当前没有政策。",
+        "empty": "There are currently no policies.",
         "card": {
-            "status": "状态：",
-            "days": "天：",
-            "time": "时间：",
-            "delete": "删除",
-            "resume": "启用",
-            "stop": "禁用"
+            "status": "Status: ",
+            "days": "Day(s): ",
+            "time": "Time: ",
+            "delete": "Delete",
+            "resume": "Resume",
+            "stop": "Stop"
         }
     },
     "maintenance": {
         "campus": {
-            "shipai": "石牌校区",
-            "knowledgecity": "知识城校区"
+            "shipai": "Shipai Campus",
+            "knowledgecity": "Knowledge City Campus"
         },
         "status": {
-            "pending": "处理中",
-            "approved": "已处理",
-            "unscheduled": "未计划",
-            "duplicated": "重复"
+            "pending": "Pending",
+            "approved": "Approved",
+            "unscheduled": "Unscheduled",
+            "duplicated": "Duplicated"
         },
-        "maintenance": "报修",
+        "maintenance": "Maintenance Report",
         "new_maintenance": {
-            "header": "新报修",
-            "choose_photo": "1. 选择一张照片",
-            "choose": "选择",
-            "fill_out": "2. 填写表单",
-            "name": "姓名",
-            "email": "邮箱",
-            "campus": "校区",
-            "subject": "主题",
-            "location": "地点",
-            "detail": "详细信息",
-            "cancel": "取消",
-            "submit": "提交"
+            "header": "Report for Maintenance",
+            "choose_photo": "1. Choose a photo",
+            "choose": "Choose",
+            "fill_out": "2. Fill out the form",
+            "name": "Name",
+            "email": "E-mail",
+            "campus": "Campus",
+            "subject": "Subject",
+            "location": "Location",
+            "detail": "Detail",
+            "cancel": "Cancel",
+            "submit": "Submit"
         },
-        "empty": "当前没有报修。",
+        "empty": "There are currently no maintenance reports.",
         "card": {
-            "header": "报修 #{0}",
-            "name": "姓名：",
-            "email": "邮箱：",
-            "location": "地点：",
-            "campus": "校区：",
-            "detail": "详细信息：",
-            "status": "状态：",
-            "mark_as": "标记为"
+            "header": "Maintenance #{0}",
+            "name": "Name: ",
+            "email": "E-mail: ",
+            "location": "Location: ",
+            "campus": "Campus: ",
+            "detail": "Detail: ",
+            "status": "Status: ",
+            "mark_as": "Mark as"
         },
-        "search": "搜索",
+        "search": "Search",
         "tooltip": {
-            "name": "你的中文名和英文名（例：山姆 Sam）。",
-            "email": "你的邮箱（例：{0}）。",
-            "campus": "要保修的校区。",
-            "subject": "报修的主题（例：空调坏了）。",
-            "location": "报修的地点（例：教室）。",
-            "detail": "报修的详细信息（例：我们打不开空调）。"
+            "name": "Your Chinese name and English name (e.g. 山姆 Sam).",
+            "email": "Your e-mail (e.g. {0}).",
+            "campus": "The campus where the maintenance was reported.",
+            "subject": "The subject of your report (e.g. AC Doesn't Work).",
+            "location": "The location you want to report for maintenance (e.g. The classroom).",
+            "detail": "The details of your report (e.g. We can not turn on the AC)."
         }
     }
 }
