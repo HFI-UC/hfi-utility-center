@@ -156,9 +156,9 @@
             "reason": "原因：",
             "status": "状态：",
             "tag": {
-                "pending": "Pending",
-                "approved": "Approved",
-                "rejected": "Rejected"
+                "pending": "审核中",
+                "approved": "已通过",
+                "rejected": "已打回"
             }
         },
         "pass": "通过"
