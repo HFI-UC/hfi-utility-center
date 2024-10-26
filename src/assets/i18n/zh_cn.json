@@ -25,7 +25,7 @@
         "license": "GNU Affero 通用公共许可证 3.0",
         "line1": "由 MAKERs' 用 ♥ 提供和编写。",
         "line2": "版权所有 © 2024 HFI Utility Center 的所有协作者。保留所有权利。",
-        "line3": "本网站基于 {0}，并在 {1} 上开源。"
+        "line3": "Build {0}. This website is under {1} and open-sourced on {2}."
     },
     "campus": {
         "shipai": "石牌校区",
