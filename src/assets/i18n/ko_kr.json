@@ -5,6 +5,11 @@
         "button": {
             "form": "Application Form",
             "status": "Reservation Status"
+        },
+        "dialog": {
+            "header": "Announcement",
+            "message": "You are using the {0} of HFI Utility Center! Go to {1} if you want to sumbit a room application!",
+            "beta": "Beta Version"
         }
     },
     "menubar": {
@@ -23,8 +28,8 @@
     },
     "footer": {
         "license": "GNU AGPL-3.0 License",
-        "line1": "Powered by {0}.",
-        "line2": "Created by MAKERs' with ♥.",
+        "line1": "Created by MAKERs' with ♥.",
+        "line2": "Powered by {0}.",
         "line3": "Copyright © 2024 The co-author of HFI Utility Center. All rights reserved.",
         "line4": "Build {0}. This website is under {1} and open-sourced on {2}."
     },

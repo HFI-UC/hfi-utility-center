@@ -5,6 +5,11 @@
         "button": {
             "form": "创建一个预约",
             "status": "预约详情"
+        },
+        "dialog": {
+            "header": "公告",
+            "message": "你正在使用 HFI Utility Center 的 {0}！如果你想要预约课室，请转至 {1}！",
+            "beta": "Beta 版本"
         }
     },
     "menubar": {
