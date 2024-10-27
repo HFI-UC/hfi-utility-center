@@ -28,8 +28,8 @@
     },
     "footer": {
         "license": "戈努 Affero 通用公共驾驶证 3.0",
-        "line1": "由 {0} 提供支持。",
-        "line2": "由 MAKERs' 编写。",
+        "line1": "由 MAKERs' 编写。",
+        "line2": "由 {0} 提供支持。",
         "line3": "版权所有 © 2024 HFI Utility Center 的所有协作者。保留所有权利。",
         "line4": "构建 {0}。本网站基于 {1}，并在 {2} 上开源。"
     },
