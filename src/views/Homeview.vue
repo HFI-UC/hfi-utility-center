@@ -1,11 +1,33 @@
 <script setup lang="ts">
 import Dialog from "primevue/dialog";
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
+
+
+import router from "../router/router";
+import Button from "primevue/button";
+import { useRequest } from "vue-request";
+import { getHitokoto } from "../api";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n()
+
+const { run, data } = useRequest(() => getHitokoto(), {
+    pollingInterval: 5000,
+    manual: true
+});
+
+const hitokoto = computed(() => {
+    if (data.value) return `${data.value?.hitokoto} —— ${data.value?.from_who || ""}《${data.value?.from || "未知"}》`
+    return t("home.subtitle")
+})
 
 const env = process.env.VERCEL_ENV;
 const visible = ref(env != "production");
-import router from "../router/router";
-import Button from "primevue/button";
+
+onMounted(() => {
+    setTimeout(() => run(), 3000)
+})
+
 </script>
 
 <template>
@@ -28,7 +50,7 @@ import Button from "primevue/button";
     </Dialog>
     <div class="flex flex-col items-center justify-center" id="home-container">
         <h1 class="text-center">{{ $t("home.title") }}</h1>
-        <h3 class="text-center">{{ $t("home.subtitle") }}</h3>
+        <h3 class="text-center">{{ hitokoto }}</h3>
         <div class="mt-[4rem] flex flex-wrap gap-4 items-center justify-center">
             <Button
                 :label="$t('home.button.form')"
