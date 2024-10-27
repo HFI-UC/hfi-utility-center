@@ -9,6 +9,7 @@ import Select from "primevue/select";
 import "./styles/styles.css";
 import { useI18n } from "vue-i18n";
 
+
 const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
 
 const { t, locale } = useI18n();
@@ -194,7 +195,7 @@ onMounted(async () => {
             scope="global"
             class="flex text-center justify-center"
         >
-            <img class="ms-2 me-2" src="./assets/vercel.svg" width="90px" />
+            <img class="ms-2 me-2" src="./assets/vercel.svg" width="80px" />
         </i18n-t>
         <p>
             {{ $t("footer.line3") }}

@@ -423,3 +423,8 @@ export async function postMaintenanceAction(
     );
     return res.data;
 }
+
+export async function getHitokoto() {
+    const res = await axios.get<{ hitokoto: string; from_who: string}>("https://v1.hitokoto.cn/?max_length=25")
+    return res.data
+}
