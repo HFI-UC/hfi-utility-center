@@ -17,7 +17,7 @@ const { run, data } = useRequest(() => getHitokoto(), {
 });
 
 const hitokoto = computed(() => {
-    if (data.value) return `${data.value?.hitokoto} —— ${data.value?.from_who || "未知"}《${data.value?.from || "未知"}》`
+    if (data.value) return `${data.value?.hitokoto} —— ${data.value?.from_who || ""}《${data.value?.from || "未知"}》`
     return t("home.subtitle")
 })
 
