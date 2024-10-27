@@ -185,18 +185,29 @@ onMounted(async () => {
         <RouterView />
     </div>
     <footer id="footer">
-        <i18n-t tag="p" keypath="footer.line1" scope="global" class="flex text-center justify-center">
-            <img class="ms-2 me-2" src="./assets/vercel.svg" width="90px"></img>
+        <i18n-t
+            tag="p"
+            keypath="footer.line1"
+            scope="global"
+            class="flex text-center justify-center"
+        >
+            <img class="ms-2 me-2" src="./assets/vercel.svg" width="90px" />
         </i18n-t>
         <p>
             {{ $t("footer.line2") }}
         </p>
-        <i18n-t tag="p" keypath="footer.line3" scope="global">
-            <a :href="`https://github.com/HFI-UC/hfi-utility-center/commit/${sha}`"><i class="pi pi-sitemap"></i> {{ sha }}</a>
+        <p>
+            {{ $t("footer.line3") }}
+        </p>
+        <i18n-t tag="p" keypath="footer.line4" scope="global">
+            <a
+                :href="`https://github.com/HFI-UC/hfi-utility-center/commit/${sha}`"
+                ><i class="pi pi-sitemap"></i> {{ sha }}</a
+            >
             <a href="https://www.gnu.org/licenses/agpl-3.0.html">{{
                 $t("footer.license")
             }}</a>
-            <a href="https://github.com/SilianZ/hfi-utility-center"
+            <a href="https://github.com/HFI-UC/hfi-utility-center"
                 ><i class="pi pi-github"></i> GitHub</a
             >
         </i18n-t>
