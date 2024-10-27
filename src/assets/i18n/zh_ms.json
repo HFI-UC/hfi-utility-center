@@ -7,9 +7,9 @@
             "status": "申请状态"
         },
         "dialog": {
-            "header": "公告",
-            "message": "你正在使用 HFI Utility Center 的 {0}！如果你想要预约课室，请转至 {1}！",
-            "beta": "Beta 版本"
+            "header": "敬告",
+            "message": "你正在使用净水器工具中心的{0}版本！走去{1}如果你想提交一个房间预约",
+            "beta": "贝塔版本"
         }
     },
     "menubar": {
@@ -28,10 +28,10 @@
     },
     "footer": {
         "license": "戈努 Affero 通用公共驾驶证 3.0",
-        "line1": "由 MAKERs' 编写。",
-        "line2": "由 {0} 提供支持。",
+        "line1": "制造 靠 创客们和♥。",
+        "line2": "驱动 靠{0}。",
         "line3": "版权所有 © 2024 HFI Utility Center 的所有协作者。保留所有权利。",
-        "line4": "构建 {0}。本网站基于 {1}，并在 {2} 上开源。"
+        "line4": "建造{0}。这个网站在{1} 下面并且开源在{2} 上面。"
     },
     "campus": {
         "shipai": "石牌校园",
@@ -194,57 +194,57 @@
         "card": {
             "status": "状态：",
             "days": "星期：",
-            "time": "时间：",
-            "delete": "删除",
-            "resume": "启用",
-            "stop": "禁用"
+            "time": "时：",
+            "delete": "删",
+            "resume": "恢复",
+            "stop": "停"
         }
     },
     "maintenance": {
         "campus": {
-            "shipai": "石牌校区",
-            "knowledgecity": "知识城校区"
+            "shipai": "石牌校园",
+            "knowledgecity": "芝士城校园"
         },
         "status": {
-            "pending": "处理中",
-            "approved": "已处理",
-            "unscheduled": "未计划",
-            "duplicated": "重复"
+            "pending": "悬而未决",
+            "approved": "板上钉钉！",
+            "unscheduled": "尚无安排",
+            "duplicated": "重复的"
         },
-        "maintenance": "报修",
+        "maintenance": "报修提交",
         "new_maintenance": {
-            "header": "新报修",
-            "choose_photo": "1. 选择一张照片",
-            "choose": "选择",
-            "fill_out": "2. 填写表单",
-            "name": "姓名",
-            "email": "邮箱",
+            "header": "提交报修",
+            "choose_photo": "1. 选择相片",
+            "choose": "选",
+            "fill_out": "2. 填充表格",
+            "name": "名",
+            "email": "电子信箱",
             "campus": "校区",
             "subject": "主题",
-            "location": "地点",
-            "detail": "详细信息",
+            "location": "位置",
+            "detail": "细节",
             "cancel": "取消",
-            "submit": "提交"
+            "submit": "提价"
         },
-        "empty": "当前没有报修。",
+        "empty": "暂无报修提交。",
         "card": {
             "header": "报修 #{0}",
-            "name": "姓名：",
-            "email": "邮箱：",
-            "location": "地点：",
-            "campus": "校区：",
-            "detail": "详细信息：",
+            "name": "名：",
+            "email": "电子信箱：",
+            "location": "位置：",
+            "campus": "校园：",
+            "detail": "细节：",
             "status": "状态：",
-            "mark_as": "标记为"
+            "mark_as": "标记成"
         },
         "search": "搜索",
         "tooltip": {
-            "name": "你的中文名和英文名（例：山姆 Sam）。",
-            "email": "你的邮箱（例：{0}）。",
-            "campus": "要保修的校区。",
-            "subject": "报修的主题（例：空调坏了）。",
-            "location": "报修的地点（例：教室）。",
-            "detail": "报修的详细信息（例：我们打不开空调）。"
+            "name": "中英文名（例：山姆 Sam）。",
+            "email": "你的电子信箱（例：{0}）。",
+            "campus": "申请的校园。",
+            "subject": "报告的主题（例：空调罢工）。",
+            "location": "报修地址（例：104 Demis Homeroom）。",
+            "detail": "报告的细节（例：空调正在冒烟，没有制造冷风）。"
         }
     }
 }
