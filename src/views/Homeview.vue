@@ -11,7 +11,7 @@ import Button from "primevue/button";
 <template>
     <Dialog
         v-model:visible="visible"
-        header="Announcement"
+        :header="$t('home.dialog.header')"
         class="w-[25rem]"
         modal
     >
