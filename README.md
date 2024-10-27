@@ -20,7 +20,7 @@ TypeScript 默认无法处理 `.vue` 导入的类型信息，因此我们用 `vu
 
 ## 自定义配置
 
-请参阅 [Vite 配置参考](https://vitejs.dev/config/).
+请参阅 [Vite 配置参考](https://vitejs.dev/config/)。
 
 ## 项目设置
 

@@ -185,17 +185,17 @@ onMounted(async () => {
         <RouterView />
     </div>
     <footer id="footer">
+        <p>
+            {{ $t("footer.line1") }}
+        </p>
         <i18n-t
             tag="p"
-            keypath="footer.line1"
+            keypath="footer.line2"
             scope="global"
             class="flex text-center justify-center"
         >
             <img class="ms-2 me-2" src="./assets/vercel.svg" width="90px" />
         </i18n-t>
-        <p>
-            {{ $t("footer.line2") }}
-        </p>
         <p>
             {{ $t("footer.line3") }}
         </p>

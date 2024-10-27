@@ -5,6 +5,11 @@
         "button": {
             "form": "创建一个预约",
             "status": "预约详情"
+        },
+        "dialog": {
+            "header": "公告",
+            "message": "你正在使用 HFI Utility Center 的 {0}！如果你想要预约课室，请转至 {1}！",
+            "beta": "Beta 版本"
         }
     },
     "menubar": {
@@ -23,8 +28,8 @@
     },
     "footer": {
         "license": "GNU Affero 通用公共许可证 3.0",
-        "line1": "由 {0} 提供支持。",
-        "line2": "由 MAKERs' 编写。",
+        "line1": "由 MAKERs' 编写。",
+        "line2": "由 {0} 提供支持。",
         "line3": "版权所有 © 2024 HFI Utility Center 的所有协作者。保留所有权利。",
         "line4": "构建 {0}。本网站基于 {1}，并在 {2} 上开源。"
     },

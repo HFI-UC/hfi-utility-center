@@ -1,30 +1,31 @@
 <script setup lang="ts">
-// import Dialog from "primevue/dialog";
-// import { ref } from "vue";
-// const visible = ref(true);
+import Dialog from "primevue/dialog";
+import { ref } from "vue";
+
+const env = process.env.VERCEL_ENV;
+const visible = ref(env != "production");
 import router from "../router/router";
 import Button from "primevue/button";
 </script>
 
 <template>
-    <!-- <Dialog
+    <Dialog
         v-model:visible="visible"
-        header="Announcement"
+        :header="$t('home.dialog.header')"
         class="w-[25rem]"
         modal
     >
         <div class="flex items-center justify-center gap-4 mb-8">
-            <p>
-                You are using the
-                <b>Beta Version (Cenozoic)</b> of HFI Utility
-                Center! Go to
-                <a href="https://hfiuc.org" style="color: var(--p-primary-500)"
-                    >https://hfiuc.org/</a
+            <i18n-t tag="p" keypath="home.dialog.message" scope="global">
+                <b>{{ $t("home.dialog.beta") }}</b>
+                <a
+                    href="https://www.hfiuc.org"
+                    style="color: var(--p-primary-500)"
+                    >https://www.hfiuc.org/</a
                 >
-                if you want to sumbit a room application!
-            </p>
+            </i18n-t>
         </div>
-    </Dialog> -->
+    </Dialog>
     <div class="flex flex-col items-center justify-center" id="home-container">
         <h1 class="text-center">{{ $t("home.title") }}</h1>
         <h3 class="text-center">{{ $t("home.subtitle") }}</h3>
