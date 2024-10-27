@@ -52,7 +52,7 @@ const { data: booking } = useRequest(
 );
 
 const bookingData = computed(
-    () => booking.value?.data.filter((item) => item.auth !== "no") || [],
+    () => booking.value?.data.filter((item) => item.auth == "non") || [],
 );
 
 const formatDate = (time: string) => {
