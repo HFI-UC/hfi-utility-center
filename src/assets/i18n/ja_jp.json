@@ -47,7 +47,8 @@
         "success_msg": "Success!",
         "multiple": "The selected time must be a multiple of 5!",
         "choose_photo": "Please choose a photo to upload!",
-        "required_field": "Please fill out the required field!"
+        "required_field": "Please fill out the required field!",
+        "invalid_argument": "Invalid argument."
     },
     "application": {
         "rule": {
@@ -144,6 +145,18 @@
         }
     },
     "reservation": {
+        "approval": {
+            "approval": "Reservation Approval",
+            "pending": "Pending...",
+            "success": "Success!",
+            "message": "The reservation has been {0}.",
+            "add_time": "Add Time: ",
+            "email": "E-mail: ",
+            "room": "Room: ",
+            "approved": "approved",
+            "rejected": "rejected",
+            "error": "Something went wrong."
+        },
         "reject": {
             "reject": "Reject",
             "reason": "Reason",
@@ -207,7 +220,7 @@
         },
         "status": {
             "pending": "Pending",
-            "approved": "Approved",
+            "solved": "Solved",
             "unscheduled": "Unscheduled",
             "duplicated": "Duplicated"
         },
