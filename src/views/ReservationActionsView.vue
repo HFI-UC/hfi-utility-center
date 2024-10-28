@@ -19,7 +19,7 @@ const color = computed(() =>
 );
 const token = props.token;
 const isValid = ref(false);
-const { t } = useI18n()
+const { t } = useI18n();
 const roomMapping: { [key: number]: string } = {
     101: "iStudy Meeting Room 1",
     102: "iStudy Meeting Room 2",
@@ -91,18 +91,32 @@ onMounted(() => {
                         v-if="data"
                         class="w-[20rem] m-[1rem] flex flex-col text-center"
                     >
-                        <i18n-t keypath="reservation.approval.message" tag="p" scope="global" class="m-[5px]">
+                        <i18n-t
+                            keypath="reservation.approval.message"
+                            tag="p"
+                            scope="global"
+                            class="m-[5px]"
+                        >
                             <b :class="`font-bold ${color}`">{{
-                                action == "approve" ? $t("reservation.approval.approved") : $t("reservation.approval.rejected")
+                                action == "approve"
+                                    ? $t("reservation.approval.approved")
+                                    : $t("reservation.approval.rejected")
                             }}</b
                             >.
                         </i18n-t>
                         <br />
                         <p class="m-[5px]">
-                            <b>{{ $t("reservation.approval.add_time") }}</b>{{ data.addTime }}
+                            <b>{{ $t("reservation.approval.add_time") }}</b
+                            >{{ data.addTime }}
                         </p>
-                        <p class="m-[5px]"><b>{{ $t("reservation.approval.email") }}</b>{{ data.email }}</p>
-                        <p class="m-[5px]"><b>{{ $t("reservation.approval.reason") }}</b>{{ data.reason }}</p>
+                        <p class="m-[5px]">
+                            <b>{{ $t("reservation.approval.email") }}</b
+                            >{{ data.email }}
+                        </p>
+                        <p class="m-[5px]">
+                            <b>{{ $t("reservation.approval.reason") }}</b
+                            >{{ data.reason }}
+                        </p>
                         <p class="m-[5px]">
                             <b>{{ $t("reservation.approval.room") }}</b
                             >{{
