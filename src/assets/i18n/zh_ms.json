@@ -47,7 +47,8 @@
         "success_msg": "恭喜！",
         "multiple": "选定的时间必须是 5 的倍数！",
         "choose_photo": "请上传图片",
-        "required_field": "请填满需要的字段！"
+        "required_field": "请填满需要的字段！",
+        "invalid_argument": "Invalid argument."
     },
     "application": {
         "rule": {
@@ -144,6 +145,18 @@
         }
     },
     "reservation": {
+        "approval": {
+            "approval": "Reservation Approval",
+            "pending": "Pending...",
+            "success": "Success!",
+            "message": "The reservation has been {0}.",
+            "add_time": "Add Time: ",
+            "email": "E-mail: ",
+            "room": "Room: ",
+            "approved": "approved",
+            "rejected": "rejected",
+            "error": "Something went wrong."
+        },
         "reject": {
             "reject": "拒绝",
             "reason": "理由",
@@ -207,7 +220,7 @@
         },
         "status": {
             "pending": "悬而未决",
-            "approved": "板上钉钉！",
+            "solved": "Solved",
             "unscheduled": "尚无安排",
             "duplicated": "重复的"
         },
