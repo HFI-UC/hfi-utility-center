@@ -134,47 +134,56 @@ onMounted(async () => {
 </script>
 
 <template>
-    <Toast />
-    <div>
-        <Menubar :model="items">
-            <template #start>
-                <img src="./assets/logo.svg" class="m-1" style="height: 25px" />
-            </template>
-            <template #end>
-                <Select
-                    :options="localeOptions"
-                    v-model="selectedLocale"
-                    optionValue="code"
-                    optionLabel="key"
-                    :style="{ width: '9rem' }"
-                >
-                    <template #dropdownicon>
-                        <i class="pi pi-globe" />
-                    </template>
-                </Select>
-                <Button
-                    v-if="!isAdmin"
-                    @click="signIn()"
-                    severity="success"
-                    class="ms-2 me-2"
-                    icon="pi pi-sign-in"
-                >
-                </Button>
-                <Button
-                    v-if="isAdmin"
-                    @click="signOut()"
-                    severity="danger"
-                    class="ms-2 me-2"
-                    icon="pi pi-sign-out"
-                >
-                </Button>
-                <Button @click="toggleColorScheme()" :icon="`pi ${iconClass}`">
-                </Button>
-            </template>
-        </Menubar>
-    </div>
-    <div id="body">
-        <RouterView />
+    <div id="global">
+        <Toast />
+        <div>
+            <Menubar :model="items">
+                <template #start>
+                    <img
+                        src="./assets/logo.svg"
+                        class="m-1"
+                        style="height: 25px"
+                    />
+                </template>
+                <template #end>
+                    <Select
+                        :options="localeOptions"
+                        v-model="selectedLocale"
+                        optionValue="code"
+                        optionLabel="key"
+                        :style="{ width: '9rem' }"
+                    >
+                        <template #dropdownicon>
+                            <i class="pi pi-globe" />
+                        </template>
+                    </Select>
+                    <Button
+                        v-if="!isAdmin"
+                        @click="signIn()"
+                        severity="success"
+                        class="ms-2 me-2"
+                        icon="pi pi-sign-in"
+                    >
+                    </Button>
+                    <Button
+                        v-if="isAdmin"
+                        @click="signOut()"
+                        severity="danger"
+                        class="ms-2 me-2"
+                        icon="pi pi-sign-out"
+                    >
+                    </Button>
+                    <Button
+                        @click="toggleColorScheme()"
+                        :icon="`pi ${iconClass}`"
+                    >
+                    </Button>
+                </template>
+            </Menubar>
+        </div>
+        <div id="body">
+            <RouterView />
+        </div>
     </div>
     <footer id="footer">
         <p>
@@ -209,6 +218,10 @@ onMounted(async () => {
 <style scoped>
 #body {
     padding: 1rem 2rem 4rem 2rem;
+}
+
+#global {
+    margin: 8px;
 }
 
 #footer {
@@ -248,6 +261,10 @@ button,
 @media screen and (max-width: 720px) {
     #body {
         padding: 20px;
+    }
+
+    #global {
+        margin: 4px;
     }
 }
 </style>
