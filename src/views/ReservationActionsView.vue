@@ -4,6 +4,7 @@ import { useToast } from "primevue/usetoast";
 import { computed, onMounted, ref } from "vue";
 import router from "../router/router";
 import { getAction } from "../api";
+import { useI18n } from "vue-i18n";
 const props = defineProps<{
     token?: string;
     action?: string;
@@ -18,6 +19,7 @@ const color = computed(() =>
 );
 const token = props.token;
 const isValid = ref(false);
+const { t } = useI18n()
 const roomMapping: { [key: number]: string } = {
     101: "iStudy Meeting Room 1",
     102: "iStudy Meeting Room 2",
@@ -29,8 +31,8 @@ onMounted(() => {
     if (!token || !action) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Invalid argument.",
+            summary: t("toast.error"),
+            detail: t("toast.invalid_argument"),
             life: 2000,
         });
         setTimeout(() => {
@@ -60,14 +62,14 @@ onMounted(() => {
 
 <template>
     <div class="flex flex-col items-center justify-center">
-        <h1>Reservation Approval</h1>
+        <h1>{{ $t("reservation.approval.approval") }}</h1>
         <Card id="card" v-if="isValid">
             <template #content>
                 <div
                     v-if="status == 'pending'"
                     class="flex flex-col items-center justify-center"
                 >
-                    <h3>Pending...</h3>
+                    <h3>{{ $t("reservation.approval.pending") }}</h3>
                     <i
                         class="pi pi-spin pi-spinner m-[2rem]"
                         id="status-icon"
@@ -79,7 +81,7 @@ onMounted(() => {
                     v-if="status == 'success'"
                     class="flex flex-col items-center justify-center"
                 >
-                    <h3>Success!</h3>
+                    <h3>{{ $t("reservation.approval.success") }}</h3>
                     <i
                         class="pi pi-check m-[2rem]"
                         id="status-icon"
@@ -89,21 +91,20 @@ onMounted(() => {
                         v-if="data"
                         class="w-[20rem] m-[1rem] flex flex-col text-center"
                     >
-                        <p class="m-[5px]">
-                            The reservation has been
+                        <i18n-t keypath="reservation.approval.message" tag="p" scope="global" class="m-[5px]">
                             <b :class="`font-bold ${color}`">{{
-                                action == "approve" ? "approved" : "rejected"
+                                action == "approve" ? $t("reservation.approval.approved") : $t("reservation.approval.rejected")
                             }}</b
                             >.
-                        </p>
+                        </i18n-t>
                         <br />
                         <p class="m-[5px]">
-                            <b>Add Time: </b>{{ data.addTime }}
+                            <b>{{ $t("reservation.approval.add_time") }}</b>{{ data.addTime }}
                         </p>
-                        <p class="m-[5px]"><b>E-mail: </b>{{ data.email }}</p>
-                        <p class="m-[5px]"><b>Reason: </b>{{ data.reason }}</p>
+                        <p class="m-[5px]"><b>{{ $t("reservation.approval.email") }}</b>{{ data.email }}</p>
+                        <p class="m-[5px]"><b>{{ $t("reservation.approval.reason") }}</b>{{ data.reason }}</p>
                         <p class="m-[5px]">
-                            <b>Room: </b
+                            <b>{{ $t("reservation.approval.room") }}</b
                             >{{
                                 roomMapping[data.room] || data.room.toString()
                             }}
@@ -114,14 +115,13 @@ onMounted(() => {
                     v-if="status == 'error'"
                     class="flex flex-col items-center justify-center"
                 >
-                    <h3>Something went wrong.</h3>
+                    <h3>{{ $t("reservation.approval.error") }}</h3>
                     <i
                         class="pi pi-times m-[2rem]"
                         id="status-icon"
                         style="color: var(--p-red-500)"
                     ></i>
                     <p class="w-[20rem] m-[1rem] text-center">
-                        We are trying to fix this problem.
                         {{ message }}
                     </p>
                 </div>

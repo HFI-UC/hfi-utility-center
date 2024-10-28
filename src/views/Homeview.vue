@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import Dialog from "primevue/dialog";
 import { ref, computed, onMounted } from "vue";
-
-
 import router from "../router/router";
 import Button from "primevue/button";
 import { useRequest } from "vue-request";
@@ -13,6 +11,7 @@ const { t } = useI18n()
 
 const { run, data } = useRequest(() => getHitokoto(), {
     pollingInterval: 5000,
+    pollingWhenHidden: false,
     manual: true
 });
 

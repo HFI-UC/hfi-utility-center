@@ -64,7 +64,7 @@ const campus = computed(() => [
 ]);
 const status = computed(() => [
     t("maintenance.status.pending"),
-    t("maintenance.status.approved"),
+    t("maintenance.status.solved"),
     t("maintenance.status.unscheduled"),
     t("maintenance.status.duplicated"),
 ]);
