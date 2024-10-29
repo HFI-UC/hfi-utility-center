@@ -125,7 +125,7 @@ const status: Ref<{ [key: string]: string }> = computed(() => ({
 
 const severity: { [key: string]: string } = {
     non: "info",
-    no: "error",
+    no: "danger",
     yes: "success",
 };
 

@@ -67,7 +67,7 @@ const status = computed(() => [
     t("maintenance.status.unscheduled"),
     t("maintenance.status.duplicated"),
 ]);
-const severity = ["info", "success", "error", "primary"];
+const severity = ["info", "success", "danger", "primary"];
 const query = ref("");
 const maintenance: Ref<MaintenanceInfo> = ref({
     studentName: "",
