@@ -71,8 +71,8 @@ const items = computed(() => {
 const iconClass = ref("pi-sun");
 
 const toggleColorScheme = () => {
-    let color = localStorage.getItem("color") == "white" ? "dark" : "white";
-    localStorage.setItem("color", color);
+    let color = sessionStorage.getItem("color") == "white" ? "dark" : "white";
+    sessionStorage.setItem("color", color);
     const root = document.getElementsByTagName("html")[0];
     root.classList.toggle("p-dark");
     iconClass.value = color == "white" ? "pi-sun" : "pi-moon";
@@ -113,14 +113,14 @@ watch(
 );
 
 onMounted(async () => {
-    selectedLocale.value = localStorage.getItem("locale") || "en_us";
+    selectedLocale.value = sessionStorage.getItem("locale") || "en_us";
     const color =
-        localStorage.getItem("color") ||
+        sessionStorage.getItem("color") ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches
             ? "dark"
             : "light");
     if (color == "dark") {
-        localStorage.setItem("color", color);
+        sessionStorage.setItem("color", color);
         const root = document.getElementsByTagName("html")[0];
         root.classList.toggle("p-dark");
         iconClass.value = "pi-moon";
