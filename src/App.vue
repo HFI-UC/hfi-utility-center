@@ -113,7 +113,7 @@ watch(
 );
 
 onMounted(async () => {
-    selectedLocale.value = sessionStorage.getItem("locale") || "en_us";
+    selectedLocale.value = localStorage.getItem("locale") || "en_us";
     const color =
         sessionStorage.getItem("color") ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches
