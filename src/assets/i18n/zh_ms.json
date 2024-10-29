@@ -48,7 +48,7 @@
         "multiple": "选定的时间必须是 5 的倍数！",
         "choose_photo": "请上传图片",
         "required_field": "请填满需要的字段！",
-        "invalid_argument": "无效参数。"
+        "invalid_argument": "非法论点。"
     },
     "application": {
         "rule": {
@@ -146,16 +146,16 @@
     },
     "reservation": {
         "approval": {
-            "approval": "预约批准",
-            "pending": "处理中……",
-            "success": "成功！",
-            "message": "该预约申请已被{0}。",
-            "add_time": "新建时间：",
-            "email": "邮箱：",
-            "room": "课室：",
-            "approved": "通过",
-            "rejected": "拒绝",
-            "error": "出错了。"
+            "approval": "预约审批",
+            "pending": "悬而未决...",
+            "success": "恭喜！",
+            "message": "该申请已被{0}。",
+            "add_time": "添加时间: ",
+            "email": "电子信箱：",
+            "room": "房：",
+            "approved": "板上钉钉！",
+            "rejected": "有疾而终",
+            "error": "不妙！"
         },
         "reject": {
             "reject": "拒绝",

@@ -15,7 +15,7 @@
     "menubar": {
         "homepage": "主页",
         "reservation": {
-            "reservation": "预约管理",
+            "reservation": "预约",
             "form": "创建一个预约",
             "status": "预约详情"
         },
