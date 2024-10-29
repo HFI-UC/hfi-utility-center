@@ -15,7 +15,7 @@
     "menubar": {
         "homepage": "主页",
         "reservation": {
-            "reservation": "预约管理",
+            "reservation": "预约",
             "form": "创建一个预约",
             "status": "预约详情"
         },
@@ -47,7 +47,8 @@
         "success_msg": "成功！",
         "multiple": "所选的时间必须是 5 的倍数！",
         "choose_photo": "请选择一张图片上传！",
-        "required_field": "请填写必需字段！"
+        "required_field": "请填写必需字段！",
+        "invalid_argument": "无效参数。"
     },
     "application": {
         "rule": {
@@ -144,6 +145,18 @@
         }
     },
     "reservation": {
+        "approval": {
+            "approval": "预约批准",
+            "pending": "处理中……",
+            "success": "成功！",
+            "message": "该预约申请已被{0}。",
+            "add_time": "新建时间：",
+            "email": "邮箱：",
+            "room": "课室：",
+            "approved": "通过",
+            "rejected": "拒绝",
+            "error": "出错了。"
+        },
         "reject": {
             "reject": "打回",
             "reason": "原因",
@@ -207,7 +220,7 @@
         },
         "status": {
             "pending": "处理中",
-            "approved": "已处理",
+            "solved": "已解决",
             "unscheduled": "未计划",
             "duplicated": "重复"
         },

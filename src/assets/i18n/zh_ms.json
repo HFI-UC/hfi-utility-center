@@ -27,7 +27,7 @@
         }
     },
     "footer": {
-        "license": "戈努 Affero 通用公共驾驶证 3.0",
+        "license": "戈努阿费洛通用公共驾驶证 3.0",
         "line1": "制造 靠 创客们和♥。",
         "line2": "驱动 靠{0}。",
         "line3": "版权所有 © 2024 HFI Utility Center 的所有协作者。保留所有权利。",
@@ -47,7 +47,8 @@
         "success_msg": "恭喜！",
         "multiple": "选定的时间必须是 5 的倍数！",
         "choose_photo": "请上传图片",
-        "required_field": "请填满需要的字段！"
+        "required_field": "请填满需要的字段！",
+        "invalid_argument": "非法论点。"
     },
     "application": {
         "rule": {
@@ -144,6 +145,18 @@
         }
     },
     "reservation": {
+        "approval": {
+            "approval": "预约审批",
+            "pending": "悬而未决...",
+            "success": "恭喜！",
+            "message": "该申请已被{0}。",
+            "add_time": "添加时间: ",
+            "email": "电子信箱：",
+            "room": "房：",
+            "approved": "板上钉钉！",
+            "rejected": "有疾而终",
+            "error": "不妙！"
+        },
         "reject": {
             "reject": "拒绝",
             "reason": "理由",
@@ -207,7 +220,7 @@
         },
         "status": {
             "pending": "悬而未决",
-            "approved": "板上钉钉！",
+            "solved": "已解决",
             "unscheduled": "尚无安排",
             "duplicated": "重复的"
         },

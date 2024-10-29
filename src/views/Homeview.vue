@@ -1,33 +1,32 @@
 <script setup lang="ts">
 import Dialog from "primevue/dialog";
 import { ref, computed, onMounted } from "vue";
-
-
 import router from "../router/router";
 import Button from "primevue/button";
 import { useRequest } from "vue-request";
 import { getHitokoto } from "../api";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 const { run, data } = useRequest(() => getHitokoto(), {
     pollingInterval: 5000,
-    manual: true
+    pollingWhenHidden: false,
+    manual: true,
 });
 
 const hitokoto = computed(() => {
-    if (data.value) return `${data.value?.hitokoto} —— ${data.value?.from_who || ""}《${data.value?.from || "未知"}》`
-    return t("home.subtitle")
-})
+    if (data.value)
+        return `${data.value?.hitokoto} —— ${data.value?.from_who || ""}《${data.value?.from || "未知"}》`;
+    return t("home.subtitle");
+});
 
 const env = process.env.VERCEL_ENV;
 const visible = ref(env != "production");
 
 onMounted(() => {
-    setTimeout(() => run(), 3000)
-})
-
+    setTimeout(() => run(), 3000);
+});
 </script>
 
 <template>

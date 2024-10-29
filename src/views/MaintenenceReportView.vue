@@ -36,7 +36,6 @@ const first = ref(0);
 const filteredMaintenanceData = computed(
     () =>
         data.value?.data
-            .filter((item) => ![2, 3].includes(item.status as number))
             .filter((item) => {
                 const regex = new RegExp(query.value, "i");
                 return (
@@ -64,7 +63,7 @@ const campus = computed(() => [
 ]);
 const status = computed(() => [
     t("maintenance.status.pending"),
-    t("maintenance.status.approved"),
+    t("maintenance.status.solved"),
     t("maintenance.status.unscheduled"),
     t("maintenance.status.duplicated"),
 ]);
