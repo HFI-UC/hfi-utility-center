@@ -163,6 +163,8 @@
             "header": "选择拒绝理由",
             "cancel": "取消"
         },
+        "reviewed": "Reviewed",
+        "unreviewed": "Unreviewed",
         "reservation": "预约管理",
         "empty": "暂时无预约。",
         "card": {
