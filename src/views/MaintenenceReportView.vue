@@ -30,24 +30,25 @@ import { useI18n } from "vue-i18n";
 const visible = ref(false);
 const token = ref(sessionStorage.getItem("token") || "");
 const isAdmin = ref(false);
-const { run, data } = useRequest(() => getMaintenance(token.value), { manual: true });
+const { run, data } = useRequest(() => getMaintenance(token.value), {
+    manual: true,
+});
 const { t, locale } = useI18n();
 const first = ref(0);
 const filteredMaintenanceData = computed(
     () =>
-        data.value?.data
-            .filter((item) => {
-                const regex = new RegExp(query.value, "i");
-                return (
-                    query.value === "" ||
-                    item.subject.match(regex) ||
-                    item.detail.match(regex) ||
-                    item.id?.toString().match(regex) ||
-                    item.location.match(regex) ||
-                    item.studentName.match(regex) ||
-                    item.email.match(regex)
-                );
-            }) || [],
+        data.value?.data.filter((item) => {
+            const regex = new RegExp(query.value, "i");
+            return (
+                query.value === "" ||
+                item.subject.match(regex) ||
+                item.detail.match(regex) ||
+                item.id?.toString().match(regex) ||
+                item.location.match(regex) ||
+                item.studentName.match(regex) ||
+                item.email.match(regex)
+            );
+        }) || [],
 );
 const maintenanceData = computed(() =>
     filteredMaintenanceData.value.slice(first.value, first.value + 10),
@@ -97,7 +98,7 @@ const onFileSelect = (event: FileUploadSelectEvent) => {
 };
 
 onMounted(async () => {
-    run()
+    run();
     if (token.value && (await verifyAdmin(token.value))) {
         isAdmin.value = true;
     }
@@ -113,7 +114,7 @@ const onActionEvent = (maintenance: MaintenanceInfo, action: number) => {
                 life: 2000,
             });
             if (res.success) {
-                run()
+                run();
             }
         },
     );
