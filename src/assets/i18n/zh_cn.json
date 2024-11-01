@@ -163,6 +163,8 @@
             "header": "选择一个打回原因",
             "cancel": "取消"
         },
+        "reviewed": "Reviewed",
+        "unreviewed": "Unreviewed",
         "reservation": "预约管理",
         "empty": "当前没有未审核的预约。",
         "card": {
