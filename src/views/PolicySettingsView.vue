@@ -456,7 +456,7 @@ b {
     width: calc(50% - 0.8rem);
 }
 
-@media screen and (max-width: 720px) {
+@media screen and (max-width: 820px) {
     #card {
         width: 100%;
     }

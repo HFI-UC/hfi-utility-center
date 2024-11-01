@@ -30,7 +30,7 @@ import { useI18n } from "vue-i18n";
 const visible = ref(false);
 const token = ref(sessionStorage.getItem("token") || "");
 const isAdmin = ref(false);
-const { data } = useRequest(() => getMaintenance(token.value));
+const { run, data } = useRequest(() => getMaintenance(token.value), { manual: true });
 const { t, locale } = useI18n();
 const first = ref(0);
 const filteredMaintenanceData = computed(
@@ -67,7 +67,7 @@ const status = computed(() => [
     t("maintenance.status.unscheduled"),
     t("maintenance.status.duplicated"),
 ]);
-const severity = ["info", "success", "danger", "primary"];
+const severity = ["info", "success", "danger", "warn"];
 const query = ref("");
 const maintenance: Ref<MaintenanceInfo> = ref({
     studentName: "",
@@ -97,6 +97,7 @@ const onFileSelect = (event: FileUploadSelectEvent) => {
 };
 
 onMounted(async () => {
+    run()
     if (token.value && (await verifyAdmin(token.value))) {
         isAdmin.value = true;
     }
@@ -112,7 +113,7 @@ const onActionEvent = (maintenance: MaintenanceInfo, action: number) => {
                 life: 2000,
             });
             if (res.success) {
-                setTimeout(() => window.location.reload(), 2000);
+                run()
             }
         },
     );
@@ -407,7 +408,7 @@ const resetForm = () => {
                             </Button>
                             <Button
                                 class="w-full"
-                                :label="$t('maintenance.status.approved')"
+                                :label="$t('maintenance.status.solved')"
                                 severity="success"
                                 icon="pi pi-check"
                                 @click="onActionEvent(maintenance, 1)"

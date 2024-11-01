@@ -51,8 +51,12 @@ const { data: booking } = useRequest(
     { pollingInterval: 3000 },
 );
 
-const bookingData = computed(
+const unreviewedBookingData = computed(
     () => booking.value?.data.filter((item) => item.auth == "non") || [],
+);
+
+const reviewedBookingData = computed(
+    () => booking.value?.data.filter((item) => item.auth != "non") || [],
 );
 
 const formatDate = (time: string) => {
@@ -193,85 +197,207 @@ onMounted(async () => {
         </Dialog>
         <h1>{{ $t("reservation.reservation") }}</h1>
         <div v-if="booking?.success" id="cards-container">
-            <p v-if="bookingData.length == 0">
+            <p v-if="booking.data.length == 0 && booking">
                 {{ $t("reservation.empty") }}
             </p>
-            <div class="flex flex-wrap justify-between gap-[1rem]">
-                <div v-for="booking in bookingData" id="card">
-                    <Card>
-                        <template #content>
-                            <div class="ms-4 me-4">
-                                <h3>
-                                    {{
-                                        $t("reservation.card.header", [
-                                            booking.id,
-                                        ])
-                                    }}
-                                </h3>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.room") }}</b
-                                    >{{
-                                        roomMapping[booking.room] ||
-                                        booking.room
-                                    }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.name") }}</b
-                                    >{{ booking.name }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.email") }}</b
-                                    >{{ booking.email }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.date") }}</b
-                                    >{{ formatDate(booking.time) }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.time") }}</b
-                                    >{{ formatTime(booking.time) }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.reason") }}</b
-                                    >{{ booking.reason }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.status") }}</b
-                                    ><Tag
-                                        :severity="severity[booking.auth]"
-                                        :value="status[booking.auth]"
-                                    ></Tag>
-                                </p>
-                            </div>
-                        </template>
-                        <template #footer>
-                            <div class="m-4 flex gap-4">
-                                <Button
-                                    outlined
-                                    icon="pi pi-times"
-                                    :label="$t('reservation.reject.reject')"
-                                    @click="
-                                        (reason = ''),
-                                            (visible = true),
-                                            (id = booking.id as number)
-                                    "
-                                    severity="danger"
-                                    class="w-full"
-                                    :disabled="disabled"
-                                />
-                                <Button
-                                    icon="pi pi-check"
-                                    severity="success"
-                                    :label="$t('reservation.pass')"
-                                    class="w-full"
-                                    @click="
-                                        (id = booking.id as number),
-                                            onAcceptEvent()
-                                    "
-                                ></Button>
-                            </div>
-                        </template>
-                    </Card>
+            <div v-else>
+                <div v-if="unreviewedBookingData.length != 0">
+                    <h2>{{ $t("reservation.unreviewed") }}</h2>
+                    <div class="flex flex-wrap justify-between gap-[1rem]">
+                        <div v-for="booking in unreviewedBookingData" id="card">
+                            <Card>
+                                <template #content>
+                                    <div class="ms-4 me-4">
+                                        <h3>
+                                            {{
+                                                $t("reservation.card.header", [
+                                                    booking.id,
+                                                ])
+                                            }}
+                                        </h3>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.room")
+                                            }}</b
+                                            >{{
+                                                roomMapping[booking.room] ||
+                                                booking.room
+                                            }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.name")
+                                            }}</b
+                                            >{{ booking.name }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.email")
+                                            }}</b
+                                            >{{ booking.email }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.date")
+                                            }}</b
+                                            >{{ formatDate(booking.time) }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.time")
+                                            }}</b
+                                            >{{ formatTime(booking.time) }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.reason")
+                                            }}</b
+                                            >{{ booking.reason }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.status")
+                                            }}</b
+                                            ><Tag
+                                                :severity="
+                                                    severity[booking.auth]
+                                                "
+                                                :value="status[booking.auth]"
+                                            ></Tag>
+                                        </p>
+                                    </div>
+                                </template>
+                                <template #footer>
+                                    <div class="m-4 flex gap-4">
+                                        <Button
+                                            outlined
+                                            icon="pi pi-times"
+                                            :label="
+                                                $t('reservation.reject.reject')
+                                            "
+                                            @click="
+                                                (reason = ''),
+                                                    (visible = true),
+                                                    (id = booking.id as number)
+                                            "
+                                            severity="danger"
+                                            class="w-full"
+                                            :disabled="disabled"
+                                        />
+                                        <Button
+                                            icon="pi pi-check"
+                                            severity="success"
+                                            :label="$t('reservation.pass')"
+                                            class="w-full"
+                                            @click="
+                                                (id = booking.id as number),
+                                                    onAcceptEvent()
+                                            "
+                                        ></Button>
+                                    </div>
+                                </template>
+                            </Card>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="reviewedBookingData.length != 0">
+                    <h2>{{ $t("reservation.reviewed") }}</h2>
+                    <div class="flex flex-wrap justify-between gap-[1rem]">
+                        <div v-for="booking in reviewedBookingData" id="card">
+                            <Card>
+                                <template #content>
+                                    <div class="ms-4 me-4">
+                                        <h3>
+                                            {{
+                                                $t("reservation.card.header", [
+                                                    booking.id,
+                                                ])
+                                            }}
+                                        </h3>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.room")
+                                            }}</b
+                                            >{{
+                                                roomMapping[booking.room] ||
+                                                booking.room
+                                            }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.name")
+                                            }}</b
+                                            >{{ booking.name }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.email")
+                                            }}</b
+                                            >{{ booking.email }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.date")
+                                            }}</b
+                                            >{{ formatDate(booking.time) }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.time")
+                                            }}</b
+                                            >{{ formatTime(booking.time) }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.reason")
+                                            }}</b
+                                            >{{ booking.reason }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.status")
+                                            }}</b
+                                            ><Tag
+                                                :severity="
+                                                    severity[booking.auth]
+                                                "
+                                                :value="status[booking.auth]"
+                                            ></Tag>
+                                        </p>
+                                    </div>
+                                </template>
+                                <template #footer>
+                                    <div class="m-4 flex gap-4">
+                                        <Button
+                                            outlined
+                                            icon="pi pi-times"
+                                            :label="
+                                                $t('reservation.reject.reject')
+                                            "
+                                            @click="
+                                                (reason = ''),
+                                                    (visible = true),
+                                                    (id = booking.id as number)
+                                            "
+                                            severity="danger"
+                                            class="w-full"
+                                            :disabled="disabled"
+                                        />
+                                        <Button
+                                            icon="pi pi-check"
+                                            severity="success"
+                                            :label="$t('reservation.pass')"
+                                            class="w-full"
+                                            @click="
+                                                (id = booking.id as number),
+                                                    onAcceptEvent()
+                                            "
+                                        ></Button>
+                                    </div>
+                                </template>
+                            </Card>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -299,6 +425,16 @@ h3 {
     font-size: 1.5em;
     margin-block-start: 0.67em;
     margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+}
+
+h2 {
+    font-size: 1.6em;
+    margin-block-start: 1.13em;
+    margin-block-end: 1.13em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     font-weight: bold;

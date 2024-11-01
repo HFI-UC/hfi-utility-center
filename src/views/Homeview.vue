@@ -75,10 +75,9 @@ h1 {
     margin-inline-end: 0px;
     font-weight: 900;
     background: linear-gradient(to right, #8a9cff, #bc3fff);
-    background-clip: border-box;
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    unicode-bidi: isolate;
 }
 h3 {
     font-size: 1.8em;
