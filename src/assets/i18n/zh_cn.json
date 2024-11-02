@@ -122,7 +122,8 @@
         "table": {
             "search": "搜索",
             "empty": "无可用数据。",
-            "enter_keyword": "输入关键词来开始搜索。"
+            "enter_keyword": "输入关键词来开始搜索。",
+            "loading": "Loading..."
         },
         "column": {
             "name": "姓名 / 班级",
@@ -166,7 +167,8 @@
         "reviewed": "已审核",
         "unreviewed": "未审核",
         "reservation": "预约管理",
-        "empty": "当前没有未审核的预约。",
+        "empty": "No available data.",
+        "search": "Search",
         "card": {
             "header": "预约 #{0}",
             "room": "课室：",
