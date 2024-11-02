@@ -46,7 +46,8 @@ const filteredMaintenanceData = computed(
                 item.id?.toString().match(regex) ||
                 item.location.match(regex) ||
                 item.studentName.match(regex) ||
-                item.email.match(regex)
+                item.email.match(regex) ||
+                status.value[item.status as number].match(regex)
             );
         }) || [],
 );

@@ -15,6 +15,9 @@ import Button from "primevue/button";
 import Tag from "primevue/tag";
 import Dialog from "primevue/dialog";
 import Select from "primevue/select";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
+import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
 import { useI18n } from "vue-i18n";
 
@@ -51,12 +54,30 @@ const { data: booking } = useRequest(
     { pollingInterval: 3000 },
 );
 
-const unreviewedBookingData = computed(
-    () => booking.value?.data.filter((item) => item.auth == "non") || [],
+const filteredBookingData = computed(
+    () =>
+        booking.value?.data.filter((item) => {
+            const regex = new RegExp(query.value, "i");
+            return (
+                query.value == "" ||
+                status.value[item.auth].match(regex) ||
+                item.email.match(regex) ||
+                item.name.match(regex) ||
+                item.reason.match(regex) ||
+                item.id?.toString().match(regex) ||
+                (roomMapping[item.room] || item.room.toString()).match(regex) ||
+                formatTime(item.time).match(regex) ||
+                formatDate(item.time).match(regex)
+            );
+        }) || [],
 );
 
-const reviewedBookingData = computed(
-    () => booking.value?.data.filter((item) => item.auth != "non") || [],
+const unreviewedBookingData = computed(() =>
+    filteredBookingData.value.filter((item) => item.auth == "non"),
+);
+
+const reviewedBookingData = computed(() =>
+    filteredBookingData.value.filter((item) => item.auth != "non"),
 );
 
 const formatDate = (time: string) => {
@@ -67,6 +88,8 @@ const formatDate = (time: string) => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
 };
+
+const query = ref("");
 
 const formatTime = (time: string) => {
     const [start, end] = time.split("-");
@@ -197,7 +220,16 @@ onMounted(async () => {
         </Dialog>
         <h1>{{ $t("reservation.reservation") }}</h1>
         <div v-if="booking?.success" id="cards-container">
-            <p v-if="booking.data.length == 0 && booking">
+            <div class="justify-left mt-4 mb-4">
+                <IconField>
+                    <InputIcon class="pi pi-search"></InputIcon>
+                    <InputText
+                        :placeholder="$t('reservation.search')"
+                        v-model="query"
+                    ></InputText>
+                </IconField>
+            </div>
+            <p v-if="filteredBookingData.length == 0 && booking">
                 {{ $t("reservation.empty") }}
             </p>
             <div v-else>
@@ -446,6 +478,13 @@ h2 {
 
 button {
     border-radius: 0.5rem;
+}
+
+:deep(.p-inputtext),
+.p-select,
+.p-textarea {
+    border-radius: 0.5rem !important;
+    min-width: 17rem;
 }
 
 #cards-container {

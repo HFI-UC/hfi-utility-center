@@ -15,11 +15,11 @@ const { run, data } = useRequest(() => getHitokoto(), {
     manual: true,
 });
 
-const hitokoto = computed(() => {
-    if (data.value)
-        return `${data.value?.hitokoto} —— ${data.value?.from_who || ""}《${data.value?.from || "未知"}》`;
-    return t("home.subtitle");
-});
+const hitokoto = computed(() =>
+    data.value
+        ? `${data.value?.hitokoto} —— ${data.value?.from_who || ""}《${data.value?.from || "未知"}》`
+        : t("home.subtitle"),
+);
 
 const env = process.env.VERCEL_ENV;
 const visible = ref(env != "production");
