@@ -9,7 +9,7 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
-const { run, data } = useRequest(() => getHitokoto(), {
+const { run, data } = useRequest(getHitokoto, {
     pollingInterval: 5000,
     pollingWhenHidden: false,
     manual: true,

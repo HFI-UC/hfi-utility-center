@@ -8,7 +8,7 @@ import DatePicker from "primevue/datepicker";
 import Card from "primevue/card";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import { computed, ref, Ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useRequest } from "vue-request";
 import Dialog from "primevue/dialog";
@@ -26,7 +26,7 @@ const { data: policyData } = useRequest(fetchPolicy);
 const policy = computed(() => policyData.value?.policy || []);
 const { t, locale } = useI18n();
 
-const reservation: Ref<ApplicationInfo> = ref({
+const reservation = ref<ApplicationInfo>({
     class: "",
     studentName: "",
     selectedRoom: null,
@@ -120,7 +120,7 @@ const formatTime = (date: Date): string =>
     `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 
 const interval = ref(15);
-const date: Ref<Date | null> = ref(null);
+const date = ref<Date | null>(null);
 
 const generateTimeOptions = (
     startHour: number,
@@ -171,7 +171,7 @@ const formatDate = (date: Date): string => {
     return `${year}-${month}-${day}`;
 };
 
-const roomMapping: { [key: string]: number } = {
+const roomMapping: Record<string, number> = {
     "iStudy Meeting Room 1": 101,
     "iStudy Meeting Room 2": 102,
     "Writing Center 1": 103,
@@ -232,7 +232,7 @@ const formatTableDate = (time: string) => {
 
 const formatTableDay = (time: string) => {
     const days = time.split(",");
-    const daysMapping: { [key: string]: string } = {
+    const daysMapping: Record<string, string> = {
         "1": "Mon.",
         "2": "Tue.",
         "3": "Wed.",

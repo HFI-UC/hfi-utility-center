@@ -3,7 +3,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Tag from "primevue/tag";
 import { postReservation, type ReservationInfo } from "../api";
-import { computed, ref, Ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import InputText from "primevue/inputtext";
 import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
@@ -11,10 +11,10 @@ import Select from "primevue/select";
 import SelectButton from "primevue/selectbutton";
 import { useI18n } from "vue-i18n";
 
-const data: Ref<ReservationInfo | null> = ref(null);
+const data = ref<ReservationInfo | null>(null);
 const queried = ref(false);
 const query = ref("");
-const date: Ref<Date | null> = ref(null);
+const date = ref<Date | null>(null);
 const room = ref("");
 const { t, locale } = useI18n();
 

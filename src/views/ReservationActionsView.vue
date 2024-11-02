@@ -20,7 +20,7 @@ const color = computed(() =>
 const token = props.token;
 const isValid = ref(false);
 const { t } = useI18n();
-const roomMapping: { [key: number]: string } = {
+const roomMapping: Record<number, string> = {
     101: "iStudy Meeting Room 1",
     102: "iStudy Meeting Room 2",
     103: "Writing Center 1",

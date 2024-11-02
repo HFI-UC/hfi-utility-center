@@ -2,7 +2,7 @@
 import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
 import FileUpload, { FileUploadSelectEvent } from "primevue/fileupload";
-import { ref, Ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import {
     generateCosKey,
     getMaintenance,
@@ -71,7 +71,7 @@ const status = computed(() => [
 ]);
 const severity = ["info", "success", "danger", "warn"];
 const query = ref("");
-const maintenance: Ref<MaintenanceInfo> = ref({
+const maintenance = ref<MaintenanceInfo>({
     studentName: "",
     subject: "",
     location: "",
@@ -173,8 +173,8 @@ const onClickEvent = async () => {
         detail: maintenanceResult.message,
         life: 3000,
     });
-
     resetForm();
+    run();
 };
 
 const resetForm = () => {

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref, Ref, computed } from "vue";
+import { onMounted, ref, computed } from "vue";
 import {
     postReservationAccept,
     postReservationReject,
     verifyAdmin,
 } from "../api";
 import { useRequest } from "vue-request";
-import { ReservationInfo, postAdminReservation } from "../api";
+import { postAdminReservation } from "../api";
 import router from "../router/router";
 import Card from "primevue/card";
 import Skeleton from "primevue/skeleton";
@@ -49,10 +49,9 @@ const reasons = ref([
     { name: "特殊活动优先 - 由于特殊活动或紧急情况，优先安排资源", code: "9" },
 ]);
 
-const { data: booking } = useRequest(
-    (): Promise<ReservationInfo> => postAdminReservation(token.value),
-    { pollingInterval: 3000 },
-);
+const { data: booking } = useRequest(() => postAdminReservation(token.value), {
+    pollingInterval: 3000,
+});
 
 const filteredBookingData = computed(
     () =>
@@ -144,19 +143,19 @@ const onRejectEvent = () => {
     visible.value = false;
 };
 
-const status: Ref<{ [key: string]: string }> = computed(() => ({
+const status = computed<Record<string, string>>(() => ({
     non: t("reservation.card.tag.pending"),
     no: t("reservation.card.tag.rejected"),
     yes: t("reservation.card.tag.approved"),
 }));
 
-const severity: { [key: string]: string } = {
+const severity: Record<string, string> = {
     non: "info",
     no: "danger",
     yes: "success",
 };
 
-const roomMapping: { [key: number]: string } = {
+const roomMapping: Record<string, string> = {
     101: "iStudy Meeting Room 1",
     102: "iStudy Meeting Room 2",
     103: "Writing Center 1",
