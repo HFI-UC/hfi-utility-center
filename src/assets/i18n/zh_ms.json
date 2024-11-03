@@ -123,7 +123,7 @@
             "search": "搜",
             "empty": "无数据可用。",
             "enter_keyword": "搜索和关键词",
-            "loading": "加载中…"
+            "loading": "载入中..."
         },
         "column": {
             "name": "名 / 班",
@@ -164,8 +164,8 @@
             "header": "选择拒绝理由",
             "cancel": "取消"
         },
-        "reviewed": "已审核",
-        "unreviewed": "未审核",
+        "reviewed": "已评价",
+        "unreviewed": "未评价",
         "reservation": "预约管理",
         "empty": "无可用数据。",
         "search": "搜索",
