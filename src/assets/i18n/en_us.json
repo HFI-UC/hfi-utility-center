@@ -190,7 +190,8 @@
         "header": "Admin Login",
         "username": "Username",
         "password": "Password",
-        "login": "Login"
+        "login": "Login",
+        "cloudflare": "Let us know you're human"
     },
     "policy": {
         "policy": "Policy Settings",

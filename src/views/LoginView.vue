@@ -105,6 +105,7 @@ const onClickEvent = () => {
                         </IconField>
                         <label for="password">{{ $t("login.password") }}</label>
                     </FloatLabel>
+                    <p class="text-sm">{{ $t("login.cloudflare") }}</p>
                     <VueTurnstile
                         class="m-[20px]"
                         v-model="cf_token"
@@ -113,6 +114,7 @@ const onClickEvent = () => {
                     <Button
                         icon="pi pi-sign-in"
                         @click="onClickEvent()"
+                        :disabled="cf_token == ''"
                         :label="$t('login.login')"
                         :loading="loading"
                     ></Button>
