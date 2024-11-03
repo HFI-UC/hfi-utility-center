@@ -3,6 +3,8 @@ import { onMounted, ref } from "vue";
 import VueTurnstile from "vue-turnstile";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
 import FloatLabel from "primevue/floatlabel";
 import { postLogin } from "../api";
 import { useToast } from "primevue/usetoast";
@@ -35,16 +37,16 @@ const onClickEvent = () => {
         loading.value = false;
         return;
     }
-    // if (cf_token.value == "") {
-    //     toast.add({
-    //         severity: "error",
-    //         summary: t("toast.error"),
-    //         detail: t("toast.robot"),
-    //         life: 3000,
-    //     });
-    //     loading.value = false;
-    //     return;
-    // }
+    if (cf_token.value == "") {
+        toast.add({
+            severity: "error",
+            summary: t("toast.error"),
+            detail: t("toast.robot"),
+            life: 3000,
+        });
+        loading.value = false;
+        return;
+    }
     postLogin(user.value, password.value, cf_token.value).then(
         (res: { success: boolean; message: string; token?: string }) => {
             if (res.success) {
@@ -80,21 +82,27 @@ const onClickEvent = () => {
             <template #content>
                 <div class="flex flex-col items-center">
                     <FloatLabel class="m-[20px]">
-                        <InputText
-                            id="user"
-                            v-model="user"
-                            :invalid="user == '' && !isCompleted"
-                        ></InputText>
+                        <IconField>
+                            <InputIcon class="pi pi-user"></InputIcon>
+                            <InputText
+                                id="user"
+                                v-model="user"
+                                :invalid="user == '' && !isCompleted"
+                            ></InputText
+                        ></IconField>
                         <label for="user">{{ $t("login.username") }}</label>
                     </FloatLabel>
                     <FloatLabel class="m-[20px]">
-                        <InputText
-                            id="password"
-                            v-model="password"
-                            :invalid="password == '' && !isCompleted"
-                            @keyup.enter="onClickEvent()"
-                            type="password"
-                        ></InputText>
+                        <IconField>
+                            <InputIcon class="pi pi-key"></InputIcon>
+                            <InputText
+                                id="password"
+                                v-model="password"
+                                :invalid="password == '' && !isCompleted"
+                                @keyup.enter="onClickEvent()"
+                                type="password"
+                            ></InputText>
+                        </IconField>
                         <label for="password">{{ $t("login.password") }}</label>
                     </FloatLabel>
                     <VueTurnstile

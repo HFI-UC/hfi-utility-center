@@ -2,9 +2,10 @@
 import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
 import Select from "primevue/select";
-import Textarea from "primevue/textarea";
 import Button from "primevue/button";
 import DatePicker from "primevue/datepicker";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
 import Card from "primevue/card";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
@@ -312,17 +313,20 @@ const rules = computed(() =>
                             {{ $t("application.personal_info") }}
                         </h3>
                         <FloatLabel class="m-[20px]">
-                            <InputText
-                                id="name"
-                                v-model="reservation.studentName"
-                                v-tooltip.bottom="
-                                    $t('application.tooltip.name')
-                                "
-                                :invalid="
-                                    !isCompleted &&
-                                    reservation.studentName === ''
-                                "
-                            />
+                            <IconField>
+                                <InputText
+                                    id="name"
+                                    v-model="reservation.studentName"
+                                    v-tooltip.bottom="
+                                        $t('application.tooltip.name')
+                                    "
+                                    :invalid="
+                                        !isCompleted &&
+                                        reservation.studentName === ''
+                                    "
+                                />
+                                <InputIcon class="pi pi-user"></InputIcon>
+                            </IconField>
                             <label for="name">{{
                                 $t("application.name")
                             }}</label>
@@ -347,35 +351,47 @@ const rules = computed(() =>
                                         <div>{{ slotProps.option.label }}</div>
                                     </div>
                                 </template>
+                                <template #dropdownicon>
+                                    <i class="pi pi-address-book"></i>
+                                </template>
                             </Select>
                             <label for="class">{{
                                 $t("application.class")
                             }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
-                            <InputText
-                                id="id"
-                                v-model="reservation.studentId"
-                                v-tooltip.bottom="$t('application.tooltip.id')"
-                                :invalid="
-                                    !isCompleted && reservation.studentId === ''
-                                "
-                            />
+                            <IconField>
+                                <InputText
+                                    id="id"
+                                    v-model="reservation.studentId"
+                                    v-tooltip.bottom="
+                                        $t('application.tooltip.id')
+                                    "
+                                    :invalid="
+                                        !isCompleted &&
+                                        reservation.studentId === ''
+                                    "
+                                />
+                                <InputIcon class="pi pi-id-card"></InputIcon>
+                            </IconField>
                             <label for="id">{{ $t("application.id") }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
-                            <InputText
-                                id="email"
-                                v-model="reservation.email"
-                                v-tooltip.bottom="
-                                    $t('application.tooltip.email', [
-                                        'sam.xulf2024@gdhfi.com',
-                                    ])
-                                "
-                                :invalid="
-                                    !isCompleted && reservation.email === ''
-                                "
-                            />
+                            <IconField>
+                                <InputText
+                                    id="email"
+                                    v-model="reservation.email"
+                                    v-tooltip.bottom="
+                                        $t('application.tooltip.email', [
+                                            'sam.xulf2024@gdhfi.com',
+                                        ])
+                                    "
+                                    :invalid="
+                                        !isCompleted && reservation.email === ''
+                                    "
+                                />
+                                <InputIcon class="pi pi-envelope"></InputIcon>
+                            </IconField>
                             <label for="email">{{
                                 $t("application.email")
                             }}</label>
@@ -395,7 +411,11 @@ const rules = computed(() =>
                                     !isCompleted &&
                                     reservation.selectedCampus === ''
                                 "
-                            />
+                            >
+                                <template #dropdownicon>
+                                    <i class="pi pi-map-marker"></i>
+                                </template>
+                            </Select>
                             <label for="campus">{{
                                 $t("application.campus")
                             }}</label>
@@ -409,7 +429,11 @@ const rules = computed(() =>
                                 v-model="selectedRoom"
                                 :options="roomsOption"
                                 :invalid="!isCompleted && selectedRoom === ''"
-                            />
+                            >
+                                <template #dropdownicon>
+                                    <i class="pi pi-building"></i>
+                                </template>
+                            </Select>
                             <label for="room">{{
                                 $t("application.room")
                             }}</label>
@@ -476,11 +500,15 @@ const rules = computed(() =>
                                     $t('application.tooltip.date')
                                 "
                                 date-format="yy/mm/dd"
+                                showIcon
+                                fluid
+                                iconDisplay="input"
                                 :min-date="minDate"
                                 :max-date="maxDate"
                                 :manual-input="false"
                                 :invalid="!isCompleted && date === null"
-                            />
+                            >
+                            </DatePicker>
                             <label for="date">{{
                                 $t("application.date")
                             }}</label>
@@ -496,7 +524,11 @@ const rules = computed(() =>
                                 :invalid="
                                     !isCompleted && reservation.startTime === ''
                                 "
-                            />
+                            >
+                                <template #dropdownicon>
+                                    <i class="pi pi-calendar-minus"></i>
+                                </template>
+                            </Select>
                             <label for="startTime">{{
                                 $t("application.start_time")
                             }}</label>
@@ -512,22 +544,32 @@ const rules = computed(() =>
                                 :invalid="
                                     !isCompleted && reservation.endTime === ''
                                 "
-                            />
+                            >
+                                <template #dropdownicon>
+                                    <i class="pi pi-calendar-plus"></i>
+                                </template>
+                            </Select>
                             <label for="endTime">{{
                                 $t("application.end_time")
                             }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
-                            <Textarea
-                                id="reason"
-                                v-model="reservation.reason"
-                                v-tooltip.bottom="
-                                    $t('application.tooltip.reason')
-                                "
-                                :invalid="
-                                    !isCompleted && reservation.reason === ''
-                                "
-                            />
+                            <IconField>
+                                <InputText
+                                    id="reason"
+                                    v-model="reservation.reason"
+                                    v-tooltip.bottom="
+                                        $t('application.tooltip.reason')
+                                    "
+                                    :invalid="
+                                        !isCompleted &&
+                                        reservation.reason === ''
+                                    "
+                                />
+                                <InputIcon
+                                    class="pi pi-info-circle"
+                                ></InputIcon>
+                            </IconField>
                             <label for="reason">{{
                                 $t("application.reason")
                             }}</label>
