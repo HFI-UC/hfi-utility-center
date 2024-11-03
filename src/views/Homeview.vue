@@ -9,17 +9,17 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
-const { run, data } = useRequest(() => getHitokoto(), {
+const { run, data } = useRequest(getHitokoto, {
     pollingInterval: 5000,
     pollingWhenHidden: false,
     manual: true,
 });
 
-const hitokoto = computed(() => {
-    if (data.value)
-        return `${data.value?.hitokoto} —— ${data.value?.from_who || ""}《${data.value?.from || "未知"}》`;
-    return t("home.subtitle");
-});
+const hitokoto = computed(() =>
+    data.value
+        ? `${data.value?.hitokoto} —— ${data.value?.from_who || ""}《${data.value?.from || "未知"}》`
+        : t("home.subtitle"),
+);
 
 const env = process.env.VERCEL_ENV;
 const visible = ref(env != "production");
@@ -75,10 +75,9 @@ h1 {
     margin-inline-end: 0px;
     font-weight: 900;
     background: linear-gradient(to right, #8a9cff, #bc3fff);
-    background-clip: border-box;
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    unicode-bidi: isolate;
 }
 h3 {
     font-size: 1.8em;

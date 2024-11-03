@@ -2,13 +2,14 @@
 import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
 import Select from "primevue/select";
-import Textarea from "primevue/textarea";
 import Button from "primevue/button";
 import DatePicker from "primevue/datepicker";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
 import Card from "primevue/card";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import { computed, ref, Ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useRequest } from "vue-request";
 import Dialog from "primevue/dialog";
@@ -18,23 +19,15 @@ import {
     postApplication,
     fetchPolicy,
     postReservation,
-    type RoomPolicyInfo,
 } from "../api";
 import router from "../router/router";
 import { useI18n } from "vue-i18n";
 
-const { data: policyData } = useRequest(
-    (): Promise<{ policy: RoomPolicyInfo[] }> => fetchPolicy(),
-    {
-        pollingInterval: 1000000,
-    },
-);
-
+const { data: policyData } = useRequest(fetchPolicy);
 const policy = computed(() => policyData.value?.policy || []);
-
 const { t, locale } = useI18n();
 
-const reservation: Ref<ApplicationInfo> = ref({
+const reservation = ref<ApplicationInfo>({
     class: "",
     studentName: "",
     selectedRoom: null,
@@ -56,7 +49,6 @@ watch(
 );
 
 const visible = ref(false);
-
 const campus = computed(() => [t("campus.shipai"), t("campus.knowledgecity")]);
 
 const classes = computed(() => [
@@ -90,10 +82,7 @@ const classes = computed(() => [
             "Skinner",
         ],
     },
-    {
-        label: t("campus.office"),
-        items: ["Teachers"],
-    },
+    { label: t("campus.office"), items: ["Teachers"] },
 ]);
 
 const rooms = ref([
@@ -114,10 +103,11 @@ const rooms = ref([
 ]);
 
 const roomsOption = computed(() => {
-    if (reservation.value.selectedCampus == "") return [];
-    return reservation.value.selectedCampus == t("campus.shipai")
-        ? rooms.value[0]
-        : rooms.value[1];
+    return reservation.value.selectedCampus === ""
+        ? []
+        : reservation.value.selectedCampus === t("campus.shipai")
+          ? rooms.value[0]
+          : rooms.value[1];
 });
 
 const minDate = ref(new Date());
@@ -131,7 +121,7 @@ const formatTime = (date: Date): string =>
     `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 
 const interval = ref(15);
-const date: Ref<Date | null> = ref(null);
+const date = ref<Date | null>(null);
 
 const generateTimeOptions = (
     startHour: number,
@@ -158,7 +148,6 @@ const generateTimeOptions = (
 };
 
 const startTimeOptions = computed(() => generateTimeOptions(6, 30, 21, 15));
-
 const endTimeOptions = computed(() => {
     if (!reservation.value.startTime) return [];
     const [startHours, startMinutes] = reservation.value.startTime
@@ -174,6 +163,7 @@ const endTimeOptions = computed(() => {
 
 const toast = useToast();
 const isCompleted = ref(true);
+const loading = ref(false);
 
 const formatDate = (date: Date): string => {
     const year = date.getFullYear();
@@ -182,14 +172,12 @@ const formatDate = (date: Date): string => {
     return `${year}-${month}-${day}`;
 };
 
-const roomMapping: { [key: string]: number } = {
+const roomMapping: Record<string, number> = {
     "iStudy Meeting Room 1": 101,
     "iStudy Meeting Room 2": 102,
     "Writing Center 1": 103,
     "Writing Center 2": 106,
 };
-
-const loading = ref(false);
 
 const validatePolicy = (time: Date, selectedRoom: number): boolean => {
     return !policy.value.some((rule) => {
@@ -203,11 +191,12 @@ const validatePolicy = (time: Date, selectedRoom: number): boolean => {
                 .split(":")
                 .map(Number);
             const [endHour, endMinute] = rule.end_time.split(":").map(Number);
-            const policyStartDate = new Date(time.getTime());
-            policyStartDate.setHours(startHour, startMinute);
-            const policyEndDate = new Date(time.getTime());
-            policyEndDate.setHours(endHour, endMinute);
-            return policyEndDate >= time && policyStartDate <= time;
+            return (
+                new Date(time.getTime()).setHours(startHour, startMinute) <=
+                    time.getTime() &&
+                new Date(time.getTime()).setHours(endHour, endMinute) >=
+                    time.getTime()
+            );
         }
         return false;
     });
@@ -224,31 +213,27 @@ watch(
             roomMapping[newValue] || parseInt(newValue);
         filteredPolicyData.value = policy.value.filter(
             (item) =>
-                item.classroom == reservation.value.selectedRoom?.toString(),
+                item.classroom === reservation.value.selectedRoom?.toString(),
         );
         postReservation({
             room: reservation.value.selectedRoom.toString(),
-        }).then(
-            (res) =>
-                (filteredBookingData.value = res.data.filter(
-                    (item) => item.auth !== "no",
-                )),
-        );
+        }).then((res) => {
+            filteredBookingData.value = res.data.filter(
+                (item) => item.auth !== "no",
+            );
+        });
     },
 );
 
 const formatTableDate = (time: string) => {
     const startTime = time.split("-")[0];
     const date = new Date(parseInt(startTime));
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 };
 
 const formatTableDay = (time: string) => {
     const days = time.split(",");
-    const daysMapping: { [key: string]: string } = {
+    const daysMapping: Record<string, string> = {
         "1": "Mon.",
         "2": "Tue.",
         "3": "Wed.",
@@ -257,20 +242,12 @@ const formatTableDay = (time: string) => {
         "6": "Sat.",
         "0": "Sun.",
     };
-    const convertedDays = [];
-    for (const item of days) {
-        convertedDays.push(daysMapping[item]);
-    }
-    return convertedDays.join(" ");
+    return days.map((item) => daysMapping[item]).join(" ");
 };
 
 const formatTableTime = (time: string) => {
     const [start, end] = time.split("-");
-    const startTime = new Date(parseInt(start));
-    const endTime = new Date(parseInt(end));
-    const formatHour = (date: Date): string =>
-        `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-    return `${formatHour(startTime)} ~ ${formatHour(endTime)}`;
+    return `${formatTime(new Date(parseInt(start)))} ~ ${formatTime(new Date(parseInt(end)))}`;
 };
 
 watch(
@@ -285,7 +262,7 @@ watch(
 const onClickEvent = () => {
     loading.value = true;
     isCompleted.value = !Object.values(reservation.value).some(
-        (value) => value === "" || value == null || value == false,
+        (value) => !value,
     );
     if (!isCompleted.value) {
         toast.add({
@@ -298,22 +275,16 @@ const onClickEvent = () => {
         return;
     }
 
-    postApplication(reservation.value).then(
-        (res: { success: boolean; message: string }) => {
-            if (res.success) {
-                loading.value = false;
-                router.push({
-                    path: "/reservation/create",
-                    query: { status: "success", message: res.message },
-                });
-            } else {
-                router.push({
-                    path: "/reservation/create",
-                    query: { status: "error", message: res.message },
-                });
-            }
-        },
-    );
+    postApplication(reservation.value).then((res) => {
+        loading.value = false;
+        router.push({
+            path: "/reservation/create",
+            query: {
+                status: res.success ? "success" : "error",
+                message: res.message,
+            },
+        });
+    });
 };
 
 const rules = computed(() =>
@@ -342,17 +313,20 @@ const rules = computed(() =>
                             {{ $t("application.personal_info") }}
                         </h3>
                         <FloatLabel class="m-[20px]">
-                            <InputText
-                                id="name"
-                                v-model="reservation.studentName"
-                                v-tooltip.bottom="
-                                    $t('application.tooltip.name')
-                                "
-                                :invalid="
-                                    !isCompleted &&
-                                    reservation.studentName === ''
-                                "
-                            />
+                            <IconField>
+                                <InputText
+                                    id="name"
+                                    v-model="reservation.studentName"
+                                    v-tooltip.bottom="
+                                        $t('application.tooltip.name')
+                                    "
+                                    :invalid="
+                                        !isCompleted &&
+                                        reservation.studentName === ''
+                                    "
+                                />
+                                <InputIcon class="pi pi-user"></InputIcon>
+                            </IconField>
                             <label for="name">{{
                                 $t("application.name")
                             }}</label>
@@ -377,35 +351,47 @@ const rules = computed(() =>
                                         <div>{{ slotProps.option.label }}</div>
                                     </div>
                                 </template>
+                                <template #dropdownicon>
+                                    <i class="pi pi-address-book"></i>
+                                </template>
                             </Select>
                             <label for="class">{{
                                 $t("application.class")
                             }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
-                            <InputText
-                                id="id"
-                                v-model="reservation.studentId"
-                                v-tooltip.bottom="$t('application.tooltip.id')"
-                                :invalid="
-                                    !isCompleted && reservation.studentId === ''
-                                "
-                            />
+                            <IconField>
+                                <InputText
+                                    id="id"
+                                    v-model="reservation.studentId"
+                                    v-tooltip.bottom="
+                                        $t('application.tooltip.id')
+                                    "
+                                    :invalid="
+                                        !isCompleted &&
+                                        reservation.studentId === ''
+                                    "
+                                />
+                                <InputIcon class="pi pi-id-card"></InputIcon>
+                            </IconField>
                             <label for="id">{{ $t("application.id") }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
-                            <InputText
-                                id="email"
-                                v-model="reservation.email"
-                                v-tooltip.bottom="
-                                    $t('application.tooltip.email', [
-                                        'sam.xulf2024@gdhfi.com',
-                                    ])
-                                "
-                                :invalid="
-                                    !isCompleted && reservation.email === ''
-                                "
-                            />
+                            <IconField>
+                                <InputText
+                                    id="email"
+                                    v-model="reservation.email"
+                                    v-tooltip.bottom="
+                                        $t('application.tooltip.email', [
+                                            'sam.xulf2024@gdhfi.com',
+                                        ])
+                                    "
+                                    :invalid="
+                                        !isCompleted && reservation.email === ''
+                                    "
+                                />
+                                <InputIcon class="pi pi-envelope"></InputIcon>
+                            </IconField>
                             <label for="email">{{
                                 $t("application.email")
                             }}</label>
@@ -425,7 +411,11 @@ const rules = computed(() =>
                                     !isCompleted &&
                                     reservation.selectedCampus === ''
                                 "
-                            />
+                            >
+                                <template #dropdownicon>
+                                    <i class="pi pi-map-marker"></i>
+                                </template>
+                            </Select>
                             <label for="campus">{{
                                 $t("application.campus")
                             }}</label>
@@ -439,7 +429,11 @@ const rules = computed(() =>
                                 v-model="selectedRoom"
                                 :options="roomsOption"
                                 :invalid="!isCompleted && selectedRoom === ''"
-                            />
+                            >
+                                <template #dropdownicon>
+                                    <i class="pi pi-building"></i>
+                                </template>
+                            </Select>
                             <label for="room">{{
                                 $t("application.room")
                             }}</label>
@@ -506,11 +500,15 @@ const rules = computed(() =>
                                     $t('application.tooltip.date')
                                 "
                                 date-format="yy/mm/dd"
+                                showIcon
+                                fluid
+                                iconDisplay="input"
                                 :min-date="minDate"
                                 :max-date="maxDate"
                                 :manual-input="false"
                                 :invalid="!isCompleted && date === null"
-                            />
+                            >
+                            </DatePicker>
                             <label for="date">{{
                                 $t("application.date")
                             }}</label>
@@ -526,7 +524,11 @@ const rules = computed(() =>
                                 :invalid="
                                     !isCompleted && reservation.startTime === ''
                                 "
-                            />
+                            >
+                                <template #dropdownicon>
+                                    <i class="pi pi-calendar-minus"></i>
+                                </template>
+                            </Select>
                             <label for="startTime">{{
                                 $t("application.start_time")
                             }}</label>
@@ -542,22 +544,32 @@ const rules = computed(() =>
                                 :invalid="
                                     !isCompleted && reservation.endTime === ''
                                 "
-                            />
+                            >
+                                <template #dropdownicon>
+                                    <i class="pi pi-calendar-plus"></i>
+                                </template>
+                            </Select>
                             <label for="endTime">{{
                                 $t("application.end_time")
                             }}</label>
                         </FloatLabel>
                         <FloatLabel class="m-[20px]">
-                            <Textarea
-                                id="reason"
-                                v-model="reservation.reason"
-                                v-tooltip.bottom="
-                                    $t('application.tooltip.reason')
-                                "
-                                :invalid="
-                                    !isCompleted && reservation.reason === ''
-                                "
-                            />
+                            <IconField>
+                                <InputText
+                                    id="reason"
+                                    v-model="reservation.reason"
+                                    v-tooltip.bottom="
+                                        $t('application.tooltip.reason')
+                                    "
+                                    :invalid="
+                                        !isCompleted &&
+                                        reservation.reason === ''
+                                    "
+                                />
+                                <InputIcon
+                                    class="pi pi-info-circle"
+                                ></InputIcon>
+                            </IconField>
                             <label for="reason">{{
                                 $t("application.reason")
                             }}</label>
@@ -599,24 +611,15 @@ const rules = computed(() =>
 
 <style scoped>
 h1 {
-    display: block;
     font-size: 2em;
-    margin-block-start: 0.67em;
-    margin-block-end: 0.67em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    margin: 0.67em 0;
     font-weight: bold;
-    unicode-bidi: isolate;
 }
 
 h3 {
     font-size: 1.5em;
-    margin-block-start: 2rem;
-    margin-block-end: 3rem;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    margin: 2rem 0 3rem;
     font-weight: bold;
-    unicode-bidi: isolate;
 }
 
 :deep(.p-inputtext),
@@ -643,8 +646,8 @@ a {
     color: var(--p-primary-600);
     text-decoration: none;
     transition:
-        0.4s color,
-        0.2s background-color ease;
+        color 0.4s,
+        background-color 0.2s ease;
 }
 
 a:hover {
@@ -661,14 +664,10 @@ a:hover {
     }
     :deep(.p-inputtext),
     .p-select,
-    .p-textarea {
-        min-width: 16rem;
-    }
-
+    .p-textarea,
     #datatable {
         min-width: 16rem;
     }
-
     h1 {
         font-size: 1.75rem;
     }

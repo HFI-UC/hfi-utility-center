@@ -429,6 +429,6 @@ export async function getHitokoto() {
         hitokoto: string;
         from_who: string;
         from: string;
-    }>("https://v1.hitokoto.cn/?max_length=15");
+    }>("https://v1.hitokoto.cn");
     return res.data;
 }

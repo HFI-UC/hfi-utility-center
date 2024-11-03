@@ -122,7 +122,8 @@
         "table": {
             "search": "Search",
             "empty": "No available data.",
-            "enter_keyword": "Enter a keyword to start your search."
+            "enter_keyword": "Enter a keyword to start your search.",
+            "loading": "Loading..."
         },
         "column": {
             "name": "Name / Class",
@@ -163,8 +164,11 @@
             "header": "Choose a reject reason",
             "cancel": "Cancel"
         },
+        "reviewed": "Reviewed",
+        "unreviewed": "Unreviewed",
         "reservation": "Reservation Management",
-        "empty": "There are currently no applications.",
+        "empty": "No available data.",
+        "search": "Search",
         "card": {
             "header": "Reservation #{0}",
             "room": "Room: ",
@@ -186,7 +190,8 @@
         "header": "Admin Login",
         "username": "Username",
         "password": "Password",
-        "login": "Login"
+        "login": "Login",
+        "cloudflare": "Let us know you're human"
     },
     "policy": {
         "policy": "Policy Settings",

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
 import router from "../router/router";
-import { ref, onMounted, computed, Ref } from "vue";
+import { ref, onMounted, computed } from "vue";
 import {
-    RoomPolicyInfo,
     verifyAdmin,
     postPolicy,
     postPolicyResume,
@@ -26,11 +25,9 @@ const token = ref("");
 const toast = useToast();
 const { t } = useI18n();
 const id = ref(-1);
-const { data: policy } = useRequest(
-    (): Promise<{ success: boolean; policy: RoomPolicyInfo[] }> =>
-        postPolicy(token.value),
-    { pollingInterval: 3000 },
-);
+const { data: policy } = useRequest(() => postPolicy(token.value), {
+    pollingInterval: 3000,
+});
 
 const rooms = ref([
     "iStudy Meeting Room 1",
@@ -58,8 +55,8 @@ const convertedDays = computed(() =>
 const isValid = ref(true);
 const isStartTimeValid = ref(true);
 const isEndTimeValid = ref(true);
-const startDate: Ref<Date | null> = ref(null);
-const endDate: Ref<Date | null> = ref(null);
+const startDate = ref<Date | null>(null);
+const endDate = ref<Date | null>(null);
 
 const minStartDate = computed(() => {
     let time = new Date();
@@ -204,7 +201,7 @@ const days = ref([
 
 const formatDays = (time: string) => {
     const days = time.split(",");
-    const daysMapping: { [key: string]: string } = {
+    const daysMapping: Record<string, string> = {
         "1": "Monday",
         "2": "Tuesday",
         "3": "Wednesday",
@@ -220,14 +217,14 @@ const formatDays = (time: string) => {
     return convertedDays.join(", ");
 };
 
-const roomMappingToString: { [key: number]: string } = {
+const roomMappingToString: Record<number, string> = {
     101: "iStudy Meeting Room 1",
     102: "iStudy Meeting Room 2",
     103: "Writing Center 1",
     106: "Writing Center 2",
 };
 
-const roomMappingToNumber: { [key: string]: number } = {
+const roomMappingToNumber: Record<string, number> = {
     "iStudy Meeting Room 1": 101,
     "iStudy Meeting Room 2": 102,
     "Writing Center 1": 103,
@@ -456,7 +453,7 @@ b {
     width: calc(50% - 0.8rem);
 }
 
-@media screen and (max-width: 720px) {
+@media screen and (max-width: 820px) {
     #card {
         width: 100%;
     }

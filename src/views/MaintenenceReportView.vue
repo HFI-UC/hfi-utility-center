@@ -2,7 +2,7 @@
 import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
 import FileUpload, { FileUploadSelectEvent } from "primevue/fileupload";
-import { ref, Ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import {
     generateCosKey,
     getMaintenance,
@@ -30,24 +30,26 @@ import { useI18n } from "vue-i18n";
 const visible = ref(false);
 const token = ref(sessionStorage.getItem("token") || "");
 const isAdmin = ref(false);
-const { data } = useRequest(() => getMaintenance(token.value));
+const { run, data } = useRequest(() => getMaintenance(token.value), {
+    manual: true,
+});
 const { t, locale } = useI18n();
 const first = ref(0);
 const filteredMaintenanceData = computed(
     () =>
-        data.value?.data
-            .filter((item) => {
-                const regex = new RegExp(query.value, "i");
-                return (
-                    query.value === "" ||
-                    item.subject.match(regex) ||
-                    item.detail.match(regex) ||
-                    item.id?.toString().match(regex) ||
-                    item.location.match(regex) ||
-                    item.studentName.match(regex) ||
-                    item.email.match(regex)
-                );
-            }) || [],
+        data.value?.data.filter((item) => {
+            const regex = new RegExp(query.value, "i");
+            return (
+                query.value === "" ||
+                item.subject.match(regex) ||
+                item.detail.match(regex) ||
+                item.id?.toString().match(regex) ||
+                item.location.match(regex) ||
+                item.studentName.match(regex) ||
+                item.email.match(regex) ||
+                status.value[item.status as number].match(regex)
+            );
+        }) || [],
 );
 const maintenanceData = computed(() =>
     filteredMaintenanceData.value.slice(first.value, first.value + 10),
@@ -67,9 +69,9 @@ const status = computed(() => [
     t("maintenance.status.unscheduled"),
     t("maintenance.status.duplicated"),
 ]);
-const severity = ["info", "success", "danger", "primary"];
+const severity = ["info", "success", "danger", "warn"];
 const query = ref("");
-const maintenance: Ref<MaintenanceInfo> = ref({
+const maintenance = ref<MaintenanceInfo>({
     studentName: "",
     subject: "",
     location: "",
@@ -97,6 +99,7 @@ const onFileSelect = (event: FileUploadSelectEvent) => {
 };
 
 onMounted(async () => {
+    run();
     if (token.value && (await verifyAdmin(token.value))) {
         isAdmin.value = true;
     }
@@ -112,7 +115,7 @@ const onActionEvent = (maintenance: MaintenanceInfo, action: number) => {
                 life: 2000,
             });
             if (res.success) {
-                setTimeout(() => window.location.reload(), 2000);
+                run();
             }
         },
     );
@@ -170,8 +173,8 @@ const onClickEvent = async () => {
         detail: maintenanceResult.message,
         life: 3000,
     });
-
     resetForm();
+    run();
 };
 
 const resetForm = () => {
@@ -407,7 +410,7 @@ const resetForm = () => {
                             </Button>
                             <Button
                                 class="w-full"
-                                :label="$t('maintenance.status.approved')"
+                                :label="$t('maintenance.status.solved')"
                                 severity="success"
                                 icon="pi pi-check"
                                 @click="onActionEvent(maintenance, 1)"

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref, Ref, computed } from "vue";
+import { onMounted, ref, computed } from "vue";
 import {
     postReservationAccept,
     postReservationReject,
     verifyAdmin,
 } from "../api";
 import { useRequest } from "vue-request";
-import { ReservationInfo, postAdminReservation } from "../api";
+import { postAdminReservation } from "../api";
 import router from "../router/router";
 import Card from "primevue/card";
 import Skeleton from "primevue/skeleton";
@@ -15,6 +15,9 @@ import Button from "primevue/button";
 import Tag from "primevue/tag";
 import Dialog from "primevue/dialog";
 import Select from "primevue/select";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
+import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
 import { useI18n } from "vue-i18n";
 
@@ -46,13 +49,34 @@ const reasons = ref([
     { name: "特殊活动优先 - 由于特殊活动或紧急情况，优先安排资源", code: "9" },
 ]);
 
-const { data: booking } = useRequest(
-    (): Promise<ReservationInfo> => postAdminReservation(token.value),
-    { pollingInterval: 3000 },
+const { data: booking } = useRequest(() => postAdminReservation(token.value), {
+    pollingInterval: 3000,
+});
+
+const filteredBookingData = computed(
+    () =>
+        booking.value?.data.filter((item) => {
+            const regex = new RegExp(query.value, "i");
+            return (
+                query.value == "" ||
+                status.value[item.auth].match(regex) ||
+                item.email.match(regex) ||
+                item.name.match(regex) ||
+                item.reason.match(regex) ||
+                item.id?.toString().match(regex) ||
+                (roomMapping[item.room] || item.room.toString()).match(regex) ||
+                formatTime(item.time).match(regex) ||
+                formatDate(item.time).match(regex)
+            );
+        }) || [],
 );
 
-const bookingData = computed(
-    () => booking.value?.data.filter((item) => item.auth == "non") || [],
+const unreviewedBookingData = computed(() =>
+    filteredBookingData.value.filter((item) => item.auth == "non"),
+);
+
+const reviewedBookingData = computed(() =>
+    filteredBookingData.value.filter((item) => item.auth != "non"),
 );
 
 const formatDate = (time: string) => {
@@ -63,6 +87,8 @@ const formatDate = (time: string) => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
 };
+
+const query = ref("");
 
 const formatTime = (time: string) => {
     const [start, end] = time.split("-");
@@ -117,19 +143,19 @@ const onRejectEvent = () => {
     visible.value = false;
 };
 
-const status: Ref<{ [key: string]: string }> = computed(() => ({
+const status = computed<Record<string, string>>(() => ({
     non: t("reservation.card.tag.pending"),
     no: t("reservation.card.tag.rejected"),
     yes: t("reservation.card.tag.approved"),
 }));
 
-const severity: { [key: string]: string } = {
+const severity: Record<string, string> = {
     non: "info",
     no: "danger",
     yes: "success",
 };
 
-const roomMapping: { [key: number]: string } = {
+const roomMapping: Record<string, string> = {
     101: "iStudy Meeting Room 1",
     102: "iStudy Meeting Room 2",
     103: "Writing Center 1",
@@ -193,85 +219,216 @@ onMounted(async () => {
         </Dialog>
         <h1>{{ $t("reservation.reservation") }}</h1>
         <div v-if="booking?.success" id="cards-container">
-            <p v-if="bookingData.length == 0">
+            <div class="justify-left mt-4 mb-4">
+                <IconField>
+                    <InputIcon class="pi pi-search"></InputIcon>
+                    <InputText
+                        :placeholder="$t('reservation.search')"
+                        v-model="query"
+                    ></InputText>
+                </IconField>
+            </div>
+            <p v-if="filteredBookingData.length == 0 && booking">
                 {{ $t("reservation.empty") }}
             </p>
-            <div class="flex flex-wrap justify-between gap-[1rem]">
-                <div v-for="booking in bookingData" id="card">
-                    <Card>
-                        <template #content>
-                            <div class="ms-4 me-4">
-                                <h3>
-                                    {{
-                                        $t("reservation.card.header", [
-                                            booking.id,
-                                        ])
-                                    }}
-                                </h3>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.room") }}</b
-                                    >{{
-                                        roomMapping[booking.room] ||
-                                        booking.room
-                                    }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.name") }}</b
-                                    >{{ booking.name }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.email") }}</b
-                                    >{{ booking.email }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.date") }}</b
-                                    >{{ formatDate(booking.time) }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.time") }}</b
-                                    >{{ formatTime(booking.time) }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.reason") }}</b
-                                    >{{ booking.reason }}
-                                </p>
-                                <p class="mb-2">
-                                    <b>{{ $t("reservation.card.status") }}</b
-                                    ><Tag
-                                        :severity="severity[booking.auth]"
-                                        :value="status[booking.auth]"
-                                    ></Tag>
-                                </p>
-                            </div>
-                        </template>
-                        <template #footer>
-                            <div class="m-4 flex gap-4">
-                                <Button
-                                    outlined
-                                    icon="pi pi-times"
-                                    :label="$t('reservation.reject.reject')"
-                                    @click="
-                                        (reason = ''),
-                                            (visible = true),
-                                            (id = booking.id as number)
-                                    "
-                                    severity="danger"
-                                    class="w-full"
-                                    :disabled="disabled"
-                                />
-                                <Button
-                                    icon="pi pi-check"
-                                    severity="success"
-                                    :label="$t('reservation.pass')"
-                                    class="w-full"
-                                    @click="
-                                        (id = booking.id as number),
-                                            onAcceptEvent()
-                                    "
-                                ></Button>
-                            </div>
-                        </template>
-                    </Card>
+            <div v-else>
+                <div v-if="unreviewedBookingData.length != 0">
+                    <h2>{{ $t("reservation.unreviewed") }}</h2>
+                    <div class="flex flex-wrap justify-between gap-[1rem]">
+                        <div v-for="booking in unreviewedBookingData" id="card">
+                            <Card>
+                                <template #content>
+                                    <div class="ms-4 me-4">
+                                        <h3>
+                                            {{
+                                                $t("reservation.card.header", [
+                                                    booking.id,
+                                                ])
+                                            }}
+                                        </h3>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.room")
+                                            }}</b
+                                            >{{
+                                                roomMapping[booking.room] ||
+                                                booking.room
+                                            }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.name")
+                                            }}</b
+                                            >{{ booking.name }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.email")
+                                            }}</b
+                                            >{{ booking.email }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.date")
+                                            }}</b
+                                            >{{ formatDate(booking.time) }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.time")
+                                            }}</b
+                                            >{{ formatTime(booking.time) }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.reason")
+                                            }}</b
+                                            >{{ booking.reason }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.status")
+                                            }}</b
+                                            ><Tag
+                                                :severity="
+                                                    severity[booking.auth]
+                                                "
+                                                :value="status[booking.auth]"
+                                            ></Tag>
+                                        </p>
+                                    </div>
+                                </template>
+                                <template #footer>
+                                    <div class="m-4 flex gap-4">
+                                        <Button
+                                            outlined
+                                            icon="pi pi-times"
+                                            :label="
+                                                $t('reservation.reject.reject')
+                                            "
+                                            @click="
+                                                (reason = ''),
+                                                    (visible = true),
+                                                    (id = booking.id as number)
+                                            "
+                                            severity="danger"
+                                            class="w-full"
+                                            :disabled="disabled"
+                                        />
+                                        <Button
+                                            icon="pi pi-check"
+                                            severity="success"
+                                            :label="$t('reservation.pass')"
+                                            class="w-full"
+                                            @click="
+                                                (id = booking.id as number),
+                                                    onAcceptEvent()
+                                            "
+                                        ></Button>
+                                    </div>
+                                </template>
+                            </Card>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="reviewedBookingData.length != 0">
+                    <h2>{{ $t("reservation.reviewed") }}</h2>
+                    <div class="flex flex-wrap justify-between gap-[1rem]">
+                        <div v-for="booking in reviewedBookingData" id="card">
+                            <Card>
+                                <template #content>
+                                    <div class="ms-4 me-4">
+                                        <h3>
+                                            {{
+                                                $t("reservation.card.header", [
+                                                    booking.id,
+                                                ])
+                                            }}
+                                        </h3>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.room")
+                                            }}</b
+                                            >{{
+                                                roomMapping[booking.room] ||
+                                                booking.room
+                                            }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.name")
+                                            }}</b
+                                            >{{ booking.name }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.email")
+                                            }}</b
+                                            >{{ booking.email }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.date")
+                                            }}</b
+                                            >{{ formatDate(booking.time) }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.time")
+                                            }}</b
+                                            >{{ formatTime(booking.time) }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.reason")
+                                            }}</b
+                                            >{{ booking.reason }}
+                                        </p>
+                                        <p class="mb-2">
+                                            <b>{{
+                                                $t("reservation.card.status")
+                                            }}</b
+                                            ><Tag
+                                                :severity="
+                                                    severity[booking.auth]
+                                                "
+                                                :value="status[booking.auth]"
+                                            ></Tag>
+                                        </p>
+                                    </div>
+                                </template>
+                                <template #footer>
+                                    <div class="m-4 flex gap-4">
+                                        <Button
+                                            outlined
+                                            icon="pi pi-times"
+                                            :label="
+                                                $t('reservation.reject.reject')
+                                            "
+                                            @click="
+                                                (reason = ''),
+                                                    (visible = true),
+                                                    (id = booking.id as number)
+                                            "
+                                            severity="danger"
+                                            class="w-full"
+                                            :disabled="disabled"
+                                        />
+                                        <Button
+                                            icon="pi pi-check"
+                                            severity="success"
+                                            :label="$t('reservation.pass')"
+                                            class="w-full"
+                                            @click="
+                                                (id = booking.id as number),
+                                                    onAcceptEvent()
+                                            "
+                                        ></Button>
+                                    </div>
+                                </template>
+                            </Card>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -304,12 +461,29 @@ h3 {
     font-weight: bold;
     unicode-bidi: isolate;
 }
+
+h2 {
+    font-size: 1.6em;
+    margin-block-start: 1.13em;
+    margin-block-end: 1.13em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+}
 #card {
     width: calc(50% - 0.8rem);
 }
 
 button {
     border-radius: 0.5rem;
+}
+
+:deep(.p-inputtext),
+.p-select,
+.p-textarea {
+    border-radius: 0.5rem !important;
+    min-width: 17rem;
 }
 
 #cards-container {

@@ -3,7 +3,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Tag from "primevue/tag";
 import { postReservation, type ReservationInfo } from "../api";
-import { computed, ref, Ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import InputText from "primevue/inputtext";
 import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
@@ -11,17 +11,19 @@ import Select from "primevue/select";
 import SelectButton from "primevue/selectbutton";
 import { useI18n } from "vue-i18n";
 
-const data: Ref<ReservationInfo | null> = ref(null);
+const data = ref<ReservationInfo | null>(null);
 const queried = ref(false);
 const query = ref("");
-const date: Ref<Date | null> = ref(null);
+const date = ref<Date | null>(null);
 const room = ref("");
 const { t, locale } = useI18n();
+
 const options = computed(() => [
     t("status.option.keyword"),
     t("status.option.time"),
     t("status.option.room"),
 ]);
+
 const rooms = ref([
     "iStudy Meeting Room 1",
     "iStudy Meeting Room 2",
@@ -41,7 +43,7 @@ const rooms = ref([
     "524",
 ]);
 
-const roomMappingToNumber: { [key: string]: number } = {
+const roomMappingToNumber: Record<string, number> = {
     "iStudy Meeting Room 1": 101,
     "iStudy Meeting Room 2": 102,
     "Writing Center 1": 103,
@@ -57,58 +59,49 @@ watch(
     },
 );
 
-const onSearch = () => {
+const onSearch = async () => {
     queried.value = true;
-    if (searchOption.value == t("status.option.time")) {
-        if (date.value) {
-            date.value.setSeconds(0, 0);
-            postReservation({ time: date.value }).then((res) => {
-                data.value = res;
-            });
-        } else {
-            data.value = { success: false, data: [] };
-        }
-    } else if (searchOption.value == t("status.option.room")) {
-        if (room.value == "") {
-            data.value = { success: false, data: [] };
-            return;
-        }
-        postReservation({
-            room: (roomMappingToNumber[room.value] || room.value).toString(),
-        }).then((res) => {
-            data.value = res;
-        });
+    loading.value = true;
+    const reservationParams = getReservationParams();
+    if (reservationParams) {
+        const res = await postReservation(reservationParams);
+        data.value = res;
     } else {
-        if (query.value == "") {
-            data.value = { success: false, data: [] };
-            return;
-        }
-        postReservation({ query: query.value }).then((res) => {
-            data.value = res;
-        });
+        data.value = { success: false, data: [] };
+        queried.value = false;
     }
+    loading.value = false;
 };
 
-const statusMapping: Ref<{ [key: string]: string }> = computed(() => ({
+const getReservationParams = () => {
+    if (searchOption.value === t("status.option.time") && date.value) {
+        date.value.setSeconds(0, 0);
+        return { time: date.value };
+    } else if (searchOption.value === t("status.option.room") && room.value) {
+        return {
+            room: (roomMappingToNumber[room.value] || room.value).toString(),
+        };
+    } else if (
+        searchOption.value === t("status.option.keyword") &&
+        query.value
+    ) {
+        return { query: query.value };
+    }
+    return null;
+};
+
+const statusMapping = computed<Record<string, string>>(() => ({
     non: t("status.tag.pending"),
     yes: t("status.tag.approved"),
     no: t("status.tag.rejected"),
 }));
 
+const loading = ref(false);
+
 const bookingData = computed(() => {
     if (!data.value) return [];
-    const booking: {
-        name: string;
-        email: string;
-        time: string;
-        date: string;
-        room: string;
-        status: string;
-        reason: string;
-        severity: string;
-    }[] = [];
-    for (const item of data.value.data) {
-        booking.push({
+    return data.value.data
+        .map((item) => ({
             name: item.name,
             email: item.email,
             time: formatTime(item.time),
@@ -117,35 +110,29 @@ const bookingData = computed(() => {
             status: statusMapping.value[item.auth],
             reason: item.reason,
             severity: getSeverity(item.auth),
-        });
-    }
-    booking.sort((a, b) =>
-        a.date === b.date
-            ? b.time.localeCompare(a.time)
-            : b.date.localeCompare(a.date),
-    );
-    return booking;
+        }))
+        .sort((a, b) =>
+            a.date === b.date
+                ? b.time.localeCompare(a.time)
+                : b.date.localeCompare(a.date),
+        );
 });
 
 const formatDate = (time: string) => {
-    const startTime = time.split("-")[0];
-    const date = new Date(parseInt(startTime));
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    const date = new Date(parseInt(time.split("-")[0]));
+    return date.toISOString().split("T")[0];
 };
 
 const formatTime = (time: string) => {
     const [start, end] = time.split("-");
-    const startTime = new Date(parseInt(start));
-    const endTime = new Date(parseInt(end));
-    const formatHour = (date: Date): string =>
-        `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-    return `${formatHour(startTime)} ~ ${formatHour(endTime)}`;
+    return `${formatHour(new Date(parseInt(start)))} ~ ${formatHour(new Date(parseInt(end)))}`;
 };
 
-const roomMappingToString: { [key: number]: string } = {
+const formatHour = (date: Date): string => {
+    return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+};
+
+const roomMappingToString: Record<number, string> = {
     101: "iStudy Meeting Room 1",
     102: "iStudy Meeting Room 2",
     103: "Writing Center 1",
@@ -174,18 +161,11 @@ const getSeverity = (label: string): string => {
         :rowsPerPageOptions="[10, 20, 50]"
     >
         <template #empty>
-            <p
-                v-if="
-                    ((searchOption == t('status.option.keyword') &&
-                        query !== '') ||
-                        (searchOption == t('status.option.time') && data)) &&
-                    data?.data.length == 0 &&
-                    queried
-                "
-            >
+            <p v-if="loading">{{ $t("status.table.loading") }}</p>
+            <p v-else-if="queried && (!data || data.data.length === 0)">
                 {{ $t("status.table.empty") }}
             </p>
-            <p v-else>{{ $t("status.table.enter_keyword") }}</p>
+            <p v-else-if="!queried">{{ $t("status.table.enter_keyword") }}</p>
         </template>
         <template #header>
             <div class="flex flex-col gap-3">
@@ -222,20 +202,21 @@ const getSeverity = (label: string): string => {
                     <Button
                         @click="onSearch()"
                         :label="$t('status.table.search')"
+                        :loading="loading"
                         icon="pi pi-search"
                     ></Button>
                 </div>
             </div>
         </template>
-        <Column field="name" :header="$t('status.column.name')"></Column>
-        <Column field="email" :header="$t('status.column.email')"></Column>
-        <Column field="date" :header="$t('status.column.date')"></Column>
-        <Column field="time" :header="$t('status.column.time')"></Column>
-        <Column field="room" :header="$t('status.column.room')"></Column>
-        <Column field="reason" :header="$t('status.column.reason')"></Column>
+        <Column field="name" :header="$t('status.column.name')" />
+        <Column field="email" :header="$t('status.column.email')" />
+        <Column field="date" :header="$t('status.column.date')" />
+        <Column field="time" :header="$t('status.column.time')" />
+        <Column field="room" :header="$t('status.column.room')" />
+        <Column field="reason" :header="$t('status.column.reason')" />
         <Column field="status" :header="$t('status.column.status')">
             <template #body="{ data }">
-                <Tag :severity="data.severity" :value="data.status"></Tag>
+                <Tag :severity="data.severity" :value="data.status" />
             </template>
         </Column>
     </DataTable>
@@ -251,6 +232,7 @@ const getSeverity = (label: string): string => {
 button {
     border-radius: 0.5rem;
 }
+
 @media screen and (max-width: 720px) {
     :deep(.p-inputtext),
     .p-select {

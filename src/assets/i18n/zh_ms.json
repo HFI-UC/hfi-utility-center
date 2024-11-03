@@ -122,7 +122,8 @@
         "table": {
             "search": "搜",
             "empty": "无数据可用。",
-            "enter_keyword": "搜索和关键词"
+            "enter_keyword": "搜索和关键词",
+            "loading": "载入中..."
         },
         "column": {
             "name": "名 / 班",
@@ -163,8 +164,11 @@
             "header": "选择拒绝理由",
             "cancel": "取消"
         },
+        "reviewed": "已评价",
+        "unreviewed": "未评价",
         "reservation": "预约管理",
-        "empty": "暂时无预约。",
+        "empty": "无可用数据。",
+        "search": "搜索",
         "card": {
             "header": "预约 #{0}",
             "room": "房：",
@@ -186,7 +190,8 @@
         "header": "管理员登录",
         "username": "用户名",
         "password": "密码",
-        "login": "登录"
+        "login": "登录",
+        "cloudflare": "让我们知道您是人类的"
     },
     "policy": {
         "policy": "政策设定",
