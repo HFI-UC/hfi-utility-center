@@ -190,7 +190,8 @@
         "header": "管理员登录",
         "username": "用户名",
         "password": "密码",
-        "login": "登录"
+        "login": "登录",
+        "cloudflare": "Let us know you're human"
     },
     "policy": {
         "policy": "政策设定",
