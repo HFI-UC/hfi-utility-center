@@ -219,21 +219,21 @@ onMounted(async () => {
         </Dialog>
         <h1>{{ $t("reservation.reservation") }}</h1>
         <div v-if="booking?.success" id="cards-container">
-            <div class="justify-left mt-4 mb-4">
-                <IconField>
-                    <InputIcon class="pi pi-search"></InputIcon>
-                    <InputText
-                        :placeholder="$t('reservation.search')"
-                        v-model="query"
-                    ></InputText>
-                </IconField>
-            </div>
             <p v-if="filteredBookingData.length == 0 && booking">
                 {{ $t("reservation.empty") }}
             </p>
             <div v-else>
+                <div class="justify-left mt-4 mb-4">
+                    <IconField>
+                        <InputIcon class="pi pi-search"></InputIcon>
+                        <InputText
+                            :placeholder="$t('reservation.search')"
+                            v-model="query"
+                        ></InputText>
+                    </IconField>
+                </div>
+                <h2>{{ $t("reservation.unreviewed") }}</h2>
                 <div v-if="unreviewedBookingData.length != 0">
-                    <h2>{{ $t("reservation.unreviewed") }}</h2>
                     <div class="flex flex-wrap justify-between gap-[1rem]">
                         <div v-for="booking in unreviewedBookingData" id="card">
                             <Card>
@@ -331,8 +331,9 @@ onMounted(async () => {
                         </div>
                     </div>
                 </div>
+                <p v-else>{{ $t("reservation.empty") }}</p>
+                <h2>{{ $t("reservation.reviewed") }}</h2>
                 <div v-if="reviewedBookingData.length != 0">
-                    <h2>{{ $t("reservation.reviewed") }}</h2>
                     <div class="flex flex-wrap justify-between gap-[1rem]">
                         <div v-for="booking in reviewedBookingData" id="card">
                             <Card>
@@ -430,6 +431,7 @@ onMounted(async () => {
                         </div>
                     </div>
                 </div>
+                <p v-else>{{ $t("reservation.empty") }}</p>
             </div>
         </div>
         <Skeleton
