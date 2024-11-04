@@ -425,8 +425,7 @@ export async function postMaintenanceAction(
 }
 
 export async function getHitokoto() {
-    const query = new URLSearchParams("c=a&c=b&c=c&c=f&c=h&c=j&c=l")
-    console.log(query.getAll("c"))
+    const query = new URLSearchParams("c=a&c=b&c=c&c=f&c=h&c=j&c=l");
     const res = await axios.get<{
         hitokoto: string;
         from_who: string;

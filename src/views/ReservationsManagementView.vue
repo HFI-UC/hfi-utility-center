@@ -344,7 +344,7 @@ onMounted(async () => {
                     </div>
                 </div>
                 <p v-else>{{ $t("reservation.empty") }}</p>
-                <br>
+                <br />
                 <h2>{{ $t("reservation.reviewed") }}</h2>
                 <div v-if="reviewedBookingData.length != 0">
                     <div class="flex flex-wrap justify-between gap-[1rem]">
