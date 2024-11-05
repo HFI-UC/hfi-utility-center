@@ -25,7 +25,6 @@ const toast = useToast();
 const token = ref("");
 const visible = ref(false);
 const { t } = useI18n();
-const id = ref(-1);
 const reason = ref("");
 const disabled = ref(false);
 const reasons = ref([
@@ -53,22 +52,28 @@ const { data: booking } = useRequest(() => postAdminReservation(token.value), {
     pollingInterval: 3000,
 });
 
+const selectedBooking = ref();
+
 const filteredBookingData = computed(
     () =>
-        booking.value?.data.filter((item) => {
-            const regex = new RegExp(query.value, "i");
-            return (
-                query.value == "" ||
-                status.value[item.auth].match(regex) ||
-                item.email.match(regex) ||
-                item.name.match(regex) ||
-                item.reason.match(regex) ||
-                item.id?.toString().match(regex) ||
-                (roomMapping[item.room] || item.room.toString()).match(regex) ||
-                formatTime(item.time).match(regex) ||
-                formatDate(item.time).match(regex)
-            );
-        }) || [],
+        booking.value?.data
+            .filter((item) => {
+                const regex = new RegExp(query.value, "i");
+                return (
+                    query.value == "" ||
+                    status.value[item.auth].match(regex) ||
+                    item.email.match(regex) ||
+                    item.name.match(regex) ||
+                    item.reason.match(regex) ||
+                    item.id?.toString().match(regex) ||
+                    (roomMapping[item.room] || item.room.toString()).match(
+                        regex,
+                    ) ||
+                    formatTime(item.time).match(regex) ||
+                    formatDate(item.time).match(regex)
+                );
+            })
+            .map((item) => ({ ...item, loading: false })) || [],
 );
 
 const unreviewedBookingData = computed(() =>
@@ -99,24 +104,25 @@ const formatTime = (time: string) => {
     return `${formatHour(startTime)} ~ ${formatHour(endTime)}`;
 };
 
-const onAcceptEvent = () => {
+const onAcceptEvent = async () => {
     disabled.value = true;
-    postReservationAccept(token.value, id.value).then(
-        (res: { success: boolean; message: string }) => {
-            toast.add({
-                severity: res.success ? "success" : "error",
-                summary: res.success ? t("toast.success") : t("toast.error"),
-                detail: res.message,
-                life: 3000,
-            });
-        },
-    );
+    const res: { success: boolean; message: string } =
+        await postReservationAccept(
+            token.value,
+            selectedBooking.value.id as number,
+        );
+    toast.add({
+        severity: res.success ? "success" : "error",
+        summary: res.success ? t("toast.success") : t("toast.error"),
+        detail: res.message,
+        life: 3000,
+    });
     disabled.value = false;
 };
 
 const isCompleted = ref(true);
 
-const onRejectEvent = () => {
+const onRejectEvent = async () => {
     isCompleted.value = true;
     disabled.value = true;
     if (reason.value == "") {
@@ -129,16 +135,18 @@ const onRejectEvent = () => {
         isCompleted.value = false;
         return;
     }
-    postReservationReject(token.value, id.value, reason.value).then(
-        (res: { success: boolean; message: string }) => {
-            toast.add({
-                severity: res.success ? "success" : "error",
-                summary: res.success ? t("toast.success") : t("toast.error"),
-                detail: res.message,
-                life: 3000,
-            });
-        },
-    );
+    const res: { success: boolean; message: string } =
+        await postReservationReject(
+            token.value,
+            selectedBooking.value?.id as number,
+            reason.value,
+        );
+    toast.add({
+        severity: res.success ? "success" : "error",
+        summary: res.success ? t("toast.success") : t("toast.error"),
+        detail: res.message,
+        life: 3000,
+    });
     disabled.value = false;
     visible.value = false;
 };
@@ -195,6 +203,7 @@ onMounted(async () => {
                         id="reason"
                         class="w-[22rem]"
                         :options="reasons"
+                        :placeholder="$t('reservation.reject.reject_reason')"
                         optionLabel="name"
                         optionValue="code"
                         v-model="reason"
@@ -206,11 +215,13 @@ onMounted(async () => {
                 <Button
                     type="button"
                     :label="$t('reservation.reject.cancel')"
+                    :disabled="disabled"
                     severity="secondary"
-                    @click="visible = false"
+                    @click="(visible = false), (disabled = false)"
                 ></Button>
                 <Button
                     type="button"
+                    :disabled="disabled"
                     :label="$t('reservation.reject.reject')"
                     severity="danger"
                     @click="onRejectEvent()"
@@ -219,21 +230,21 @@ onMounted(async () => {
         </Dialog>
         <h1>{{ $t("reservation.reservation") }}</h1>
         <div v-if="booking?.success" id="cards-container">
-            <div class="justify-left mt-4 mb-4">
-                <IconField>
-                    <InputIcon class="pi pi-search"></InputIcon>
-                    <InputText
-                        :placeholder="$t('reservation.search')"
-                        v-model="query"
-                    ></InputText>
-                </IconField>
-            </div>
-            <p v-if="filteredBookingData.length == 0 && booking">
+            <p v-if="booking.data.length == 0 && booking">
                 {{ $t("reservation.empty") }}
             </p>
             <div v-else>
+                <div class="justify-left mt-4 mb-4">
+                    <IconField>
+                        <InputIcon class="pi pi-search"></InputIcon>
+                        <InputText
+                            :placeholder="$t('reservation.search')"
+                            v-model="query"
+                        ></InputText>
+                    </IconField>
+                </div>
+                <h2>{{ $t("reservation.unreviewed") }}</h2>
                 <div v-if="unreviewedBookingData.length != 0">
-                    <h2>{{ $t("reservation.unreviewed") }}</h2>
                     <div class="flex flex-wrap justify-between gap-[1rem]">
                         <div v-for="booking in unreviewedBookingData" id="card">
                             <Card>
@@ -309,19 +320,20 @@ onMounted(async () => {
                                             @click="
                                                 (reason = ''),
                                                     (visible = true),
-                                                    (id = booking.id as number)
+                                                    (selectedBooking = booking)
                                             "
+                                            :disabled="disabled"
                                             severity="danger"
                                             class="w-full"
-                                            :disabled="disabled"
                                         />
                                         <Button
                                             icon="pi pi-check"
                                             severity="success"
+                                            :disabled="disabled"
                                             :label="$t('reservation.pass')"
                                             class="w-full"
                                             @click="
-                                                (id = booking.id as number),
+                                                (selectedBooking = booking),
                                                     onAcceptEvent()
                                             "
                                         ></Button>
@@ -331,8 +343,10 @@ onMounted(async () => {
                         </div>
                     </div>
                 </div>
+                <p v-else>{{ $t("reservation.empty") }}</p>
+                <br />
+                <h2>{{ $t("reservation.reviewed") }}</h2>
                 <div v-if="reviewedBookingData.length != 0">
-                    <h2>{{ $t("reservation.reviewed") }}</h2>
                     <div class="flex flex-wrap justify-between gap-[1rem]">
                         <div v-for="booking in reviewedBookingData" id="card">
                             <Card>
@@ -401,6 +415,7 @@ onMounted(async () => {
                                     <div class="m-4 flex gap-4">
                                         <Button
                                             outlined
+                                            v-if="booking.auth == 'yes'"
                                             icon="pi pi-times"
                                             :label="
                                                 $t('reservation.reject.reject')
@@ -408,19 +423,21 @@ onMounted(async () => {
                                             @click="
                                                 (reason = ''),
                                                     (visible = true),
-                                                    (id = booking.id as number)
+                                                    (selectedBooking = booking)
                                             "
+                                            :disabled="disabled"
                                             severity="danger"
                                             class="w-full"
-                                            :disabled="disabled"
                                         />
                                         <Button
+                                            v-else
                                             icon="pi pi-check"
                                             severity="success"
                                             :label="$t('reservation.pass')"
                                             class="w-full"
+                                            :disabled="disabled"
                                             @click="
-                                                (id = booking.id as number),
+                                                (selectedBooking = booking),
                                                     onAcceptEvent()
                                             "
                                         ></Button>
@@ -430,6 +447,7 @@ onMounted(async () => {
                         </div>
                     </div>
                 </div>
+                <p v-else>{{ $t("reservation.empty") }}</p>
             </div>
         </div>
         <Skeleton

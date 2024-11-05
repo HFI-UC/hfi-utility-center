@@ -162,7 +162,8 @@
             "reject": "Reject",
             "reason": "Reason",
             "header": "Choose a reject reason",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "reject_reason": "Reject Reason"
         },
         "reviewed": "Reviewed",
         "unreviewed": "Unreviewed",

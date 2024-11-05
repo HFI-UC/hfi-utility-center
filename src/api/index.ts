@@ -310,13 +310,9 @@ export async function uploadCOS(
             data.append("file-name", options.Key);
             data.append("cosKey", cosKey);
 
-            const {
-                credentials: { SessionToken: SecurityToken, ...rest },
-            } = (
-                await axios.post<{
-                    credentials: Credentials & { SessionToken: string };
-                }>("/api/keygen.php", data)
-            ).data;
+            const { SessionToken: SecurityToken, ...rest } = (
+                await axios.post<{ credentials: { SessionToken: string } & Credentials }>("/api/keygen.php", data)
+            ).data.credentials;            
 
             callback({ SecurityToken, ...rest });
         },
@@ -425,10 +421,11 @@ export async function postMaintenanceAction(
 }
 
 export async function getHitokoto() {
+    const query = new URLSearchParams("c=a&c=b&c=c&c=f&c=h&c=j&c=l");
     const res = await axios.get<{
         hitokoto: string;
         from_who: string;
         from: string;
-    }>("https://v1.hitokoto.cn");
+    }>("https://v1.hitokoto.cn", { params: query });
     return res.data;
 }

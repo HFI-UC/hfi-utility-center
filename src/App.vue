@@ -221,7 +221,7 @@ onMounted(async () => {
 }
 
 #global {
-    margin: 8px;
+    margin: 14px;
 }
 
 #footer {
