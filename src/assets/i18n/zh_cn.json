@@ -163,7 +163,7 @@
             "reason": "原因",
             "header": "选择一个打回原因",
             "cancel": "取消",
-            "reject_reason": "Reject Reason"
+            "reject_reason": "打回原因"
         },
         "reviewed": "已审核",
         "unreviewed": "未审核",
