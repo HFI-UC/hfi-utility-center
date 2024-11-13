@@ -20,6 +20,7 @@
             "status": "预约详情"
         },
         "maintenance": "报修",
+        "lostnfound": "Lost & Found",
         "admin": {
             "admin": "管理员功能",
             "reservation": "预约管理",
@@ -31,7 +32,8 @@
         "line1": "由 MAKERs' 编写。",
         "line2": "由 {0} 提供支持。",
         "line3": "版权所有 © 2024 HFI Utility Center 的所有协作者。保留所有权利。",
-        "line4": "构建 {0}。本网站基于 {1}，并在 {2} 上开源。"
+        "line4": "构建 {0}。本网站基于 {1}，并在 {2} 上开源。",
+        "line5": "Most of the back-end code is written with {0} ChatGPT."
     },
     "campus": {
         "shipai": "石牌校区",
@@ -264,6 +266,34 @@
             "subject": "报修的主题（例：空调坏了）。",
             "location": "报修的地点（例：教室）。",
             "detail": "报修的详细信息（例：我们打不开空调）。"
+        }
+    },
+    "lostnfound": {
+        "lostnfound": "Lost & Found",
+        "new_lostnfound": {
+            "header": "Add a new L&F",
+            "choose_photo": "1. Choose a photo",
+            "choose": "Choose",
+            "fill_out": "2. Fill out the form",
+            "cancel": "Cancel",
+            "submit": "Submit",
+            "name": "Name",
+            "email": "E-mail",
+            "type": "Type",
+            "campus": "Campus",
+            "location": "Location",
+            "detail": "Detail",
+            "password": "Password",
+            "reward": "Reward (Optional)",
+            "alternative_contact": "Alternative Contact (Optional)"
+        },
+        "campus": {
+            "shipai": "Shipai Campus",
+            "knowledgecity": "Knowledge City Campus"
+        },
+        "type": {
+            "lost": "Lost",
+            "found": "Found"
         }
     }
 }
