@@ -43,10 +43,17 @@ export interface RoomPolicyInfo {
 }
 
 export interface Clue {
-    // ...
+    id: number
+    campus: string
+    detail: string
+    location: string
+    filePath: string
+    contact: string
+    createdAt: string
 }
 
 export interface LostAndFoundInfo {
+    id?: number
     studentName: string;
     detail: string;
     location: string;
@@ -56,8 +63,9 @@ export interface LostAndFoundInfo {
     password: string;
     type: string;
     reward?: string;
-    alternativeContact?: string;
-    isFound?: boolean;
+    altContact?: string;
+    clues?: Clue[]
+    isFound?: number;
 }
 
 export interface ReservationInfo {
@@ -460,8 +468,8 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
     data.set("location", lostnfound.location);
     data.set("password", lostnfound.password);
     data.set("campus", lostnfound.campus);
-    if (lostnfound.alternativeContact)
-        data.set("alt_contact", lostnfound.alternativeContact);
+    if (lostnfound.altContact)
+        data.set("alt_contact", lostnfound.altContact);
     if (lostnfound.reward) data.set("reward", lostnfound.reward);
     try {
         const res = await axios.post<{ success: boolean; message: string }>(
@@ -479,4 +487,21 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
             };
         }
     }
+}
+
+export async function getLostAndFound(page: number, query: string) {
+    const params = new URLSearchParams()
+    if (page) params.set("page", page.toString())
+    if (query !== "") params.set("query", query)
+    const { data } = await axios.get<{ success: boolean; data: LostAndFoundInfo[] }>("/api/fetch_lnf_with_clues.php", { params: params})
+    data.data = await Promise.all(
+        data.data.map(async (item, index) => {
+            await delay(index * 100);
+            return {
+                ...item,
+                filePath: await getCOS(item.filePath),
+            };
+        }),
+    );
+    return data
 }

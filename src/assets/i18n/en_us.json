@@ -247,7 +247,7 @@
             "cancel": "Cancel",
             "submit": "Submit"
         },
-        "empty": "There are currently no maintenance reports.",
+        "empty": "No available data.",
         "card": {
             "header": "Maintenance #{0}",
             "name": "Name: ",
@@ -291,9 +291,28 @@
             "shipai": "Shipai Campus",
             "knowledgecity": "Knowledge City Campus"
         },
+        "empty": "No available data.",
         "type": {
             "lost": "Lost",
             "found": "Found"
+        },
+        "status": {
+            "pending": "Pending",
+            "completed": "Completed"
+        },
+        "search": "Search",
+        "card": {
+            "header": "Lost & Found #{0}",
+            "location": "Location: ",
+            "type": "Type: ",
+            "campus": "Campus: ",
+            "name":"Name: ",
+            "email": "E-mail: ",
+            "status": "Status: ",
+            "reward": "Reward: ",
+            "detail":"Detail: ",
+            "alternative_contact": "Alternative Contact: ",
+            "view_clues": "View Clues"
         }
     }
 }

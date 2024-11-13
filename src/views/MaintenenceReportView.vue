@@ -315,13 +315,11 @@ const resetForm = () => {
             </div>
             <div class="flex justify-end gap-2 m-3">
                 <Button
-                    type="button"
                     :label="$t('maintenance.new_maintenance.cancel')"
                     severity="secondary"
                     @click="visible = false"
                 ></Button>
                 <Button
-                    type="button"
                     :label="$t('maintenance.new_maintenance.submit')"
                     :loading="loading"
                     icon="pi pi-plus"
@@ -486,6 +484,9 @@ h4 {
     unicode-bidi: isolate;
 }
 
+#buttons {
+    flex-wrap: nowrap;
+}
 #card {
     width: calc(50% - 0.8rem);
 }
