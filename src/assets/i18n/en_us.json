@@ -283,9 +283,19 @@
             "campus": "Campus",
             "location": "Location",
             "detail": "Detail",
-            "password": "Password",
+            "password": "Passphrase",
             "reward": "Reward (Optional)",
             "alternative_contact": "Alternative Contact (Optional)"
+        },
+        "new_clue": {
+            "header": "Add a new Clue",
+            "choose_photo":"1. Choose a photo",
+            "choose":"Choose",
+            "fill_out":"2. Fill out the form",
+            "contact": "Contact",
+            "campus":"Campus",
+            "detail":"Detail",
+            "location":"Location"
         },
         "campus": {
             "shipai": "Shipai Campus",
@@ -315,17 +325,18 @@
             "view_clues": "View Clues"
         },
         "clue": {
-            "clue": "Clue"
-        },
-        "column": {
-            "id": "ID",
-            "campus": "Campus",
-            "location": "Location",
-            "detail": "Detail",
-            "image": "Image",
-            "contact": "Contact",
-            "created_at": "Created At",
-            "view": "View"
+            "clue": "Clues",
+            "column": {
+                "id": "ID",
+                "campus": "Campus",
+                "location": "Location",
+                "detail": "Detail",
+                "image": "Image",
+                "contact": "Contact",
+                "created_at": "Create Time"
+            },
+            "view": "View",
+            "back": "Back"
         }
     }
 }

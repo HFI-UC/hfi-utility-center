@@ -156,10 +156,7 @@ const onClickEvent = async () => {
     }
 
     const maintenanceResult = await postMaintenance(maintenance.value);
-    if (!maintenanceResult.success) {
-        loading.value = false;
-        return;
-    }
+
 
     toast.add({
         severity: maintenanceResult.success ? "success" : "error",
@@ -169,6 +166,10 @@ const onClickEvent = async () => {
         detail: maintenanceResult.message,
         life: 3000,
     });
+    if (!maintenanceResult.success) {
+        loading.value = false;
+        return;
+    }
     resetForm();
     run();
 };

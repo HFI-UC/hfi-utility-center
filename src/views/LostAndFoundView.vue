@@ -124,10 +124,7 @@ const onClickEvent = async () => {
     }
 
     const lostnfoundResult = await postLostAndFound(lostnfound.value);
-    if (!lostnfoundResult.success) {
-        loading.value = false;
-        return;
-    }
+
 
     toast.add({
         severity: lostnfoundResult.success ? "success" : "error",
@@ -137,7 +134,12 @@ const onClickEvent = async () => {
         detail: lostnfoundResult.message,
         life: 3000,
     });
+    if (!lostnfoundResult.success) {
+        loading.value = false;
+        return;
+    }
     resetForm();
+    run()
 };
 
 const resetForm = () => {
@@ -260,7 +262,7 @@ onMounted(() => {
                 <Select
                     id="campus"
                     v-model="lostnfound.campus"
-                    :invalid="!isCompleted && lostnfound.type == ''"
+                    :invalid="!isCompleted && lostnfound.campus == ''"
                     :options="campus"
                     optionLabel="label"
                     optionValue="code"

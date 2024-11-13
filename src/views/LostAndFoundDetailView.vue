@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { getLostAndFound, getCOS } from "../api";
+import { getLostAndFound, getCOS, Clue, uploadCOS, generateCosKey, postClue } from "../api";
 import { useRequest } from "vue-request";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Card from "primevue/card";
 import Image from "primevue/image";
 import Tag from "primevue/tag";
@@ -9,20 +9,123 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
 import Skeleton from "primevue/skeleton";
+import InputText from "primevue/inputtext";
+import FloatLabel from "primevue/floatlabel";
+import Select from "primevue/select";
 import { useI18n } from "vue-i18n";
+import router from "../router/router";
+import FileUpload, { FileUploadSelectEvent } from "primevue/fileupload";
 import Dialog from "primevue/dialog";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps<{
     id: number;
 }>();
 
-const visible = ref(false);
+const view = ref(false);
 const { t } = useI18n();
 const src = ref("");
+const visible = ref(false);
+const isCompleted = ref(true);
+const clue = ref<Clue>({
+    contact: "",
+    campus: "",
+    detail: "",
+    location: "",
+    filePath: "",
+});
+const campus = computed(() => [
+    { label: t("lostnfound.campus.shipai"), code: "shipai" },
+    { label: t("lostnfound.campus.knowledgecity"), code: "kc" },
+]);
+const img = ref<null | string>(null);
+const file = ref<null | File>(null);
+const loading = ref(false)
+const onFileSelect = (event: FileUploadSelectEvent) => {
+    file.value = event.files[0];
+    if (!file.value) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        img.value = e.target?.result as string;
+    };
+    reader.readAsDataURL(file.value);
+};
 
-const { data } = useRequest(() =>
-    getLostAndFound(0, props.id.toString(), true),
+const { data, run } = useRequest(() =>
+    getLostAndFound(0, props.id.toString(), true), {manual: true}
 );
+
+const toast = useToast()
+
+const onClickEvent = async () => {
+    isCompleted.value = true;
+    if (!file.value) {
+        toast.add({
+            severity: "error",
+            summary: t("toast.error"),
+            detail: t("toast.choose_photo"),
+        });
+        return;
+    }
+
+    loading.value = true;
+
+    const filePath = generateCosKey(file.value.name.split(".").pop());
+    clue.value.filePath = filePath;
+
+    isCompleted.value = !Object.values(clue.value).some(
+        (value) => value === "",
+    );
+    if (!isCompleted.value) {
+        toast.add({
+            severity: "error",
+            summary: t("toast.error"),
+            detail: t("toast.required_field"),
+            life: 3000,
+        });
+        loading.value = false;
+        return;
+    }
+
+    const uploadResult = await uploadCOS(file.value, filePath);
+    if (!uploadResult.success) {
+        loading.value = false;
+        return;
+    }
+
+    const clueResult = await postClue(clue.value, props.id);
+
+    toast.add({
+        severity: clueResult.success ? "success" : "error",
+        summary: clueResult.success
+            ? t("toast.success")
+            : t("toast.error"),
+        detail: clueResult.message,
+        life: 3000,
+    });
+    if (!clueResult.success) {
+        loading.value = false;
+        return;
+    }
+    resetForm();
+    run()
+};
+
+onMounted(() => run())
+
+const resetForm = () => {
+    visible.value = false;
+    clue.value = {
+        contact: "",
+        campus: "",
+        detail: "",
+        location: "",
+        filePath: "",
+    }
+    img.value = file.value = null;
+    loading.value = false;
+};
+
 const severity = ref(["info", "success"]);
 
 const lostnfound = computed(
@@ -46,20 +149,108 @@ const status = computed(() => [
 
 const onViewEvent = async (path: string) => {
     src.value = "";
-    visible.value = true;
+    view.value = true;
     src.value = await getCOS(path);
 };
 </script>
 
 <template>
     <h1>{{ $t("lostnfound.lostnfound") }}</h1>
-    <Dialog v-model:visible="visible" class="w-[25rem]">
+    <Dialog v-model:visible="view" modal class="w-[25rem]">
         <Image
             :src="src"
             preview
             class="w-full items-center justify-center"
         ></Image>
     </Dialog>
+    <Dialog v-model:visible="visible" modal :header="$t('lostnfound.new_clue.header')" class="w-[25rem]">
+        <p class="font-bold m-4">
+            {{ $t("lostnfound.new_clue.choose_photo") }}
+        </p>
+        <div class="flex flex-col items-center align-center">
+            <div class="flex">
+                <FileUpload
+                    mode="basic"
+                    @select="onFileSelect"
+                    accept="image/*"
+                    customUpload
+                    auto
+                    :chooseLabel="$t('lostnfound.new_clue.choose')"
+                    class="m-3"
+                ></FileUpload>
+            </div>
+            <img
+                v-if="img"
+                :src="img"
+                class="shadow-md rounded-xl w-full sm:w-64 m-3"
+            />
+            <p v-if="file" id="name" class="m-3">{{ file.name }}</p>
+        </div>
+        <p class="font-bold m-4">
+            {{ $t("lostnfound.new_clue.fill_out") }}
+        </p>
+        <div class="flex flex-col items-center align-center">
+            <FloatLabel class="m-[20px]">
+                <InputText
+                    id="contact"
+                    v-model="clue.contact"
+                    :invalid="!isCompleted && clue.contact == ''"
+                />
+                <label for="contact">{{
+                    $t("lostnfound.new_clue.contact")
+                }}</label>
+            </FloatLabel>
+            <FloatLabel class="m-[20px]">
+                <Select
+                    id="campus"
+                    v-model="clue.campus"
+                    :invalid="!isCompleted && clue.campus == ''"
+                    :options="campus"
+                    optionLabel="label"
+                    optionValue="code"
+                />
+                <label for="campus">{{
+                    $t("lostnfound.new_clue.campus")
+                }}</label>
+            </FloatLabel>
+            <FloatLabel class="m-[20px]">
+                <InputText
+                    id="location"
+                    v-model="clue.location"
+                    :invalid="!isCompleted && clue.location == ''"
+                />
+                <label for="location">{{
+                    $t("lostnfound.new_clue.location")
+                }}</label>
+            </FloatLabel>
+            <FloatLabel class="m-[20px]">
+                <InputText
+                    id="detail"
+                    v-model="clue.detail"
+                    :invalid="!isCompleted && clue.detail == ''"
+                />
+                <label for="detail">{{
+                    $t("lostnfound.new_clue.detail")
+                }}</label>
+            </FloatLabel>
+        </div>
+        <div class="flex justify-end gap-2 m-3">
+            <Button
+                type="button"
+                :label="$t('lostnfound.new_lostnfound.cancel')"
+                severity="secondary"
+                @click="visible = false"
+            ></Button>
+            <Button
+                type="button"
+                :label="$t('lostnfound.new_lostnfound.submit')"
+                :loading="loading"
+                icon="pi pi-plus"
+                @click="onClickEvent()"
+            ></Button>
+        </div>
+    </Dialog>
+    <Button class="mb-4" :label="$t('lostnfound.clue.back')" icon="pi pi-arrow-left" @click="router.go(-1)"></Button>
     <div v-if="lostnfound">
         <Card>
             <template #content>
@@ -132,6 +323,11 @@ const onViewEvent = async (path: string) => {
             <template #content>
                 <div class="ms-4 me-4">
                     <h3>{{ $t("lostnfound.clue.clue") }}</h3>
+                    <Button
+                        :label="$t('lostnfound.new_clue.header')"
+                        icon="pi pi-plus"
+                        @click="visible = true"
+                    ></Button>
                     <DataTable
                         :value="lostnfound.clues"
                         paginator
@@ -143,37 +339,37 @@ const onViewEvent = async (path: string) => {
                         </template>
                         <Column
                             field="id"
-                            :header="$t('lostnfound.column.id')"
+                            :header="$t('lostnfound.clue.column.id')"
                         ></Column>
-                        <Column :header="$t('lostnfound.column.campus')">
+                        <Column :header="$t('lostnfound.clue.column.campus')">
                             <template #body="{ data }">
                                 <p>{{ campusMapping[data.campus] }}</p>
                             </template>
                         </Column>
                         <Column
                             field="location"
-                            :header="$t('lostnfound.column.location')"
+                            :header="$t('lostnfound.clue.column.location')"
                         ></Column>
                         <Column
                             field="detail"
-                            :header="$t('lostnfound.column.detail')"
+                            :header="$t('lostnfound.clue.column.detail')"
                         ></Column>
                         <Column
                             field="contact"
-                            :header="$t('lostnfound.column.contact')"
+                            :header="$t('lostnfound.clue.column.contact')"
                         ></Column>
-                        <Column :header="$t('lostnfound.column.image')">
+                        <Column :header="$t('lostnfound.clue.column.image')">
                             <template #body="{ data }">
                                 <Button
                                     icon="pi pi-eye"
-                                    :label="$t('lostnfound.column.view')"
+                                    :label="$t('lostnfound.clue.column.view')"
                                     @click="onViewEvent(data.filePath)"
                                 ></Button>
                             </template>
                         </Column>
                         <Column
                             field="createdAt"
-                            :header="$t('lostnfound.column.created_at')"
+                            :header="$t('lostnfound.clue.column.created_at')"
                         ></Column>
                     </DataTable>
                 </div>
@@ -203,6 +399,12 @@ h3 {
     margin-inline-end: 0px;
     font-weight: bold;
     unicode-bidi: isolate;
+}
+
+:deep(.p-inputtext),
+.p-select {
+    border-radius: 0.5rem !important;
+    min-width: 17rem;
 }
 
 #image {

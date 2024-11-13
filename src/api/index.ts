@@ -43,13 +43,13 @@ export interface RoomPolicyInfo {
 }
 
 export interface Clue {
-    id: number;
+    id?: number;
     campus: string;
     detail: string;
     location: string;
     filePath: string;
     contact: string;
-    createdAt: string;
+    createdAt?: string;
 }
 
 export interface LostAndFoundInfo {
@@ -512,4 +512,30 @@ export async function getLostAndFound(
         }),
     );
     return data;
+}
+
+export async function postClue(clue: Clue, id: number) {
+    const data = new FormData();
+    data.set("detail", clue.detail);
+    data.set("filePath", clue.filePath);
+    data.set("location", clue.location);
+    data.set("campus", clue.campus);
+    data.set("contact", clue.contact);
+    data.set("lost_info_id", id.toString());
+    try {
+        const res = await axios.post<{ success: boolean; message: string }>(
+            "/api/submit_clue.php",
+            data,
+        );
+        return res.data;
+    } catch (err) {
+        if (isAxiosError(err) && err.response) {
+            return err.response.data as { success: boolean; message: string };
+        } else {
+            return {
+                success: false,
+                message: "Error.",
+            };
+        }
+    }
 }
