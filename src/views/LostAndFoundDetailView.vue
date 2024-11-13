@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { getLostAndFound, getCOS, Clue, uploadCOS, generateCosKey, postClue } from "../api";
+import {
+    getLostAndFound,
+    getCOS,
+    Clue,
+    uploadCOS,
+    generateCosKey,
+    postClue,
+} from "../api";
 import { useRequest } from "vue-request";
 import { computed, onMounted, ref } from "vue";
 import Card from "primevue/card";
@@ -40,7 +47,7 @@ const campus = computed(() => [
 ]);
 const img = ref<null | string>(null);
 const file = ref<null | File>(null);
-const loading = ref(false)
+const loading = ref(false);
 const onFileSelect = (event: FileUploadSelectEvent) => {
     file.value = event.files[0];
     if (!file.value) return;
@@ -51,11 +58,12 @@ const onFileSelect = (event: FileUploadSelectEvent) => {
     reader.readAsDataURL(file.value);
 };
 
-const { data, run } = useRequest(() =>
-    getLostAndFound(0, props.id.toString(), true), {manual: true}
+const { data, run } = useRequest(
+    () => getLostAndFound(0, props.id.toString(), true),
+    { manual: true },
 );
 
-const toast = useToast()
+const toast = useToast();
 
 const onClickEvent = async () => {
     isCompleted.value = true;
@@ -97,9 +105,7 @@ const onClickEvent = async () => {
 
     toast.add({
         severity: clueResult.success ? "success" : "error",
-        summary: clueResult.success
-            ? t("toast.success")
-            : t("toast.error"),
+        summary: clueResult.success ? t("toast.success") : t("toast.error"),
         detail: clueResult.message,
         life: 3000,
     });
@@ -108,10 +114,10 @@ const onClickEvent = async () => {
         return;
     }
     resetForm();
-    run()
+    run();
 };
 
-onMounted(() => run())
+onMounted(() => run());
 
 const resetForm = () => {
     visible.value = false;
@@ -121,7 +127,7 @@ const resetForm = () => {
         detail: "",
         location: "",
         filePath: "",
-    }
+    };
     img.value = file.value = null;
     loading.value = false;
 };
@@ -163,7 +169,12 @@ const onViewEvent = async (path: string) => {
             class="w-full items-center justify-center"
         ></Image>
     </Dialog>
-    <Dialog v-model:visible="visible" modal :header="$t('lostnfound.new_clue.header')" class="w-[25rem]">
+    <Dialog
+        v-model:visible="visible"
+        modal
+        :header="$t('lostnfound.new_clue.header')"
+        class="w-[25rem]"
+    >
         <p class="font-bold m-4">
             {{ $t("lostnfound.new_clue.choose_photo") }}
         </p>
@@ -250,7 +261,12 @@ const onViewEvent = async (path: string) => {
             ></Button>
         </div>
     </Dialog>
-    <Button class="mb-4" :label="$t('lostnfound.clue.back')" icon="pi pi-arrow-left" @click="router.go(-1)"></Button>
+    <Button
+        class="mb-4"
+        :label="$t('lostnfound.clue.back')"
+        icon="pi pi-arrow-left"
+        @click="router.go(-1)"
+    ></Button>
     <div v-if="lostnfound">
         <Card>
             <template #content>

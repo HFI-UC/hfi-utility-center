@@ -125,7 +125,6 @@ const onClickEvent = async () => {
 
     const lostnfoundResult = await postLostAndFound(lostnfound.value);
 
-
     toast.add({
         severity: lostnfoundResult.success ? "success" : "error",
         summary: lostnfoundResult.success
@@ -139,7 +138,7 @@ const onClickEvent = async () => {
         return;
     }
     resetForm();
-    run()
+    run();
 };
 
 const resetForm = () => {

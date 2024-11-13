@@ -157,7 +157,6 @@ const onClickEvent = async () => {
 
     const maintenanceResult = await postMaintenance(maintenance.value);
 
-
     toast.add({
         severity: maintenanceResult.success ? "success" : "error",
         summary: maintenanceResult.success
