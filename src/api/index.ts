@@ -42,6 +42,24 @@ export interface RoomPolicyInfo {
     end_time: string;
 }
 
+export interface Clue {
+    // ...
+}
+
+export interface LostAndFoundInfo {
+    studentName: string;
+    detail: string;
+    location: string;
+    email: string;
+    campus: string;
+    filePath: string;
+    password: string;
+    type: string;
+    reward?: string;
+    alternativeContact?: string;
+    isFound?: boolean;
+}
+
 export interface ReservationInfo {
     success: boolean;
     data: {
@@ -311,8 +329,10 @@ export async function uploadCOS(
             data.append("cosKey", cosKey);
 
             const { SessionToken: SecurityToken, ...rest } = (
-                await axios.post<{ credentials: { SessionToken: string } & Credentials }>("/api/keygen.php", data)
-            ).data.credentials;            
+                await axios.post<{
+                    credentials: { SessionToken: string } & Credentials;
+                }>("/api/keygen.php", data)
+            ).data.credentials;
 
             callback({ SecurityToken, ...rest });
         },
@@ -428,4 +448,35 @@ export async function getHitokoto() {
         from: string;
     }>("https://v1.hitokoto.cn", { params: query });
     return res.data;
+}
+
+export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
+    const data = new FormData();
+    data.set("type", lostnfound.type);
+    data.set("email", lostnfound.email);
+    data.set("student_name", lostnfound.studentName);
+    data.set("detail", lostnfound.detail);
+    data.set("file_path", lostnfound.filePath);
+    data.set("location", lostnfound.location);
+    data.set("password", lostnfound.password);
+    data.set("campus", lostnfound.campus);
+    if (lostnfound.alternativeContact)
+        data.set("alt_contact", lostnfound.alternativeContact);
+    if (lostnfound.reward) data.set("reward", lostnfound.reward);
+    try {
+        const res = await axios.post<{ success: boolean; message: string }>(
+            "/api/submit_lnf.php",
+            data,
+        );
+        return res.data;
+    } catch (err) {
+        if (isAxiosError(err) && err.response) {
+            return err.response.data as { success: boolean; message: string };
+        } else {
+            return {
+                success: false,
+                message: "Error.",
+            };
+        }
+    }
 }

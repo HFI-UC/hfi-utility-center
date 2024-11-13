@@ -5,6 +5,7 @@ import ReservationsManagementView from "../views/ReservationsManagementView.vue"
 import ReservationView from "../views/ReservationView.vue";
 import ReservationActionsView from "../views/ReservationActionsView.vue";
 import PolicySettingsView from "../views/PolicySettingsView.vue";
+import LostAndFoundView from "../views/LostAndFoundView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import MaintenenceReportView from "../views/MaintenenceReportView.vue";
 import { createRouter, createWebHistory } from "vue-router";
@@ -51,6 +52,10 @@ const router = createRouter({
         {
             path: "/maintenance",
             component: MaintenenceReportView,
+        },
+        {
+            path: "/lostnfound",
+            component: LostAndFoundView, 
         },
         {
             path: "/:pathMatch(.*)",

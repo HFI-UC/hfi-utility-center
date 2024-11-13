@@ -20,6 +20,7 @@
             "status": "Reservation Status"
         },
         "maintenance": "Maintenance Report",
+        "lostnfound": "Lost & Found",
         "admin": {
             "admin": "Admin",
             "reservation": "Reservation Management",
@@ -31,7 +32,8 @@
         "line1": "Created by MAKERs' with ♥.",
         "line2": "Powered by {0}.",
         "line3": "Copyright © 2024 The co-author of HFI Utility Center. All rights reserved.",
-        "line4": "Build {0}. This website is under {1} and open-sourced on {2}."
+        "line4": "Build {0}. This website is under {1} and open-sourced on {2}.",
+        "line5": "Most of the back-end code is written with {0} ChatGPT."
     },
     "campus": {
         "shipai": "Shipai Campus",
@@ -264,6 +266,34 @@
             "subject": "The subject of your report (e.g. AC Doesn't Work).",
             "location": "The location you want to report for maintenance (e.g. The classroom).",
             "detail": "The details of your report (e.g. We can not turn on the AC)."
+        }
+    },
+    "lostnfound": {
+        "lostnfound": "Lost & Found",
+        "new_lostnfound": {
+            "header": "Add a new L&F",
+            "choose_photo": "1. Choose a photo",
+            "choose": "Choose",
+            "fill_out": "2. Fill out the form",
+            "cancel": "Cancel",
+            "submit": "Submit",
+            "name": "Name",
+            "email":"E-mail",
+            "type": "Type",
+            "campus": "Campus",
+            "location": "Location",
+            "detail": "Detail",
+            "password": "Password",
+            "reward": "Reward (Optional)",
+            "alternative_contact": "Alternative Contact (Optional)"
+        },
+        "campus": {
+            "shipai": "Shipai Campus",
+            "knowledgecity": "Knowledge City Campus"
+        },
+        "type": {
+            "lost": "Lost",
+            "found": "Found"
         }
     }
 }
