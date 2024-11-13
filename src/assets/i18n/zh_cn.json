@@ -247,7 +247,7 @@
             "cancel": "取消",
             "submit": "提交"
         },
-        "empty": "当前没有报修。",
+        "empty": "No available data.",
         "card": {
             "header": "报修 #{0}",
             "name": "姓名：",
@@ -291,9 +291,28 @@
             "shipai": "Shipai Campus",
             "knowledgecity": "Knowledge City Campus"
         },
+        "empty": "No available data.",
         "type": {
             "lost": "Lost",
             "found": "Found"
+        },
+        "status": {
+            "pending": "Pending",
+            "completed": "Completed"
+        },
+        "search": "Search",
+        "card": {
+            "header": "Lost & Found #{0}",
+            "location": "Location: ",
+            "type": "Type: ",
+            "campus": "Campus: ",
+            "name": "Name: ",
+            "email": "E-mail: ",
+            "status": "Status: ",
+            "reward": "Reward: ",
+            "detail": "Detail: ",
+            "alternative_contact": "Alternative Contact: ",
+            "view_clues": "View Clues"
         }
     }
 }
