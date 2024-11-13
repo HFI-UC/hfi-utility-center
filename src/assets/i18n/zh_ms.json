@@ -20,6 +20,7 @@
             "status": "申请状态"
         },
         "maintenance": "报修",
+        "lostnfound": "Lost & Found",
         "admin": {
             "admin": "管理员",
             "reservation": "管理申请",
@@ -31,7 +32,8 @@
         "line1": "制造 靠 创客们和♥。",
         "line2": "驱动 靠{0}。",
         "line3": "版权所有 © 2024 HFI Utility Center 的所有协作者。保留所有权利。",
-        "line4": "建造{0}。这个网站在{1} 下面并且开源在{2} 上面。"
+        "line4": "建造{0}。这个网站在{1} 下面并且开源在{2} 上面。",
+        "line5": "Most of the back-end code is written with {0} ChatGPT."
     },
     "campus": {
         "shipai": "石牌校园",
@@ -264,6 +266,34 @@
             "subject": "报告的主题（例：空调罢工）。",
             "location": "报修地址（例：104 Demis Homeroom）。",
             "detail": "报告的细节（例：空调正在冒烟，没有制造冷风）。"
+        }
+    },
+    "lostnfound": {
+        "lostnfound": "Lost & Found",
+        "new_lostnfound": {
+            "header": "Add a new L&F",
+            "choose_photo": "1. Choose a photo",
+            "choose": "Choose",
+            "fill_out": "2. Fill out the form",
+            "cancel": "Cancel",
+            "submit": "Submit",
+            "name": "Name",
+            "email": "E-mail",
+            "type": "Type",
+            "campus": "Campus",
+            "location": "Location",
+            "detail": "Detail",
+            "password": "Password",
+            "reward": "Reward (Optional)",
+            "alternative_contact": "Alternative Contact (Optional)"
+        },
+        "campus": {
+            "shipai": "Shipai Campus",
+            "knowledgecity": "Knowledge City Campus"
+        },
+        "type": {
+            "lost": "Lost",
+            "found": "Found"
         }
     }
 }
