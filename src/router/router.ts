@@ -55,7 +55,7 @@ const router = createRouter({
         },
         {
             path: "/lostnfound",
-            component: LostAndFoundView, 
+            component: LostAndFoundView,
         },
         {
             path: "/:pathMatch(.*)",

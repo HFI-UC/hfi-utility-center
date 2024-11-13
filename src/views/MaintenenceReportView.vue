@@ -59,8 +59,8 @@ const src = ref<null | string>(null);
 const file = ref<null | File>(null);
 const toast = useToast();
 const campus = computed(() => [
-    {label: t("maintenance.campus.shipai"), code:"shipai"},
-    {label: t("maintenance.campus.knowledgecity"), code:"kc"},
+    { label: t("maintenance.campus.shipai"), code: "shipai" },
+    { label: t("maintenance.campus.knowledgecity"), code: "kc" },
 ]);
 const status = computed(() => [
     t("maintenance.status.pending"),
@@ -82,8 +82,8 @@ const maintenance = ref<MaintenanceInfo>({
 
 const campusMapping: Record<string, string> = {
     shipai: t("maintenance.campus.shipai"),
-    kc: t("maintenance.campus.knowledgecity")
-}
+    kc: t("maintenance.campus.knowledgecity"),
+};
 const onFileSelect = (event: FileUploadSelectEvent) => {
     file.value = event.files[0];
     if (!file.value) return;

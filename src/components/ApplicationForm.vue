@@ -204,8 +204,8 @@ const validatePolicy = (time: Date, selectedRoom: number): boolean => {
 
 watch(
     () => reservation.value.startTime,
-    () => reservation.value.endTime = ""
-)
+    () => (reservation.value.endTime = ""),
+);
 
 const selectedRoom = ref("");
 const filteredBookingData = ref([] as any);

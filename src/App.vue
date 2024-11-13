@@ -50,7 +50,7 @@ const items = computed(() => {
             label: t("menubar.lostnfound"),
             icon: "pi pi-info",
             url: "/lostnfound",
-        }
+        },
     ];
     if (isAdmin.value) {
         data.push({
@@ -217,7 +217,12 @@ onMounted(async () => {
                 ><i class="pi pi-github"></i> GitHub</a
             >
         </i18n-t>
-        <i18n-t tag="p" keypath="footer.line5" scope="global" class="flex text-center justify-center">
+        <i18n-t
+            tag="p"
+            keypath="footer.line5"
+            scope="global"
+            class="flex text-center justify-center"
+        >
             <img class="ms-2 me-1" src="./assets/openai.svg" width="20px" />
         </i18n-t>
     </footer>
