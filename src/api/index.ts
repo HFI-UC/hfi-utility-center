@@ -43,17 +43,17 @@ export interface RoomPolicyInfo {
 }
 
 export interface Clue {
-    id: number
-    campus: string
-    detail: string
-    location: string
-    filePath: string
-    contact: string
-    createdAt: string
+    id: number;
+    campus: string;
+    detail: string;
+    location: string;
+    filePath: string;
+    contact: string;
+    createdAt: string;
 }
 
 export interface LostAndFoundInfo {
-    id?: number
+    id?: number;
     studentName: string;
     detail: string;
     location: string;
@@ -64,7 +64,7 @@ export interface LostAndFoundInfo {
     type: string;
     reward?: string;
     altContact?: string;
-    clues?: Clue[]
+    clues?: Clue[];
     isFound?: number;
 }
 
@@ -468,8 +468,7 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
     data.set("location", lostnfound.location);
     data.set("password", lostnfound.password);
     data.set("campus", lostnfound.campus);
-    if (lostnfound.altContact)
-        data.set("alt_contact", lostnfound.altContact);
+    if (lostnfound.altContact) data.set("alt_contact", lostnfound.altContact);
     if (lostnfound.reward) data.set("reward", lostnfound.reward);
     try {
         const res = await axios.post<{ success: boolean; message: string }>(
@@ -489,12 +488,20 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
     }
 }
 
-export async function getLostAndFound(page: number, query: string, clue?: boolean) {
-    const params = new URLSearchParams()
-    params.set("page", page.toString())
-    if (clue) params.set("include_clues", "true")
-    if (query !== "") params.set("query", query)
-    const { data } = await axios.get<{ success: boolean; data: LostAndFoundInfo[]; totalPages: number }>("/api/fetch_lnf.php", { params: params})
+export async function getLostAndFound(
+    page: number,
+    query: string,
+    clue?: boolean,
+) {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    if (clue) params.set("include_clues", "true");
+    if (query !== "") params.set("query", query);
+    const { data } = await axios.get<{
+        success: boolean;
+        data: LostAndFoundInfo[];
+        totalPages: number;
+    }>("/api/fetch_lnf.php", { params: params });
     data.data = await Promise.all(
         data.data.map(async (item, index) => {
             await delay(index * 100);
@@ -504,5 +511,5 @@ export async function getLostAndFound(page: number, query: string, clue?: boolea
             };
         }),
     );
-    return data
+    return data;
 }

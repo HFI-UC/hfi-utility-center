@@ -45,17 +45,20 @@ const status = computed(() => [
 ]);
 
 const onViewEvent = async (path: string) => {
-    src.value = ""
-    visible.value = true
-    src.value = await getCOS(path)
-}
-
+    src.value = "";
+    visible.value = true;
+    src.value = await getCOS(path);
+};
 </script>
 
 <template>
     <h1>{{ $t("lostnfound.lostnfound") }}</h1>
     <Dialog v-model:visible="visible" class="w-[25rem]">
-        <Image :src="src" preview class="w-full items-center justify-center"></Image>
+        <Image
+            :src="src"
+            preview
+            class="w-full items-center justify-center"
+        ></Image>
     </Dialog>
     <div v-if="lostnfound">
         <Card>
@@ -142,9 +145,7 @@ const onViewEvent = async (path: string) => {
                             field="id"
                             :header="$t('lostnfound.column.id')"
                         ></Column>
-                        <Column
-                            :header="$t('lostnfound.column.campus')"
-                        >
+                        <Column :header="$t('lostnfound.column.campus')">
                             <template #body="{ data }">
                                 <p>{{ campusMapping[data.campus] }}</p>
                             </template>
@@ -163,7 +164,11 @@ const onViewEvent = async (path: string) => {
                         ></Column>
                         <Column :header="$t('lostnfound.column.image')">
                             <template #body="{ data }">
-                                <Button icon="pi pi-eye" :label="$t('lostnfound.column.view')" @click="onViewEvent(data.filePath)"></Button>
+                                <Button
+                                    icon="pi pi-eye"
+                                    :label="$t('lostnfound.column.view')"
+                                    @click="onViewEvent(data.filePath)"
+                                ></Button>
                             </template>
                         </Column>
                         <Column

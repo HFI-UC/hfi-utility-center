@@ -306,11 +306,11 @@
             "location": "Location: ",
             "type": "Type: ",
             "campus": "Campus: ",
-            "name":"Name: ",
+            "name": "Name: ",
             "email": "E-mail: ",
             "status": "Status: ",
             "reward": "Reward: ",
-            "detail":"Detail: ",
+            "detail": "Detail: ",
             "alternative_contact": "Alternative Contact: ",
             "view_clues": "View Clues"
         },

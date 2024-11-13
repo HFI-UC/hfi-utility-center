@@ -413,7 +413,11 @@ onMounted(() => {
                             <Button
                                 class="w-full"
                                 :label="$t('lostnfound.card.view_clues')"
-                                @click="router.push(`/lostnfound/detail?id=${lostnfound.id}`)"
+                                @click="
+                                    router.push(
+                                        `/lostnfound/detail?id=${lostnfound.id}`,
+                                    )
+                                "
                             ></Button>
                         </div>
                     </template>

@@ -62,7 +62,7 @@ const router = createRouter({
             path: "/lostnfound/detail",
             component: LostAndFoundDetailView,
             props: (route) => ({
-                id: route.query.id
+                id: route.query.id,
             }),
         },
         {
