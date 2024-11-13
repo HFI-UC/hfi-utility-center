@@ -271,7 +271,7 @@
     "lostnfound": {
         "lostnfound": "Lost & Found",
         "new_lostnfound": {
-            "header": "Add a new L&F",
+            "header": "Add a new Lost & Found",
             "choose_photo": "1. Choose a photo",
             "choose": "Choose",
             "fill_out": "2. Fill out the form",
@@ -313,6 +313,19 @@
             "detail": "Detail: ",
             "alternative_contact": "Alternative Contact: ",
             "view_clues": "View Clues"
+        },
+        "clue": {
+            "clue": "Clue"
+        },
+        "column": {
+            "id": "ID",
+            "campus": "Campus",
+            "location": "Location",
+            "detail": "Detail",
+            "image": "Image",
+            "contact": "Contact",
+            "created_at": "Created At",
+            "view": "View"
         }
     }
 }
