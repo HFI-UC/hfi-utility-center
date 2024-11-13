@@ -7,7 +7,9 @@ import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
 import Image from "primevue/image";
 import Tag from "primevue/tag";
-import { ref, computed, onMounted } from "vue";
+import Paginator from "primevue/paginator";
+import Skeleton from "primevue/skeleton";
+import { ref, computed, onMounted, watch } from "vue";
 import {
     LostAndFoundInfo,
     generateCosKey,
@@ -15,6 +17,7 @@ import {
     postLostAndFound,
     getLostAndFound,
 } from "../api";
+import router from "../router/router";
 import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
 import Select from "primevue/select";
@@ -48,11 +51,14 @@ const campus = computed(() => [
     { label: t("lostnfound.campus.knowledgecity"), code: "kc" },
 ]);
 
-const first = ref(1);
+const first = ref(0);
 
-const { data, run } = useRequest(() => getLostAndFound(first.value, query.value), {
-    manual: true,
-});
+const { data, run } = useRequest(
+    () => getLostAndFound(first.value, query.value),
+    {
+        manual: true,
+    },
+);
 
 const lostnfoundData = computed(() => data.value?.data || []);
 
@@ -74,8 +80,7 @@ const lostnfound = ref<LostAndFoundInfo>({
 const onSearchEvent = () => {
     if (query.value == "") return;
     run();
-}
-
+};
 
 const query = ref("");
 const isCompleted = ref(true);
@@ -151,6 +156,11 @@ const resetForm = () => {
     loading.value = false;
 };
 
+watch(
+    () => first.value,
+    () => run(),
+);
+
 const typesMapping = computed<Record<string, string>>(() => ({
     found: t("lostnfound.type.found"),
     lost: t("lostnfound.type.lost"),
@@ -163,7 +173,9 @@ const status = computed(() => [
 
 const severity = ref(["info", "success"]);
 
-onMounted(() => { run() });
+onMounted(() => {
+    run();
+});
 </script>
 
 <template>
@@ -309,93 +321,114 @@ onMounted(() => { run() });
             ></Button>
         </div>
     </Dialog>
-    <Button
-        :label="$t('lostnfound.new_lostnfound.header')"
-        icon="pi pi-plus"
-        @click="visible = true"
-    ></Button>
-    <div class="flex gap-4 justify-left mt-4 mb-4">
-        <IconField>
-            <InputIcon class="pi pi-search"></InputIcon>
-            <InputText
-                :placeholder="$t('lostnfound.search')"
-                v-model="query"
-            ></InputText>
-        </IconField>
-        <Button :label="$t('lostnfound.search')" @click="onSearchEvent()" icon="pi pi-search"></Button>
-    </div>
-    <p v-if="lostnfoundData.length == 0">
-        {{ $t("lostnfound.empty") }}
-    </p>
-    <div class="flex flex-wrap justify-between gap-[1rem] mb-8">
-        <div v-for="lostnfound in lostnfoundData" id="card">
-            <Card>
-                <template #content>
-                    <div class="ms-4 me-4 min-h-[48rem]">
-                        <h3>
-                            {{ $t("lostnfound.card.header", [lostnfound.id]) }}
-                        </h3>
-                        <Image
-                            :src="lostnfound.filePath"
-                            class="w-full h-[20rem] items-center justify-center mt-4 mb-6"
-                            preview
-                        ></Image>
-                        <p class="mb-3">
-                            <b>{{ $t("lostnfound.card.type") }}</b>
-                            {{ typesMapping[lostnfound.type] }}
-                        </p>
-                        <p class="mb-3">
-                            <b>{{ $t("lostnfound.card.name") }}</b>
-                            {{ lostnfound.studentName }}
-                        </p>
-                        <p class="mb-3">
-                            <b>{{ $t("lostnfound.card.email") }}</b>
-                            {{ lostnfound.email }}
-                        </p>
-                        <p class="mb-3">
-                            <b>{{ $t("lostnfound.card.campus") }}</b>
-                            {{ campusMapping[lostnfound.campus] }}
-                        </p>
-                        <p class="mb-3">
-                            <b>{{ $t("lostnfound.card.location") }}</b>
-                            {{ lostnfound.location }}
-                        </p>
-                        <p class="mb-3">
-                            <b>{{ $t("lostnfound.card.detail") }}</b>
-                            {{ lostnfound.detail }}
-                        </p>
-                        <p class="mb-3" v-if="lostnfound.altContact">
-                            <b>{{
-                                $t("lostnfound.card.alternative_contact")
-                            }}</b>
-                            {{ lostnfound.altContact }}
-                        </p>
-                        <p class="mb-3" v-if="lostnfound.reward">
-                            <b>{{ $t("lostnfound.card.reward") }}</b>
-                            {{ lostnfound.reward }}
-                        </p>
-                        <p class="mb-3">
-                            <b>{{ $t("lostnfound.card.status") }}</b>
-                            <Tag
-                                :value="status[lostnfound.isFound as number]"
-                                :severity="
-                                    severity[lostnfound.isFound as number]
-                                "
-                            ></Tag>
-                        </p>
-                    </div>
-                </template>
-                <template #footer>
-                    <div class="m-4 flex gap-4" id="buttons">
-                        <Button
-                            class="w-full"
-                            :label="$t('lostnfound.card.view_clues')"
-                        ></Button>
-                    </div>
-                </template>
-            </Card>
+    <div v-if="data?.success">
+        <Button
+            :label="$t('lostnfound.new_lostnfound.header')"
+            icon="pi pi-plus"
+            @click="visible = true"
+        ></Button>
+        <div class="flex gap-4 justify-left mt-4 mb-4">
+            <IconField>
+                <InputIcon class="pi pi-search"></InputIcon>
+                <InputText
+                    :placeholder="$t('lostnfound.search')"
+                    v-model="query"
+                ></InputText>
+            </IconField>
+            <Button
+                :label="$t('lostnfound.search')"
+                @click="onSearchEvent()"
+                icon="pi pi-search"
+            ></Button>
         </div>
+        <p v-if="lostnfoundData.length == 0">
+            {{ $t("lostnfound.empty") }}
+        </p>
+        <div class="flex flex-wrap justify-between gap-[1rem] mb-8">
+            <div v-for="lostnfound in lostnfoundData" id="card">
+                <Card>
+                    <template #content>
+                        <div class="ms-4 me-4 min-h-[48rem]">
+                            <h3>
+                                {{
+                                    $t("lostnfound.card.header", [
+                                        lostnfound.id,
+                                    ])
+                                }}
+                            </h3>
+                            <Image
+                                :src="lostnfound.filePath"
+                                class="w-full h-[20rem] items-center justify-center mt-4 mb-6"
+                                preview
+                            ></Image>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.type") }}</b>
+                                {{ typesMapping[lostnfound.type] }}
+                            </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.name") }}</b>
+                                {{ lostnfound.studentName }}
+                            </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.email") }}</b>
+                                {{ lostnfound.email }}
+                            </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.campus") }}</b>
+                                {{ campusMapping[lostnfound.campus] }}
+                            </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.location") }}</b>
+                                {{ lostnfound.location }}
+                            </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.detail") }}</b>
+                                {{ lostnfound.detail }}
+                            </p>
+                            <p class="mb-3" v-if="lostnfound.altContact">
+                                <b>{{
+                                    $t("lostnfound.card.alternative_contact")
+                                }}</b>
+                                {{ lostnfound.altContact }}
+                            </p>
+                            <p class="mb-3" v-if="lostnfound.reward">
+                                <b>{{ $t("lostnfound.card.reward") }}</b>
+                                {{ lostnfound.reward }}
+                            </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.status") }}</b>
+                                <Tag
+                                    :value="
+                                        status[lostnfound.isFound as number]
+                                    "
+                                    :severity="
+                                        severity[lostnfound.isFound as number]
+                                    "
+                                ></Tag>
+                            </p>
+                        </div>
+                    </template>
+                    <template #footer>
+                        <div class="m-4 flex gap-4" id="buttons">
+                            <Button
+                                class="w-full"
+                                :label="$t('lostnfound.card.view_clues')"
+                                @click="router.push(`/lostnfound/detail?id=${lostnfound.id}`)"
+                            ></Button>
+                        </div>
+                    </template>
+                </Card>
+            </div>
+        </div>
+        <Paginator
+            v-if="lostnfoundData.length !== 0"
+            class="justify-center"
+            v-model:first="first"
+            :rows="1"
+            :totalRecords="data?.totalPages"
+        ></Paginator>
     </div>
+    <Skeleton v-else height="650px" style="border-radius: 0.75rem"></Skeleton>
 </template>
 
 <style scoped>
@@ -444,7 +477,7 @@ h3 {
     unicode-bidi: isolate;
 }
 
-#name {
+p > #name {
     font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
 }
 

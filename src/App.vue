@@ -48,7 +48,7 @@ const items = computed(() => {
         },
         {
             label: t("menubar.lostnfound"),
-            icon: "pi pi-info",
+            icon: "pi pi-info-circle",
             url: "/lostnfound",
         },
     ];

@@ -489,11 +489,12 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
     }
 }
 
-export async function getLostAndFound(page: number, query: string) {
+export async function getLostAndFound(page: number, query: string, clue?: boolean) {
     const params = new URLSearchParams()
-    if (page) params.set("page", page.toString())
+    params.set("page", page.toString())
+    if (clue) params.set("include_clues", "true")
     if (query !== "") params.set("query", query)
-    const { data } = await axios.get<{ success: boolean; data: LostAndFoundInfo[] }>("/api/fetch_lnf_with_clues.php", { params: params})
+    const { data } = await axios.get<{ success: boolean; data: LostAndFoundInfo[]; totalPages: number }>("/api/fetch_lnf.php", { params: params})
     data.data = await Promise.all(
         data.data.map(async (item, index) => {
             await delay(index * 100);
