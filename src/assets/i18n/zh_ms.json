@@ -322,7 +322,16 @@
             "reward": "Reward: ",
             "detail": "Detail: ",
             "alternative_contact": "Alternative Contact: ",
-            "view_clues": "View Clues"
+            "view_clues": "Add / View Clues",
+            "manage": "Manage Lost & Found"
+        },
+        "manage": {
+            "header": "Manage Lost & Found",
+            "password": "Passphrase",
+            "cancel": "Cancel",
+            "found": "Mark as Found",
+            "not_found": "Mark as Not Found",
+            "hidden": "Hide This L&F"
         },
         "clue": {
             "clue": "Clues",
