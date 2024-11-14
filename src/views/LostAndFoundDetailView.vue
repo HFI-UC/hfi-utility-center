@@ -164,11 +164,12 @@ const onViewEvent = async (path: string) => {
     <h1>{{ $t("lostnfound.lostnfound") }}</h1>
     <Dialog v-model:visible="view" modal class="min-w-[20rem]">
         <div class="flex items-center justify-center">
-        <Image
-            :src="src"
-            preview
-            class="w-64 lg:w-auto items-center justify-center"
-        ></Image></div>
+            <Image
+                :src="src"
+                preview
+                class="w-64 lg:w-auto items-center justify-center"
+            ></Image>
+        </div>
     </Dialog>
     <Dialog
         v-model:visible="visible"
