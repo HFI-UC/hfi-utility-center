@@ -539,3 +539,27 @@ export async function postClue(clue: Clue, id: number) {
         }
     }
 }
+
+export async function postLostAndFoundAction(id: number, action: number, password: string) {
+    const data = new FormData();
+    const actions = ["not_found", "found", "hidden"]
+    data.set("id", id.toString())
+    data.set("password", password)
+    data.set("action", actions[action].toString())
+    try {
+        const res = await axios.post<{ success: boolean; message: string }>(
+            "/api/update_lnf_status.php",
+            data,
+        );
+        return res.data;
+    } catch (err) {
+        if (isAxiosError(err) && err.response) {
+            return err.response.data as { success: boolean; message: string };
+        } else {
+            return {
+                success: false,
+                message: "Error.",
+            };
+        }
+    }
+}

@@ -9,6 +9,7 @@ import Image from "primevue/image";
 import Tag from "primevue/tag";
 import Paginator from "primevue/paginator";
 import Skeleton from "primevue/skeleton";
+import SplitButton from "primevue/splitbutton";
 import { ref, computed, onMounted, watch } from "vue";
 import {
     LostAndFoundInfo,
@@ -16,6 +17,7 @@ import {
     uploadCOS,
     postLostAndFound,
     getLostAndFound,
+    postLostAndFoundAction,
 } from "../api";
 import router from "../router/router";
 import InputText from "primevue/inputtext";
@@ -46,6 +48,7 @@ const types = ref([
     },
     { label: t("lostnfound.type.found"), code: "found" },
 ]);
+const manage = ref(false)
 const campus = computed(() => [
     { label: t("lostnfound.campus.shipai"), code: "shipai" },
     { label: t("lostnfound.campus.knowledgecity"), code: "kc" },
@@ -82,6 +85,8 @@ const onSearchEvent = () => {
     run();
 };
 
+const password = ref("")
+const isPassword = ref(true)
 const query = ref("");
 const isCompleted = ref(true);
 const src = ref<null | string>(null);
@@ -162,10 +167,56 @@ watch(
     () => run(),
 );
 
+const id = ref(-1)
+
 const typesMapping = computed<Record<string, string>>(() => ({
     found: t("lostnfound.type.found"),
     lost: t("lostnfound.type.lost"),
 }));
+
+const items = computed(() => [
+    {
+        label: t("lostnfound.manage.not_found"),
+        command: () => onManageEvent(0)
+    },
+    {
+        label: t("lostnfound.manage.hidden"),
+        command: () => onManageEvent(2)
+    }
+])
+
+const onManageEvent = async (action: number) => {
+    loading.value = true
+    isPassword.value = true
+    if (password.value == '') {
+        isPassword.value = false;
+        toast.add({
+            severity: "error",
+            summary: t("toast.error"),
+            detail: t("toast.required_field"),
+            life: 3000,
+        });
+        loading.value = false;
+        return
+    }
+
+    const res = await postLostAndFoundAction(id.value, action, password.value)
+    toast.add({
+        severity: res.success ? "success" : "error",
+        summary: res.success
+            ? t("toast.success")
+            : t("toast.error"),
+        detail: res.message,
+        life: 3000,
+    });
+    if (!res.success) {
+        loading.value = false;
+        return;
+    }
+    password.value = ""
+    manage.value = false
+    run();
+}
 
 const status = computed(() => [
     t("lostnfound.status.pending"),
@@ -322,6 +373,43 @@ onMounted(() => {
             ></Button>
         </div>
     </Dialog>
+    <Dialog
+        v-model:visible="manage"
+        modal
+        class="w-[25rem]"
+        :header="$t('lostnfound.manage.header')"
+    >
+    <div class="flex flex-col items-center align-center">
+        <FloatLabel class="m-[20px]">
+            <InputText
+                id="password"
+                v-model="password"
+                :loading="loading"
+                :invalid="!isPassword && password == ''"
+            />
+            <label for="password">{{
+                $t("lostnfound.manage.password")
+            }}</label>
+        </FloatLabel>
+        </div>
+        <div class="flex justify-end gap-2 m-3">
+            <Button
+                type="button"
+                :label="$t('lostnfound.manage.cancel')"
+                severity="secondary"
+                @click="manage = false"
+            ></Button>
+            <SplitButton
+                type="button"
+                :model="items"
+                :label="$t('lostnfound.manage.found')"
+                :loading="loading"
+                icon="pi pi-cog"
+                severity="warn"
+                @click="onManageEvent(1)"
+            ></SplitButton>
+        </div>
+    </Dialog>
     <div v-if="data?.success">
         <Button
             :label="$t('lostnfound.new_lostnfound.header')"
@@ -414,11 +502,19 @@ onMounted(() => {
                             <Button
                                 class="w-full"
                                 :label="$t('lostnfound.card.view_clues')"
+                                icon="pi pi-search"
                                 @click="
                                     router.push(
                                         `/lostnfound/detail?id=${lostnfound.id}`,
                                     )
                                 "
+                            ></Button>
+                            <Button
+                                class="w-full"
+                                severity="warn"
+                                icon="pi pi-cog"
+                                :label="$t('lostnfound.card.manage')"
+                                @click="manage = true, id = lostnfound.id as number"
                             ></Button>
                         </div>
                     </template>
@@ -443,10 +539,19 @@ onMounted(() => {
     min-width: 17rem;
 }
 
-button,
 :deep(.p-button),
 :deep(.p-image) {
     border-radius: 0.5rem;
+}
+
+:deep(.p-splitbutton-button) {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+:deep(.p-splitbutton-dropdown) {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
 }
 
 :deep(.p-image-preview-mask) {

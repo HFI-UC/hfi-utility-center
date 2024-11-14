@@ -378,7 +378,7 @@ const onViewEvent = async (path: string) => {
                             <template #body="{ data }">
                                 <Button
                                     icon="pi pi-eye"
-                                    :label="$t('lostnfound.clue.column.view')"
+                                    :label="$t('lostnfound.clue.view')"
                                     @click="onViewEvent(data.filePath)"
                                 ></Button>
                             </template>
