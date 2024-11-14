@@ -435,7 +435,7 @@ onMounted(() => {
             <div v-for="lostnfound in lostnfoundData" id="card">
                 <Card>
                     <template #content>
-                        <div class="ms-4 me-4 min-h-[43rem]">
+                        <div class="ms-4 me-4 min-h-[47rem]">
                             <h3>
                                 {{
                                     $t("lostnfound.card.header", [
