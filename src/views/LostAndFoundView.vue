@@ -48,7 +48,7 @@ const types = ref([
     },
     { label: t("lostnfound.type.found"), code: "found" },
 ]);
-const manage = ref(false)
+const manage = ref(false);
 const campus = computed(() => [
     { label: t("lostnfound.campus.shipai"), code: "shipai" },
     { label: t("lostnfound.campus.knowledgecity"), code: "kc" },
@@ -85,8 +85,8 @@ const onSearchEvent = () => {
     run();
 };
 
-const password = ref("")
-const isPassword = ref(true)
+const password = ref("");
+const isPassword = ref(true);
 const query = ref("");
 const isCompleted = ref(true);
 const src = ref<null | string>(null);
@@ -167,7 +167,7 @@ watch(
     () => run(),
 );
 
-const id = ref(-1)
+const id = ref(-1);
 
 const typesMapping = computed<Record<string, string>>(() => ({
     found: t("lostnfound.type.found"),
@@ -177,18 +177,18 @@ const typesMapping = computed<Record<string, string>>(() => ({
 const items = computed(() => [
     {
         label: t("lostnfound.manage.not_found"),
-        command: () => onManageEvent(0)
+        command: () => onManageEvent(0),
     },
     {
         label: t("lostnfound.manage.hidden"),
-        command: () => onManageEvent(2)
-    }
-])
+        command: () => onManageEvent(2),
+    },
+]);
 
 const onManageEvent = async (action: number) => {
-    loading.value = true
-    isPassword.value = true
-    if (password.value == '') {
+    loading.value = true;
+    isPassword.value = true;
+    if (password.value == "") {
         isPassword.value = false;
         toast.add({
             severity: "error",
@@ -197,15 +197,13 @@ const onManageEvent = async (action: number) => {
             life: 3000,
         });
         loading.value = false;
-        return
+        return;
     }
 
-    const res = await postLostAndFoundAction(id.value, action, password.value)
+    const res = await postLostAndFoundAction(id.value, action, password.value);
     toast.add({
         severity: res.success ? "success" : "error",
-        summary: res.success
-            ? t("toast.success")
-            : t("toast.error"),
+        summary: res.success ? t("toast.success") : t("toast.error"),
         detail: res.message,
         life: 3000,
     });
@@ -213,10 +211,10 @@ const onManageEvent = async (action: number) => {
         loading.value = false;
         return;
     }
-    password.value = ""
-    manage.value = false
+    password.value = "";
+    manage.value = false;
     run();
-}
+};
 
 const status = computed(() => [
     t("lostnfound.status.pending"),
@@ -379,18 +377,18 @@ onMounted(() => {
         class="w-[25rem]"
         :header="$t('lostnfound.manage.header')"
     >
-    <div class="flex flex-col items-center align-center">
-        <FloatLabel class="m-[20px]">
-            <InputText
-                id="password"
-                v-model="password"
-                :loading="loading"
-                :invalid="!isPassword && password == ''"
-            />
-            <label for="password">{{
-                $t("lostnfound.manage.password")
-            }}</label>
-        </FloatLabel>
+        <div class="flex flex-col items-center align-center">
+            <FloatLabel class="m-[20px]">
+                <InputText
+                    id="password"
+                    v-model="password"
+                    :loading="loading"
+                    :invalid="!isPassword && password == ''"
+                />
+                <label for="password">{{
+                    $t("lostnfound.manage.password")
+                }}</label>
+            </FloatLabel>
         </div>
         <div class="flex justify-end gap-2 m-3">
             <Button
@@ -514,7 +512,10 @@ onMounted(() => {
                                 severity="warn"
                                 icon="pi pi-cog"
                                 :label="$t('lostnfound.card.manage')"
-                                @click="manage = true, id = lostnfound.id as number"
+                                @click="
+                                    (manage = true),
+                                        (id = lostnfound.id as number)
+                                "
                             ></Button>
                         </div>
                     </template>
