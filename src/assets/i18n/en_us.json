@@ -33,7 +33,7 @@
         "line2": "Powered by {0}.",
         "line3": "Copyright © 2024 The co-author of HFI Utility Center. All rights reserved.",
         "line4": "Build {0}. This website is under {1} and open-sourced on {2}.",
-        "line5": "Most of the back-end code is written with {0} ChatGPT."
+        "line5": "Most of the back-end code is written with {0}."
     },
     "campus": {
         "shipai": "Shipai Campus",

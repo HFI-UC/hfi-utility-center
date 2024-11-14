@@ -217,14 +217,9 @@ onMounted(async () => {
                 ><i class="pi pi-github"></i> GitHub</a
             >
         </i18n-t>
-        <i18n-t
-            tag="p"
-            keypath="footer.line5"
-            scope="global"
-            class="flex text-center justify-center"
-        >
-            <img class="ms-2 me-1" src="./assets/openai.svg" width="20px" />
-        </i18n-t>
+            <i18n-t tag="p" keypath="footer.line5" scope="global" class="flex flex-wrap text-center justify-center">
+                <img class="ms-2 me-1" src="./assets/chatgpt.svg" width="100px" />
+            </i18n-t>
     </footer>
 </template>
 
