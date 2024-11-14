@@ -162,12 +162,13 @@ const onViewEvent = async (path: string) => {
 
 <template>
     <h1>{{ $t("lostnfound.lostnfound") }}</h1>
-    <Dialog v-model:visible="view" modal class="w-[25rem]">
+    <Dialog v-model:visible="view" modal class="min-w-[20rem]">
+        <div class="flex items-center justify-center">
         <Image
             :src="src"
             preview
-            class="w-full items-center justify-center"
-        ></Image>
+            class="w-64 lg:w-auto items-center justify-center"
+        ></Image></div>
     </Dialog>
     <Dialog
         v-model:visible="visible"
@@ -195,7 +196,7 @@ const onViewEvent = async (path: string) => {
                 :src="img"
                 class="shadow-md rounded-xl w-full sm:w-64 m-3"
             />
-            <p v-if="file" id="name" class="m-3">{{ file.name }}</p>
+            <p v-if="file" id="file" class="m-3">{{ file.name }}</p>
         </div>
         <p class="font-bold m-4">
             {{ $t("lostnfound.new_clue.fill_out") }}
@@ -428,7 +429,11 @@ h3 {
 }
 
 :deep(img) {
-    height: 20rem;
+    max-height: 20rem;
+}
+
+#file {
+    font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
 }
 
 #text {

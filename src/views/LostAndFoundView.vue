@@ -254,9 +254,9 @@ onMounted(() => {
             <img
                 v-if="src"
                 :src="src"
-                class="shadow-md rounded-xl w-full sm:w-64 m-3"
+                class="shadow-md rounded-xl sm:w-64 m-3"
             />
-            <p v-if="file" id="name" class="m-3">{{ file.name }}</p>
+            <p v-if="file" id="file" class="m-3">{{ file.name }}</p>
         </div>
         <p class="font-bold m-4">
             {{ $t("lostnfound.new_lostnfound.fill_out") }}
@@ -588,7 +588,7 @@ h3 {
     unicode-bidi: isolate;
 }
 
-p > #name {
+#file {
     font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
 }
 
