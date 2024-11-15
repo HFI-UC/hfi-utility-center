@@ -491,10 +491,12 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
 export async function getLostAndFound(
     page: number,
     query: string,
+    token: string,
     clue?: boolean,
 ) {
     const params = new URLSearchParams();
     params.set("page", page.toString());
+    if (token !== "") params.set("token", token)
     if (clue) params.set("include_clues", "true");
     if (query !== "") params.set("query", query);
     const { data } = await axios.get<{

@@ -41,6 +41,7 @@ const onFileSelect = (event: FileUploadSelectEvent) => {
 const toast = useToast();
 const loading = ref(false);
 const { t } = useI18n();
+const token = ref("")
 const types = ref([
     {
         label: t("lostnfound.type.lost"),
@@ -57,7 +58,7 @@ const campus = computed(() => [
 const first = ref(0);
 
 const { data, run } = useRequest(
-    () => getLostAndFound(first.value, query.value),
+    () => getLostAndFound(first.value, query.value, token.value),
     {
         manual: true,
     },
@@ -219,11 +220,14 @@ const onManageEvent = async (action: number) => {
 const status = computed(() => [
     t("lostnfound.status.pending"),
     t("lostnfound.status.completed"),
+    t("lostnfound.status.clue"),
+    t("lostnfound.status.hidden")
 ]);
 
-const severity = ref(["info", "success"]);
+const severity = ref(["info", "success", "warn", "secondary"]);
 
 onMounted(() => {
+    token.value = sessionStorage.getItem("token") || ""
     run();
 });
 </script>

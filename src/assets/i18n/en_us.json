@@ -308,7 +308,9 @@
         },
         "status": {
             "pending": "Pending",
-            "completed": "Completed"
+            "completed": "Completed",
+            "clue": "New Clue",
+            "hidden": "Hidden"
         },
         "search": "Search",
         "card": {
