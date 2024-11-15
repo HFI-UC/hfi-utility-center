@@ -59,7 +59,7 @@ const onFileSelect = (event: FileUploadSelectEvent) => {
 };
 
 const { data, run } = useRequest(
-    () => getLostAndFound(0, props.id.toString(), true),
+    () => getLostAndFound(0, props.id.toString(), ""),
     { manual: true },
 );
 
