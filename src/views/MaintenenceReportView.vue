@@ -2,7 +2,7 @@
 import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
 import FileUpload, { FileUploadSelectEvent } from "primevue/fileupload";
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {
     generateCosKey,
     getMaintenance,
@@ -18,7 +18,6 @@ import InputText from "primevue/inputtext";
 import FloatLabel from "primevue/floatlabel";
 import Button from "primevue/button";
 import Select from "primevue/select";
-import Textarea from "primevue/textarea";
 import Paginator from "primevue/paginator";
 import Tag from "primevue/tag";
 import Image from "primevue/image";
@@ -33,7 +32,7 @@ const isAdmin = ref(false);
 const { run, data } = useRequest(() => getMaintenance(token.value), {
     manual: true,
 });
-const { t, locale } = useI18n();
+const { t } = useI18n();
 const first = ref(0);
 const filteredMaintenanceData = computed(
     () =>
@@ -60,8 +59,8 @@ const src = ref<null | string>(null);
 const file = ref<null | File>(null);
 const toast = useToast();
 const campus = computed(() => [
-    t("maintenance.campus.shipai"),
-    t("maintenance.campus.knowledgecity"),
+    { label: t("maintenance.campus.shipai"), code: "shipai" },
+    { label: t("maintenance.campus.knowledgecity"), code: "kc" },
 ]);
 const status = computed(() => [
     t("maintenance.status.pending"),
@@ -81,13 +80,10 @@ const maintenance = ref<MaintenanceInfo>({
     detail: "",
 });
 
-watch(
-    () => locale.value,
-    () => {
-        maintenance.value.campus = "";
-    },
-);
-
+const campusMapping: Record<string, string> = {
+    shipai: t("maintenance.campus.shipai"),
+    kc: t("maintenance.campus.knowledgecity"),
+};
 const onFileSelect = (event: FileUploadSelectEvent) => {
     file.value = event.files[0];
     if (!file.value) return;
@@ -160,10 +156,6 @@ const onClickEvent = async () => {
     }
 
     const maintenanceResult = await postMaintenance(maintenance.value);
-    if (!maintenanceResult.success) {
-        loading.value = false;
-        return;
-    }
 
     toast.add({
         severity: maintenanceResult.success ? "success" : "error",
@@ -173,6 +165,10 @@ const onClickEvent = async () => {
         detail: maintenanceResult.message,
         life: 3000,
     });
+    if (!maintenanceResult.success) {
+        loading.value = false;
+        return;
+    }
     resetForm();
     run();
 };
@@ -274,6 +270,8 @@ const resetForm = () => {
                         v-model="maintenance.campus"
                         v-tooltip.bottom="$t('maintenance.tooltip.campus')"
                         :options="campus"
+                        optionLabel="label"
+                        optionValue="code"
                         :invalid="!isCompleted && maintenance.campus == ''"
                     />
                     <label for="campus">{{
@@ -304,7 +302,7 @@ const resetForm = () => {
                     }}</label>
                 </FloatLabel>
                 <FloatLabel class="m-[20px]">
-                    <Textarea
+                    <InputText
                         id="detail"
                         v-model="maintenance.detail"
                         v-tooltip.bottom="$t('maintenance.tooltip.detail')"
@@ -317,13 +315,11 @@ const resetForm = () => {
             </div>
             <div class="flex justify-end gap-2 m-3">
                 <Button
-                    type="button"
                     :label="$t('maintenance.new_maintenance.cancel')"
                     severity="secondary"
                     @click="visible = false"
                 ></Button>
                 <Button
-                    type="button"
                     :label="$t('maintenance.new_maintenance.submit')"
                     :loading="loading"
                     icon="pi pi-plus"
@@ -366,7 +362,7 @@ const resetForm = () => {
                             </p>
                             <p class="mb-3">
                                 <b>{{ $t("maintenance.card.campus") }}</b>
-                                {{ maintenance.campus }}
+                                {{ campusMapping[maintenance.campus] }}
                             </p>
                             <p class="mb-3">
                                 <b>{{ $t("maintenance.card.detail") }}</b>
@@ -434,8 +430,7 @@ const resetForm = () => {
 
 <style scoped>
 :deep(.p-inputtext),
-.p-select,
-.p-textarea {
+.p-select {
     border-radius: 0.5rem !important;
     min-width: 17rem;
 }
@@ -444,10 +439,6 @@ button,
 :deep(.p-button),
 :deep(.p-image) {
     border-radius: 0.5rem;
-}
-
-#buttons {
-    flex-wrap: nowrap;
 }
 
 h1 {
@@ -493,6 +484,9 @@ h4 {
     unicode-bidi: isolate;
 }
 
+#buttons {
+    flex-wrap: nowrap;
+}
 #card {
     width: calc(50% - 0.8rem);
 }

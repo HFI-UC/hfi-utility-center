@@ -161,7 +161,10 @@ const getSeverity = (label: string): string => {
         :rowsPerPageOptions="[10, 20, 50]"
     >
         <template #empty>
-            <p v-if="loading">{{ $t("status.table.loading") }}</p>
+            <p v-if="loading">
+                {{ $t("status.table.loading") }}
+                <i class="pi pi-spin pi-spinner"></i>
+            </p>
             <p v-else-if="queried && (!data || data.data.length === 0)">
                 {{ $t("status.table.empty") }}
             </p>

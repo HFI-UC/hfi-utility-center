@@ -20,6 +20,7 @@
             "status": "Reservation Status"
         },
         "maintenance": "Maintenance Report",
+        "lostnfound": "Lost & Found",
         "admin": {
             "admin": "Admin",
             "reservation": "Reservation Management",
@@ -31,7 +32,8 @@
         "line1": "Created by MAKERs' with ♥.",
         "line2": "Powered by {0}.",
         "line3": "Copyright © 2024 The co-author of HFI Utility Center. All rights reserved.",
-        "line4": "Build {0}. This website is under {1} and open-sourced on {2}."
+        "line4": "Build {0}. This website is under {1} and open-sourced on {2}.",
+        "line5": "Most of the back-end code is written with {0}."
     },
     "campus": {
         "shipai": "Shipai Campus",
@@ -245,7 +247,7 @@
             "cancel": "Cancel",
             "submit": "Submit"
         },
-        "empty": "There are currently no maintenance reports.",
+        "empty": "No available data.",
         "card": {
             "header": "Maintenance #{0}",
             "name": "Name: ",
@@ -264,6 +266,88 @@
             "subject": "The subject of your report (e.g. AC Doesn't Work).",
             "location": "The location you want to report for maintenance (e.g. The classroom).",
             "detail": "The details of your report (e.g. We can not turn on the AC)."
+        }
+    },
+    "lostnfound": {
+        "lostnfound": "Lost & Found",
+        "new_lostnfound": {
+            "header": "Add a new Lost & Found",
+            "choose_photo": "1. Choose a photo",
+            "choose": "Choose",
+            "fill_out": "2. Fill out the form",
+            "cancel": "Cancel",
+            "submit": "Submit",
+            "name": "Name",
+            "email": "E-mail",
+            "type": "Type",
+            "campus": "Campus",
+            "location": "Location",
+            "detail": "Detail",
+            "password": "Passphrase",
+            "reward": "Reward (Optional)",
+            "alternative_contact": "Alternative Contact (Optional)"
+        },
+        "new_clue": {
+            "header": "Add a new Clue",
+            "choose_photo": "1. Choose a photo",
+            "choose": "Choose",
+            "fill_out": "2. Fill out the form",
+            "contact": "Contact",
+            "campus": "Campus",
+            "detail": "Detail",
+            "location": "Location"
+        },
+        "campus": {
+            "shipai": "Shipai Campus",
+            "knowledgecity": "Knowledge City Campus"
+        },
+        "empty": "No available data.",
+        "type": {
+            "lost": "Lost",
+            "found": "Found"
+        },
+        "status": {
+            "pending": "Pending",
+            "completed": "Completed",
+            "clue": "New Clue",
+            "hidden": "Hidden"
+        },
+        "search": "Search",
+        "card": {
+            "header": "Lost & Found #{0}",
+            "location": "Location: ",
+            "type": "Type: ",
+            "campus": "Campus: ",
+            "name": "Name: ",
+            "email": "E-mail: ",
+            "status": "Status: ",
+            "reward": "Reward: ",
+            "detail": "Detail: ",
+            "alternative_contact": "Alternative Contact: ",
+            "view_clues": "Add / View Clues",
+            "manage": "Manage Lost & Found"
+        },
+        "manage": {
+            "header": "Manage Lost & Found",
+            "password": "Passphrase",
+            "cancel": "Cancel",
+            "found": "Mark as Found",
+            "not_found": "Mark as Not Found",
+            "hidden": "Hide This L&F"
+        },
+        "clue": {
+            "clue": "Clues",
+            "column": {
+                "id": "ID",
+                "campus": "Campus",
+                "location": "Location",
+                "detail": "Detail",
+                "image": "Image",
+                "contact": "Contact",
+                "created_at": "Create Time"
+            },
+            "view": "View",
+            "back": "Back"
         }
     }
 }

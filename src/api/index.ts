@@ -42,6 +42,32 @@ export interface RoomPolicyInfo {
     end_time: string;
 }
 
+export interface Clue {
+    id?: number;
+    campus: string;
+    detail: string;
+    location: string;
+    filePath: string;
+    contact: string;
+    createdAt?: string;
+}
+
+export interface LostAndFoundInfo {
+    id?: number;
+    studentName: string;
+    detail: string;
+    location: string;
+    email: string;
+    campus: string;
+    filePath: string;
+    password: string;
+    type: string;
+    reward?: string;
+    altContact?: string;
+    clues?: Clue[];
+    isFound?: number;
+}
+
 export interface ReservationInfo {
     success: boolean;
     data: {
@@ -311,8 +337,10 @@ export async function uploadCOS(
             data.append("cosKey", cosKey);
 
             const { SessionToken: SecurityToken, ...rest } = (
-                await axios.post<{ credentials: { SessionToken: string } & Credentials }>("/api/keygen.php", data)
-            ).data.credentials;            
+                await axios.post<{
+                    credentials: { SessionToken: string } & Credentials;
+                }>("/api/keygen.php", data)
+            ).data.credentials;
 
             callback({ SecurityToken, ...rest });
         },
@@ -428,4 +456,116 @@ export async function getHitokoto() {
         from: string;
     }>("https://v1.hitokoto.cn", { params: query });
     return res.data;
+}
+
+export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
+    const data = new FormData();
+    data.set("type", lostnfound.type);
+    data.set("email", lostnfound.email);
+    data.set("student_name", lostnfound.studentName);
+    data.set("detail", lostnfound.detail);
+    data.set("file_path", lostnfound.filePath);
+    data.set("location", lostnfound.location);
+    data.set("password", lostnfound.password);
+    data.set("campus", lostnfound.campus);
+    if (lostnfound.altContact) data.set("alt_contact", lostnfound.altContact);
+    if (lostnfound.reward) data.set("reward", lostnfound.reward);
+    try {
+        const res = await axios.post<{ success: boolean; message: string }>(
+            "/api/submit_lnf.php",
+            data,
+        );
+        return res.data;
+    } catch (err) {
+        if (isAxiosError(err) && err.response) {
+            return err.response.data as { success: boolean; message: string };
+        } else {
+            return {
+                success: false,
+                message: "Error.",
+            };
+        }
+    }
+}
+
+export async function getLostAndFound(
+    page: number,
+    query: string,
+    token: string,
+    clue?: boolean,
+) {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    if (token !== "") params.set("token", token)
+    if (clue) params.set("include_clues", "true");
+    if (query !== "") params.set("query", query);
+    const { data } = await axios.get<{
+        success: boolean;
+        data: LostAndFoundInfo[];
+        totalPages: number;
+    }>("/api/fetch_lnf.php", { params: params });
+    data.data = await Promise.all(
+        data.data.map(async (item, index) => {
+            await delay(index * 100);
+            return {
+                ...item,
+                filePath: await getCOS(item.filePath),
+            };
+        }),
+    );
+    return data;
+}
+
+export async function postClue(clue: Clue, id: number) {
+    const data = new FormData();
+    data.set("detail", clue.detail);
+    data.set("filePath", clue.filePath);
+    data.set("location", clue.location);
+    data.set("campus", clue.campus);
+    data.set("contact", clue.contact);
+    data.set("lost_info_id", id.toString());
+    try {
+        const res = await axios.post<{ success: boolean; message: string }>(
+            "/api/submit_clue.php",
+            data,
+        );
+        return res.data;
+    } catch (err) {
+        if (isAxiosError(err) && err.response) {
+            return err.response.data as { success: boolean; message: string };
+        } else {
+            return {
+                success: false,
+                message: "Error.",
+            };
+        }
+    }
+}
+
+export async function postLostAndFoundAction(
+    id: number,
+    action: number,
+    password: string,
+) {
+    const data = new FormData();
+    const actions = ["not_found", "found", "hidden"];
+    data.set("id", id.toString());
+    data.set("password", password);
+    data.set("action", actions[action].toString());
+    try {
+        const res = await axios.post<{ success: boolean; message: string }>(
+            "/api/update_lnf_status.php",
+            data,
+        );
+        return res.data;
+    } catch (err) {
+        if (isAxiosError(err) && err.response) {
+            return err.response.data as { success: boolean; message: string };
+        } else {
+            return {
+                success: false,
+                message: "Error.",
+            };
+        }
+    }
 }
