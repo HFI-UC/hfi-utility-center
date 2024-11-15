@@ -308,7 +308,9 @@
         },
         "status": {
             "pending": "处理中",
-            "completed": "已完成"
+            "completed": "已完成",
+            "clue": "New Clue",
+            "hidden": "Hidden"
         },
         "search": "搜索",
         "card": {
