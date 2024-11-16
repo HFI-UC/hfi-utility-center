@@ -20,7 +20,7 @@
             "status": "申请状态"
         },
         "maintenance": "报修",
-        "lostnfound": "失物招领",
+        "lostnfound": "失物&招领",
         "admin": {
             "admin": "管理员",
             "reservation": "管理申请",
@@ -33,7 +33,7 @@
         "line2": "驱动 靠{0}。",
         "line3": "版权所有 © 2024 HFI Utility Center 的所有协作者。保留所有权利。",
         "line4": "建造{0}。这个网站在{1} 下面并且开源在{2} 上面。",
-        "line5": "大部分后端代码使用 {0} 编写。"
+        "line5": "大部分后端代码由{0}优化"
     },
     "campus": {
         "shipai": "石牌校园",
@@ -165,7 +165,7 @@
             "reason": "理由",
             "header": "选择拒绝理由",
             "cancel": "取消",
-            "reject_reason": "打回原因"
+            "reject_reason": "打回理由"
         },
         "reviewed": "已评价",
         "unreviewed": "未评价",
@@ -247,7 +247,7 @@
             "cancel": "取消",
             "submit": "提价"
         },
-        "empty": "无可用数据。",
+        "empty": "无可用数据",
         "card": {
             "header": "报修 #{0}",
             "name": "名：",
@@ -269,85 +269,85 @@
         }
     },
     "lostnfound": {
-        "lostnfound": "失物招领",
+        "lostnfound": "失物&招领",
         "new_lostnfound": {
-            "header": "新增失物招领",
-            "choose_photo": "1. 选择一张照片",
-            "choose": "选择",
-            "fill_out": "2. 填写表单",
-            "cancel": "取消",
-            "submit": "提交",
-            "name": "姓名",
-            "email": "邮箱",
-            "type": "类型",
-            "campus": "校区",
+            "header": "新增一条失物&招领请求",
+            "choose_photo": "1. 选图片",
+            "choose": "选！",
+            "fill_out": "2. 填完表格",
+            "cancel": "不了",
+            "submit": "交！",
+            "name": "名",
+            "email": "电子信箱",
+            "type": "类别",
+            "campus": "校园",
             "location": "地点",
-            "detail": "详细信息",
-            "password": "访问密码",
-            "reward": "悬赏（可选）",
-            "alternative_contact": "备用联系方式（可选）"
+            "detail": "细节",
+            "password": "身份凭证短语",
+            "reward": "悬赏（可选的）",
+            "alternative_contact": "备用联系方式（可选的）"
         },
         "new_clue": {
-            "header": "添加新的线索",
-            "choose_photo": "1. 选择一张照片",
-            "choose": "选择",
-            "fill_out": "2. 填写表单",
-            "contact": "联系信息",
-            "campus": "校区",
-            "detail": "详细信息",
+            "header": "交一条新线索",
+            "choose_photo": "选图片",
+            "choose": "选！",
+            "fill_out": "填完表格",
+            "contact": "联系方式",
+            "campus": "校园",
+            "detail": "细节",
             "location": "地点"
         },
         "campus": {
-            "shipai": "石牌校区",
-            "knowledgecity": "知识城校区"
+            "shipai": "石牌校园",
+            "knowledgecity": "芝士城校园"
         },
-        "empty": "无可用数据。",
+        "empty": "无可用数据",
         "type": {
-            "lost": "寻物启事",
-            "found": "失物招领"
+            "lost": "失物",
+            "found": "招领"
         },
         "status": {
-            "pending": "处理中",
-            "completed": "已完成",
-            "clue": "新线索",
-            "hidden": "已隐藏"
+            "pending": "下落不明",
+            "completed": "失而复得",
+            "clue": "有待考证",
+            "hidden": "秘而不宣"
         },
-        "search": "搜索",
+        "search": "检索",
         "card": {
-            "header": "失物招领 #{0}",
+            "header": "请求#{0}",
             "location": "地点：",
             "type": "类型：",
-            "campus": "校区：",
-            "name": "姓名：",
-            "email": "邮箱：",
+            "campus": "校园：",
+            "name": "名：",
+            "email": "电子信箱：",
             "status": "状态：",
             "reward": "悬赏：",
-            "detail": "详细信息：",
-            "alternative_contact": "备用联系信息：",
-            "view_clues": "添加 / 查看线索",
-            "manage": "管理失物招领"
+            "detail": "细节：",
+            "alternative_contact": "备用联系方式：",
+            "view_clues": "交/查看线索",
+            "manage": "管理请求"
         },
         "manage": {
-            "header": "管理失物招领",
-            "password": "访问密码",
-            "cancel": "取消",
-            "found": "标记为已找到",
-            "not_found": "标记为未找到",
-            "hidden": "隐藏此失物招领"
+            "header": "管理请求",
+            "password": "身份凭证短语",
+            "cancel": "算了",
+            "found": "标记为“失而复得”",
+            "not_found": "标记为“下落不明”",
+            "hidden": "标记为“秘而不宣”"
         },
         "clue": {
             "clue": "线索",
             "column": {
-                "id": "ID",
-                "campus": "校区",
-                "location": "地点",
-                "detail": "详细信息",
-                "image": "图片",
-                "contact": "联系信息",
-                "created_at": "创建时间"
+                "id": "编号",
+                "campus": "校园",
+                "location": "地址",
+                "detail": "细节",
+                "image": "图像",
+                "contact": "联系人",
+                "created_at": "交于"
             },
             "view": "查看",
-            "back": "返回"
+            "back": "润"
         }
     }
 }
