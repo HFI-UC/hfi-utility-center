@@ -165,7 +165,7 @@
             "reason": "理由",
             "header": "选择拒绝理由",
             "cancel": "取消",
-            "reject_reason": "打回原因"
+            "reject_reason": "打回理由"
         },
         "reviewed": "已评价",
         "unreviewed": "未评价",
