@@ -62,6 +62,8 @@ export interface LostAndFoundInfo {
     filePath: string;
     password: string;
     type: string;
+    createdAt?: string
+    lastUpdated?: string
     reward?: string;
     altContact?: string;
     clues?: Clue[];

@@ -322,6 +322,14 @@ const onViewEvent = async (path: string) => {
                                 {{ lostnfound.reward }}
                             </p>
                             <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.created_at") }}</b>
+                                {{ lostnfound.createdAt }}
+                            </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.last_updated") }}</b>
+                                {{ lostnfound.lastUpdated }}
+                            </p>
+                            <p class="mb-3">
                                 <b>{{ $t("lostnfound.card.status") }}</b>
                                 <Tag
                                     :value="

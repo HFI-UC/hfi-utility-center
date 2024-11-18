@@ -439,7 +439,7 @@ onMounted(() => {
             <div v-for="lostnfound in lostnfoundData" id="card">
                 <Card>
                     <template #content>
-                        <div class="ms-4 me-4 min-h-[47rem]">
+                        <div class="ms-4 me-4 min-h-[52rem]">
                             <h3>
                                 {{
                                     $t("lostnfound.card.header", [
@@ -485,6 +485,14 @@ onMounted(() => {
                             <p class="mb-3" v-if="lostnfound.reward">
                                 <b>{{ $t("lostnfound.card.reward") }}</b>
                                 {{ lostnfound.reward }}
+                            </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.created_at") }}</b>
+                                {{ lostnfound.createdAt }}
+                            </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.last_updated") }}</b>
+                                {{ lostnfound.lastUpdated }}
                             </p>
                             <p class="mb-3">
                                 <b>{{ $t("lostnfound.card.status") }}</b>

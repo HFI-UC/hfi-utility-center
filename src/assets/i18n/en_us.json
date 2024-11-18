@@ -323,6 +323,8 @@
             "status": "Status: ",
             "reward": "Reward: ",
             "detail": "Detail: ",
+            "created_at": "Create Time: ",
+            "last_updated": "Update Time: ",
             "alternative_contact": "Alternative Contact: ",
             "view_clues": "Add / View Clues",
             "manage": "Manage Lost & Found"
