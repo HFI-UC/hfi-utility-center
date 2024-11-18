@@ -323,8 +323,8 @@
             "status": "状态：",
             "reward": "悬赏：",
             "detail": "详细信息：",
-            "created_at": "Create Time: ",
-            "last_updated": "Update Time: ",
+            "created_at": "创建时间：",
+            "last_updated": "更新时间：",
             "alternative_contact": "备用联系信息：",
             "view_clues": "添加 / 查看线索",
             "manage": "管理失物招领"
