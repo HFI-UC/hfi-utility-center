@@ -323,8 +323,8 @@
             "status": "状态：",
             "reward": "悬赏：",
             "detail": "细节：",
-            "created_at": "创建时间：",
-            "last_updated": "更新时间：",
+            "created_at": "制造于：",
+            "last_updated": "最后更新：",
             "alternative_contact": "备用联系方式：",
             "view_clues": "交/查看线索",
             "manage": "管理请求"
