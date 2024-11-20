@@ -10,7 +10,7 @@ setInterval(() => time.value--, 1000);
 <template>
     <div class="flex flex-col items-center justify-center">
         <img
-            src="https://7507.kstore.space/thinking_face_color.svg"
+            src="https://d.kstore.space/download/7507/thinking_face_color.svg"
             class="m-6"
         />
         <h2 class="text-center">404</h2>
