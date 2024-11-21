@@ -311,6 +311,10 @@ const onViewEvent = async (path: string) => {
                                 <b>{{ $t("lostnfound.card.detail") }}</b>
                                 {{ lostnfound.detail }}
                             </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.time") }}</b>
+                                {{ lostnfound.eventTime }}
+                            </p>
                             <p class="mb-3" v-if="lostnfound.altContact">
                                 <b>{{
                                     $t("lostnfound.card.alternative_contact")

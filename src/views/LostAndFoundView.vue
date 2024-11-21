@@ -78,6 +78,7 @@ const lostnfound = ref<LostAndFoundInfo>({
     filePath: "",
     password: "",
     campus: "",
+    eventTime: "",
     type: "",
 });
 
@@ -156,6 +157,7 @@ const resetForm = () => {
         email: "",
         filePath: "",
         password: "",
+        eventTime: "",
         campus: "",
         type: "",
     };
@@ -344,6 +346,16 @@ onMounted(() => {
                 }}</label>
             </FloatLabel>
             <FloatLabel class="m-[20px]">
+                <InputText
+                    id="time"
+                    v-model="lostnfound.eventTime"
+                    :invalid="!isCompleted && lostnfound.eventTime == ''"
+                />
+                <label for="time">{{
+                    $t("lostnfound.new_lostnfound.time")
+                }}</label>
+            </FloatLabel>
+            <FloatLabel class="m-[20px]">
                 <InputText id="reward" v-model="lostnfound.reward" />
                 <label for="reward">{{
                     $t("lostnfound.new_lostnfound.reward")
@@ -439,7 +451,7 @@ onMounted(() => {
             <div v-for="lostnfound in lostnfoundData" id="card">
                 <Card>
                     <template #content>
-                        <div class="ms-4 me-4 min-h-[52rem]">
+                        <div class="ms-4 me-4 min-h-[55rem]">
                             <h3>
                                 {{
                                     $t("lostnfound.card.header", [
@@ -475,6 +487,10 @@ onMounted(() => {
                             <p class="mb-3">
                                 <b>{{ $t("lostnfound.card.detail") }}</b>
                                 {{ lostnfound.detail }}
+                            </p>
+                            <p class="mb-3">
+                                <b>{{ $t("lostnfound.card.time") }}</b>
+                                {{ lostnfound.eventTime }}
                             </p>
                             <p class="mb-3" v-if="lostnfound.altContact">
                                 <b>{{

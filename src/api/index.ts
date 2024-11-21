@@ -62,6 +62,7 @@ export interface LostAndFoundInfo {
     filePath: string;
     password: string;
     type: string;
+    eventTime: string;
     createdAt?: string
     lastUpdated?: string
     reward?: string;
@@ -469,6 +470,7 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
     data.set("file_path", lostnfound.filePath);
     data.set("location", lostnfound.location);
     data.set("password", lostnfound.password);
+    data.set("event_time", lostnfound.eventTime)
     data.set("campus", lostnfound.campus);
     if (lostnfound.altContact) data.set("alt_contact", lostnfound.altContact);
     if (lostnfound.reward) data.set("reward", lostnfound.reward);
