@@ -19,6 +19,7 @@ import {
     postApplication,
     fetchPolicy,
     postReservation,
+    ReservationInfo,
 } from "../api";
 import router from "../router/router";
 import { useI18n } from "vue-i18n";
@@ -143,7 +144,7 @@ const generateTimeOptions = (
     return options.filter((item) => {
         if (!date.value || !reservation.value.selectedRoom) return true;
         const time = new Date(`${reservation.value.date}T${item}`);
-        return validatePolicy(time, reservation.value.selectedRoom);
+        return validatePolicy(time, reservation.value.selectedRoom) && validateTimeConflict(time, reservation.value.selectedRoom);
     });
 };
 
@@ -179,6 +180,22 @@ const roomMapping: Record<string, number> = {
     "Writing Center 2": 106,
 };
 
+const validateTimeConflict = (
+    time: Date,
+    selectRoom: number,
+): boolean => {
+    return !filteredBookingData.value.data.some((booking) => {
+        const [start, end] = booking.time.split("-");
+        const startDate = new Date(parseInt(start)),
+            endDate = new Date(parseInt(end));
+        return (
+            selectRoom == booking.room &&
+            endDate >= time &&
+            startDate <= time
+        );
+    });
+};
+
 const validatePolicy = (time: Date, selectedRoom: number): boolean => {
     return !policy.value.some((rule) => {
         const days = rule.days.split(",");
@@ -208,7 +225,7 @@ watch(
 );
 
 const selectedRoom = ref("");
-const filteredBookingData = ref([] as any);
+const filteredBookingData = ref({} as ReservationInfo);
 const filteredPolicyData = ref([] as any);
 
 watch(
@@ -223,7 +240,7 @@ watch(
         postReservation({
             room: reservation.value.selectedRoom.toString(),
         }).then((res) => {
-            filteredBookingData.value = res.data.filter(
+            filteredBookingData.value.data = res.data.filter(
                 (item) => item.auth !== "no",
             );
         });
@@ -445,7 +462,7 @@ const rules = computed(() =>
                         </FloatLabel>
                         <DataTable
                             v-if="reservation.selectedRoom"
-                            :value="filteredBookingData"
+                            :value="filteredBookingData.data"
                             id="datatable"
                         >
                             <template #header>

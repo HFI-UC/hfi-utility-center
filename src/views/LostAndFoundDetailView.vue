@@ -207,6 +207,7 @@ const onViewEvent = async (path: string) => {
                 <InputText
                     id="contact"
                     v-model="clue.contact"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.clue.contact')"
                     :invalid="!isCompleted && clue.contact == ''"
                 />
                 <label for="contact">{{
@@ -217,6 +218,7 @@ const onViewEvent = async (path: string) => {
                 <Select
                     id="campus"
                     v-model="clue.campus"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.clue.campus')"
                     :invalid="!isCompleted && clue.campus == ''"
                     :options="campus"
                     optionLabel="label"
@@ -230,6 +232,7 @@ const onViewEvent = async (path: string) => {
                 <InputText
                     id="location"
                     v-model="clue.location"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.clue.location')"
                     :invalid="!isCompleted && clue.location == ''"
                 />
                 <label for="location">{{
@@ -240,6 +243,7 @@ const onViewEvent = async (path: string) => {
                 <InputText
                     id="detail"
                     v-model="clue.detail"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.clue.detail')"
                     :invalid="!isCompleted && clue.detail == ''"
                 />
                 <label for="detail">{{

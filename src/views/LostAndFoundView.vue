@@ -272,6 +272,7 @@ onMounted(() => {
                 <InputText
                     id="name"
                     v-model="lostnfound.studentName"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.name')"
                     :invalid="!isCompleted && lostnfound.studentName == ''"
                 />
                 <label for="name">{{
@@ -282,6 +283,9 @@ onMounted(() => {
                 <InputText
                     id="email"
                     v-model="lostnfound.email"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.email', [
+                                            'sam.xulf2024@gdhfi.com',
+                                        ])"
                     :invalid="!isCompleted && lostnfound.email == ''"
                 />
                 <label for="email">{{
@@ -293,6 +297,7 @@ onMounted(() => {
                     id="password"
                     type="password"
                     v-model="lostnfound.password"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.password')"
                     :invalid="!isCompleted && lostnfound.password == ''"
                 />
                 <label for="password">{{
@@ -303,6 +308,7 @@ onMounted(() => {
                 <Select
                     id="type"
                     v-model="lostnfound.type"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.type')"
                     :invalid="!isCompleted && lostnfound.type == ''"
                     :options="types"
                     optionLabel="label"
@@ -316,6 +322,7 @@ onMounted(() => {
                 <Select
                     id="campus"
                     v-model="lostnfound.campus"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.campus')"
                     :invalid="!isCompleted && lostnfound.campus == ''"
                     :options="campus"
                     optionLabel="label"
@@ -329,6 +336,7 @@ onMounted(() => {
                 <InputText
                     id="location"
                     v-model="lostnfound.location"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.location')"
                     :invalid="!isCompleted && lostnfound.location == ''"
                 />
                 <label for="location">{{
@@ -339,6 +347,7 @@ onMounted(() => {
                 <InputText
                     id="detail"
                     v-model="lostnfound.detail"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.detail')"
                     :invalid="!isCompleted && lostnfound.detail == ''"
                 />
                 <label for="detail">{{
@@ -349,6 +358,7 @@ onMounted(() => {
                 <InputText
                     id="time"
                     v-model="lostnfound.eventTime"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.time')"
                     :invalid="!isCompleted && lostnfound.eventTime == ''"
                 />
                 <label for="time">{{
@@ -356,7 +366,9 @@ onMounted(() => {
                 }}</label>
             </FloatLabel>
             <FloatLabel class="m-[20px]">
-                <InputText id="reward" v-model="lostnfound.reward" />
+                <InputText id="reward" v-model="lostnfound.reward"
+                v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.reward')"
+                />
                 <label for="reward">{{
                     $t("lostnfound.new_lostnfound.reward")
                 }}</label>
@@ -365,7 +377,8 @@ onMounted(() => {
                 <InputText
                     id="alternativeContact"
                     v-model="lostnfound.altContact"
-                />
+                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.alternative_contact')"
+                    />
                 <label for="alternativeContact">{{
                     $t("lostnfound.new_lostnfound.alternative_contact")
                 }}</label>
@@ -398,6 +411,7 @@ onMounted(() => {
                 <InputText
                     id="password"
                     v-model="password"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.password')"
                     :loading="loading"
                     :invalid="!isPassword && password == ''"
                 />
@@ -436,6 +450,7 @@ onMounted(() => {
                 <InputText
                     :placeholder="$t('lostnfound.search')"
                     v-model="query"
+                    v-tooltip.bottom="$t('lostnfound.tooltip.search')"
                 ></InputText>
             </IconField>
             <Button
