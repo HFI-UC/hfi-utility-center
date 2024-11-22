@@ -352,6 +352,27 @@
             },
             "view": "查看",
             "back": "返回"
+        },
+        "tooltip": {
+            "lostnfound": {
+                "name": "Your Chinese name and English name (e.g. 山姆 Sam).",
+                "email": "Your e-mail (e.g. {0}).",
+                "password": "Your passphase.",
+                "type": "The type of your Lost & Found request.",
+                "campus": "The campus where the Lost & Found was requested.",
+                "location": "The location you want to request for Lost & Found (e.g. The classroom).",
+                "detail": "The details of your request (e.g. I found an Apple Pencil).",
+                "time": "The time at which the item is recognized (e.g. 4.p.m. at Nov. 13th).",
+                "reward": "If you want to put some reward on the item, please fill in this field.",
+                "alternative_contact": "Set up an alternate contact so that people can reach you more easily."
+            },
+            "search": "Search with keywords.",
+            "clue": {
+                "contact": "Your contact (e.g. Wechat: 1213414).",
+                "campus": "The campus where the Clue is reported.",
+                "location": "The location you want to report for Clue (e.g. The classroom).",
+                "detail": "The details of your Clue (e.g. I found a pen)."
+            }
         }
     }
 }
