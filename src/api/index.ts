@@ -308,7 +308,7 @@ export async function postPolicyAdd(
     start_time: Date,
     end_time: Date,
 ) {
-    const startTime = `${start_time.getHours()}:${start_time.getMinutes()}:00`;
+    const startTime = `${start_time.getHours().toString().padStart(2, "0")}:${start_time.getMinutes().toString().padStart(2, "0")}:00`;
     const endTime = `${end_time.getHours()}:${end_time.getMinutes()}:00`;
     const data = new FormData();
     data.set("token", token);
