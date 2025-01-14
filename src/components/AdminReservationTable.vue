@@ -61,7 +61,7 @@ const onSearch = async () => {
     loading.value = true;
     const reservationParams = getReservationParams();
     if (reservationParams) {
-        const res = await postReservation(reservationParams);
+        const res = await postReservation({ ...reservationParams, token: token.value});
         data.value = res;
     } else {
         data.value = { success: false, data: [] };

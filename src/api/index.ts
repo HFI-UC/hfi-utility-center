@@ -62,6 +62,9 @@ export interface LostAndFoundInfo {
     filePath: string;
     password: string;
     type: string;
+    eventTime: string;
+    createdAt?: string
+    lastUpdated?: string
     reward?: string;
     altContact?: string;
     clues?: Clue[];
@@ -305,7 +308,7 @@ export async function postPolicyAdd(
     start_time: Date,
     end_time: Date,
 ) {
-    const startTime = `${start_time.getHours()}:${start_time.getMinutes()}:00`;
+    const startTime = `${start_time.getHours().toString().padStart(2, "0")}:${start_time.getMinutes().toString().padStart(2, "0")}:00`;
     const endTime = `${end_time.getHours()}:${end_time.getMinutes()}:00`;
     const data = new FormData();
     data.set("token", token);
@@ -467,6 +470,7 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
     data.set("file_path", lostnfound.filePath);
     data.set("location", lostnfound.location);
     data.set("password", lostnfound.password);
+    data.set("event_time", lostnfound.eventTime)
     data.set("campus", lostnfound.campus);
     if (lostnfound.altContact) data.set("alt_contact", lostnfound.altContact);
     if (lostnfound.reward) data.set("reward", lostnfound.reward);

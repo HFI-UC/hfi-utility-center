@@ -291,7 +291,7 @@ const resetForm = () => {
                     }}</label>
                 </FloatLabel>
                 <FloatLabel class="m-[20px]">
-                    <Textarea
+                    <InputText
                         id="location"
                         v-model="maintenance.location"
                         v-tooltip.bottom="$t('maintenance.tooltip.location')"

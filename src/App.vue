@@ -7,6 +7,7 @@ import { verifyAdmin } from "./api";
 import Button from "primevue/button";
 import Select from "primevue/select";
 import "./styles/styles.css";
+import ScrollTop from 'primevue/scrolltop';
 import { useI18n } from "vue-i18n";
 
 const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
@@ -93,7 +94,7 @@ const localeOptions = ref([
         code: "en_us",
     },
     {
-        key: "微软中文（不建议）",
+        key: "微软中文",
         code: "zh_ms",
     },
 ]);
@@ -221,6 +222,7 @@ onMounted(async () => {
                 <img class="ms-2 me-1" src="./assets/chatgpt.svg" width="100px" />
             </i18n-t>
     </footer>
+    <ScrollTop />
 </template>
 
 <style scoped>
