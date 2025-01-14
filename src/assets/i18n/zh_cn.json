@@ -262,7 +262,7 @@
         "tooltip": {
             "name": "你的中文名和英文名（例：山姆 Sam）。",
             "email": "你的邮箱（例：{0}）。",
-            "campus": "要保修的校区。",
+            "campus": "要报修的校区。",
             "subject": "报修的主题（例：空调坏了）。",
             "location": "报修的地点（例：教室）。",
             "detail": "报修的详细信息（例：我们打不开空调）。"
@@ -282,6 +282,7 @@
             "type": "类型",
             "campus": "校区",
             "location": "地点",
+            "time": "Time",
             "detail": "详细信息",
             "password": "访问密码",
             "reward": "悬赏（可选）",
@@ -323,6 +324,7 @@
             "status": "状态：",
             "reward": "悬赏：",
             "detail": "详细信息：",
+            "time": "Time: ",
             "created_at": "创建时间：",
             "last_updated": "更新时间：",
             "alternative_contact": "备用联系信息：",
@@ -350,6 +352,27 @@
             },
             "view": "查看",
             "back": "返回"
+        },
+        "tooltip": {
+            "lostnfound": {
+                "name": "Your Chinese name and English name (e.g. 山姆 Sam).",
+                "email": "Your e-mail (e.g. {0}).",
+                "password": "Your passphase.",
+                "type": "The type of your Lost & Found request.",
+                "campus": "The campus where the Lost & Found was requested.",
+                "location": "The location you want to request for Lost & Found (e.g. The classroom).",
+                "detail": "The details of your request (e.g. I found an Apple Pencil).",
+                "time": "The time at which the item is recognized (e.g. 4.p.m. at Nov. 13th).",
+                "reward": "If you want to put some reward on the item, please fill in this field.",
+                "alternative_contact": "Set up an alternate contact so that people can reach you more easily."
+            },
+            "search": "Search with keywords.",
+            "clue": {
+                "contact": "Your contact (e.g. Wechat: 1213414).",
+                "campus": "The campus where the Clue is reported.",
+                "location": "The location you want to report for Clue (e.g. The classroom).",
+                "detail": "The details of your Clue (e.g. I found a pen)."
+            }
         }
     }
 }
