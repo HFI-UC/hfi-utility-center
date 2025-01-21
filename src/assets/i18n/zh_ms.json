@@ -52,6 +52,13 @@
         "required_field": "请填满需要的字段！",
         "invalid_argument": "非法论点。"
     },
+    "message": {
+        "fill_out": "Please fill up this field.",
+        "invalid": "Invalid value.",
+        "invalid_email": "Invalid E-mail format.",
+        "start_with_gj": "Please enter your student ID beginning with GJ.",
+        "contains_number": "Student ID should contain digits."
+    },
     "application": {
         "rule": {
             "rule": "课室守则",
