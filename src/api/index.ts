@@ -4,7 +4,7 @@ import COS, { Credentials } from "cos-js-sdk-v5";
 axios.defaults.baseURL =
     process.env.VERCEL_ENV == "production"
         ? "https://api.hfiuc.org"
-        : "https://api.preview.hfiuc.org/";
+        : "https://preview-api.hfiuc.org/";
 
 export interface ApplicationInfo {
     selectedClass: string;
