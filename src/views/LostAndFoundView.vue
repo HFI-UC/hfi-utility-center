@@ -66,10 +66,11 @@ const { data, run } = useRequest(
 
 const lostnfoundData = computed(() => data.value?.data || []);
 
-const campusMapping: Record<string, string> = {
+const campusMapping = computed<Record<string, string>>(() => ({
     shipai: t("lostnfound.campus.shipai"),
     kc: t("lostnfound.campus.knowledgecity"),
-};
+}));
+
 const lostnfound = ref<LostAndFoundInfo>({
     studentName: "",
     detail: "",
@@ -101,6 +102,7 @@ const onClickEvent = async () => {
             severity: "error",
             summary: t("toast.error"),
             detail: t("toast.choose_photo"),
+            life: 3000,
         });
         return;
     }

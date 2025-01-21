@@ -52,6 +52,13 @@
         "required_field": "Please fill out the required field!",
         "invalid_argument": "Invalid argument."
     },
+    "message": {
+        "fill_out": "Please fill up this field.",
+        "invalid": "Invalid value.",
+        "invalid_email": "Invalid E-mail format.",
+        "start_with_gj": "Please enter your student ID beginning with GJ.",
+        "contains_number": "Student ID should contain digits."
+    },
     "application": {
         "rule": {
             "rule": "Classroom Regulations",
