@@ -216,7 +216,6 @@ const getData = ({ selectedRoom }: Record<string, FormFieldState>) => {
         policy.value = policyData.value.policy.filter(
             (item) => item.classroom == selectedRoom.value.toString(),
         );
-    console.log(reservation.value, policy.value)
 };
 
 const minDate = ref(new Date());
@@ -288,7 +287,6 @@ const generateTimeOptions = (
             validateTimeConflict(time)
         );
     });
-    console.log(res)
     return res;
 };
 
@@ -332,7 +330,6 @@ const getStartTimeOptions = ({
     selectedRoom,
 }: Record<string, FormFieldState | undefined>) => {
     if (!date || !selectedRoom || selectedRoom.value == "" || !date.value) {
-        console.log("invalid")
         return [];
     }
     return generateTimeOptions(date.value, selectedRoom.value, 6, 30, 21, 15);
@@ -376,7 +373,6 @@ const onSubmitEvent = (form: FormSubmitEvent) => {
         loading.value = false;
         return;
     }
-    console.log(form)
     postApplication(form.values as ApplicationInfo).then((res) => {
         loading.value = false;
         router.push({
