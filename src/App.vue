@@ -145,11 +145,11 @@ onMounted(async () => {
         <div>
             <Menubar :model="items">
                 <template #start>
-                    <img
+                    <a href="/"><img
                         src="./assets/logo.svg"
                         class="m-1"
                         style="height: 25px"
-                    />
+                    /></a>
                 </template>
                 <template #end>
                     <Select
