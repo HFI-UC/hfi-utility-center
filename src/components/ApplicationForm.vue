@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { Form, FormFieldState } from "@primevue/forms";
+import { Form, FormFieldState, FormSubmitEvent } from "@primevue/forms";
 import { reactive, ref, computed } from "vue";
 import {
     ApplicationInfo,
     fetchPolicy,
+    postApplication,
     postReservation,
     ReservationInfo,
     RoomPolicyInfo,
@@ -11,6 +12,7 @@ import {
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { z } from "zod";
 import { useI18n, I18nT } from "vue-i18n";
+import router from "../router/router";
 import Button from "primevue/button";
 import Message from "primevue/message";
 import IconField from "primevue/iconfield";
@@ -24,9 +26,11 @@ import Checkbox from "primevue/checkbox";
 import DataTable from "primevue/datatable";
 import DatePicker from "primevue/datepicker";
 import { useRequest } from "vue-request";
+import { useToast } from "primevue";
 
 const visible = ref(false);
 const { t } = useI18n();
+const toast = useToast()
 const { data: policyData } = useRequest(fetchPolicy);
 const policy = ref<RoomPolicyInfo[] | null>(null);
 const reservation = ref<ReservationInfo | null>(null);
@@ -324,10 +328,12 @@ const validatePolicy = (time: Date, selectedRoom: number): boolean => {
 const getStartTimeOptions = ({
     date,
     selectedRoom,
-}: Record<string, FormFieldState | undefined>) =>
-    date && selectedRoom && selectedRoom.value != "" && date.value
-        ? generateTimeOptions(date.value, selectedRoom.value, 6, 30, 21, 15)
-        : [];
+}: Record<string, FormFieldState | undefined>) => {
+    if (!date || !selectedRoom || selectedRoom.value == "" || !date.value)
+        return [];
+    return generateTimeOptions(date.value, selectedRoom.value, 6, 30, 21, 15);
+};
+
 const getEndTimeOptions = ({
     startTime,
     date,
@@ -354,8 +360,29 @@ const getEndTimeOptions = ({
 };
 
 const loading = ref(false);
-const onSubmitEvent = (form: any) => {
-    console.log(form);
+const onSubmitEvent = (form: FormSubmitEvent) => {
+    loading.value = true;
+    if (!form.valid) {
+        toast.add({
+            severity: "error",
+            summary: t("toast.error"),
+            detail: t("toast.required_field"),
+            life: 3000,
+        });
+        loading.value = false;
+        return;
+    }
+    console.log(form)
+    postApplication(form.values as ApplicationInfo).then((res) => {
+        loading.value = false;
+        router.push({
+            path: "/reservation/create",
+            query: {
+                status: res.success ? "success" : "error",
+                message: res.message,
+            },
+        });
+    });
 };
 const rules = computed(() =>
     Array.from({ length: 12 }, (_, i) => t(`application.rule.${i + 1}`)),
@@ -744,7 +771,7 @@ h2 {
 }
 
 #datatable {
-    min-width: 20rem;
+    min-width: 23rem;
     margin: 20px;
 }
 
