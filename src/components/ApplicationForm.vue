@@ -216,6 +216,7 @@ const getData = ({ selectedRoom }: Record<string, FormFieldState>) => {
         policy.value = policyData.value.policy.filter(
             (item) => item.classroom == selectedRoom.value.toString(),
         );
+    console.log(reservation.value, policy.value)
 };
 
 const minDate = ref(new Date());
@@ -279,35 +280,36 @@ const generateTimeOptions = (
         start.setMinutes(start.getMinutes() + 15);
     }
 
-    return options.filter((item) => {
+    const res = options.filter((item) => {
         if (!date || !selectedRoom) return true;
         const time = new Date(`${formatDate(date)}T${item}`);
         return (
-            validatePolicy(time, selectedRoom) &&
-            validateTimeConflict(time, selectedRoom)
+            validatePolicy(time) &&
+            validateTimeConflict(time)
         );
     });
+    console.log(res)
+    return res;
 };
 
-const validateTimeConflict = (time: Date, selectRoom: number): boolean => {
+const validateTimeConflict = (time: Date): boolean => {
     if (!reservation.value) return true;
-    return reservation.value.data.some((booking) => {
+    return !reservation.value.data.some((booking) => {
         const [start, end] = booking.time.split("-");
         const startDate = new Date(parseInt(start)),
             endDate = new Date(parseInt(end));
         return (
-            selectRoom == booking.room && endDate >= time && startDate <= time
+            endDate >= time && startDate <= time
         );
     });
 };
 
-const validatePolicy = (time: Date, selectedRoom: number): boolean => {
+const validatePolicy = (time: Date): boolean => {
     if (!policy.value) return true;
     return !policy.value.some((rule) => {
         const days = rule.days.split(",");
         const day = time.getDay();
         if (
-            selectedRoom === parseInt(rule.classroom) &&
             days.includes(day.toString())
         ) {
             const [startHour, startMinute] = rule.start_time
@@ -329,8 +331,10 @@ const getStartTimeOptions = ({
     date,
     selectedRoom,
 }: Record<string, FormFieldState | undefined>) => {
-    if (!date || !selectedRoom || selectedRoom.value == "" || !date.value)
+    if (!date || !selectedRoom || selectedRoom.value == "" || !date.value) {
+        console.log("invalid")
         return [];
+    }
     return generateTimeOptions(date.value, selectedRoom.value, 6, 30, 21, 15);
 };
 
