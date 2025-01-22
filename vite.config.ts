@@ -9,7 +9,8 @@ const dynamicRoutes = [
     "/admin/reservations",
     "/admin/approval",
     "/admin/policy",
-    "/maintenance"
+    "/maintenance",
+    "/lostnfound"
 ]
 
 // https://vitejs.dev/config/

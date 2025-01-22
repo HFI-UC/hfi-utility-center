@@ -1,40 +1,46 @@
 <script setup lang="ts">
-import InputText from "primevue/inputtext";
-import FloatLabel from "primevue/floatlabel";
-import Select from "primevue/select";
-import Button from "primevue/button";
-import DatePicker from "primevue/datepicker";
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
-import Card from "primevue/card";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import { computed, ref, watch } from "vue";
-import { useToast } from "primevue/usetoast";
-import { useRequest } from "vue-request";
-import Dialog from "primevue/dialog";
-import Checkbox from "primevue/checkbox";
+import { Form, FormFieldState, FormSubmitEvent } from "@primevue/forms";
+import { reactive, ref, computed } from "vue";
 import {
-    type ApplicationInfo,
-    postApplication,
+    ApplicationInfo,
     fetchPolicy,
+    postApplication,
     postReservation,
     ReservationInfo,
+    RoomPolicyInfo,
 } from "../api";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import { z } from "zod";
+import { useI18n, I18nT } from "vue-i18n";
 import router from "../router/router";
-import { useI18n } from "vue-i18n";
+import Button from "primevue/button";
+import Message from "primevue/message";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
+import InputText from "primevue/inputtext";
+import Card from "primevue/card";
+import Select from "primevue/select";
+import Dialog from "primevue/dialog";
+import Column from "primevue/column";
+import Checkbox from "primevue/checkbox";
+import DataTable from "primevue/datatable";
+import DatePicker from "primevue/datepicker";
+import { useRequest } from "vue-request";
+import { useToast } from "primevue";
 
+const visible = ref(false);
+const { t } = useI18n();
+const toast = useToast()
 const { data: policyData } = useRequest(fetchPolicy);
-const policy = computed(() => policyData.value?.policy || []);
-const { t, locale } = useI18n();
-
-const reservation = ref<ApplicationInfo>({
-    class: "",
+const policy = ref<RoomPolicyInfo[] | null>(null);
+const reservation = ref<ReservationInfo | null>(null);
+const initialValues = reactive<ApplicationInfo>({
+    selectedClass: "",
     studentName: "",
     selectedRoom: null,
     studentId: "",
     email: "",
-    date: "",
+    date: null,
     startTime: "",
     endTime: "",
     reason: "",
@@ -42,15 +48,16 @@ const reservation = ref<ApplicationInfo>({
     isAgreed: false,
 });
 
-watch(
-    () => locale.value,
-    () => {
-        reservation.value.selectedCampus = selectedRoom.value = "";
+const campus = computed(() => [
+    {
+        label: t("campus.shipai"),
+        code: "shipai",
     },
-);
-
-const visible = ref(false);
-const campus = computed(() => [t("campus.shipai"), t("campus.knowledgecity")]);
+    {
+        label: t("campus.knowledgecity"),
+        code: "kc",
+    },
+]);
 
 const classes = computed(() => [
     {
@@ -86,30 +93,130 @@ const classes = computed(() => [
     { label: t("campus.office"), items: ["Teachers"] },
 ]);
 
-const rooms = ref([
-    [
-        "iStudy Meeting Room 1",
-        "iStudy Meeting Room 2",
-        "606",
-        "605",
-        "603",
-        "602",
-        "601",
-        "206",
-        "105",
-        "Writing Center 1",
-        "Writing Center 2",
-    ],
-    ["511", "512", "513", "524"],
-]);
+const resolver = ref(
+    zodResolver(
+        z.object({
+            selectedClass: z
+                .string()
+                .min(1, { message: t("message.fill_out") }),
+            studentName: z.string().min(1, { message: t("message.fill_out") }),
+            selectedRoom: z.number({ message: t("message.fill_out") }),
+            studentId: z
+                .string()
+                .min(1, { message: t("message.fill_out") })
+                .startsWith("GJ", { message: t("message.start_with_gj") })
+                .regex(/\d/, t("message.contains_number")),
+            email: z
+                .string()
+                .min(1, { message: t("message.fill_out") })
+                .regex(/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/, {
+                    message: t("message.invalid_email"),
+                }),
+            date: z.date({ message: t("message.fill_out") }),
+            startTime: z.string().min(1, { message: t("message.fill_out") }),
+            endTime: z.string().min(1, { message: t("message.fill_out") }),
+            reason: z.string().min(1, { message: t("message.fill_out") }),
+            selectedCampus: z
+                .string()
+                .min(1, { message: t("message.fill_out") }),
+            isAgreed: z
+                .boolean()
+                .refine((value) => value, { message: t("message.fill_out") }),
+        }),
+    ),
+);
 
-const roomsOption = computed(() => {
-    return reservation.value.selectedCampus === ""
-        ? []
-        : reservation.value.selectedCampus === t("campus.shipai")
-          ? rooms.value[0]
-          : rooms.value[1];
-});
+const getRooms = ({
+    selectedCampus,
+}: {
+    selectedCampus: FormFieldState | undefined;
+}) => {
+    if (!selectedCampus || selectedCampus.value == "") return [];
+    const rooms = [
+        [
+            {
+                label: "iStudy Meeting Room 1",
+                code: 101,
+            },
+            {
+                label: "iStudy Meeting Room 2",
+                code: 102,
+            },
+            {
+                label: "606",
+                code: 606,
+            },
+            {
+                label: "605",
+                code: 605,
+            },
+            {
+                label: "603",
+                code: 603,
+            },
+            {
+                label: "602",
+                code: 602,
+            },
+            {
+                label: "601",
+                code: 601,
+            },
+            {
+                label: "206",
+                code: 206,
+            },
+            {
+                label: "105",
+                code: 105,
+            },
+            {
+                label: "105",
+                code: 105,
+            },
+            {
+                label: "Writing Center 1",
+                code: 103,
+            },
+            {
+                label: "Writing Center 2",
+                code: 106,
+            },
+        ],
+        [
+            {
+                label: "511",
+                code: 511,
+            },
+            {
+                label: "512",
+                code: 512,
+            },
+            {
+                label: "513",
+                code: 513,
+            },
+            {
+                label: "524",
+                code: 524,
+            },
+        ],
+    ];
+    return selectedCampus.value == "shipai" ? rooms[0] : rooms[1];
+};
+
+const getData = ({ selectedRoom }: Record<string, FormFieldState>) => {
+    postReservation({ room: selectedRoom.value }).then((res) => {
+        reservation.value = {
+            data: res.data.filter((item) => item.auth != "no"),
+            success: true,
+        };
+    });
+    if (policyData.value)
+        policy.value = policyData.value.policy.filter(
+            (item) => item.classroom == selectedRoom.value.toString(),
+        );
+};
 
 const minDate = ref(new Date());
 const maxDate = computed(() => {
@@ -121,131 +228,12 @@ const maxDate = computed(() => {
 const formatTime = (date: Date): string =>
     `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 
-const interval = ref(15);
-const date = ref<Date | null>(null);
-
-const generateTimeOptions = (
-    startHour: number,
-    startMinute: number,
-    endHour: number,
-    endMinute: number,
-) => {
-    const options: string[] = [];
-    const start = new Date();
-    start.setHours(startHour, startMinute, 0, 0);
-    const end = new Date();
-    end.setHours(endHour, endMinute, 0, 0);
-
-    while (start <= end) {
-        options.push(formatTime(new Date(start)));
-        start.setMinutes(start.getMinutes() + interval.value);
-    }
-
-    return options.filter((item) => {
-        if (!date.value || !reservation.value.selectedRoom) return true;
-        const time = new Date(`${reservation.value.date}T${item}`);
-        return validatePolicy(time, reservation.value.selectedRoom) && validateTimeConflict(time, reservation.value.selectedRoom);
-    });
-};
-
-const startTimeOptions = computed(() => generateTimeOptions(6, 30, 21, 15));
-const endTimeOptions = computed(() => {
-    if (!reservation.value.startTime) return [];
-    const [startHours, startMinutes] = reservation.value.startTime
-        .split(":")
-        .map(Number);
-    return generateTimeOptions(
-        startHours,
-        startMinutes + interval.value,
-        21,
-        15,
-    );
-});
-
-const toast = useToast();
-const isCompleted = ref(true);
-const loading = ref(false);
-
 const formatDate = (date: Date): string => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
 };
-
-const roomMapping: Record<string, number> = {
-    "iStudy Meeting Room 1": 101,
-    "iStudy Meeting Room 2": 102,
-    "Writing Center 1": 103,
-    "Writing Center 2": 106,
-};
-
-const validateTimeConflict = (
-    time: Date,
-    selectRoom: number,
-): boolean => {
-    return !filteredBookingData.value.data.some((booking) => {
-        const [start, end] = booking.time.split("-");
-        const startDate = new Date(parseInt(start)),
-            endDate = new Date(parseInt(end));
-        return (
-            selectRoom == booking.room &&
-            endDate >= time &&
-            startDate <= time
-        );
-    });
-};
-
-const validatePolicy = (time: Date, selectedRoom: number): boolean => {
-    return !policy.value.some((rule) => {
-        const days = rule.days.split(",");
-        const day = time.getDay();
-        if (
-            selectedRoom === parseInt(rule.classroom) &&
-            days.includes(day.toString())
-        ) {
-            const [startHour, startMinute] = rule.start_time
-                .split(":")
-                .map(Number);
-            const [endHour, endMinute] = rule.end_time.split(":").map(Number);
-            return (
-                new Date(time.getTime()).setHours(startHour, startMinute) <=
-                    time.getTime() &&
-                new Date(time.getTime()).setHours(endHour, endMinute) >=
-                    time.getTime()
-            );
-        }
-        return false;
-    });
-};
-
-watch(
-    () => reservation.value.startTime,
-    () => (reservation.value.endTime = ""),
-);
-
-const selectedRoom = ref("");
-const filteredBookingData = ref({} as ReservationInfo);
-const filteredPolicyData = ref([] as any);
-
-watch(
-    () => selectedRoom.value,
-    (newValue) => {
-        reservation.value.selectedRoom =
-            roomMapping[newValue] || parseInt(newValue);
-        filteredPolicyData.value = policy.value.filter(
-            (item) =>
-                item.classroom === reservation.value.selectedRoom?.toString(),
-        );
-        postReservation({
-            room: reservation.value.selectedRoom.toString(),
-        }).then((res) => {
-            filteredBookingData.value.data = res.data.filter(
-                (item) => item.auth !== "no",
-            );
-        });
-    },
-);
 
 const formatTableDate = (time: string) => {
     const startTime = time.split("-")[0];
@@ -272,21 +260,110 @@ const formatTableTime = (time: string) => {
     return `${formatTime(new Date(parseInt(start)))} ~ ${formatTime(new Date(parseInt(end)))}`;
 };
 
-watch(
-    () => date.value,
-    () => {
-        if (date.value) {
-            reservation.value.date = formatDate(date.value);
-        }
-    },
-);
+const generateTimeOptions = (
+    date: Date | null,
+    selectedRoom: number | null,
+    startHour: number,
+    startMinute: number,
+    endHour: number,
+    endMinute: number,
+) => {
+    const options: string[] = [];
+    const start = new Date();
+    start.setHours(startHour, startMinute, 0, 0);
+    const end = new Date();
+    end.setHours(endHour, endMinute, 0, 0);
 
-const onClickEvent = () => {
-    loading.value = true;
-    isCompleted.value = !Object.values(reservation.value).some(
-        (value) => !value,
+    while (start <= end) {
+        options.push(formatTime(new Date(start)));
+        start.setMinutes(start.getMinutes() + 15);
+    }
+
+    const res = options.filter((item) => {
+        if (!date || !selectedRoom) return true;
+        const time = new Date(`${formatDate(date)}T${item}`);
+        return (
+            validatePolicy(time) &&
+            validateTimeConflict(time)
+        );
+    });
+    return res;
+};
+
+const validateTimeConflict = (time: Date): boolean => {
+    if (!reservation.value) return true;
+    return !reservation.value.data.some((booking) => {
+        const [start, end] = booking.time.split("-");
+        const startDate = new Date(parseInt(start)),
+            endDate = new Date(parseInt(end));
+        return (
+            endDate >= time && startDate <= time
+        );
+    });
+};
+
+const validatePolicy = (time: Date): boolean => {
+    if (!policy.value) return true;
+    return !policy.value.some((rule) => {
+        const days = rule.days.split(",");
+        const day = time.getDay();
+        if (
+            days.includes(day.toString())
+        ) {
+            const [startHour, startMinute] = rule.start_time
+                .split(":")
+                .map(Number);
+            const [endHour, endMinute] = rule.end_time.split(":").map(Number);
+            return (
+                new Date(time.getTime()).setHours(startHour, startMinute) <=
+                    time.getTime() &&
+                new Date(time.getTime()).setHours(endHour, endMinute) >=
+                    time.getTime()
+            );
+        }
+        return false;
+    });
+};
+
+const getStartTimeOptions = ({
+    date,
+    selectedRoom,
+}: Record<string, FormFieldState | undefined>) => {
+    if (!date || !selectedRoom || selectedRoom.value == "" || !date.value) {
+        return [];
+    }
+    return generateTimeOptions(date.value, selectedRoom.value, 6, 30, 21, 15);
+};
+
+const getEndTimeOptions = ({
+    startTime,
+    date,
+    selectedRoom,
+}: Record<string, FormFieldState | undefined>) => {
+    if (
+        !startTime ||
+        !date ||
+        !selectedRoom ||
+        selectedRoom.value == "" ||
+        startTime.value == "" ||
+        !date.value
+    )
+        return [];
+    const [startHours, startMinutes] = startTime.value.split(":").map(Number);
+    return generateTimeOptions(
+        date.value,
+        selectedRoom.value,
+        startHours,
+        startMinutes + 15,
+        21,
+        15,
     );
-    if (!isCompleted.value) {
+};
+
+const loading = ref(false);
+const onSubmitEvent = (form: FormSubmitEvent) => {
+    loading.value = true;
+    if (!form.valid) {
         toast.add({
             severity: "error",
             summary: t("toast.error"),
@@ -296,8 +373,7 @@ const onClickEvent = () => {
         loading.value = false;
         return;
     }
-
-    postApplication(reservation.value).then((res) => {
+    postApplication(form.values as ApplicationInfo).then((res) => {
         loading.value = false;
         router.push({
             path: "/reservation/create",
@@ -308,7 +384,6 @@ const onClickEvent = () => {
         });
     });
 };
-
 const rules = computed(() =>
     Array.from({ length: 12 }, (_, i) => t(`application.rule.${i + 1}`)),
 );
@@ -323,50 +398,52 @@ const rules = computed(() =>
     >
         <p v-for="i in rules" class="mb-3">{{ i }}</p>
     </Dialog>
-    <div class="flex flex-col items-center justify-center">
-        <Card id="card">
+    <div class="flex items-center justify-center">
+        <Card class="w-[28rem]">
             <template #content>
-                <div class="flex flex-col items-center">
+                <Form
+                    v-slot="$form"
+                    :initialValues
+                    :resolver
+                    @submit="onSubmitEvent"
+                >
                     <div
-                        class="flex flex-col m-[10px] items-center justify-center"
-                        id="form-container"
+                        class="flex flex-col m-[10px] items-center justify-center gap-[20px]"
                     >
-                        <h3 class="text-center">
+                        <h2 class="text-center">
                             {{ $t("application.personal_info") }}
-                        </h3>
-                        <FloatLabel class="m-[20px]">
+                        </h2>
+                        <div class="flex flex-col gap-2">
                             <IconField>
                                 <InputText
-                                    id="name"
-                                    v-model="reservation.studentName"
+                                    name="studentName"
+                                    :placeholder="$t('application.name')"
+                                    type="text"
                                     v-tooltip.bottom="
                                         $t('application.tooltip.name')
-                                    "
-                                    :invalid="
-                                        !isCompleted &&
-                                        reservation.studentName === ''
                                     "
                                 />
                                 <InputIcon class="pi pi-user"></InputIcon>
                             </IconField>
-                            <label for="name">{{
-                                $t("application.name")
-                            }}</label>
-                        </FloatLabel>
-                        <FloatLabel class="m-[20px]">
+                            <Message
+                                v-if="$form.studentName?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{ $form.studentName.error?.message }}</Message
+                            >
+                        </div>
+                        <div class="flex flex-col gap-2">
                             <Select
-                                id="class"
-                                v-model="reservation.class"
+                                name="selectedClass"
                                 v-tooltip.bottom="
                                     $t('application.tooltip.class')
                                 "
                                 optionGroupLabel="label"
                                 optionGroupChildren="items"
                                 filter
+                                :placeholder="$t('application.class')"
                                 :options="classes"
-                                :invalid="
-                                    !isCompleted && reservation.class === ''
-                                "
                             >
                                 <template #optiongroup="slotProps">
                                     <div class="flex items-center">
@@ -377,92 +454,118 @@ const rules = computed(() =>
                                     <i class="pi pi-address-book"></i>
                                 </template>
                             </Select>
-                            <label for="class">{{
-                                $t("application.class")
-                            }}</label>
-                        </FloatLabel>
-                        <FloatLabel class="m-[20px]">
+                            <Message
+                                v-if="$form.selectedClass?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{
+                                    $form.selectedClass.error?.message
+                                }}</Message
+                            >
+                        </div>
+                        <div class="flex flex-col gap-2">
                             <IconField>
                                 <InputText
-                                    id="id"
-                                    v-model="reservation.studentId"
+                                    name="studentId"
+                                    :placeholder="$t('application.id')"
                                     v-tooltip.bottom="
                                         $t('application.tooltip.id')
-                                    "
-                                    :invalid="
-                                        !isCompleted &&
-                                        reservation.studentId === ''
                                     "
                                 />
                                 <InputIcon class="pi pi-id-card"></InputIcon>
                             </IconField>
-                            <label for="id">{{ $t("application.id") }}</label>
-                        </FloatLabel>
-                        <FloatLabel class="m-[20px]">
+                            <Message
+                                v-if="$form.studentId?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{ $form.studentId.error?.message }}</Message
+                            >
+                        </div>
+                        <div class="flex flex-col gap-2">
                             <IconField>
                                 <InputText
-                                    id="email"
-                                    v-model="reservation.email"
+                                    name="email"
+                                    :placeholder="$t('application.email')"
                                     v-tooltip.bottom="
                                         $t('application.tooltip.email', [
                                             'sam.xulf2024@gdhfi.com',
                                         ])
                                     "
-                                    :invalid="
-                                        !isCompleted && reservation.email === ''
-                                    "
                                 />
                                 <InputIcon class="pi pi-envelope"></InputIcon>
                             </IconField>
-                            <label for="email">{{
-                                $t("application.email")
-                            }}</label>
-                        </FloatLabel>
-                        <h3 class="text-center">
+                            <Message
+                                v-if="$form.email?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{ $form.email.error?.message }}</Message
+                            >
+                        </div>
+                        <h2 class="text-center">
                             {{ $t("application.room_info") }}
-                        </h3>
-                        <FloatLabel class="m-[20px]">
+                        </h2>
+                        <div class="flex flex-col gap-2">
                             <Select
-                                id="campus"
-                                v-model="reservation.selectedCampus"
+                                name="selectedCampus"
                                 v-tooltip.bottom="
                                     $t('application.tooltip.campus')
                                 "
+                                optionLabel="label"
+                                optionValue="code"
+                                :placeholder="$t('application.campus')"
                                 :options="campus"
-                                :invalid="
-                                    !isCompleted &&
-                                    reservation.selectedCampus === ''
-                                "
+                                @change="$form.selectedRoom.value = null"
                             >
                                 <template #dropdownicon>
                                     <i class="pi pi-map-marker"></i>
                                 </template>
                             </Select>
-                            <label for="campus">{{
-                                $t("application.campus")
-                            }}</label>
-                        </FloatLabel>
-                        <FloatLabel class="m-[20px]">
+                            <Message
+                                v-if="$form.selectedCampus?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{
+                                    $form.selectedCampus.error?.message
+                                }}</Message
+                            >
+                        </div>
+                        <div class="flex flex-col gap-2">
                             <Select
-                                id="room"
+                                name="selectedRoom"
                                 v-tooltip.bottom="
                                     $t('application.tooltip.room')
                                 "
-                                v-model="selectedRoom"
-                                :options="roomsOption"
-                                :invalid="!isCompleted && selectedRoom === ''"
+                                optionLabel="label"
+                                optionValue="code"
+                                :options="getRooms($form as any)"
+                                :placeholder="$t('application.room')"
+                                @change="getData($form as any)"
                             >
                                 <template #dropdownicon>
                                     <i class="pi pi-building"></i>
                                 </template>
                             </Select>
-                            <label for="room">{{
-                                $t("application.room")
-                            }}</label>
-                        </FloatLabel>
+                            <Message
+                                v-if="$form.selectedRoom?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{
+                                    $form.selectedRoom.error?.message
+                                }}</Message
+                            >
+                        </div>
                         <DataTable
-                            v-if="reservation.selectedRoom"
-                            :value="filteredBookingData.data"
+                            v-if="
+                                $form.selectedRoom?.value &&
+                                $form.selectedRoom.value != '' &&
+                                reservation
+                            "
+                            :value="reservation.data"
                             id="datatable"
                         >
                             <template #header>
@@ -487,8 +590,12 @@ const rules = computed(() =>
                             </Column>
                         </DataTable>
                         <DataTable
-                            v-if="reservation.selectedRoom"
-                            :value="filteredPolicyData"
+                            v-if="
+                                $form.selectedRoom?.value &&
+                                $form.selectedRoom.value != '' &&
+                                policy
+                            "
+                            :value="policy"
                             id="datatable"
                         >
                             <template #header>
@@ -514,118 +621,130 @@ const rules = computed(() =>
                                 </template>
                             </Column>
                         </DataTable>
-                        <FloatLabel class="m-[20px]">
+                        <div class="flex flex-col gap-2">
                             <DatePicker
-                                id="date"
-                                v-model="date"
+                                name="date"
                                 v-tooltip.bottom="
                                     $t('application.tooltip.date')
                                 "
                                 date-format="yy/mm/dd"
                                 showIcon
                                 fluid
+                                :placeholder="$t('application.date')"
                                 iconDisplay="input"
                                 :min-date="minDate"
                                 :max-date="maxDate"
                                 :manual-input="false"
-                                :invalid="!isCompleted && date === null"
                             >
                             </DatePicker>
-                            <label for="date">{{
-                                $t("application.date")
-                            }}</label>
-                        </FloatLabel>
-                        <FloatLabel class="m-[20px]">
+                            <Message
+                                v-if="$form.date?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{ $form.date.error?.message }}</Message
+                            >
+                        </div>
+                        <div class="flex flex-col gap-2">
                             <Select
                                 v-tooltip.bottom="
                                     $t('application.tooltip.start_time')
                                 "
-                                id="startTime"
-                                v-model="reservation.startTime"
-                                :options="startTimeOptions"
-                                :invalid="
-                                    !isCompleted && reservation.startTime === ''
-                                "
+                                name="startTime"
+                                :placeholder="$t('application.start_time')"
+                                :options="getStartTimeOptions($form as any)"
                             >
                                 <template #dropdownicon>
                                     <i class="pi pi-calendar-minus"></i>
                                 </template>
                             </Select>
-                            <label for="startTime">{{
-                                $t("application.start_time")
-                            }}</label>
-                        </FloatLabel>
-                        <FloatLabel class="m-[20px]">
+                            <Message
+                                v-if="$form.startTime?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{ $form.startTime.error?.message }}</Message
+                            >
+                        </div>
+                        <div class="flex flex-col gap-2">
                             <Select
-                                id="endTime"
-                                v-model="reservation.endTime"
+                                name="endTime"
                                 v-tooltip.bottom="
                                     $t('application.tooltip.end_time')
                                 "
-                                :options="endTimeOptions"
-                                :invalid="
-                                    !isCompleted && reservation.endTime === ''
-                                "
+                                :placeholder="$t('application.end_time')"
+                                :options="getEndTimeOptions($form as any)"
                             >
                                 <template #dropdownicon>
                                     <i class="pi pi-calendar-plus"></i>
                                 </template>
                             </Select>
-                            <label for="endTime">{{
-                                $t("application.end_time")
-                            }}</label>
-                        </FloatLabel>
-                        <FloatLabel class="m-[20px]">
+                            <Message
+                                v-if="$form.endTime?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{ $form.endTime.error?.message }}</Message
+                            >
+                        </div>
+                        <div class="flex flex-col gap-2">
                             <IconField>
                                 <InputText
-                                    id="reason"
-                                    v-model="reservation.reason"
+                                    name="reason"
+                                    :placeholder="$t('application.reason')"
                                     v-tooltip.bottom="
                                         $t('application.tooltip.reason')
-                                    "
-                                    :invalid="
-                                        !isCompleted &&
-                                        reservation.reason === ''
                                     "
                                 />
                                 <InputIcon
                                     class="pi pi-info-circle"
                                 ></InputIcon>
                             </IconField>
-                            <label for="reason">{{
-                                $t("application.reason")
-                            }}</label>
-                        </FloatLabel>
-                        <div class="flex items-center mt-[20px] mb-[20px]">
-                            <Checkbox
-                                v-model="reservation.isAgreed"
-                                id="check"
-                                v-tooltip.bottom="
-                                    $t('application.tooltip.checkbox')
-                                "
-                                :invalid="!isCompleted && !reservation.isAgreed"
-                                :binary="true"
-                            />
-                            <label for="check" class="ml-2 text-sm">
-                                <i18n-t
-                                    keypath="application.checkbox"
-                                    scope="global"
-                                >
-                                    <a @click="visible = true">{{
-                                        $t("application.rule.rule")
-                                    }}</a
-                                    >.
-                                </i18n-t>
-                            </label>
+                            <Message
+                                v-if="$form.reason?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{ $form.reason.error?.message }}</Message
+                            >
                         </div>
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="flex items-center">
+                                <Checkbox
+                                    name="isAgreed"
+                                    v-tooltip.bottom="
+                                        $t('application.tooltip.checkbox')
+                                    "
+                                    :binary="true"
+                                />
+                                <label class="ml-2 text-sm">
+                                    <I18nT
+                                        keypath="application.checkbox"
+                                        scope="global"
+                                    >
+                                        <a @click="visible = true">{{
+                                            $t("application.rule.rule")
+                                        }}</a
+                                        >.
+                                    </I18nT>
+                                </label>
+                            </div>
+                            <Message
+                                v-if="$form.isAgreed?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{ $form.isAgreed.error?.message }}</Message
+                            >
+                        </div>
+                        <Button
+                            icon="pi pi-upload"
+                            type="submit"
+                            :label="$t('application.submit')"
+                            :loading="loading"
+                        />
                     </div>
-                    <Button
-                        icon="pi pi-upload"
-                        :label="$t('application.submit')"
-                        :loading="loading"
-                        @click="onClickEvent()"
-                    />
-                </div>
+                </Form>
             </template>
         </Card>
     </div>
@@ -638,9 +757,9 @@ h1 {
     font-weight: bold;
 }
 
-h3 {
+h2 {
     font-size: 1.5em;
-    margin: 2rem 0 3rem;
+    margin: 0.67em 0;
     font-weight: bold;
 }
 
@@ -651,12 +770,8 @@ h3 {
     min-width: 20rem;
 }
 
-#card {
-    width: 28rem;
-}
-
 #datatable {
-    min-width: 20rem;
+    min-width: 23rem;
     margin: 20px;
 }
 
@@ -681,7 +796,7 @@ a:hover {
     #card {
         width: calc(100% - 1.5rem);
     }
-    h3 {
+    h2 {
         font-size: 1.45rem;
     }
     :deep(.p-inputtext),

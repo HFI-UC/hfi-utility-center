@@ -4,15 +4,15 @@ import COS, { Credentials } from "cos-js-sdk-v5";
 axios.defaults.baseURL =
     process.env.VERCEL_ENV == "production"
         ? "https://api.hfiuc.org"
-        : "https://120.24.212.59/";
+        : "https://preview-api.hfiuc.org/";
 
 export interface ApplicationInfo {
-    class: string;
+    selectedClass: string;
     studentName: string;
     selectedRoom: number | null;
     studentId: string;
     email: string;
-    date: string;
+    date: Date | null;
     startTime: string;
     endTime: string;
     reason: string;
@@ -128,14 +128,20 @@ export async function postReservation({
 }
 
 export async function postApplication(application: ApplicationInfo) {
-    const startTime = new Date(`${application.date}T${application.startTime}`);
-    const endTime = new Date(`${application.date}T${application.endTime}`);
+    const formatDate = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+    const startTime = new Date(`${formatDate(application.date as Date)}T${application.startTime}`);
+    const endTime = new Date(`${formatDate(application.date as Date)}T${application.endTime}`);
 
     const data = new FormData();
     data.append("room", application.selectedRoom?.toString() as string);
     data.append("email", application.email);
     data.append("time", `${startTime.getTime()}-${endTime.getTime()}`);
-    data.append("name", `${application.studentName} / ${application.class}`);
+    data.append("name", `${application.studentName} / ${application.selectedClass}`);
     data.append("reason", application.reason);
     data.append("sid", application.studentId);
     try {
