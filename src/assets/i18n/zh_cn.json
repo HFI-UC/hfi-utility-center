@@ -52,6 +52,13 @@
         "required_field": "请填写必需字段！",
         "invalid_argument": "无效参数。"
     },
+    "message": {
+        "fill_out": "请填写此栏。",
+        "invalid": "无效的值。",
+        "invalid_email": "错误的邮件格式。",
+        "start_with_gj": "请输入由 GJ 开头的学号。",
+        "contains_number": "学号需包含数字。"
+    },
     "application": {
         "rule": {
             "rule": "课室使用规则",
@@ -282,7 +289,7 @@
             "type": "类型",
             "campus": "校区",
             "location": "地点",
-            "time": "Time",
+            "time": "时间",
             "detail": "详细信息",
             "password": "访问密码",
             "reward": "悬赏（可选）",
@@ -324,7 +331,7 @@
             "status": "状态：",
             "reward": "悬赏：",
             "detail": "详细信息：",
-            "time": "Time: ",
+            "time": "时间：",
             "created_at": "创建时间：",
             "last_updated": "更新时间：",
             "alternative_contact": "备用联系信息：",
@@ -355,23 +362,23 @@
         },
         "tooltip": {
             "lostnfound": {
-                "name": "Your Chinese name and English name (e.g. 山姆 Sam).",
-                "email": "Your e-mail (e.g. {0}).",
-                "password": "Your passphase.",
-                "type": "The type of your Lost & Found request.",
-                "campus": "The campus where the Lost & Found was requested.",
-                "location": "The location you want to request for Lost & Found (e.g. The classroom).",
-                "detail": "The details of your request (e.g. I found an Apple Pencil).",
-                "time": "The time at which the item is recognized (e.g. 4.p.m. at Nov. 13th).",
-                "reward": "If you want to put some reward on the item, please fill in this field.",
-                "alternative_contact": "Set up an alternate contact so that people can reach you more easily."
+                "name": "你的中文名和英文名（例：山姆 Sam）。",
+                "email": "你的邮箱（例：{0}）。",
+                "password": "你的通行密码。",
+                "type": "你的失物招领请求的类型。",
+                "campus": "你的失物招领请求所属的校区。",
+                "location": "失物招领的地点（例：教室）。",
+                "detail": "请求的详细信息（例：我发现了一支 Apple Pencil）。",
+                "time": "事件发生的时间（例：11 月 13 日下午 4 时）。",
+                "reward": "如果你想要给这个请求添加一些悬赏，请填写此字段。",
+                "alternative_contact": "设置一个备用联系方式，以便他人能够更容易地联系到你。"
             },
-            "search": "Search with keywords.",
+            "search": "根据关键词搜索。",
             "clue": {
-                "contact": "Your contact (e.g. Wechat: 1213414).",
-                "campus": "The campus where the Clue is reported.",
-                "location": "The location you want to report for Clue (e.g. The classroom).",
-                "detail": "The details of your Clue (e.g. I found a pen)."
+                "contact": "您的联系方式（例：微信：1213414）。",
+                "campus": "要提交线索的校区。",
+                "location": "线索的地点（例：教室）。",
+                "detail": "线索的详细信息（例：我发现了一支笔）。"
             }
         }
     }
