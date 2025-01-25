@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import Button from "primevue/button";
 import VueTurnstile from "vue-turnstile";
-import router from "../router/router";
 
 const visible = ref(false);
 const cnt = ref(1);
