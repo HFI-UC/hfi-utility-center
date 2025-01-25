@@ -12,6 +12,7 @@ import { injectSpeedInsights } from "@vercel/speed-insights";
 import en_us from "./assets/i18n/en_us.json";
 import zh_cn from "./assets/i18n/zh_cn.json";
 import zh_ms from "./assets/i18n/zh_ms.json";
+import AnimateOnScroll from 'primevue/animateonscroll';
 
 const app = createApp(App);
 const i18n = createI18n({
@@ -28,6 +29,7 @@ injectSpeedInsights();
 app.use(i18n);
 app.use(router);
 app.use(ToastService);
+app.directive('animateonscroll', AnimateOnScroll);
 app.use(PrimeVue, {
     theme: {
         preset: Vio,

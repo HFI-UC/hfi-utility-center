@@ -9,6 +9,7 @@ import LostAndFoundView from "../views/LostAndFoundView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import LostAndFoundDetailView from "../views/LostAndFoundDetailView.vue";
 import MaintenenceReportView from "../views/MaintenenceReportView.vue";
+import AbsurdView from "../views/AbsurdView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -64,6 +65,10 @@ const router = createRouter({
             props: (route) => ({
                 id: route.query.id,
             }),
+        },
+        {
+            path: "/what-the-hell-is-that",
+            component: AbsurdView,
         },
         {
             path: "/:pathMatch(.*)",
