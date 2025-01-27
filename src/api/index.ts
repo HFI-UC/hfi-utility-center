@@ -1,4 +1,4 @@
-import axios, { isAxiosError } from "axios";
+#import axios, { isAxiosError } from "axios";
 import COS, { Credentials } from "cos-js-sdk-v5";
 
 axios.defaults.baseURL =
@@ -598,7 +598,7 @@ export async function postAbsurdAdd(cf_token: string) {
     try {
         const res = await axios.post<{ success: boolean }>(
             "/api/visitHell.php",
-            { cf_token },
+            { cf_token: cf_token },
         );
         return res.data;
     } catch (err) {
