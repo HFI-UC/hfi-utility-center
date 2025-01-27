@@ -595,10 +595,11 @@ export async function getAbsurdCount() {
 }
 
 export async function postAbsurdAdd(cf_token: string) {
+    const data = { cf_token: cf_token }
     try {
         const res = await axios.post<{ success: boolean }>(
             "/api/visitHell.php",
-            { cf_token: cf_token },
+            data,
         );
         return res.data;
     } catch (err) {
