@@ -24,6 +24,7 @@ const slideDown = ref(true);
 const showLive2d = ref(false);
 const addLoading = ref(false);
 const showSummonButton = ref(true);
+const turnstileRef = ref<any>(null)
 const onPlay = () => {
     title.value = "你被骗了";
     version.value = "哈哈哈";
@@ -69,6 +70,8 @@ const onAddEvent = async () => {
             life: 3000,
         });
     }
+    run()
+    if (turnstileRef.value) turnstileRef.value.reset()
     addLoading.value = false;
 };
 
@@ -102,6 +105,7 @@ setInterval(() => {
         </h1>
         <p class="text-sm">告诉我们你是人类</p>
         <VueTurnstile
+            ref="turnstileRef"
             v-model="cf_token"
             site-key="0x4AAAAAAAiw3hAxhw1fzq4B"
         ></VueTurnstile>
