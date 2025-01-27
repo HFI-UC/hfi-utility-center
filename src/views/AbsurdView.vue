@@ -108,7 +108,7 @@ setInterval(() => {
         <Button
             @click="onAddEvent()"
             :loading="addLoading"
-						icon="pi pi-plus"
+            icon="pi pi-plus"
             :disabled="cf_token == ''"
             class="animate-duration-1000 animate-ease-in-out"
             v-animateonscroll="{
