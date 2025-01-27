@@ -63,8 +63,8 @@ export interface LostAndFoundInfo {
     password: string;
     type: string;
     eventTime: string;
-    createdAt?: string
-    lastUpdated?: string
+    createdAt?: string;
+    lastUpdated?: string;
     reward?: string;
     altContact?: string;
     clues?: Clue[];
@@ -134,14 +134,21 @@ export async function postApplication(application: ApplicationInfo) {
         const day = String(date.getDate()).padStart(2, "0");
         return `${year}-${month}-${day}`;
     };
-    const startTime = new Date(`${formatDate(application.date as Date)}T${application.startTime}`);
-    const endTime = new Date(`${formatDate(application.date as Date)}T${application.endTime}`);
+    const startTime = new Date(
+        `${formatDate(application.date as Date)}T${application.startTime}`,
+    );
+    const endTime = new Date(
+        `${formatDate(application.date as Date)}T${application.endTime}`,
+    );
 
     const data = new FormData();
     data.append("room", application.selectedRoom?.toString() as string);
     data.append("email", application.email);
     data.append("time", `${startTime.getTime()}-${endTime.getTime()}`);
-    data.append("name", `${application.studentName} / ${application.selectedClass}`);
+    data.append(
+        "name",
+        `${application.studentName} / ${application.selectedClass}`,
+    );
     data.append("reason", application.reason);
     data.append("sid", application.studentId);
     try {
@@ -476,7 +483,7 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
     data.set("file_path", lostnfound.filePath);
     data.set("location", lostnfound.location);
     data.set("password", lostnfound.password);
-    data.set("event_time", lostnfound.eventTime)
+    data.set("event_time", lostnfound.eventTime);
     data.set("campus", lostnfound.campus);
     if (lostnfound.altContact) data.set("alt_contact", lostnfound.altContact);
     if (lostnfound.reward) data.set("reward", lostnfound.reward);
@@ -506,7 +513,7 @@ export async function getLostAndFound(
 ) {
     const params = new URLSearchParams();
     params.set("page", page.toString());
-    if (token !== "") params.set("token", token)
+    if (token !== "") params.set("token", token);
     if (clue) params.set("include_clues", "true");
     if (query !== "") params.set("query", query);
     const { data } = await axios.get<{
@@ -575,6 +582,31 @@ export async function postLostAndFoundAction(
             return {
                 success: false,
                 message: "Error.",
+            };
+        }
+    }
+}
+
+export async function getAbsurdCount() {
+    const { data } = await axios.get<{
+        cnt: number;
+    }>("/api/cache/visit_count.json");
+    return data.cnt;
+}
+
+export async function postAbsurdAdd(cf_token: string) {
+    try {
+        const res = await axios.post<{ success: boolean }>(
+            "/api/visitHell.php",
+            { cf_token },
+        );
+        return res.data;
+    } catch (err) {
+        if (isAxiosError(err) && err.response) {
+            return err.response.data as { success: boolean };
+        } else {
+            return {
+                success: false,
             };
         }
     }
