@@ -109,13 +109,14 @@ setInterval(() => {
             @click="onAddEvent()"
             :loading="addLoading"
             icon="pi pi-plus"
+            label="增加"
             :disabled="cf_token == ''"
             class="animate-duration-1000 animate-ease-in-out"
             v-animateonscroll="{
                 enterClass: 'animate-fadeinleft',
                 leaveClass: 'animate-fadeoutleft',
             }"
-            >增加</Button
+            ></Button
         >
         <span class="h-[20rem]"></span>
         <div
