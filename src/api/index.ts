@@ -590,7 +590,7 @@ export async function postLostAndFoundAction(
 export async function getAbsurdCount() {
     const { data } = await axios.get<{
         cnt: number;
-    }>("/api/cache/visit_count.json");
+    }>("/api/getHellVisits.php");
     return data.cnt;
 }
 
