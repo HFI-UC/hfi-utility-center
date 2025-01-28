@@ -100,7 +100,7 @@ const handleSubmit = async () => {
                     >itorr</a
                 ></span
             >
-            <ScrollPanel class="w-[58vh] h-[80vh]">
+            <ScrollPanel class="sm:w-[58vh] w-[40vh] h-[80vh]">
                 <div class="chat-container">
                     <div
                         class="messages-list layout flex flex-col justify-center"
@@ -124,9 +124,8 @@ const handleSubmit = async () => {
             </ScrollPanel>
             <div class="input-box flex justify-center">
                 <div class="input-area flex items-center">
-                    <form autocomplete="off">
+                    <form autocomplete="off" @submit.prevent="handleSubmit()" class="flex items-center">
                         <InputText
-                            id="input"
                             v-model="userInput"
                             placeholder="给“NoobGPT”发送消息"
                             :style="{
@@ -134,20 +133,19 @@ const handleSubmit = async () => {
                                 padding: '15px',
                                 border: 'none',
                                 boxShadow: 'none',
-                                width: '62vh',
                             }"
                         ></InputText>
+                        <Button
+                            class="m-[10px]"
+                            id="button"
+                            label="发送"
+                            @click="handleSubmit()"
+                            rounded
+                            severity="contrast"
+                            style="width: 4rem; height: 2.5rem"
+                            :disabled="userInput == '' || isWaiting"
+                        ></Button>
                     </form>
-                    <Button
-                        class="m-[10px]"
-                        id="button"
-                        label="发送"
-                        @click="handleSubmit()"
-                        rounded
-                        severity="contrast"
-                        style="width: 4rem; height: 2.5rem"
-                        :disabled="userInput == '' || isWaiting"
-                    ></Button>
                 </div>
             </div>
         </div>
@@ -168,8 +166,9 @@ html.p-dark .user {
     background: #2f2f2f;
 }
 
-input {
+:deep(.p-inputtext) {
     background-color: #f4f4f4;
+    width: 62vh;
 }
 
 html.p-dark input {
@@ -201,5 +200,11 @@ a {
 a:hover {
     color: var(--p-highlight-text-color);
     background-color: var(--p-highlight-bg);
+}
+
+@media screen and (max-width: 720px) {
+    :deep(.p-inputtext) {
+        width: 40vh;
+    }
 }
 </style>
