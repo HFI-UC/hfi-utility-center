@@ -71,6 +71,13 @@ const items = computed(() => {
             ],
         });
     }
+    if (selectedLocale.value == "zh_ms") {
+        data.push({
+            label: "？？？",
+            icon: "pi pi-question-circle",
+            url: "/what-the-hell-is-that",
+        },)
+    }
     return data;
 });
 
@@ -94,7 +101,7 @@ const localeOptions = ref([
         code: "en_us",
     },
     {
-        key: "微软中文",
+        key: "微软中文（彩蛋）",
         code: "zh_ms",
     },
 ]);
