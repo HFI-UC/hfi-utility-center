@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import Button from "primevue/button";
 import VueTurnstile from "vue-turnstile";
 import AbsurdAnimation from "../components/AbsurdAnimation.vue";
+import NoobGPT from "../components/NoobGPT.vue";
 // @ts-ignore
 import VueLive2d from "vue-live2d";
 import { useRequest } from "vue-request";
@@ -24,7 +25,7 @@ const slideDown = ref(true);
 const showLive2d = ref(false);
 const addLoading = ref(false);
 const showSummonButton = ref(true);
-const turnstileRef = ref<any>(null)
+const turnstileRef = ref<any>(null);
 const onPlay = () => {
     title.value = "你被骗了";
     version.value = "哈哈哈";
@@ -70,10 +71,31 @@ const onAddEvent = async () => {
             life: 3000,
         });
     }
-    run()
-    if (turnstileRef.value) turnstileRef.value.reset()
+    run();
+    if (turnstileRef.value) turnstileRef.value.reset();
     addLoading.value = false;
 };
+
+const showNoobGPT = ref(false);
+
+// prettier-ignore
+const httpStatusCodes: number[] = [
+  100, 101, 102, 103,
+  200, 201, 202, 203, 204, 205, 206, 207, 208, 226,
+  300, 301, 302, 303, 304, 305, 306, 307, 308,
+  400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 421, 422, 423, 424, 425, 426, 427, 428, 429, 431, 451, // 4xx Client Error
+  500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511
+];
+
+const getRandomImageLoading = ref(false);
+
+const getRandomStatusImage = () => {
+    getRandomImageLoading.value = true;
+    const randomIndex = Math.floor(Math.random() * httpStatusCodes.length);
+    imageUrl.value = `https://http.cat/${httpStatusCodes[randomIndex]}.jpg`;
+};
+
+const imageUrl = ref("");
 
 setInterval(() => {
     changeDirection();
@@ -120,21 +142,20 @@ setInterval(() => {
                 enterClass: 'animate-fadeinleft',
                 leaveClass: 'animate-fadeoutleft',
             }"
-            ></Button
-        >
+        ></Button>
         <span class="h-[20rem]"></span>
         <div
             class="flex flex-wrap text-center justify-center text-[1.8em] font-bold gap-2 animate-duration-1000 animate-ease-in-out"
             v-animateonscroll="{
-                enterClass: 'animate-fadeinright',
-                leaveClass: 'animate-fadeoutright',
+                enterClass: 'animate-fadein',
+                leaveClass: 'animate-fadeout',
             }"
         >
             由
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 475.02 92"
-                width="160px"
+                class="w-[160px]"
             >
                 <g>
                     <g>
@@ -181,8 +202,8 @@ setInterval(() => {
         <div
             class="flex flex-wrap text-center justify-center text-[1.8em] font-bold gap-1 animate-duration-1000 animate-ease-in-out"
             v-animateonscroll="{
-                enterClass: 'animate-fadein',
-                leaveClass: 'animate-fadeout',
+                enterClass: 'animate-fadeinright',
+                leaveClass: 'animate-fadeoutright',
             }"
         >
             隆重介绍……
@@ -199,7 +220,7 @@ setInterval(() => {
             {{ title }}
         </div>
         <div
-            class="text-red-500 sm:text-[3em] text-[1.5em] font-bold animate-duration-2000 animate-ease-in-out"
+            class="text-red-500 sm:text-[3em] text-[1.8em] font-bold animate-duration-2000 animate-ease-in-out"
             v-animateonscroll="{
                 enterClass: 'animate-zoomin',
                 leaveClass: 'animate-fadeout',
@@ -267,8 +288,8 @@ setInterval(() => {
         <div
             class="flex flex-col text-center justify-center text-[1.8em] font-bold gap-4 animate-duration-1000 animate-ease-in-out"
             v-animateonscroll="{
-                enterClass: 'animate-fadeinright',
-                leaveClass: 'animate-fadeoutright',
+                enterClass: 'animate-fadein',
+                leaveClass: 'animate-fadeout',
             }"
         >
             <img
@@ -277,18 +298,72 @@ setInterval(() => {
             />
             功能一：二次元老婆😋😋😋
         </div>
-        <span class="h-[rem]"></span>
+        <span class="h-[2rem]"></span>
         <Button
             class="animate-duration-1000 animate-ease-in-out"
             v-if="showSummonButton"
             @click="summonLive2d()"
             v-animateonscroll="{
-                enterClass: 'animate-fadein',
-                leaveClass: 'animate-fadeout',
+                enterClass: 'animate-fadeinleft',
+                leaveClass: 'animate-fadeoutleft',
             }"
             >{{ summonText }}</Button
         >
         <VueLive2d v-if="showLive2d" :size="400" id="live2d"></VueLive2d>
+        <span class="h-[20rem]"></span>
+        <div
+            class="flex flex-col text-center justify-center text-[1.8em] font-bold gap-4 animate-duration-1000 animate-ease-in-out"
+            v-animateonscroll="{
+                enterClass: 'animate-fadein',
+                leaveClass: 'animate-fadeout',
+            }"
+        >
+            <img src="https://http.cat/404.jpg" width="400px" />
+            功能二：随机 HTTP 猫 meme
+        </div>
+        <span class="h-[2rem]"></span>
+        <Button
+            class="animate-duration-1000 animate-ease-in-out"
+            @click="getRandomStatusImage()"
+            :loading="getRandomImageLoading"
+            label="获取随机 meme"
+            v-animateonscroll="{
+                enterClass: 'animate-fadeinleft',
+                leaveClass: 'animate-fadeoutleft',
+            }"
+        ></Button>
+        <img
+            @load="getRandomImageLoading = false"
+            v-if="imageUrl != ''"
+            :src="imageUrl"
+            width="400px"
+        />
+        <span class="h-[20rem]"></span>
+        <div
+            class="flex flex-col text-center justify-center text-[1.8em] font-bold gap-4 animate-duration-1000 animate-ease-in-out"
+            v-animateonscroll="{
+                enterClass: 'animate-fadein',
+                leaveClass: 'animate-fadeout',
+            }"
+        >
+            <img
+                src="https://s21.ax1x.com/2025/01/28/pEVlkFO.png"
+                width="400px"
+            />
+            功能三：内置 NoobGPT™
+        </div>
+        <span class="h-[2rem]"></span>
+        <Button
+            v-if="!showNoobGPT"
+            class="animate-duration-1000 animate-ease-in-out"
+            @click="showNoobGPT = true"
+            v-animateonscroll="{
+                enterClass: 'animate-fadeinleft',
+                leaveClass: 'animate-fadeoutleft',
+            }"
+            >即刻体验</Button
+        >
+        <NoobGPT v-if="showNoobGPT"></NoobGPT>
     </div>
 </template>
 
@@ -354,10 +429,6 @@ h1 {
     animation-duration: 2s;
     animation-name: jack-in-the-box;
     width: 170px !important;
-}
-
-button {
-    border-radius: 0.5rem;
 }
 
 video {
