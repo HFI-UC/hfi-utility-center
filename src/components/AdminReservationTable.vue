@@ -168,7 +168,6 @@ const getSeverity = (label: string): string => {
         <template #empty>
             <p v-if="loading">
                 {{ $t("status.table.loading") }}
-                <i class="icon-loader-circle"></i>
             </p>
             <p v-else-if="queried && (!data || data.data.length === 0)">
                 {{ $t("status.table.empty") }}
