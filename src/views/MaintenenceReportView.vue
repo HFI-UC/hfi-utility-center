@@ -194,12 +194,12 @@ const resetForm = () => {
     <div v-if="data?.success">
         <Button
             :label="$t('maintenance.new_maintenance.header')"
-            icon="pi pi-plus"
+            icon="icon-plus"
             @click="visible = true"
         ></Button>
         <div class="justify-left mt-4 mb-4">
             <IconField>
-                <InputIcon class="pi pi-search"></InputIcon>
+                <InputIcon class="icon-search"></InputIcon>
                 <InputText
                     :placeholder="$t('maintenance.search')"
                     v-model="query"
@@ -221,6 +221,7 @@ const resetForm = () => {
                         mode="basic"
                         @select="onFileSelect"
                         accept="image/*"
+                        chooseIcon="icon-plus"
                         customUpload
                         auto
                         :chooseLabel="$t('maintenance.new_maintenance.choose')"
@@ -322,7 +323,7 @@ const resetForm = () => {
                 <Button
                     :label="$t('maintenance.new_maintenance.submit')"
                     :loading="loading"
-                    icon="pi pi-plus"
+                    icon="icon-plus"
                     @click="onClickEvent()"
                 ></Button>
             </div>
@@ -392,7 +393,7 @@ const resetForm = () => {
                                 class="w-full"
                                 :label="$t('maintenance.status.duplicated')"
                                 severity="warn"
-                                icon="pi pi-clone"
+                                icon="icon-copy"
                                 @click="onActionEvent(maintenance, 3)"
                             >
                             </Button>
@@ -400,7 +401,7 @@ const resetForm = () => {
                                 class="w-full"
                                 :label="$t('maintenance.status.unscheduled')"
                                 severity="danger"
-                                icon="pi pi-times"
+                                icon="icon-x"
                                 @click="onActionEvent(maintenance, 2)"
                             >
                             </Button>
@@ -408,7 +409,7 @@ const resetForm = () => {
                                 class="w-full"
                                 :label="$t('maintenance.status.solved')"
                                 severity="success"
-                                icon="pi pi-check"
+                                icon="icon-check"
                                 @click="onActionEvent(maintenance, 1)"
                             >
                             </Button>

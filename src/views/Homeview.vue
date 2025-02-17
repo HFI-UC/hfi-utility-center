@@ -53,12 +53,12 @@ onMounted(() => {
         <div class="mt-[4rem] flex flex-wrap gap-4 items-center justify-center">
             <Button
                 :label="$t('home.button.form')"
-                icon="pi pi-pen-to-square"
+                icon="icon-square-pen"
                 @click="router.push('/reservation/create')"
             ></Button>
             <Button
                 :label="$t('home.button.status')"
-                icon="pi pi-chart-bar"
+                icon="icon-chart-column-decreasing"
                 severity="secondary"
                 @click="router.push('/reservation/status')"
             ></Button>

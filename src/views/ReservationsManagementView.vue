@@ -236,7 +236,7 @@ onMounted(async () => {
             <div v-else>
                 <div class="justify-left mt-4 mb-4">
                     <IconField>
-                        <InputIcon class="pi pi-search"></InputIcon>
+                        <InputIcon class="icon-search"></InputIcon>
                         <InputText
                             :placeholder="$t('reservation.search')"
                             v-model="query"
@@ -313,7 +313,7 @@ onMounted(async () => {
                                     <div class="m-4 flex gap-4">
                                         <Button
                                             outlined
-                                            icon="pi pi-times"
+                                            icon="icon-x"
                                             :label="
                                                 $t('reservation.reject.reject')
                                             "
@@ -327,7 +327,7 @@ onMounted(async () => {
                                             class="w-full"
                                         />
                                         <Button
-                                            icon="pi pi-check"
+                                            icon="icon-check"
                                             severity="success"
                                             :disabled="disabled"
                                             :label="$t('reservation.pass')"
@@ -416,7 +416,7 @@ onMounted(async () => {
                                         <Button
                                             outlined
                                             v-if="booking.auth == 'yes'"
-                                            icon="pi pi-times"
+                                            icon="icon-x"
                                             :label="
                                                 $t('reservation.reject.reject')
                                             "
@@ -431,7 +431,7 @@ onMounted(async () => {
                                         />
                                         <Button
                                             v-else
-                                            icon="pi pi-check"
+                                            icon="icon-check"
                                             severity="success"
                                             :label="$t('reservation.pass')"
                                             class="w-full"

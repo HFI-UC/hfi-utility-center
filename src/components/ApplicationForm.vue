@@ -423,7 +423,7 @@ const rules = computed(() =>
                                         $t('application.tooltip.name')
                                     "
                                 />
-                                <InputIcon class="pi pi-user"></InputIcon>
+                                <InputIcon class="icon-user-round"></InputIcon>
                             </IconField>
                             <Message
                                 v-if="$form.studentName?.invalid"
@@ -451,7 +451,7 @@ const rules = computed(() =>
                                     </div>
                                 </template>
                                 <template #dropdownicon>
-                                    <i class="pi pi-address-book"></i>
+                                    <i class="icon-school"></i>
                                 </template>
                             </Select>
                             <Message
@@ -473,7 +473,7 @@ const rules = computed(() =>
                                         $t('application.tooltip.id')
                                     "
                                 />
-                                <InputIcon class="pi pi-id-card"></InputIcon>
+                                <InputIcon class="icon-id-card"></InputIcon>
                             </IconField>
                             <Message
                                 v-if="$form.studentId?.invalid"
@@ -494,7 +494,7 @@ const rules = computed(() =>
                                         ])
                                     "
                                 />
-                                <InputIcon class="pi pi-envelope"></InputIcon>
+                                <InputIcon class="icon-mail"></InputIcon>
                             </IconField>
                             <Message
                                 v-if="$form.email?.invalid"
@@ -520,7 +520,7 @@ const rules = computed(() =>
                                 @change="$form.selectedRoom.value = null"
                             >
                                 <template #dropdownicon>
-                                    <i class="pi pi-map-marker"></i>
+                                    <i class="icon-building-2"></i>
                                 </template>
                             </Select>
                             <Message
@@ -546,7 +546,7 @@ const rules = computed(() =>
                                 @change="getData($form as any)"
                             >
                                 <template #dropdownicon>
-                                    <i class="pi pi-building"></i>
+                                    <i class="icon-building"></i>
                                 </template>
                             </Select>
                             <Message
@@ -636,6 +636,9 @@ const rules = computed(() =>
                                 :max-date="maxDate"
                                 :manual-input="false"
                             >
+                            <template #inputicon="slotProps">
+                                <i class="icon-calendar" @click="slotProps.clickCallback" />
+                            </template>
                             </DatePicker>
                             <Message
                                 v-if="$form.date?.invalid"
@@ -655,7 +658,7 @@ const rules = computed(() =>
                                 :options="getStartTimeOptions($form as any)"
                             >
                                 <template #dropdownicon>
-                                    <i class="pi pi-calendar-minus"></i>
+                                    <i class="icon-calendar-arrow-up"></i>
                                 </template>
                             </Select>
                             <Message
@@ -676,7 +679,7 @@ const rules = computed(() =>
                                 :options="getEndTimeOptions($form as any)"
                             >
                                 <template #dropdownicon>
-                                    <i class="pi pi-calendar-plus"></i>
+                                    <i class="icon-calendar-arrow-down"></i>
                                 </template>
                             </Select>
                             <Message
@@ -697,7 +700,7 @@ const rules = computed(() =>
                                     "
                                 />
                                 <InputIcon
-                                    class="pi pi-info-circle"
+                                    class="icon-info"
                                 ></InputIcon>
                             </IconField>
                             <Message
@@ -738,7 +741,7 @@ const rules = computed(() =>
                             >
                         </div>
                         <Button
-                            icon="pi pi-upload"
+                            icon="icon-upload"
                             type="submit"
                             :label="$t('application.submit')"
                             :loading="loading"

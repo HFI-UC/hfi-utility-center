@@ -66,24 +66,12 @@ onMounted(() => {
         <Card id="card" v-if="isValid">
             <template #content>
                 <div
-                    v-if="status == 'pending'"
-                    class="flex flex-col items-center justify-center"
-                >
-                    <h3>{{ $t("reservation.approval.pending") }}</h3>
-                    <i
-                        class="pi pi-spin pi-spinner m-[2rem]"
-                        id="status-icon"
-                        style="color: var(--p-gray-500)"
-                    ></i>
-                    <p class="w-[20rem] m-[1rem] text-center"></p>
-                </div>
-                <div
                     v-if="status == 'success'"
                     class="flex flex-col items-center justify-center"
                 >
                     <h3>{{ $t("reservation.approval.success") }}</h3>
                     <i
-                        class="pi pi-check m-[2rem]"
+                        class="icon-check m-[2rem]"
                         id="status-icon"
                         style="color: var(--p-green-500)"
                     ></i>
@@ -131,7 +119,7 @@ onMounted(() => {
                 >
                     <h3>{{ $t("reservation.approval.error") }}</h3>
                     <i
-                        class="pi pi-times m-[2rem]"
+                        class="icon-x m-[2rem]"
                         id="status-icon"
                         style="color: var(--p-red-500)"
                     ></i>

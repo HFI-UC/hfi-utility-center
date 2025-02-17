@@ -313,7 +313,7 @@ onMounted(async () => {
                     type="button"
                     :label="$t('policy.new_policy.add')"
                     :loading="loading"
-                    icon="pi pi-plus"
+                    icon="icon-plus"
                     @click="onAddEvent()"
                 ></Button>
             </div>
@@ -322,7 +322,7 @@ onMounted(async () => {
         <div v-if="policy?.success" id="cards-container">
             <Button
                 class="mt-2 mb-4"
-                icon="pi pi-plus"
+                icon="icon-plus"
                 :label="$t('policy.new_policy.header')"
                 @click="visible = true"
             ></Button>
@@ -372,7 +372,7 @@ onMounted(async () => {
                             <div class="m-4 flex gap-4">
                                 <Button
                                     outlined
-                                    icon="pi pi-trash"
+                                    icon="icon-trash-2"
                                     :label="$t('policy.card.delete')"
                                     severity="danger"
                                     class="w-full"
@@ -383,7 +383,7 @@ onMounted(async () => {
                                 />
                                 <Button
                                     v-if="!policy.unavailable"
-                                    icon="pi pi-play"
+                                    icon="icon-play"
                                     severity="success"
                                     :label="$t('policy.card.resume')"
                                     class="w-full"
@@ -394,7 +394,7 @@ onMounted(async () => {
                                 ></Button>
                                 <Button
                                     v-if="policy.unavailable"
-                                    icon="pi pi-pause"
+                                    icon="icon-pause"
                                     severity="danger"
                                     :label="$t('policy.card.stop')"
                                     class="w-full"

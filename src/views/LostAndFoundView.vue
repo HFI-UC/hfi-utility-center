@@ -397,7 +397,7 @@ onMounted(() => {
                 type="button"
                 :label="$t('lostnfound.new_lostnfound.submit')"
                 :loading="loading"
-                icon="pi pi-plus"
+                icon="icon-plus"
                 @click="onClickEvent()"
             ></Button>
         </div>
@@ -434,7 +434,7 @@ onMounted(() => {
                 :model="items"
                 :label="$t('lostnfound.manage.found')"
                 :loading="loading"
-                icon="pi pi-cog"
+                icon="icon-settings"
                 severity="warn"
                 @click="onManageEvent(1)"
             ></SplitButton>
@@ -443,12 +443,12 @@ onMounted(() => {
     <div v-if="data?.success">
         <Button
             :label="$t('lostnfound.new_lostnfound.header')"
-            icon="pi pi-plus"
+            icon="icon-plus"
             @click="visible = true"
         ></Button>
         <div class="flex gap-4 justify-left mt-4 mb-4">
             <IconField>
-                <InputIcon class="pi pi-search"></InputIcon>
+                <InputIcon class="icon-search"></InputIcon>
                 <InputText
                     :placeholder="$t('lostnfound.search')"
                     v-model="query"
@@ -458,7 +458,7 @@ onMounted(() => {
             <Button
                 :label="$t('lostnfound.search')"
                 @click="onSearchEvent()"
-                icon="pi pi-search"
+                icon="icon-search"
             ></Button>
         </div>
         <p v-if="lostnfoundData.length == 0">
@@ -545,7 +545,7 @@ onMounted(() => {
                             <Button
                                 class="w-full"
                                 :label="$t('lostnfound.card.view_clues')"
-                                icon="pi pi-search"
+                                icon="icon-search"
                                 @click="
                                     router.push(
                                         `/lostnfound/detail?id=${lostnfound.id}`,
@@ -555,7 +555,7 @@ onMounted(() => {
                             <Button
                                 class="w-full"
                                 severity="warn"
-                                icon="pi pi-cog"
+                                icon="icon-settings"
                                 :label="$t('lostnfound.card.manage')"
                                 @click="
                                     (manage = true),

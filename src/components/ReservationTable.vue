@@ -163,7 +163,6 @@ const getSeverity = (label: string): string => {
         <template #empty>
             <p v-if="loading">
                 {{ $t("status.table.loading") }}
-                <i class="pi pi-spin pi-spinner"></i>
             </p>
             <p v-else-if="queried && (!data || data.data.length === 0)">
                 {{ $t("status.table.empty") }}
@@ -206,7 +205,7 @@ const getSeverity = (label: string): string => {
                         @click="onSearch()"
                         :label="$t('status.table.search')"
                         :loading="loading"
-                        icon="pi pi-search"
+                        icon="icon-search"
                     ></Button>
                 </div>
             </div>

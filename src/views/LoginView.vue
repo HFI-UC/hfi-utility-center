@@ -83,7 +83,7 @@ const onClickEvent = () => {
                 <div class="flex flex-col items-center">
                     <FloatLabel class="m-[20px]">
                         <IconField>
-                            <InputIcon class="pi pi-user"></InputIcon>
+                            <InputIcon class="icon-user-round"></InputIcon>
                             <InputText
                                 id="user"
                                 v-model="user"
@@ -94,7 +94,7 @@ const onClickEvent = () => {
                     </FloatLabel>
                     <FloatLabel class="m-[20px]">
                         <IconField>
-                            <InputIcon class="pi pi-key"></InputIcon>
+                            <InputIcon class="icon-key-round"></InputIcon>
                             <InputText
                                 id="password"
                                 v-model="password"
@@ -112,7 +112,7 @@ const onClickEvent = () => {
                         site-key="0x4AAAAAAAiw3hAxhw1fzq4B"
                     ></VueTurnstile>
                     <Button
-                        icon="pi pi-sign-in"
+                        icon="icon-log-in"
                         @click="onClickEvent()"
                         :disabled="cf_token == ''"
                         :label="$t('login.login')"
