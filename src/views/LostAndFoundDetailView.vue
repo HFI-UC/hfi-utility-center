@@ -262,7 +262,7 @@ const onViewEvent = async (path: string) => {
                 type="button"
                 :label="$t('lostnfound.new_lostnfound.submit')"
                 :loading="loading"
-                icon="pi pi-plus"
+                icon="icon-plus"
                 @click="onClickEvent()"
             ></Button>
         </div>
@@ -270,7 +270,7 @@ const onViewEvent = async (path: string) => {
     <Button
         class="mb-4"
         :label="$t('lostnfound.clue.back')"
-        icon="pi pi-arrow-left"
+        icon="icon-arrow-left"
         @click="router.go(-1)"
     ></Button>
     <div v-if="lostnfound">
@@ -359,7 +359,7 @@ const onViewEvent = async (path: string) => {
                     <h3>{{ $t("lostnfound.clue.clue") }}</h3>
                     <Button
                         :label="$t('lostnfound.new_clue.header')"
-                        icon="pi pi-plus"
+                        icon="icon-plus"
                         @click="visible = true"
                     ></Button>
                     <DataTable
@@ -395,7 +395,7 @@ const onViewEvent = async (path: string) => {
                         <Column :header="$t('lostnfound.clue.column.image')">
                             <template #body="{ data }">
                                 <Button
-                                    icon="pi pi-eye"
+                                    icon="icon-eye"
                                     :label="$t('lostnfound.clue.view')"
                                     @click="onViewEvent(data.filePath)"
                                 ></Button>

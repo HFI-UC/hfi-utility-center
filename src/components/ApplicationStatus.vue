@@ -16,7 +16,7 @@ const props = defineProps<{
                 >
                     <h3>{{ $t("application.success") }}</h3>
                     <i
-                        class="pi pi-check m-[2rem]"
+                        class="icon-check m-[2rem]"
                         id="status-icon"
                         style="color: var(--p-green-500)"
                     ></i>
@@ -30,7 +30,7 @@ const props = defineProps<{
                 >
                     <h3>{{ $t("application.error") }}</h3>
                     <i
-                        class="pi pi-times m-[2rem]"
+                        class="icon-x m-[2rem]"
                         id="status-icon"
                         style="color: var(--p-red-500)"
                     ></i>

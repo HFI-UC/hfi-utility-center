@@ -69,6 +69,8 @@ const getBotResponse = (userMessage: string): string => {
 };
 
 const handleSubmit = async () => {
+    if (isWaiting.value) return;
+
     const userInputTrimmed = userInput.value.trim();
     if (userInputTrimmed === "") return;
 
@@ -92,7 +94,7 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-    <div class="relative min-h-[110vh] w-full flex items-center justify-center">
+    <div class="relative min-h-[95vh] w-full flex items-center justify-center">
         <div class="w-full flex flex-col justify-center items-center">
             <div class="m-0 py-2 text-lg font-semibold">NoobGPT</div>
             <span class="text-gray-500"
@@ -100,7 +102,7 @@ const handleSubmit = async () => {
                     >itorr</a
                 ></span
             >
-            <ScrollPanel class="sm:w-[58vh] w-[40vh] h-[80vh]">
+            <ScrollPanel class="sm:w-[58vh] w-full h-[70vh]">
                 <div class="chat-container">
                     <div
                         class="messages-list layout flex flex-col justify-center"
@@ -116,7 +118,7 @@ const handleSubmit = async () => {
                         >
                             {{ message.text }}
                         </div>
-                        <div class="text-gray-500 mt-10" v-if="isWaiting">
+                        <div class="text-gray-500 mt-12" v-if="isWaiting">
                             Waiting...
                         </div>
                     </div>

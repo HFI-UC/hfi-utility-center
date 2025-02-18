@@ -7,65 +7,76 @@ import { verifyAdmin } from "./api";
 import Button from "primevue/button";
 import Select from "primevue/select";
 import "./styles/styles.css";
-import ScrollTop from 'primevue/scrolltop';
+import ScrollTop from "primevue/scrolltop";
+import en from "primelocale/en.json";
+import zh_cn from "primelocale/zh-CN.json";
+import { usePrimeVue } from "primevue/config";
 import { useI18n } from "vue-i18n";
+import { MenuItem } from "primevue/menuitem";
 
 const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
 
 const { t, locale } = useI18n();
+const primeVue = usePrimeVue();
+const primeVueLocales: Record<string, any> = {
+    zh_cn: zh_cn["zh-CN"],
+    zh_ms: zh_cn["zh-CN"],
+    en_us: en["en"],
+};
 
 const changeLocale = (lang: string) => {
     localStorage.setItem("locale", lang);
     locale.value = lang;
+    primeVue.config.locale = { ...primeVueLocales[lang] };
 };
 
 const items = computed(() => {
-    const data: any = [
+    const data: MenuItem[] = [
         {
             label: t("menubar.homepage"),
-            icon: "pi pi-home",
+            icon: "icon-house",
             url: "/",
         },
         {
             label: t("menubar.reservation.reservation"),
-            icon: "pi pi-calendar-clock",
+            icon: "icon-book-user",
             items: [
                 {
                     label: t("menubar.reservation.form"),
-                    icon: "pi pi-pen-to-square",
+                    icon: "icon-square-pen",
                     url: "/reservation/create",
                 },
                 {
                     label: t("menubar.reservation.status"),
-                    icon: "pi pi-chart-bar",
+                    icon: "icon-chart-column-decreasing",
                     url: "/reservation/status",
                 },
             ],
         },
         {
             label: t("menubar.maintenance"),
-            icon: "pi pi-wrench",
+            icon: "icon-wrench",
             url: "/maintenance",
         },
         {
             label: t("menubar.lostnfound"),
-            icon: "pi pi-info-circle",
+            icon: "icon-info",
             url: "/lostnfound",
         },
     ];
     if (isAdmin.value) {
         data.push({
             label: t("menubar.admin.admin"),
-            icon: "pi pi-user",
+            icon: "icon-user-round",
             items: [
                 {
                     label: t("menubar.admin.reservation"),
-                    icon: "pi pi-list-check",
+                    icon: "icon-book-check",
                     url: "/admin/reservations",
                 },
                 {
                     label: t("menubar.admin.policy"),
-                    icon: "pi pi-building-columns",
+                    icon: "icon-book-text",
                     url: "/admin/policy",
                 },
             ],
@@ -74,21 +85,21 @@ const items = computed(() => {
     if (selectedLocale.value == "zh_ms") {
         data.push({
             label: "？？？",
-            icon: "pi pi-question-circle",
+            icon: "icon-circle-help",
             url: "/what-the-hell-is-that",
-        },)
+        });
     }
     return data;
 });
 
-const iconClass = ref("pi-sun");
+const iconClass = ref("icon-sun");
 
 const toggleColorScheme = () => {
     let color = sessionStorage.getItem("color") == "white" ? "dark" : "white";
     sessionStorage.setItem("color", color);
     const root = document.getElementsByTagName("html")[0];
     root.classList.toggle("p-dark");
-    iconClass.value = color == "white" ? "pi-sun" : "pi-moon";
+    iconClass.value = color == "white" ? "icon-sun" : "icon-moon";
 };
 
 const localeOptions = ref([
@@ -136,7 +147,7 @@ onMounted(async () => {
         sessionStorage.setItem("color", color);
         const root = document.getElementsByTagName("html")[0];
         root.classList.toggle("p-dark");
-        iconClass.value = "pi-moon";
+        iconClass.value = "icon-moon";
     }
     const token = sessionStorage.getItem("token");
     if (!token) return;
@@ -152,10 +163,11 @@ onMounted(async () => {
         <div>
             <Menubar :model="items">
                 <template #start>
-                    <a href="/"><img
-                        src="./assets/logo.svg"
-                        class="m-1"
-                        style="height: 25px"
+                    <a href="/"
+                        ><img
+                            src="./assets/logo.svg"
+                            class="m-1"
+                            style="height: 25px"
                     /></a>
                 </template>
                 <template #end>
@@ -167,7 +179,7 @@ onMounted(async () => {
                         :style="{ width: '9rem' }"
                     >
                         <template #dropdownicon>
-                            <i class="pi pi-globe" />
+                            <i class="icon-globe" />
                         </template>
                     </Select>
                     <Button
@@ -175,7 +187,7 @@ onMounted(async () => {
                         @click="signIn()"
                         severity="success"
                         class="ms-2 me-2"
-                        icon="pi pi-sign-in"
+                        icon="icon-log-in"
                     >
                     </Button>
                     <Button
@@ -183,13 +195,10 @@ onMounted(async () => {
                         @click="signOut()"
                         severity="danger"
                         class="ms-2 me-2"
-                        icon="pi pi-sign-out"
+                        icon="icon-log-out"
                     >
                     </Button>
-                    <Button
-                        @click="toggleColorScheme()"
-                        :icon="`pi ${iconClass}`"
-                    >
+                    <Button @click="toggleColorScheme()" :icon="`${iconClass}`">
                     </Button>
                 </template>
             </Menubar>
@@ -213,21 +222,34 @@ onMounted(async () => {
         <p>
             {{ $t("footer.line3") }}
         </p>
-        <i18n-t tag="p" keypath="footer.line4" scope="global">
+        <i18n-t
+            tag="p"
+            class="flex gap-1 items-center justify-center flex-wrap"
+            keypath="footer.line4"
+            scope="global"
+        >
             <a
                 :href="`https://github.com/HFI-UC/hfi-utility-center/commit/${sha}`"
-                ><i class="pi pi-sitemap"></i> {{ sha }}</a
+                class="flex items-center gap-1"
+                ><i class="icon-git-commit-horizontal"></i> {{ sha }}</a
             >
             <a href="https://www.gnu.org/licenses/agpl-3.0.html">{{
                 $t("footer.license")
             }}</a>
-            <a href="https://github.com/HFI-UC/hfi-utility-center"
-                ><i class="pi pi-github"></i> GitHub</a
+            <a
+                href="https://github.com/HFI-UC/hfi-utility-center"
+                class="flex items-center gap-1"
+                ><i class="icon-github inline-block"></i> GitHub</a
             >
         </i18n-t>
-            <i18n-t tag="p" keypath="footer.line5" scope="global" class="flex flex-wrap text-center justify-center">
-                <img class="ms-2 me-1" src="./assets/chatgpt.svg" width="100px" />
-            </i18n-t>
+        <i18n-t
+            tag="p"
+            keypath="footer.line5"
+            scope="global"
+            class="flex flex-wrap text-center justify-center"
+        >
+            <img class="ms-2 me-1" src="./assets/chatgpt.svg" width="100px" />
+        </i18n-t>
     </footer>
     <ScrollTop />
 </template>

@@ -80,11 +80,13 @@ const showNoobGPT = ref(false);
 
 // prettier-ignore
 const httpStatusCodes: number[] = [
-  100, 101, 102, 103,
-  200, 201, 202, 203, 204, 205, 206, 207, 208, 226,
-  300, 301, 302, 303, 304, 305, 306, 307, 308,
-  400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 421, 422, 423, 424, 425, 426, 427, 428, 429, 431, 451, // 4xx Client Error
-  500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511
+    100, 101, 102, 103,
+    200, 201, 202, 203, 204, 205, 206, 207, 208, 226,
+    300, 301, 302, 303, 304, 305, 306, 307, 308,
+    400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410,
+    411, 412, 413, 414, 415, 416, 417, 418, 421, 422, 423,
+    424, 425, 426, 427, 428, 429, 431, 451,
+    500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511
 ];
 
 const getRandomImageLoading = ref(false);
@@ -113,7 +115,7 @@ setInterval(() => {
         <span
             class="slidedown-icon h-8 w-8 bg-primary text-primary-contrast rounded-full inline-flex items-center justify-center"
         >
-            <i class="pi pi-arrow-down" />
+            <i class="icon-arrow-down" />
         </span>
         <span class="h-[10rem]"></span>
         <h1
@@ -134,7 +136,7 @@ setInterval(() => {
         <Button
             @click="onAddEvent()"
             :loading="addLoading"
-            icon="pi pi-plus"
+            icon="icon-plus"
             label="增加"
             :disabled="cf_token == ''"
             class="animate-duration-1000 animate-ease-in-out"
@@ -263,14 +265,14 @@ setInterval(() => {
             <span
                 class="slidedown-icon h-8 w-8 bg-primary text-primary-contrast rounded-full inline-flex items-center justify-center"
             >
-                <i class="pi pi-arrow-down" />
+                <i class="icon-arrow-down" />
             </span>
         </div>
         <div v-else class="flex flex-col gap-4 items-center justify-center">
             <span
                 class="slideup-icon h-8 w-8 bg-primary text-primary-contrast rounded-full inline-flex items-center justify-center"
             >
-                <i class="pi pi-arrow-up" />
+                <i class="icon-arrow-up" />
             </span>
             <span class="text-xl font-medium">向上滑动</span>
         </div>
@@ -467,5 +469,9 @@ html.p-dark .cls-1 {
     animation: slideup-icon;
     animation-duration: 3s;
     animation-iteration-count: infinite;
+}
+
+button {
+    border-radius: 0.5rem;
 }
 </style>
