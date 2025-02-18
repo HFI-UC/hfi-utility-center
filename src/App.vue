@@ -213,7 +213,7 @@ onMounted(async () => {
         </p>
         <i18n-t
             tag="p"
-            class="flex gap-1 items-center justify-center"
+            class="flex gap-1 items-center justify-center flex-wrap"
             keypath="footer.line4"
             scope="global"
         >
