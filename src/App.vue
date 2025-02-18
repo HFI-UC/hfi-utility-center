@@ -8,19 +8,30 @@ import Button from "primevue/button";
 import Select from "primevue/select";
 import "./styles/styles.css";
 import ScrollTop from "primevue/scrolltop";
+import en from "primelocale/en.json";
+import zh_cn from "primelocale/zh-CN.json";
+import { usePrimeVue } from "primevue/config";
 import { useI18n } from "vue-i18n";
+import { MenuItem } from "primevue/menuitem";
 
 const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
 
 const { t, locale } = useI18n();
+const primeVue = usePrimeVue();
+const primeVueLocales: Record<string, any> = {
+    zh_cn: zh_cn["zh-CN"],
+    zh_ms: zh_cn["zh-CN"],
+    en_us: en["en"],
+};
 
 const changeLocale = (lang: string) => {
     localStorage.setItem("locale", lang);
     locale.value = lang;
+    primeVue.config.locale = { ...primeVueLocales[lang] };
 };
 
 const items = computed(() => {
-    const data: any = [
+    const data: MenuItem[] = [
         {
             label: t("menubar.homepage"),
             icon: "icon-house",
