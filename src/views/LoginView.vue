@@ -1,39 +1,49 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import VueTurnstile from "vue-turnstile";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
-import FloatLabel from "primevue/floatlabel";
 import { postLogin } from "../api";
 import { useToast } from "primevue/usetoast";
 import Card from "primevue/card";
+import { Form, FormSubmitEvent } from "@primevue/forms";
 import { useI18n } from "vue-i18n";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import { z } from "zod";
 
 const cf_token = ref("");
-const user = ref("");
-const password = ref("");
 const { t } = useI18n();
+const initialValues = reactive({
+    user: "",
+    password: "",
+});
+const resolver = ref(
+    zodResolver(
+        z.object({
+            user: z.string().min(1, { message: t("message.fill_out") }),
+            captcha: z.string().min(1, { message: t("message.fill_out") }),
+            password: z.string().min(1, { message: t("message.fill_out") }),
+        }),
+    ),
+);
 const toast = useToast();
-const isCompleted = ref(true);
 const loading = ref(false);
 
 onMounted(() => {
     if (sessionStorage.getItem("token")) window.location.href = "/";
 });
 
-const onClickEvent = () => {
-    isCompleted.value = true;
+const onSubmitEvent = (form: FormSubmitEvent) => {
     loading.value = true;
-    if (user.value == "" || password.value == "") {
+    if (!form.valid) {
         toast.add({
             severity: "error",
             summary: t("toast.error"),
             detail: t("toast.required_field"),
             life: 3000,
         });
-        isCompleted.value = false;
         loading.value = false;
         return;
     }
@@ -47,7 +57,7 @@ const onClickEvent = () => {
         loading.value = false;
         return;
     }
-    postLogin(user.value, password.value, cf_token.value).then(
+    postLogin(form.values.user, form.values.password, cf_token.value).then(
         (res: { success: boolean; message: string; token?: string }) => {
             if (res.success) {
                 toast.add({
@@ -80,45 +90,59 @@ const onClickEvent = () => {
         <h1>{{ $t("login.header") }}</h1>
         <Card>
             <template #content>
-                <div class="flex flex-col items-center">
-                    <FloatLabel class="m-[20px]">
-                        <IconField>
-                            <InputIcon class="icon-user-round"></InputIcon>
-                            <InputText
-                                id="user"
-                                v-model="user"
-                                :invalid="user == '' && !isCompleted"
-                            ></InputText
-                        ></IconField>
-                        <label for="user">{{ $t("login.username") }}</label>
-                    </FloatLabel>
-                    <FloatLabel class="m-[20px]">
-                        <IconField>
-                            <InputIcon class="icon-key-round"></InputIcon>
-                            <InputText
-                                id="password"
-                                v-model="password"
-                                :invalid="password == '' && !isCompleted"
-                                @keyup.enter="onClickEvent()"
-                                type="password"
-                            ></InputText>
-                        </IconField>
-                        <label for="password">{{ $t("login.password") }}</label>
-                    </FloatLabel>
+                <Form
+                    class="flex flex-col items-center"
+                    :initialValues
+                    :resolver
+                    v-slot="$form"
+                    @submit="onSubmitEvent"
+                >
+                    <div
+                        class="flex flex-col m-[10px] items-center justify-center gap-[20px]"
+                    >
+                    <div class="flex flex-col gap-2">
+                    <IconField>
+                        <InputIcon class="icon-user-round"></InputIcon>
+                        <InputText
+                            name="user"
+                            :placeholder="$t('login.username')"
+                        ></InputText
+                    ></IconField>
+                    <Message
+                        v-if="$form.user?.invalid"
+                        severity="error"
+                        size="small"
+                        variant="simple"
+                        >{{ $form.user.error?.message }}</Message
+                    ></div>
+                    <div class="flex flex-col gap-2">
+                    <IconField>
+                        <InputIcon class="icon-key-round"></InputIcon>
+                        <InputText
+                            :placeholder="$t('login.password')"
+                            type="password"
+                            name="password"
+                        ></InputText>
+                    </IconField>
+                    <Message
+                        v-if="$form.password?.invalid"
+                        severity="error"
+                        size="small"
+                        variant="simple"
+                        >{{ $form.password.error?.message }}</Message
+                    ></div>
                     <p class="text-sm">{{ $t("login.cloudflare") }}</p>
                     <VueTurnstile
-                        class="m-[20px]"
                         v-model="cf_token"
                         site-key="0x4AAAAAAAiw3hAxhw1fzq4B"
                     ></VueTurnstile>
                     <Button
                         icon="icon-log-in"
-                        @click="onClickEvent()"
                         :disabled="cf_token == ''"
                         :label="$t('login.login')"
                         :loading="loading"
-                    ></Button>
-                </div>
+                    ></Button></div>
+                </Form>
             </template>
         </Card>
     </div>
