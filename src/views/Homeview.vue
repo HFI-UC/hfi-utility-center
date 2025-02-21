@@ -69,17 +69,19 @@ onMounted(() => {
 <style scoped>
 h1 {
     font-size: 5em;
+    font-family: 'Montserrat', sans-serif;
     margin-block-start: 0.1em;
     margin-block-end: 0.1em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
-    font-weight: 900;
+    font-weight: 800;
     background: linear-gradient(to right, #8a9cff, #bc3fff);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 h3 {
+    font-family: 'Montserrat', sans-serif;
     font-size: 1.8em;
     margin-block-start: 0.1em;
     margin-block-end: 0.1em;
