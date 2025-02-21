@@ -110,6 +110,7 @@ setInterval(() => {
         <img
             src="https://d.kstore.dev/download/7507/thinking_face_color.svg"
             class="hero-img m-6"
+            alt="thinking-face"
         />
         <span class="mt-[10rem] text-xl font-medium">向下滑动</span>
         <span
@@ -297,6 +298,7 @@ setInterval(() => {
             <img
                 src="https://s21.ax1x.com/2025/01/27/pEVemVg.png"
                 width="400px"
+                alt="feat-1"
             />
             功能一：二次元老婆😋😋😋
         </div>
@@ -320,7 +322,7 @@ setInterval(() => {
                 leaveClass: 'animate-fadeout',
             }"
         >
-            <img src="https://http.cat/404.jpg" width="400px" />
+            <img src="https://http.cat/404.jpg" width="400px" alt="feat-2" />
             功能二：随机 HTTP 猫 meme
         </div>
         <span class="h-[2rem]"></span>
@@ -339,6 +341,7 @@ setInterval(() => {
             v-if="imageUrl != ''"
             :src="imageUrl"
             width="400px"
+            alt="random-meme"
         />
         <span class="h-[20rem]"></span>
         <div
@@ -351,6 +354,7 @@ setInterval(() => {
             <img
                 src="https://s21.ax1x.com/2025/01/28/pEVlkFO.png"
                 width="400px"
+                alt="feat-3"
             />
             功能三：内置 NoobGPT™
         </div>

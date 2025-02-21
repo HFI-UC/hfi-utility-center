@@ -4,7 +4,7 @@ import VueTurnstile from "vue-turnstile";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import IconField from "primevue/iconfield";
-import Message from "primevue/message"
+import Message from "primevue/message";
 import InputIcon from "primevue/inputicon";
 import { postLogin } from "../api";
 import { useToast } from "primevue/usetoast";
@@ -35,6 +35,15 @@ const loading = ref(false);
 onMounted(() => {
     if (sessionStorage.getItem("token")) window.location.href = "/";
 });
+
+const langMapping: Record<string, string> = {
+    zh_cn: "zh-CN",
+    en_us: "en-US",
+    zh_ms: "zh-CN",
+};
+
+const getLanguage = () =>
+    langMapping[localStorage.getItem("locale") || "en_us"];
 
 const onSubmitEvent = (form: FormSubmitEvent) => {
     loading.value = true;
@@ -101,49 +110,53 @@ const onSubmitEvent = (form: FormSubmitEvent) => {
                     <div
                         class="flex flex-col m-[10px] items-center justify-center gap-[20px]"
                     >
-                    <div class="flex flex-col gap-2">
-                    <IconField>
-                        <InputIcon class="icon-user-round"></InputIcon>
-                        <InputText
-                            name="user"
-                            :placeholder="$t('login.username')"
-                        ></InputText
-                    ></IconField>
-                    <Message
-                        v-if="$form.user?.invalid"
-                        severity="error"
-                        size="small"
-                        variant="simple"
-                        >{{ $form.user.error?.message }}</Message
-                    ></div>
-                    <div class="flex flex-col gap-2">
-                    <IconField>
-                        <InputIcon class="icon-key-round"></InputIcon>
-                        <InputText
-                            :placeholder="$t('login.password')"
-                            type="password"
-                            name="password"
-                        ></InputText>
-                    </IconField>
-                    <Message
-                        v-if="$form.password?.invalid"
-                        severity="error"
-                        size="small"
-                        variant="simple"
-                        >{{ $form.password.error?.message }}</Message
-                    ></div>
-                    <p class="text-sm">{{ $t("login.cloudflare") }}</p>
-                    <VueTurnstile
-                        v-model="cf_token"
-                        site-key="0x4AAAAAAAiw3hAxhw1fzq4B"
-                    ></VueTurnstile>
-                    <Button
-                        icon="icon-log-in"
-                        type="submit"
-                        :disabled="cf_token == ''"
-                        :label="$t('login.login')"
-                        :loading="loading"
-                    ></Button></div>
+                        <div class="flex flex-col gap-2">
+                            <IconField>
+                                <InputIcon class="icon-user-round"></InputIcon>
+                                <InputText
+                                    name="user"
+                                    :placeholder="$t('login.username')"
+                                ></InputText
+                            ></IconField>
+                            <Message
+                                v-if="$form.user?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{ $form.user.error?.message }}</Message
+                            >
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <IconField>
+                                <InputIcon class="icon-key-round"></InputIcon>
+                                <InputText
+                                    :placeholder="$t('login.password')"
+                                    type="password"
+                                    name="password"
+                                ></InputText>
+                            </IconField>
+                            <Message
+                                v-if="$form.password?.invalid"
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >{{ $form.password.error?.message }}</Message
+                            >
+                        </div>
+                        <p class="text-sm">{{ $t("login.cloudflare") }}</p>
+                        <VueTurnstile
+                            :language="getLanguage()"
+                            v-model="cf_token"
+                            site-key="0x4AAAAAAAiw3hAxhw1fzq4B"
+                        ></VueTurnstile>
+                        <Button
+                            icon="icon-log-in"
+                            type="submit"
+                            :disabled="cf_token == ''"
+                            :label="$t('login.login')"
+                            :loading="loading"
+                        ></Button>
+                    </div>
                 </Form>
             </template>
         </Card>
