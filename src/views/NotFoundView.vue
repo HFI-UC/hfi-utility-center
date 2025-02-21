@@ -12,6 +12,7 @@ setInterval(() => time.value--, 1000);
         <img
             src="https://d.kstore.dev/download/7507/thinking_face_color.svg"
             class="m-6"
+            alt="thinking-face"
         />
         <h2 class="text-center">404</h2>
         <br />

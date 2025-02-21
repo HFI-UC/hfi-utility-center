@@ -231,6 +231,7 @@ const resetForm = () => {
                 <img
                     v-if="src"
                     :src="src"
+                    alt="upload-img"
                     class="shadow-md rounded-xl w-full sm:w-64 m-3"
                 />
                 <p v-if="file" id="name" class="m-3">{{ file.name }}</p>

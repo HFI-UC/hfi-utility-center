@@ -195,6 +195,7 @@ const onViewEvent = async (path: string) => {
             <img
                 v-if="img"
                 :src="img"
+                alt="upload-img"
                 class="shadow-md rounded-xl w-full sm:w-64 m-3"
             />
             <p v-if="file" id="file" class="m-3">{{ file.name }}</p>

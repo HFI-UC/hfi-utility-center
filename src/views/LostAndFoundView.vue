@@ -263,6 +263,7 @@ onMounted(() => {
                 v-if="src"
                 :src="src"
                 class="shadow-md rounded-xl sm:w-64 m-3"
+                alt="upload-img"
             />
             <p v-if="file" id="file" class="m-3">{{ file.name }}</p>
         </div>

@@ -167,6 +167,7 @@ onMounted(async () => {
                         ><img
                             src="./assets/logo.svg"
                             class="m-1"
+                            alt="logo"
                             style="height: 25px"
                     /></a>
                 </template>
@@ -215,9 +216,10 @@ onMounted(async () => {
             tag="p"
             keypath="footer.line2"
             scope="global"
-            class="flex text-center justify-center"
+            class="flex text-center justify-center gap-2"
         >
-            <img class="ms-2 me-2" src="./assets/vercel.svg" width="80px" />
+            <img src="./assets/vercel.svg" width="80px" alt="vercel" />
+            <img src="./assets/cloudflare.svg" width="130px" alt="cloudflare" />
         </i18n-t>
         <p>
             {{ $t("footer.line3") }}
@@ -248,7 +250,7 @@ onMounted(async () => {
             scope="global"
             class="flex flex-wrap text-center justify-center"
         >
-            <img class="ms-2 me-1" src="./assets/chatgpt.svg" width="100px" />
+            <img class="ms-2 me-1" src="./assets/chatgpt.svg" width="100px" alt="chatgpt" />
         </i18n-t>
     </footer>
     <ScrollTop />
