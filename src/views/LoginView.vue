@@ -139,6 +139,7 @@ const onSubmitEvent = (form: FormSubmitEvent) => {
                     ></VueTurnstile>
                     <Button
                         icon="icon-log-in"
+                        type="submit"
                         :disabled="cf_token == ''"
                         :label="$t('login.login')"
                         :loading="loading"
