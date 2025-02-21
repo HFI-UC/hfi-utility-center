@@ -24,7 +24,6 @@ const resolver = ref(
     zodResolver(
         z.object({
             user: z.string().min(1, { message: t("message.fill_out") }),
-            captcha: z.string().min(1, { message: t("message.fill_out") }),
             password: z.string().min(1, { message: t("message.fill_out") }),
         }),
     ),
