@@ -216,7 +216,7 @@ onMounted(async () => {
             tag="p"
             keypath="footer.line2"
             scope="global"
-            class="flex text-center justify-center gap-2"
+            class="flex flex-wrap text-center justify-center gap-2"
         >
             <img src="./assets/vercel.svg" width="80px" alt="vercel" />
             <img src="./assets/cloudflare.svg" width="130px" alt="cloudflare" />
