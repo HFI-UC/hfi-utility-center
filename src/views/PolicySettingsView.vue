@@ -41,6 +41,8 @@ const rooms = ref([
     "105",
     "Writing Center 1",
     "Writing Center 2",
+    "512",
+    "513",
     "514",
     "524",
 ]);

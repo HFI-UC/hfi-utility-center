@@ -98,30 +98,30 @@ const resolver = ref(
         z.object({
             selectedClass: z
                 .string()
-                .min(1, { message: t("message.fill_out") }),
-            studentName: z.string().min(1, { message: t("message.fill_out") }),
-            selectedRoom: z.number({ message: t("message.fill_out") }),
+                .min(1, { message: "message.fill_out" }),
+            studentName: z.string().min(1, { message: "message.fill_out" }),
+            selectedRoom: z.number({ message: "message.fill_out" }),
             studentId: z
                 .string()
-                .min(1, { message: t("message.fill_out") })
-                .startsWith("GJ", { message: t("message.start_with_gj") })
-                .regex(/\d/, t("message.contains_number")),
+                .min(1, { message: "message.fill_out" })
+                .startsWith("GJ", { message: "message.start_with_gj" })
+                .regex(/\d/, "message.contains_number"),
             email: z
                 .string()
-                .min(1, { message: t("message.fill_out") })
+                .min(1, { message: "message.fill_out" })
                 .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
-                    message: t("message.invalid_email"),
+                    message: "message.invalid_email",
                 }),
-            date: z.date({ message: t("message.fill_out") }),
-            startTime: z.string().min(1, { message: t("message.fill_out") }),
-            endTime: z.string().min(1, { message: t("message.fill_out") }),
-            reason: z.string().min(1, { message: t("message.fill_out") }),
+            date: z.date({ message: "message.fill_out" }),
+            startTime: z.string().min(1, { message: "message.fill_out" }),
+            endTime: z.string().min(1, { message: "message.fill_out" }),
+            reason: z.string().min(1, { message: "message.fill_out" }),
             selectedCampus: z
                 .string()
-                .min(1, { message: t("message.fill_out") }),
+                .min(1, { message: "message.fill_out" }),
             isAgreed: z
                 .boolean()
-                .refine((value) => value, { message: t("message.fill_out") }),
+                .refine((value) => value, { message: "message.fill_out" }),
         }),
     ),
 );
@@ -430,7 +430,7 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $form.studentName.error?.message }}</Message
+                                >{{ $t($form.studentName.error?.message) }}</Message
                             >
                         </div>
                         <div class="flex flex-col gap-2">
@@ -460,7 +460,7 @@ const rules = computed(() =>
                                 size="small"
                                 variant="simple"
                                 >{{
-                                    $form.selectedClass.error?.message
+                                    $t($form.selectedClass.error?.message)
                                 }}</Message
                             >
                         </div>
@@ -480,7 +480,7 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $form.studentId.error?.message }}</Message
+                                >{{ $t($form.studentId.error?.message) }}</Message
                             >
                         </div>
                         <div class="flex flex-col gap-2">
@@ -501,7 +501,7 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $form.email.error?.message }}</Message
+                                >{{ $t($form.email.error?.message) }}</Message
                             >
                         </div>
                         <h2 class="text-center">
@@ -529,7 +529,7 @@ const rules = computed(() =>
                                 size="small"
                                 variant="simple"
                                 >{{
-                                    $form.selectedCampus.error?.message
+                                    $t($form.selectedCampus.error?.message)
                                 }}</Message
                             >
                         </div>
@@ -555,7 +555,7 @@ const rules = computed(() =>
                                 size="small"
                                 variant="simple"
                                 >{{
-                                    $form.selectedRoom.error?.message
+                                    $t($form.selectedRoom.error?.message)
                                 }}</Message
                             >
                         </div>
@@ -645,7 +645,7 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $form.date.error?.message }}</Message
+                                >{{ $t($form.date.error?.message) }}</Message
                             >
                         </div>
                         <div class="flex flex-col gap-2">
@@ -666,7 +666,7 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $form.startTime.error?.message }}</Message
+                                >{{ $t($form.startTime.error?.message) }}</Message
                             >
                         </div>
                         <div class="flex flex-col gap-2">
@@ -687,7 +687,7 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $form.endTime.error?.message }}</Message
+                                >{{ $t($form.endTime.error?.message) }}</Message
                             >
                         </div>
                         <div class="flex flex-col gap-2">
@@ -708,7 +708,7 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $form.reason.error?.message }}</Message
+                                >{{ $t($form.reason.error?.message) }}</Message
                             >
                         </div>
                         <div class="flex flex-col items-center gap-2">
@@ -737,7 +737,7 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $form.isAgreed.error?.message }}</Message
+                                >{{ $t($form.isAgreed.error?.message) }}</Message
                             >
                         </div>
                         <Button
