@@ -172,6 +172,7 @@ onMounted(async () => {
                     /></a>
                 </template>
                 <template #end>
+                    <div class="flex gap-2">
                     <Select
                         :options="localeOptions"
                         v-model="selectedLocale"
@@ -187,7 +188,6 @@ onMounted(async () => {
                         v-if="!isAdmin"
                         @click="signIn()"
                         severity="success"
-                        class="ms-2 me-2"
                         icon="icon-log-in"
                     >
                     </Button>
@@ -195,12 +195,11 @@ onMounted(async () => {
                         v-if="isAdmin"
                         @click="signOut()"
                         severity="danger"
-                        class="ms-2 me-2"
                         icon="icon-log-out"
                     >
                     </Button>
                     <Button @click="toggleColorScheme()" :icon="`${iconClass}`">
-                    </Button>
+                    </Button></div>
                 </template>
             </Menubar>
         </div>
@@ -212,7 +211,7 @@ onMounted(async () => {
         <p>
             {{ $t("footer.line1") }}
         </p>
-        <i18n-t
+        <I18nT
             tag="p"
             keypath="footer.line2"
             scope="global"
@@ -220,11 +219,11 @@ onMounted(async () => {
         >
             <img src="./assets/vercel.svg" width="80px" alt="vercel" />
             <img src="./assets/cloudflare.svg" width="130px" alt="cloudflare" />
-        </i18n-t>
+        </I18nT>
         <p>
             {{ $t("footer.line3") }}
         </p>
-        <i18n-t
+        <I18nT
             tag="p"
             class="flex gap-1 items-center justify-center flex-wrap"
             keypath="footer.line4"
@@ -243,15 +242,15 @@ onMounted(async () => {
                 class="flex items-center gap-1"
                 ><i class="icon-github inline-block"></i> GitHub</a
             >
-        </i18n-t>
-        <i18n-t
+        </I18nT>
+        <I18nT
             tag="p"
             keypath="footer.line5"
             scope="global"
             class="flex flex-wrap text-center justify-center"
         >
             <img class="ms-2 me-1" src="./assets/chatgpt.svg" width="100px" alt="chatgpt" />
-        </i18n-t>
+        </I18nT>
     </footer>
     <ScrollTop />
 </template>

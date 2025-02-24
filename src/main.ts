@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import PrimeVue from "primevue/config";
 import router from "./router/router";
+import "./styles/styles.css";
 import "lucide-static/font/lucide.css"
 import ToastService from "primevue/toastservice";
 import Tooltip from "primevue/tooltip";

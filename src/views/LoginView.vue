@@ -13,9 +13,10 @@ import { Form, FormSubmitEvent } from "@primevue/forms";
 import { useI18n } from "vue-i18n";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { z } from "zod";
+import { watch } from "vue";
 
 const cf_token = ref("");
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const initialValues = reactive({
     user: "",
     password: "",
@@ -23,13 +24,20 @@ const initialValues = reactive({
 const resolver = ref(
     zodResolver(
         z.object({
-            user: z.string().min(1, { message: t("message.fill_out") }),
-            password: z.string().min(1, { message: t("message.fill_out") }),
+            user: z.string().min(1, { message: "message.fill_out" }),
+            password: z.string().min(1, { message: "message.fill_out" }),
         }),
     ),
 );
 const toast = useToast();
 const loading = ref(false);
+const key = ref(1)
+watch(
+    () => locale.value,
+    () => {
+        key.value++
+    },
+);
 
 onMounted(() => {
     if (sessionStorage.getItem("token")) window.location.href = "/";
@@ -40,9 +48,6 @@ const langMapping: Record<string, string> = {
     en_us: "en-US",
     zh_ms: "zh-CN",
 };
-
-const getLanguage = () =>
-    langMapping[localStorage.getItem("locale") || "en_us"];
 
 const onSubmitEvent = (form: FormSubmitEvent) => {
     loading.value = true;
@@ -122,7 +127,7 @@ const onSubmitEvent = (form: FormSubmitEvent) => {
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $form.user.error?.message }}</Message
+                                >{{ $t($form.user.error?.message) }}</Message
                             >
                         </div>
                         <div class="flex flex-col gap-2">
@@ -139,12 +144,16 @@ const onSubmitEvent = (form: FormSubmitEvent) => {
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $form.password.error?.message }}</Message
+                                >{{
+                                    $t($form.password.error?.message)
+                                }}</Message
                             >
                         </div>
                         <p class="text-sm">{{ $t("login.cloudflare") }}</p>
                         <VueTurnstile
-                            :language="getLanguage()"
+                            ref="turnstileRef"
+                            :language="langMapping[locale]"
+                            :key="key"
                             v-model="cf_token"
                             site-key="0x4AAAAAAAiw3hAxhw1fzq4B"
                         ></VueTurnstile>

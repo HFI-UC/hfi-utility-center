@@ -79,7 +79,7 @@ onMounted(() => {
                         v-if="data"
                         class="w-[20rem] m-[1rem] flex flex-col text-center"
                     >
-                        <i18n-t
+                        <I18nT
                             keypath="reservation.approval.message"
                             tag="p"
                             scope="global"
@@ -91,7 +91,7 @@ onMounted(() => {
                                     : $t("reservation.approval.rejected")
                             }}</b
                             >.
-                        </i18n-t>
+                        </I18nT>
                         <br />
                         <p class="m-[5px]">
                             <b>{{ $t("reservation.approval.add_time") }}</b

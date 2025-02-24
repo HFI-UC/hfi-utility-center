@@ -61,7 +61,10 @@ const onSearch = async () => {
     loading.value = true;
     const reservationParams = getReservationParams();
     if (reservationParams) {
-        const res = await postReservation({ ...reservationParams, token: token.value});
+        const res = await postReservation({
+            ...reservationParams,
+            token: token.value,
+        });
         data.value = res;
     } else {
         data.value = { success: false, data: [] };
@@ -160,6 +163,7 @@ const getSeverity = (label: string): string => {
 
 <template>
     <DataTable
+        class="text-nowrap"
         :value="bookingData"
         paginator
         :rows="10"
@@ -184,6 +188,7 @@ const getSeverity = (label: string): string => {
                 />
                 <div class="flex justify-start gap-3">
                     <Select
+                        class="sm:w-[20rem] w-[70%]"
                         v-if="searchOption == $t('status.option.room')"
                         v-model="room"
                         v-tooltip.bottom="$t('status.tooltip.room')"
@@ -191,6 +196,7 @@ const getSeverity = (label: string): string => {
                         :options="rooms"
                     />
                     <DatePicker
+                        class="sm:w-[20rem] w-[70%]"
                         v-else-if="searchOption == $t('status.option.time')"
                         showTime
                         v-tooltip.bottom="$t('status.tooltip.time')"
@@ -200,11 +206,13 @@ const getSeverity = (label: string): string => {
                     />
                     <InputText
                         v-else
+                        class="sm:w-[20rem] w-[70%]"
                         v-model="query"
                         v-tooltip.bottom="$t('status.tooltip.keyword')"
                         :placeholder="$t('status.option.keyword')"
                     />
                     <Button
+                        class="sm:w-auto w-[30%]"
                         @click="onSearch()"
                         :label="$t('status.table.search')"
                         :loading="loading"

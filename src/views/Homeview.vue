@@ -37,14 +37,14 @@ onMounted(() => {
         modal
     >
         <div class="flex items-center justify-center gap-4 mb-8">
-            <i18n-t tag="p" keypath="home.dialog.message" scope="global">
+            <I18nT tag="p" keypath="home.dialog.message" scope="global">
                 <b>{{ $t("home.dialog.beta") }}</b>
                 <a
                     href="https://www.hfiuc.org"
                     style="color: var(--p-primary-500)"
                     >https://www.hfiuc.org/</a
                 >
-            </i18n-t>
+            </I18nT>
         </div>
     </Dialog>
     <div class="flex flex-col items-center justify-center" id="home-container">
@@ -69,7 +69,6 @@ onMounted(() => {
 <style scoped>
 h1 {
     font-size: 5em;
-    font-family: 'Montserrat', sans-serif;
     margin-block-start: 0.1em;
     margin-block-end: 0.1em;
     margin-inline-start: 0px;
@@ -81,7 +80,6 @@ h1 {
     -webkit-text-fill-color: transparent;
 }
 h3 {
-    font-family: 'Montserrat', sans-serif;
     font-size: 1.8em;
     margin-block-start: 0.1em;
     margin-block-end: 0.1em;

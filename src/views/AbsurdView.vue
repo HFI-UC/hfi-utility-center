@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import Button from "primevue/button";
 import VueTurnstile from "vue-turnstile";
 import AbsurdAnimation from "../components/AbsurdAnimation.vue";
@@ -9,6 +9,7 @@ import VueLive2d from "vue-live2d";
 import { useRequest } from "vue-request";
 import { getAbsurdCount, postAbsurdAdd } from "../api";
 import { useToast } from "primevue";
+import { useI18n } from "vue-i18n";
 
 const { data, run } = useRequest(() => getAbsurdCount(), { manual: true });
 onMounted(() => {
@@ -24,6 +25,7 @@ const showMore = ref(false);
 const slideDown = ref(true);
 const showLive2d = ref(false);
 const addLoading = ref(false);
+const key = ref(1)
 const showSummonButton = ref(true);
 const turnstileRef = ref<any>(null);
 const onPlay = () => {
@@ -99,6 +101,21 @@ const getRandomStatusImage = () => {
 
 const imageUrl = ref("");
 
+const { locale } = useI18n()
+
+watch(
+    () => locale.value,
+    () => {
+        key.value++
+    },
+);
+
+const langMapping: Record<string, string> = {
+    zh_cn: "zh-CN",
+    en_us: "en-US",
+    zh_ms: "zh-CN",
+};
+
 setInterval(() => {
     changeDirection();
 }, 2000);
@@ -130,6 +147,8 @@ setInterval(() => {
         </h1>
         <p class="text-sm">告诉我们你是人类</p>
         <VueTurnstile
+            :key="key"
+            :language="langMapping[locale]"
             ref="turnstileRef"
             v-model="cf_token"
             site-key="0x4AAAAAAAiw3hAxhw1fzq4B"
@@ -213,7 +232,7 @@ setInterval(() => {
         </div>
         <span class="h-[20rem]"></span>
         <div
-            class="flex flex-wrap text-center justify-center text-[2.5em] sm:text-[5em] font-bold gap-1 animate-duration-1000 animate-ease-in-out"
+            class="flex flex-wrap text-center justify-center text-[2.5em] sm:text-[5em] font-extrabold gap-1 animate-duration-1000 animate-ease-in-out"
             id="title"
             v-animateonscroll="{
                 enterClass: 'animate-fadein',
