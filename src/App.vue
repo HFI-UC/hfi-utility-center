@@ -6,7 +6,6 @@ import Menubar from "primevue/menubar";
 import { verifyAdmin } from "./api";
 import Button from "primevue/button";
 import Select from "primevue/select";
-import "./styles/styles.css";
 import ScrollTop from "primevue/scrolltop";
 import en from "primelocale/en.json";
 import zh_cn from "primelocale/zh-CN.json";
