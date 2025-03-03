@@ -361,6 +361,7 @@ export async function uploadCOS(
                 Region: "ap-guangzhou",
                 Key: Key,
                 Body: await file.arrayBuffer(),
+                ContentType: file.type
             },
             (err, data) => {
                 if (err) {
