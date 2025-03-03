@@ -28,7 +28,7 @@ export interface MaintenanceInfo {
     location: string;
     email: string;
     campus: string;
-    filePath: string;
+    filePath: string | null;
     addTime?: number;
     status?: number;
 }
@@ -47,7 +47,7 @@ export interface Clue {
     campus: string;
     detail: string;
     location: string;
-    filePath: string;
+    filePath: string | null;
     contact: string;
     createdAt?: string;
 }
@@ -59,7 +59,7 @@ export interface LostAndFoundInfo {
     location: string;
     email: string;
     campus: string;
-    filePath: string;
+    filePath: string | null;
     password: string;
     type: string;
     eventTime: string;
@@ -395,7 +395,7 @@ export async function postMaintenance(
     data.set("subject", maintenance.subject);
     data.set("detail", maintenance.detail);
     data.set("campus", maintenance.campus);
-    data.set("filePath", maintenance.filePath);
+    data.set("filePath", maintenance.filePath as string);
     data.set("location", maintenance.location);
     data.set("email", maintenance.email);
     try {
@@ -435,7 +435,7 @@ export async function getMaintenance(token: string) {
             await delay(index * 100);
             return {
                 ...item,
-                filePath: await getCOS(item.filePath),
+                filePath: await getCOS(item.filePath as string),
             };
         }),
     );
@@ -474,7 +474,7 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
     data.set("email", lostnfound.email);
     data.set("student_name", lostnfound.studentName);
     data.set("detail", lostnfound.detail);
-    data.set("file_path", lostnfound.filePath);
+    data.set("file_path", lostnfound.filePath as string);
     data.set("location", lostnfound.location);
     data.set("password", lostnfound.password);
     data.set("event_time", lostnfound.eventTime);
@@ -520,7 +520,7 @@ export async function getLostAndFound(
             await delay(index * 100);
             return {
                 ...item,
-                filePath: await getCOS(item.filePath),
+                filePath: await getCOS(item.filePath as string),
             };
         }),
     );
@@ -530,7 +530,7 @@ export async function getLostAndFound(
 export async function postClue(clue: Clue, id: number) {
     const data = new FormData();
     data.set("detail", clue.detail);
-    data.set("filePath", clue.filePath);
+    data.set("filePath", clue.filePath as string);
     data.set("location", clue.location);
     data.set("campus", clue.campus);
     data.set("contact", clue.contact);

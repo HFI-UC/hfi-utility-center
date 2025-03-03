@@ -38,7 +38,7 @@ const clue = ref<Clue>({
     campus: "",
     detail: "",
     location: "",
-    filePath: "",
+    filePath: null,
 });
 const campus = computed(() => [
     { label: t("lostnfound.campus.shipai"), code: "shipai" },

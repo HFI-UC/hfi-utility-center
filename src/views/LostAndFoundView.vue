@@ -75,7 +75,7 @@ const lostnfound = ref<LostAndFoundInfo>({
     detail: "",
     location: "",
     email: "",
-    filePath: "",
+    filePath: null,
     password: "",
     campus: "",
     eventTime: "",

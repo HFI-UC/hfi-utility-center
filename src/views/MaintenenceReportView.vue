@@ -75,7 +75,7 @@ const maintenance = ref<MaintenanceInfo>({
     location: "",
     campus: "",
     email: "",
-    filePath: "",
+    filePath: null,
     detail: "",
 });
 
