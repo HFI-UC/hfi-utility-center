@@ -4,7 +4,6 @@ import {
     getCOS,
     Clue,
     uploadCOS,
-    generateCosKey,
     postClue,
 } from "../api";
 import { useRequest } from "vue-request";
@@ -78,8 +77,6 @@ const onClickEvent = async () => {
 
     loading.value = true;
 
-    const filePath = generateCosKey(file.value.name.split(".").pop());
-    clue.value.filePath = filePath;
 
     isCompleted.value = !Object.values(clue.value).some(
         (value) => value === "",
@@ -95,11 +92,12 @@ const onClickEvent = async () => {
         return;
     }
 
-    const uploadResult = await uploadCOS(file.value, filePath);
+    const uploadResult = await uploadCOS(file.value);
     if (!uploadResult.success) {
         loading.value = false;
         return;
     }
+    clue.value.filePath = uploadResult.path;
 
     const clueResult = await postClue(clue.value, props.id);
 

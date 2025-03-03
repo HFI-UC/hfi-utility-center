@@ -338,26 +338,18 @@ export async function postPolicyAdd(
     return res.data;
 }
 
-export function generateCosKey(ext: string = ""): string {
-    return `file/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}_${String(Math.floor(Math.random() * 1e6)).padStart(6, "0")}${ext ? "." + ext : ""}`;
-}
-
 export async function uploadCOS(
     file: File,
-    cosKey: string,
-): Promise<{ success: boolean; message: string }> {
+): Promise<{ success: boolean; message: string; path: string }> {
+    const data = new FormData();
+    data.append("file-name", file.name);
+    const { SessionToken: SecurityToken, Key: Key, ...rest } = (
+        await axios.post<{
+            credentials: { SessionToken: string, Key: string } & Credentials;
+        }>("/api/keygen.php", data)
+    ).data.credentials;
     const cos = new COS({
-        getAuthorization: async (options, callback) => {
-            const data = new FormData();
-            data.append("file-name", options.Key);
-            data.append("cosKey", cosKey);
-
-            const { SessionToken: SecurityToken, ...rest } = (
-                await axios.post<{
-                    credentials: { SessionToken: string } & Credentials;
-                }>("/api/keygen.php", data)
-            ).data.credentials;
-
+        getAuthorization: async (_, callback) => {
             callback({ SecurityToken, ...rest });
         },
     });
@@ -366,7 +358,7 @@ export async function uploadCOS(
             {
                 Bucket: "repair-1304562386",
                 Region: "ap-guangzhou",
-                Key: cosKey,
+                Key: Key,
                 Body: await file.arrayBuffer(),
             },
             (err, data) => {
@@ -374,11 +366,13 @@ export async function uploadCOS(
                     resolve({
                         success: false,
                         message: err.message,
+                        path: Key
                     });
                 } else {
                     resolve({
                         success: true,
                         message: JSON.stringify(data),
+                        path: Key
                     });
                 }
             },

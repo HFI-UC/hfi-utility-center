@@ -4,7 +4,6 @@ import { useToast } from "primevue/usetoast";
 import FileUpload, { FileUploadSelectEvent } from "primevue/fileupload";
 import { ref, computed, onMounted } from "vue";
 import {
-    generateCosKey,
     getMaintenance,
     postMaintenance,
     postMaintenanceAction,
@@ -132,8 +131,6 @@ const onClickEvent = async () => {
 
     loading.value = true;
 
-    const filePath = generateCosKey(file.value.name.split(".").pop());
-    maintenance.value.filePath = filePath;
 
     isCompleted.value = !Object.values(maintenance.value).some(
         (value) => value === "",
@@ -149,11 +146,12 @@ const onClickEvent = async () => {
         return;
     }
 
-    const uploadResult = await uploadCOS(file.value, filePath);
+    const uploadResult = await uploadCOS(file.value);
     if (!uploadResult.success) {
         loading.value = false;
         return;
     }
+    maintenance.value.filePath = uploadResult.path;
 
     const maintenanceResult = await postMaintenance(maintenance.value);
 

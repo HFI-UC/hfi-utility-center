@@ -13,7 +13,6 @@ import SplitButton from "primevue/splitbutton";
 import { ref, computed, onMounted, watch } from "vue";
 import {
     LostAndFoundInfo,
-    generateCosKey,
     uploadCOS,
     postLostAndFound,
     getLostAndFound,
@@ -109,8 +108,6 @@ const onClickEvent = async () => {
 
     loading.value = true;
 
-    const filePath = generateCosKey(file.value.name.split(".").pop());
-    lostnfound.value.filePath = filePath;
 
     isCompleted.value = !Object.values(lostnfound.value).some(
         (value) => value === "",
@@ -126,11 +123,12 @@ const onClickEvent = async () => {
         return;
     }
 
-    const uploadResult = await uploadCOS(file.value, filePath);
+    const uploadResult = await uploadCOS(file.value);
     if (!uploadResult.success) {
         loading.value = false;
         return;
     }
+    lostnfound.value.filePath = uploadResult.path;
 
     const lostnfoundResult = await postLostAndFound(lostnfound.value);
 
