@@ -109,7 +109,7 @@ const resolver = ref(
             email: z
                 .string()
                 .min(1, { message: "message.fill_out" })
-                .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
+                .email({
                     message: "message.invalid_email",
                 }),
             date: z.date({ message: "message.fill_out" }),

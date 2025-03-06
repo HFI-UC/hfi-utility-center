@@ -28,7 +28,7 @@ export interface MaintenanceInfo {
     location: string;
     email: string;
     campus: string;
-    filePath: string;
+    filePath: string | null;
     addTime?: number;
     status?: number;
 }
@@ -47,7 +47,7 @@ export interface Clue {
     campus: string;
     detail: string;
     location: string;
-    filePath: string;
+    filePath: string | null;
     contact: string;
     createdAt?: string;
 }
@@ -59,7 +59,7 @@ export interface LostAndFoundInfo {
     location: string;
     email: string;
     campus: string;
-    filePath: string;
+    filePath: string | null;
     password: string;
     type: string;
     eventTime: string;
@@ -338,26 +338,19 @@ export async function postPolicyAdd(
     return res.data;
 }
 
-export function generateCosKey(ext: string = ""): string {
-    return `file/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}_${String(Math.floor(Math.random() * 1e6)).padStart(6, "0")}${ext ? "." + ext : ""}`;
-}
-
 export async function uploadCOS(
     file: File,
-    cosKey: string,
-): Promise<{ success: boolean; message: string }> {
+): Promise<{ success: boolean; message: string; path: string }> {
+    const data = new FormData();
+    data.append("file-name", file.name);
+    data.set("cosKey", "/"); // nothing to do here but to make the backend server works properly.
+    const { SessionToken: SecurityToken, Key: Key, ...rest } = (
+        await axios.post<{
+            credentials: { SessionToken: string, Key: string } & Credentials;
+        }>("/api/keygen.php", data)
+    ).data.credentials;
     const cos = new COS({
-        getAuthorization: async (options, callback) => {
-            const data = new FormData();
-            data.append("file-name", options.Key);
-            data.append("cosKey", cosKey);
-
-            const { SessionToken: SecurityToken, ...rest } = (
-                await axios.post<{
-                    credentials: { SessionToken: string } & Credentials;
-                }>("/api/keygen.php", data)
-            ).data.credentials;
-
+        getAuthorization: async (_, callback) => {
             callback({ SecurityToken, ...rest });
         },
     });
@@ -366,19 +359,22 @@ export async function uploadCOS(
             {
                 Bucket: "repair-1304562386",
                 Region: "ap-guangzhou",
-                Key: cosKey,
+                Key: Key,
                 Body: await file.arrayBuffer(),
+                ContentType: file.type
             },
             (err, data) => {
                 if (err) {
                     resolve({
                         success: false,
                         message: err.message,
+                        path: Key
                     });
                 } else {
                     resolve({
                         success: true,
                         message: JSON.stringify(data),
+                        path: Key
                     });
                 }
             },
@@ -401,7 +397,7 @@ export async function postMaintenance(
     data.set("subject", maintenance.subject);
     data.set("detail", maintenance.detail);
     data.set("campus", maintenance.campus);
-    data.set("filePath", maintenance.filePath);
+    data.set("filePath", maintenance.filePath as string);
     data.set("location", maintenance.location);
     data.set("email", maintenance.email);
     try {
@@ -441,7 +437,7 @@ export async function getMaintenance(token: string) {
             await delay(index * 100);
             return {
                 ...item,
-                filePath: await getCOS(item.filePath),
+                filePath: await getCOS(item.filePath as string),
             };
         }),
     );
@@ -480,7 +476,7 @@ export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
     data.set("email", lostnfound.email);
     data.set("student_name", lostnfound.studentName);
     data.set("detail", lostnfound.detail);
-    data.set("file_path", lostnfound.filePath);
+    data.set("file_path", lostnfound.filePath as string);
     data.set("location", lostnfound.location);
     data.set("password", lostnfound.password);
     data.set("event_time", lostnfound.eventTime);
@@ -526,7 +522,7 @@ export async function getLostAndFound(
             await delay(index * 100);
             return {
                 ...item,
-                filePath: await getCOS(item.filePath),
+                filePath: await getCOS(item.filePath as string),
             };
         }),
     );
@@ -536,7 +532,7 @@ export async function getLostAndFound(
 export async function postClue(clue: Clue, id: number) {
     const data = new FormData();
     data.set("detail", clue.detail);
-    data.set("filePath", clue.filePath);
+    data.set("filePath", clue.filePath as string);
     data.set("location", clue.location);
     data.set("campus", clue.campus);
     data.set("contact", clue.contact);

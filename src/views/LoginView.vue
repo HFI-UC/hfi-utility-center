@@ -44,9 +44,9 @@ onMounted(() => {
 });
 
 const langMapping: Record<string, string> = {
-    zh_cn: "zh-CN",
-    en_us: "en-US",
-    zh_ms: "zh-CN",
+    zh_cn: "zh-cn",
+    en_us: "en-us",
+    zh_ms: "zh-cn",
 };
 
 const onSubmitEvent = (form: FormSubmitEvent) => {
