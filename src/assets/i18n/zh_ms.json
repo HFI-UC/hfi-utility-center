@@ -10,6 +10,10 @@
             "header": "敬告",
             "message": "你正在使用净水器工具中心的{0}！走去{1}如果你想提交一个房间预约",
             "beta": "贝塔版本"
+        },
+        "dialog_ai": {
+            "header": "BREAKING NEWS",
+            "message": "TRY OUT HFI-UC'S ALL NEW ARTIFICIAL INTELLIGENCE (AI) ON {0}."
         }
     },
     "menubar": {
