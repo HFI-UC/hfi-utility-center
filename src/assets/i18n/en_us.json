@@ -10,6 +10,10 @@
             "header": "Announcement",
             "message": "You are using the {0} of HFI Utility Center! Go to {1} if you want to sumbit a room application!",
             "beta": "Beta Version"
+        },
+        "dialog_ai": {
+            "header": "BREAKING NEWS",
+            "message": "TRY OUT HFI-UC'S ALL NEW ARTIFICIAL INTELLIGENCE (AI) ON {0}."
         }
     },
     "menubar": {
