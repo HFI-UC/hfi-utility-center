@@ -10,6 +10,10 @@
             "header": "公告",
             "message": "你正在使用 HFI Utility Center 的 {0}！如果你想要预约课室，请转至 {1}！",
             "beta": "Beta 版本"
+        },
+        "dialog_ai": {
+            "header": "重磅新闻",
+            "message": "即刻体验由 HFI-UC 自主研发的人工智能（AI），尽在 {0}。"
         }
     },
     "menubar": {
