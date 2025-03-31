@@ -12,8 +12,8 @@
             "beta": "贝塔版本"
         },
         "dialog_ai": {
-            "header": "BREAKING NEWS",
-            "message": "TRY OUT HFI-UC'S ALL NEW ARTIFICIAL INTELLIGENCE (AI) ON {0}."
+            "header": "重磅新闻",
+            "message": "即刻体验由 HFI-UC 自主研发的人工智能（AI），尽在 {0}。"
         }
     },
     "menubar": {
