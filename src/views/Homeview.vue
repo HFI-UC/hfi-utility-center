@@ -23,7 +23,6 @@ const hitokoto = computed(() =>
 
 const env = process.env.VERCEL_ENV;
 const visible = ref(env != "production");
-const aiVisible = ref(true)
 const goWisMart = () => {
     window.location.href = "https://wismart.hfiuc.org/"
 }
@@ -47,22 +46,6 @@ onMounted(() => {
                     href="https://www.hfiuc.org"
                     style="color: var(--p-primary-500)"
                     >https://www.hfiuc.org/</a
-                >
-            </I18nT>
-        </div>
-    </Dialog>
-    <Dialog
-        v-model:visible="aiVisible"
-        :header="$t('home.dialog_ai.header')"
-        class="w-[25rem]"
-        modal
-    >
-        <div class="flex items-center justify-center gap-4 mb-8">
-            <I18nT tag="p" keypath="home.dialog_ai.message" scope="global">
-                <a
-                    href="https://ai-future.hfiuc.org"
-                    style="color: var(--p-primary-500)"
-                    >https://ai-future.hfiuc.org/</a
                 >
             </I18nT>
         </div>
