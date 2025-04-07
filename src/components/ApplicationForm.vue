@@ -135,16 +135,8 @@ const getRooms = ({
     const rooms = [
         [
             {
-                label: "iStudy Meeting Room 1",
-                code: 101,
-            },
-            {
                 label: "iStudy Meeting Room 2",
                 code: 102,
-            },
-            {
-                label: "606",
-                code: 606,
             },
             {
                 label: "605",
@@ -165,10 +157,6 @@ const getRooms = ({
             {
                 label: "206",
                 code: 206,
-            },
-            {
-                label: "105",
-                code: 105,
             },
             {
                 label: "105",

@@ -10,7 +10,6 @@ import NotFoundView from "../views/NotFoundView.vue";
 import LostAndFoundDetailView from "../views/LostAndFoundDetailView.vue";
 import MaintenenceReportView from "../views/MaintenenceReportView.vue";
 import AbsurdView from "../views/AbsurdView.vue";
-import ShakeAndShakeView from "../views/ShakeAndShakeView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -75,10 +74,6 @@ const router = createRouter({
             path: "/:pathMatch(.*)",
             component: NotFoundView,
         },
-        {
-            path: "/shake",
-            component: ShakeAndShakeView
-        }
     ],
 });
 
