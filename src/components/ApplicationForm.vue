@@ -135,6 +135,10 @@ const getRooms = ({
     const rooms = [
         [
             {
+                label: "iStudy Meeting Room 1",
+                code: 101,
+            },
+            {
                 label: "iStudy Meeting Room 2",
                 code: 102,
             },
