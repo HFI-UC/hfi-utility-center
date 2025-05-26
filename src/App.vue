@@ -12,6 +12,7 @@ import zh_cn from "primelocale/zh-CN.json";
 import { usePrimeVue } from "primevue/config";
 import { useI18n } from "vue-i18n";
 import { MenuItem } from "primevue/menuitem";
+import { Rive } from "@rive-app/canvas";
 
 const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
 
@@ -91,16 +92,6 @@ const items = computed(() => {
     return data;
 });
 
-const iconClass = ref("icon-sun");
-
-const toggleColorScheme = () => {
-    let color = sessionStorage.getItem("color") == "white" ? "dark" : "white";
-    sessionStorage.setItem("color", color);
-    const root = document.getElementsByTagName("html")[0];
-    root.classList.toggle("p-dark");
-    iconClass.value = color == "white" ? "icon-sun" : "icon-moon";
-};
-
 const localeOptions = ref([
     {
         key: "简体中文",
@@ -135,6 +126,36 @@ watch(
     (newLocale) => changeLocale(newLocale),
 );
 
+const colorTheme = ref("white");
+const toggleColorScheme = () => {
+    let color = sessionStorage.getItem("color") == "white" ? "dark" : "white";
+    sessionStorage.setItem("color", color);
+    const root = document.getElementsByTagName("html")[0];
+    root.classList.toggle("p-dark");
+    colorTheme.value = color == "white" ? "white" : "dark";
+};
+const stateChangeCount = ref(0);
+onMounted(() => {
+    const r = new Rive({
+        src: "/theme-toggle.riv",
+        // @ts-ignore
+        canvas: document.getElementById("canvas"),
+        autoplay: true,
+        pixelRatio: 5,
+        stateMachines: "State Machine 1",
+        onLoad: () => {
+            const inputs = r.stateMachineInputs("State Machine 1");
+            const darkInput = inputs.find((i) => i.name === "isDark");
+            if (darkInput) darkInput.value = colorTheme.value == "dark";
+            r.resizeDrawingSurfaceToCanvas();
+        },
+        onStateChange: () => {
+            if (stateChangeCount.value) toggleColorScheme();
+            stateChangeCount.value++;
+        },
+    });
+});
+
 onMounted(async () => {
     selectedLocale.value = localStorage.getItem("locale") || "en_us";
     const color =
@@ -146,9 +167,9 @@ onMounted(async () => {
         sessionStorage.setItem("color", color);
         const root = document.getElementsByTagName("html")[0];
         root.classList.toggle("p-dark");
-        iconClass.value = "icon-moon";
+        colorTheme.value = "dark";
     }
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (!token) return;
     if (await verifyAdmin(token)) {
         isAdmin.value = true;
@@ -172,33 +193,35 @@ onMounted(async () => {
                 </template>
                 <template #end>
                     <div class="flex gap-2">
-                    <Select
-                        :options="localeOptions"
-                        v-model="selectedLocale"
-                        optionValue="code"
-                        optionLabel="key"
-                        :style="{ width: '9rem' }"
-                    >
-                        <template #dropdownicon>
-                            <i class="icon-globe" />
-                        </template>
-                    </Select>
-                    <Button
-                        v-if="!isAdmin"
-                        @click="signIn()"
-                        severity="success"
-                        icon="icon-log-in"
-                    >
-                    </Button>
-                    <Button
-                        v-if="isAdmin"
-                        @click="signOut()"
-                        severity="danger"
-                        icon="icon-log-out"
-                    >
-                    </Button>
-                    <Button @click="toggleColorScheme()" :icon="`${iconClass}`">
-                    </Button></div>
+                        <Select
+                            :options="localeOptions"
+                            v-model="selectedLocale"
+                            optionValue="code"
+                            optionLabel="key"
+                            :style="{ width: '9rem' }"
+                        >
+                            <template #dropdownicon>
+                                <i class="icon-globe" />
+                            </template>
+                        </Select>
+                        <Button
+                            v-if="!isAdmin"
+                            @click="signIn()"
+                            severity="success"
+                            icon="icon-log-in"
+                        >
+                        </Button>
+                        <Button
+                            v-if="isAdmin"
+                            @click="signOut()"
+                            severity="danger"
+                            icon="icon-log-out"
+                        >
+                        </Button>
+                        <a href="#" class="flex items-center">
+                            <canvas id="canvas" style="width: 80px"></canvas>
+                        </a>
+                    </div>
                 </template>
             </Menubar>
         </div>
@@ -248,7 +271,12 @@ onMounted(async () => {
             scope="global"
             class="flex flex-wrap text-center justify-center"
         >
-            <img class="ms-2 me-1" src="./assets/chatgpt.svg" width="100px" alt="chatgpt" />
+            <img
+                class="ms-2 me-1"
+                src="./assets/chatgpt.svg"
+                width="100px"
+                alt="chatgpt"
+            />
         </I18nT>
     </footer>
     <ScrollTop />

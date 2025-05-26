@@ -23,9 +23,6 @@ const hitokoto = computed(() =>
 
 const env = process.env.VERCEL_ENV;
 const visible = ref(env != "production");
-const goWisMart = () => {
-    window.location.href = "https://wismart.hfiuc.org/"
-}
 
 onMounted(() => {
     setTimeout(() => run(), 3000);
@@ -66,8 +63,6 @@ onMounted(() => {
                 @click="router.push('/reservation/status')"
             ></Button>
         </div>
-        <Button class="mt-8 !bg-orange-500 !text-white !w-[100px] !h-[45px] !border-orange-500 !rounded-full !font-bold !text-md" label="WisMart" @click="goWisMart()"></Button>
-        <div class="w-[100px] h-[50px] mt-[-48px] bg-gradient-to-r from-orange-500 to-orange-400 rounded-full blur-2xl z-[-1]"></div>
     </div>
 </template>
 

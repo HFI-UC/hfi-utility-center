@@ -12,6 +12,7 @@
   "dependencies": {
     "@primevue/forms": "^4.2.5",
     "@primevue/themes": "^4.2.5",
+    "@rive-app/canvas": "^2.28.0",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
     "axios": "^1.7.9",
