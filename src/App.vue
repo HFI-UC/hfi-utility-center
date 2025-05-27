@@ -169,7 +169,7 @@ onMounted(async () => {
         root.classList.toggle("p-dark");
         colorTheme.value = "dark";
     }
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return;
     if (await verifyAdmin(token)) {
         isAdmin.value = true;
