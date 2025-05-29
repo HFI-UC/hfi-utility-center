@@ -154,6 +154,17 @@ onMounted(() => {
             stateChangeCount.value++;
         },
     });
+    const rLogo = new Rive({
+        src: "/logo.riv",
+        // @ts-ignore
+        canvas: document.getElementById("logo-canvas"),
+        autoplay: true,
+        pixelRatio: 5,
+        stateMachines: "State Machine 1",
+        onLoad: () => {
+            rLogo.resizeDrawingSurfaceToCanvas();
+        },
+    });
 });
 
 onMounted(async () => {
@@ -184,12 +195,7 @@ onMounted(async () => {
             <Menubar :model="items">
                 <template #start>
                     <a href="/"
-                        ><img
-                            src="./assets/logo.svg"
-                            class="m-1"
-                            alt="logo"
-                            style="height: 25px"
-                    /></a>
+                        ><canvas id="logo-canvas" style="width: 60px"></canvas></a>
                 </template>
                 <template #end>
                     <div class="flex gap-2">
