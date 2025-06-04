@@ -8,7 +8,7 @@
         },
         "dialog": {
             "header": "Announcement",
-            "message": "You are using the {0} of HFI Utility Center! Go to {1} if you want to sumbit a room application!",
+            "message": "You are using the {0} of HFI Utility Center! Go to {1} if you want to submit a room application!",
             "beta": "Beta Version"
         }
     },
