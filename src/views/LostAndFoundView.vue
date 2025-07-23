@@ -40,7 +40,7 @@ const onFileSelect = (event: FileUploadSelectEvent) => {
 const toast = useToast();
 const loading = ref(false);
 const { t } = useI18n();
-const token = ref("")
+const token = ref("");
 const types = ref([
     {
         label: t("lostnfound.type.lost"),
@@ -107,7 +107,6 @@ const onClickEvent = async () => {
     }
 
     loading.value = true;
-
 
     isCompleted.value = !Object.values(lostnfound.value).some(
         (value) => value === "",
@@ -223,13 +222,13 @@ const status = computed(() => [
     t("lostnfound.status.pending"),
     t("lostnfound.status.completed"),
     t("lostnfound.status.clue"),
-    t("lostnfound.status.hidden")
+    t("lostnfound.status.hidden"),
 ]);
 
 const severity = ref(["info", "success", "warn", "secondary"]);
 
 onMounted(() => {
-    token.value = sessionStorage.getItem("token") || ""
+    token.value = sessionStorage.getItem("token") || "";
     run();
 });
 </script>
@@ -284,9 +283,11 @@ onMounted(() => {
                 <InputText
                     id="email"
                     v-model="lostnfound.email"
-                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.email', [
-                                            'sam.xulf2024@gdhfi.com',
-                                        ])"
+                    v-tooltip.bottom="
+                        $t('lostnfound.tooltip.lostnfound.email', [
+                            'sam.xulf2024@gdhfi.com',
+                        ])
+                    "
                     :invalid="!isCompleted && lostnfound.email == ''"
                 />
                 <label for="email">{{
@@ -298,7 +299,9 @@ onMounted(() => {
                     id="password"
                     type="password"
                     v-model="lostnfound.password"
-                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.password')"
+                    v-tooltip.bottom="
+                        $t('lostnfound.tooltip.lostnfound.password')
+                    "
                     :invalid="!isCompleted && lostnfound.password == ''"
                 />
                 <label for="password">{{
@@ -323,7 +326,9 @@ onMounted(() => {
                 <Select
                     id="campus"
                     v-model="lostnfound.campus"
-                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.campus')"
+                    v-tooltip.bottom="
+                        $t('lostnfound.tooltip.lostnfound.campus')
+                    "
                     :invalid="!isCompleted && lostnfound.campus == ''"
                     :options="campus"
                     optionLabel="label"
@@ -337,7 +342,9 @@ onMounted(() => {
                 <InputText
                     id="location"
                     v-model="lostnfound.location"
-                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.location')"
+                    v-tooltip.bottom="
+                        $t('lostnfound.tooltip.lostnfound.location')
+                    "
                     :invalid="!isCompleted && lostnfound.location == ''"
                 />
                 <label for="location">{{
@@ -348,7 +355,9 @@ onMounted(() => {
                 <InputText
                     id="detail"
                     v-model="lostnfound.detail"
-                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.detail')"
+                    v-tooltip.bottom="
+                        $t('lostnfound.tooltip.lostnfound.detail')
+                    "
                     :invalid="!isCompleted && lostnfound.detail == ''"
                 />
                 <label for="detail">{{
@@ -367,8 +376,12 @@ onMounted(() => {
                 }}</label>
             </FloatLabel>
             <FloatLabel class="m-[20px]">
-                <InputText id="reward" v-model="lostnfound.reward"
-                v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.reward')"
+                <InputText
+                    id="reward"
+                    v-model="lostnfound.reward"
+                    v-tooltip.bottom="
+                        $t('lostnfound.tooltip.lostnfound.reward')
+                    "
                 />
                 <label for="reward">{{
                     $t("lostnfound.new_lostnfound.reward")
@@ -378,8 +391,10 @@ onMounted(() => {
                 <InputText
                     id="alternativeContact"
                     v-model="lostnfound.altContact"
-                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.alternative_contact')"
-                    />
+                    v-tooltip.bottom="
+                        $t('lostnfound.tooltip.lostnfound.alternative_contact')
+                    "
+                />
                 <label for="alternativeContact">{{
                     $t("lostnfound.new_lostnfound.alternative_contact")
                 }}</label>
@@ -412,7 +427,9 @@ onMounted(() => {
                 <InputText
                     id="password"
                     v-model="password"
-                    v-tooltip.bottom="$t('lostnfound.tooltip.lostnfound.password')"
+                    v-tooltip.bottom="
+                        $t('lostnfound.tooltip.lostnfound.password')
+                    "
                     :loading="loading"
                     :invalid="!isPassword && password == ''"
                 />
@@ -476,7 +493,7 @@ onMounted(() => {
                                 }}
                             </h3>
                             <Image
-                                :src="lostnfound.filePath"
+                                :src="lostnfound.filePath ?? undefined"
                                 class="w-full h-[20rem] items-center justify-center mt-4 mb-6"
                                 preview
                             ></Image>
@@ -557,8 +574,8 @@ onMounted(() => {
                                 icon="icon-settings"
                                 :label="$t('lostnfound.card.manage')"
                                 @click="
-                                    (manage = true),
-                                        (id = lostnfound.id as number)
+                                    ((manage = true),
+                                    (id = lostnfound.id as number))
                                 "
                             ></Button>
                         </div>

@@ -217,7 +217,7 @@ onMounted(async () => {
                     :label="$t('reservation.reject.cancel')"
                     :disabled="disabled"
                     severity="secondary"
-                    @click="(visible = false), (disabled = false)"
+                    @click="((visible = false), (disabled = false))"
                 ></Button>
                 <Button
                     type="button"
@@ -318,9 +318,9 @@ onMounted(async () => {
                                                 $t('reservation.reject.reject')
                                             "
                                             @click="
-                                                (reason = ''),
-                                                    (visible = true),
-                                                    (selectedBooking = booking)
+                                                ((reason = ''),
+                                                (visible = true),
+                                                (selectedBooking = booking))
                                             "
                                             :disabled="disabled"
                                             severity="danger"
@@ -333,8 +333,8 @@ onMounted(async () => {
                                             :label="$t('reservation.pass')"
                                             class="w-full"
                                             @click="
-                                                (selectedBooking = booking),
-                                                    onAcceptEvent()
+                                                ((selectedBooking = booking),
+                                                onAcceptEvent())
                                             "
                                         ></Button>
                                     </div>
@@ -421,9 +421,9 @@ onMounted(async () => {
                                                 $t('reservation.reject.reject')
                                             "
                                             @click="
-                                                (reason = ''),
-                                                    (visible = true),
-                                                    (selectedBooking = booking)
+                                                ((reason = ''),
+                                                (visible = true),
+                                                (selectedBooking = booking))
                                             "
                                             :disabled="disabled"
                                             severity="danger"
@@ -437,8 +437,8 @@ onMounted(async () => {
                                             class="w-full"
                                             :disabled="disabled"
                                             @click="
-                                                (selectedBooking = booking),
-                                                    onAcceptEvent()
+                                                ((selectedBooking = booking),
+                                                onAcceptEvent())
                                             "
                                         ></Button>
                                     </div>

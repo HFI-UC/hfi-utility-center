@@ -380,8 +380,8 @@ onMounted(async () => {
                                     severity="danger"
                                     class="w-full"
                                     @click="
-                                        (id = policy.id as number),
-                                            onDeleteEvent()
+                                        ((id = policy.id as number),
+                                        onDeleteEvent())
                                     "
                                 />
                                 <Button
@@ -391,8 +391,8 @@ onMounted(async () => {
                                     :label="$t('policy.card.resume')"
                                     class="w-full"
                                     @click="
-                                        (id = policy.id as number),
-                                            onResumeEvent()
+                                        ((id = policy.id as number),
+                                        onResumeEvent())
                                     "
                                 ></Button>
                                 <Button
@@ -402,8 +402,8 @@ onMounted(async () => {
                                     :label="$t('policy.card.stop')"
                                     class="w-full"
                                     @click="
-                                        (id = policy.id as number),
-                                            onPauseEvent()
+                                        ((id = policy.id as number),
+                                        onPauseEvent())
                                     "
                                 ></Button>
                             </div>

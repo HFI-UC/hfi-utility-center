@@ -126,7 +126,11 @@ const handleSubmit = async () => {
             </ScrollPanel>
             <div class="input-box flex justify-center">
                 <div class="input-area flex items-center">
-                    <form autocomplete="off" @submit.prevent="handleSubmit()" class="flex items-center">
+                    <form
+                        autocomplete="off"
+                        @submit.prevent="handleSubmit()"
+                        class="flex items-center"
+                    >
                         <InputText
                             v-model="userInput"
                             placeholder="给“NoobGPT”发送消息"

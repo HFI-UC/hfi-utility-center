@@ -25,7 +25,7 @@ const showMore = ref(false);
 const slideDown = ref(true);
 const showLive2d = ref(false);
 const addLoading = ref(false);
-const key = ref(1)
+const key = ref(1);
 const showSummonButton = ref(true);
 const turnstileRef = ref<any>(null);
 const onPlay = () => {
@@ -101,12 +101,12 @@ const getRandomStatusImage = () => {
 
 const imageUrl = ref("");
 
-const { locale } = useI18n()
+const { locale } = useI18n();
 
 watch(
     () => locale.value,
     () => {
-        key.value++
+        key.value++;
     },
 );
 
