@@ -3,7 +3,11 @@
         class="container flex flex-col justify-center items-center p-[2rem]"
         ref="containerRef"
     >
-        <div v-if="!isPlaying" id="warning" class="text-center text-white mb-4 text-lg">
+        <div
+            v-if="!isPlaying"
+            id="warning"
+            class="text-center text-white mb-4 text-lg"
+        >
             <span class="font-bold">警告：</span
             >此动画包含闪烁效果，可能会对光敏性癫痫患者造成不适，请谨慎观看。
         </div>

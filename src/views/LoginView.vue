@@ -31,11 +31,11 @@ const resolver = ref(
 );
 const toast = useToast();
 const loading = ref(false);
-const key = ref(1)
+const key = ref(1);
 watch(
     () => locale.value,
     () => {
-        key.value++
+        key.value++;
     },
 );
 

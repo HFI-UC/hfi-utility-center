@@ -344,9 +344,13 @@ export async function uploadCOS(
     const data = new FormData();
     data.append("file-name", file.name);
     data.set("cosKey", "/"); // nothing to do here but to make the backend server work properly.
-    const { SessionToken: SecurityToken, Key: Key, ...rest } = (
+    const {
+        SessionToken: SecurityToken,
+        Key: Key,
+        ...rest
+    } = (
         await axios.post<{
-            credentials: { SessionToken: string, Key: string } & Credentials;
+            credentials: { SessionToken: string; Key: string } & Credentials;
         }>("/api/keygen.php", data)
     ).data.credentials;
     const cos = new COS({
@@ -361,20 +365,20 @@ export async function uploadCOS(
                 Region: "ap-guangzhou",
                 Key: Key,
                 Body: await file.arrayBuffer(),
-                ContentType: file.type
+                ContentType: file.type,
             },
             (err, data) => {
                 if (err) {
                     resolve({
                         success: false,
                         message: err.message,
-                        path: Key
+                        path: Key,
                     });
                 } else {
                     resolve({
                         success: true,
                         message: JSON.stringify(data),
-                        path: Key
+                        path: Key,
                     });
                 }
             },
@@ -591,7 +595,7 @@ export async function getAbsurdCount() {
 }
 
 export async function postAbsurdAdd(cf_token: string) {
-    const data = { cf_token: cf_token }
+    const data = { cf_token: cf_token };
     try {
         const res = await axios.post<{ success: boolean }>(
             "/api/visitHell.php",

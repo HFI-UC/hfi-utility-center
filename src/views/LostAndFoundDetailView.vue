@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import {
-    getLostAndFound,
-    getCOS,
-    Clue,
-    uploadCOS,
-    postClue,
-} from "../api";
+import { getLostAndFound, getCOS, Clue, uploadCOS, postClue } from "../api";
 import { useRequest } from "vue-request";
 import { computed, onMounted, ref } from "vue";
 import Card from "primevue/card";
@@ -76,7 +70,6 @@ const onClickEvent = async () => {
     }
 
     loading.value = true;
-
 
     isCompleted.value = !Object.values(clue.value).some(
         (value) => value === "",
@@ -284,7 +277,7 @@ const onViewEvent = async (path: string) => {
                         id="content"
                     >
                         <Image
-                            :src="lostnfound.filePath"
+                            :src="lostnfound.filePath ?? undefined"
                             class="items-center justify-center"
                             id="image"
                             preview

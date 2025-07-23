@@ -131,7 +131,6 @@ const onClickEvent = async () => {
 
     loading.value = true;
 
-
     isCompleted.value = !Object.values(maintenance.value).some(
         (value) => value === "",
     );
@@ -344,7 +343,7 @@ const resetForm = () => {
                             </h3>
                             <h4>{{ maintenance.subject }}</h4>
                             <Image
-                                :src="maintenance.filePath"
+                                :src="maintenance.filePath ?? undefined"
                                 class="w-full h-[20rem] items-center justify-center mt-4 mb-6"
                                 preview
                             ></Image>
