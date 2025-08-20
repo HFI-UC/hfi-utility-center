@@ -167,10 +167,6 @@ const getRooms = ({
                 code: 206,
             },
             {
-                label: "105",
-                code: 105,
-            },
-            {
                 label: "Writing Center 1",
                 code: 103,
             },
