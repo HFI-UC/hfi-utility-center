@@ -11,8 +11,9 @@ import en from "primelocale/en.json";
 import zh_cn from "primelocale/zh-CN.json";
 import { usePrimeVue } from "primevue/config";
 import { useI18n } from "vue-i18n";
-import { MenuItem } from "primevue/menuitem";
 import { Rive } from "@rive-app/canvas";
+import { SpeedInsights } from '@vercel/speed-insights/vue';
+import { Analytics } from '@vercel/analytics/vue';
 
 const sha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7);
 
@@ -31,7 +32,7 @@ const changeLocale = (lang: string) => {
 };
 
 const items = computed(() => {
-    const data: MenuItem[] = [
+    const data: any = [
         {
             label: t("menubar.homepage"),
             icon: "icon-house",
@@ -189,6 +190,8 @@ onMounted(async () => {
 </script>
 
 <template>
+    <Analytics />
+    <SpeedInsights />
     <div id="global">
         <Toast />
         <div>

@@ -351,8 +351,8 @@ const getEndTimeOptions = ({
         selectedRoom.value,
         startHours,
         startMinutes + 15,
-        21,
-        15,
+        startHours + 2,
+        startMinutes,
     );
 };
 
@@ -650,6 +650,7 @@ const rules = computed(() =>
                                     $t('application.tooltip.start_time')
                                 "
                                 name="startTime"
+                                @change="$form.endTime.value = null"
                                 :placeholder="$t('application.start_time')"
                                 :options="getStartTimeOptions($form as any)"
                             >

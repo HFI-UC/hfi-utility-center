@@ -8,8 +8,6 @@ import ToastService from "primevue/toastservice";
 import Tooltip from "primevue/tooltip";
 import { Vio } from "./styles/theme";
 import { createI18n } from "vue-i18n";
-import { inject } from "@vercel/analytics";
-import { injectSpeedInsights } from "@vercel/speed-insights";
 import en_us from "./assets/i18n/en_us.json";
 import zh_cn from "./assets/i18n/zh_cn.json";
 import zh_ms from "./assets/i18n/zh_ms.json";
@@ -25,8 +23,6 @@ const i18n = createI18n({
         zh_ms,
     },
 });
-inject();
-injectSpeedInsights();
 app.use(i18n);
 app.use(router);
 app.use(ToastService);
