@@ -30,7 +30,7 @@ import { useToast } from "primevue";
 
 const visible = ref(false);
 const { t } = useI18n();
-const toast = useToast()
+const toast = useToast();
 const { data: policyData } = useRequest(fetchPolicy);
 const policy = ref<RoomPolicyInfo[] | null>(null);
 const reservation = ref<ReservationInfo | null>(null);
@@ -100,9 +100,7 @@ const classes = computed(() => [
 const resolver = ref(
     zodResolver(
         z.object({
-            selectedClass: z
-                .string()
-                .min(1, { message: "message.fill_out" }),
+            selectedClass: z.string().min(1, { message: "message.fill_out" }),
             studentName: z.string().min(1, { message: "message.fill_out" }),
             selectedRoom: z.number({ message: "message.fill_out" }),
             studentId: z
@@ -110,19 +108,14 @@ const resolver = ref(
                 .min(1, { message: "message.fill_out" })
                 .startsWith("GJ", { message: "message.start_with_gj" })
                 .regex(/\d/, "message.contains_number"),
-            email: z
-                .string()
-                .min(1, { message: "message.fill_out" })
-                .email({
-                    message: "message.invalid_email",
-                }),
+            email: z.string().min(1, { message: "message.fill_out" }).email({
+                message: "message.invalid_email",
+            }),
             date: z.date({ message: "message.fill_out" }),
             startTime: z.string().min(1, { message: "message.fill_out" }),
             endTime: z.string().min(1, { message: "message.fill_out" }),
             reason: z.string().min(1, { message: "message.fill_out" }),
-            selectedCampus: z
-                .string()
-                .min(1, { message: "message.fill_out" }),
+            selectedCampus: z.string().min(1, { message: "message.fill_out" }),
             isAgreed: z
                 .boolean()
                 .refine((value) => value, { message: "message.fill_out" }),
@@ -274,10 +267,7 @@ const generateTimeOptions = (
     const res = options.filter((item) => {
         if (!date || !selectedRoom) return true;
         const time = new Date(`${formatDate(date)}T${item}`);
-        return (
-            validatePolicy(time) &&
-            validateTimeConflict(time)
-        );
+        return validatePolicy(time) && validateTimeConflict(time);
     });
     return res;
 };
@@ -288,9 +278,7 @@ const validateTimeConflict = (time: Date): boolean => {
         const [start, end] = booking.time.split("-");
         const startDate = new Date(parseInt(start)),
             endDate = new Date(parseInt(end));
-        return (
-            endDate >= time && startDate <= time
-        );
+        return endDate >= time && startDate <= time;
     });
 };
 
@@ -299,9 +287,7 @@ const validatePolicy = (time: Date): boolean => {
     return !policy.value.some((rule) => {
         const days = rule.days.split(",");
         const day = time.getDay();
-        if (
-            days.includes(day.toString())
-        ) {
+        if (days.includes(day.toString())) {
             const [startHour, startMinute] = rule.start_time
                 .split(":")
                 .map(Number);
@@ -347,8 +333,8 @@ const getEndTimeOptions = ({
         selectedRoom.value,
         startHours,
         startMinutes + 15,
-        startHours + 2,
-        startMinutes,
+        21 > startHours + 2 ? startHours + 2 : 21,
+        15 > startMinutes && 21 < startHours + 2 ? 15 : startMinutes,
     );
 };
 
@@ -422,7 +408,9 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $t($form.studentName.error?.message) }}</Message
+                                >{{
+                                    $t($form.studentName.error?.message)
+                                }}</Message
                             >
                         </div>
                         <div class="flex flex-col gap-2">
@@ -451,7 +439,8 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{
+                            >
+                                {{
                                     $t($form.selectedClass.error?.message)
                                 }}</Message
                             >
@@ -472,7 +461,9 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $t($form.studentId.error?.message) }}</Message
+                                >{{
+                                    $t($form.studentId.error?.message)
+                                }}</Message
                             >
                         </div>
                         <div class="flex flex-col gap-2">
@@ -546,7 +537,8 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{
+                            >
+                                {{
                                     $t($form.selectedRoom.error?.message)
                                 }}</Message
                             >
@@ -628,9 +620,12 @@ const rules = computed(() =>
                                 :max-date="maxDate"
                                 :manual-input="false"
                             >
-                            <template #inputicon="slotProps">
-                                <i class="icon-calendar" @click="slotProps.clickCallback" />
-                            </template>
+                                <template #inputicon="slotProps">
+                                    <i
+                                        class="icon-calendar"
+                                        @click="slotProps.clickCallback"
+                                    />
+                                </template>
                             </DatePicker>
                             <Message
                                 v-if="$form.date?.invalid"
@@ -659,7 +654,9 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $t($form.startTime.error?.message) }}</Message
+                                >{{
+                                    $t($form.startTime.error?.message)
+                                }}</Message
                             >
                         </div>
                         <div class="flex flex-col gap-2">
@@ -692,9 +689,7 @@ const rules = computed(() =>
                                         $t('application.tooltip.reason')
                                     "
                                 />
-                                <InputIcon
-                                    class="icon-info"
-                                ></InputIcon>
+                                <InputIcon class="icon-info"></InputIcon>
                             </IconField>
                             <Message
                                 v-if="$form.reason?.invalid"
@@ -730,7 +725,9 @@ const rules = computed(() =>
                                 severity="error"
                                 size="small"
                                 variant="simple"
-                                >{{ $t($form.isAgreed.error?.message) }}</Message
+                                >{{
+                                    $t($form.isAgreed.error?.message)
+                                }}</Message
                             >
                         </div>
                         <Button
@@ -792,15 +789,18 @@ a:hover {
     #card {
         width: calc(100% - 1.5rem);
     }
+
     h2 {
         font-size: 1.45rem;
     }
+
     :deep(.p-inputtext),
     .p-select,
     .p-textarea,
     #datatable {
         min-width: 16rem;
     }
+
     h1 {
         font-size: 1.75rem;
     }
