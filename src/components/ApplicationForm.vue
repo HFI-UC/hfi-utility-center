@@ -144,18 +144,6 @@ const getRooms = ({
                 code: 605,
             },
             {
-                label: "603",
-                code: 603,
-            },
-            {
-                label: "602",
-                code: 602,
-            },
-            {
-                label: "601",
-                code: 601,
-            },
-            {
                 label: "206",
                 code: 206,
             },
@@ -333,8 +321,8 @@ const getEndTimeOptions = ({
         selectedRoom.value,
         startHours,
         startMinutes + 15,
-        21 > startHours + 2 ? startHours + 2 : 21,
-        15 > startMinutes && 21 < startHours + 2 ? 15 : startMinutes,
+        21 >= startHours + 2 ? startHours + 2 : 21,
+        30 > startMinutes && 21 <= startHours + 2 ? 30 : startMinutes,
     );
 };
 
