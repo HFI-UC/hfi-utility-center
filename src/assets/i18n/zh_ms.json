@@ -8,7 +8,7 @@
         },
         "dialog": {
             "header": "敬告",
-            "message": "你正在使用净水器工具中心的{0}！走去{1}如果你想提交一个房间预约",
+            "message": "You are using the {0} of HFI Utility Center! Go to {1} if you want to submit a room application!",
             "beta": "贝塔版本"
         }
     },
