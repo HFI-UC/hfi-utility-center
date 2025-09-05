@@ -343,7 +343,7 @@ export async function uploadCOS(
 ): Promise<{ success: boolean; message: string; path: string }> {
     const data = new FormData();
     data.append("file-name", file.name);
-    data.set("cosKey", "/"); // nothing to do here but to make the backend server works properly.
+    data.set("cosKey", "/"); // nothing to do here but to make the backend server work properly.
     const { SessionToken: SecurityToken, Key: Key, ...rest } = (
         await axios.post<{
             credentials: { SessionToken: string, Key: string } & Credentials;
