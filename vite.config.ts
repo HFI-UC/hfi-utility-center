@@ -1,23 +1,24 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import sitemap from 'vite-plugin-sitemap'
+import tailwindcss from "@tailwindcss/vite";
+import mpa from "vite-plugin-mpa";
+import path from "path";
+import components from "unplugin-vue-components/vite";
+import { PrimeVueResolver } from "@primevue/auto-import-resolver";
 
-const dynamicRoutes = [
-    "/reservation/create",
-    "/reservation/status",
-    "/admin/login",
-    "/admin/reservations",
-    "/admin/approval",
-    "/admin/policy",
-    "/maintenance",
-    "/lostnfound"
-]
-
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
-    plugins: [vue(), sitemap({ hostname: "https://www.hfiuc.org", readable: true, dynamicRoutes: dynamicRoutes})],
-    define: {
-        "process.env.VERCEL_ENV": JSON.stringify(process.env.VERCEL_ENV),
-        "process.env.VERCEL_GIT_COMMIT_SHA": JSON.stringify(process.env.VERCEL_GIT_COMMIT_SHA)
-    }
+    plugins: [
+        vue(),
+        tailwindcss(),
+        // @ts-ignore
+        mpa.default(),
+        components({ resolvers: [PrimeVueResolver()] }),
+    ],
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "src"),
+        },
+    },
+    assetsInclude: ["**/*.riv", "**/*.wasm"],
 });
