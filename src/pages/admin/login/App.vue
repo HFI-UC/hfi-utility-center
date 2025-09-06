@@ -68,7 +68,7 @@ const initialValues = ref({ email: null, password: null });
     <Navbar></Navbar>
     <LoadingMask></LoadingMask>
     <AdminLogin :requireLogin="false" :redirect="getRedirect()"></AdminLogin>
-    <div class="flex items-center justify-center flex-col my-[6rem]">
+    <div class="flex items-center justify-center flex-col mt-[6rem] mb-4">
         <h1 class="font-bold text-3xl my-4">Admin Login</h1>
         <Card class="sm:w-[25rem] w-[23rem]">
             <template #content>

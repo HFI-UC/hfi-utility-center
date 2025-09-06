@@ -23,6 +23,8 @@ RuntimeLoader.setWasmUrl(riveWASMResource)
 const isScrolled = ref(false);
 const isMobile = ref(false);
 const menu = ref();
+const riveInstance = ref<any>(null);
+const resizeTimeout = ref<number | null>(null);
 const { data: loginData } = useRequest(getCheckLogin);
 
 const handleScroll = () => {
@@ -30,6 +32,17 @@ const handleScroll = () => {
 };
 const handleResize = () => {
     isMobile.value = window.innerWidth < 900;
+    if (resizeTimeout.value) {
+        clearTimeout(resizeTimeout.value);
+    }
+    resizeTimeout.value = window.setTimeout(() => {
+        if (
+            riveInstance.value &&
+            typeof riveInstance.value.resizeDrawingSurfaceToCanvas === "function"
+        ) {
+            riveInstance.value.resizeDrawingSurfaceToCanvas();
+        }
+    }, 150);
 };
 const toggleMenu = (event: Event) => {
     menu.value.toggle(event);
@@ -148,6 +161,7 @@ onMounted(() => {
             stateChangeCount.value++;
         },
     });
+    riveInstance.value = r;
 });
 
 onMounted(async () => {

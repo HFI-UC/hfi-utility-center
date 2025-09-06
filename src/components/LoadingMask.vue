@@ -56,7 +56,7 @@ onMounted(() => {
             class="z-[9998] absolute inset-0 bg-gradient-to-br from-red-800 from-10% via-indigo-500 via-50% to-violet-400 to-70% animate-gradient bg-[length:400%_400%]"
         ></div>
         <div
-            class="absolute z-[9999] w-40 h-40 border-zinc-200 bg-white border-1 shadow-lg rounded-4xl pointer-events-none transition-transform duration-500 ease-out flex items-center justify-center"
+            class="absolute z-[9999] w-40 h-40 border-zinc-200 bg-white border-1 shadow-lg rounded-[35px] pointer-events-none transition-transform duration-500 ease-out flex items-center justify-center"
         >
             <canvas
                 id="logo-canvas"

@@ -21,8 +21,6 @@ declare module 'vue' {
     Divider: typeof import('primevue/divider')['default']
     Fieldset: typeof import('primevue/fieldset')['default']
     Form: typeof import('@primevue/forms/form')['default']
-    IconField: typeof import('primevue/iconfield')['default']
-    InputIcon: typeof import('primevue/inputicon')['default']
     InputText: typeof import('primevue/inputtext')['default']
     LoadingMask: typeof import('./src/components/LoadingMask.vue')['default']
     Menu: typeof import('primevue/menu')['default']
@@ -30,7 +28,6 @@ declare module 'vue' {
     MultiSelect: typeof import('primevue/multiselect')['default']
     Navbar: typeof import('./src/components/Navbar.vue')['default']
     Select: typeof import('primevue/select')['default']
-    SelectButton: typeof import('primevue/selectbutton')['default']
     Tag: typeof import('primevue/tag')['default']
     Toast: typeof import('primevue/toast')['default']
   }
