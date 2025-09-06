@@ -217,7 +217,7 @@ const deleteAdmin = async (id: number) => {
             </div>
         </Form>
     </Dialog>
-    <div class="my-[6rem] mx-[3rem]">
+    <div class="mt-[6rem] mb-4 mx-[3rem]">
         <h1 class="font-bold text-3xl my-4">Admin Management</h1>
         <Card>
             <template #content>

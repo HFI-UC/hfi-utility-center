@@ -323,7 +323,7 @@ const termsVisible = ref(false);
             <li>At any time, the study area must not be used for non-study-related activities (including but not limited to video games on phones/computers, board games, watching variety shows or movies, etc.). Violation of these rules will be handled according to the "Student Violation Management Regulations" based on the actual situation.</li>
         </ul>
     </Dialog>
-    <div class="flex items-center justify-center flex-col my-[6rem]">
+    <div class="flex items-center justify-center flex-col mt-[6rem] mb-4">
         <h1 class="font-bold text-3xl my-4">New Reservation</h1>
         <Card class="sm:w-[25rem] w-[23rem]">
             <template #content>

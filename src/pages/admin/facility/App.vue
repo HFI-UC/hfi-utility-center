@@ -1277,7 +1277,7 @@ const deleteApprover = async (id: number) => {
             </div>
         </Form>
     </Dialog>
-    <div class="my-[6rem] md:mx-[3rem] mx-4">
+    <div class="mt-[6rem] mb-4 md:mx-[3rem] mx-4">
         <h1 class="text-3xl font-bold my-4">Facility Management</h1>
         <div class="grid gap-4 grid-cols-6">
             <Card class="md:col-span-6 col-span-6">

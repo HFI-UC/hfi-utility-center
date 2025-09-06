@@ -388,7 +388,7 @@ const exportOptions = [
             </div>
         </Form>
     </Dialog>
-    <div class="my-[6rem] md:mx-[3rem] mx-4">
+    <div class="mt-[6rem] mb-4 md:mx-[3rem] mx-4">
         <h1 class="font-bold md:text-3xl text-2xl my-4">
             Reservation Management
         </h1>

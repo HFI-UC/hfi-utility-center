@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { PenSquare, Search } from 'lucide-vue-next';
-import LoadingMask from '../../components/LoadingMask.vue';
+// import LoadingMask from '../../components/LoadingMask.vue';
 import Navbar from '../../components/Navbar.vue';
 </script>
 <template>
-    <LoadingMask />
+    <!-- <LoadingMask /> -->
     <Navbar></Navbar>
     <div class="flex items-center justify-center h-[100vh] flex-col">
         <h1 class="font-extrabold text-4xl sm:text-5xl bg-linear-to-r from-cyan-500 to-sky-500 bg-clip-text text-transparent text-center inline-block p-4">HFI Utility Center</h1>

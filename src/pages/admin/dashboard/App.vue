@@ -10,7 +10,7 @@ import LoadingMask from '../../../components/LoadingMask.vue';
     <AdminLogin :requireLogin="true"></AdminLogin>
     <Navbar></Navbar>
     <LoadingMask></LoadingMask>
-    <div class="my-[6rem] mx-[3rem]">
+    <div class="mt-[6rem] mb-4 mx-[3rem]">
         <h1 class="font-bold text-3xl my-4">Admin Dashboard</h1>
         <h2 class="font-bold text-lg mt-8 mb-3">Application Entrance</h2>
         <div class="flex flex-wrap gap-3 items-center">
