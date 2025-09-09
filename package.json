@@ -16,6 +16,8 @@
     "@tailwindcss/vite": "^4.1.12",
     "axios": "^1.11.0",
     "canvas-confetti": "^1.9.3",
+    "chart.js": "^4.5.0",
+    "dotenv": "^17.2.2",
     "lucide-vue-next": "^0.540.0",
     "primevue": "^4.3.7",
     "tailwindcss": "^4.1.12",

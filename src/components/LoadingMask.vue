@@ -60,7 +60,7 @@ onMounted(() => {
         >
             <canvas
                 id="logo-canvas"
-                class="pointer-events-none w-[100px] h-[100px] aria-hidden touch-none"
+                class="pointer-events-none h-17 aria-hidden touch-none"
             ></canvas>
         </div>
     </div>

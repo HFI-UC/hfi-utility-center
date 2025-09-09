@@ -20,6 +20,7 @@ import themeToggleUrl from "@/assets/theme-toggle.riv?inline";
 
 RuntimeLoader.setWasmUrl(riveWASMResource)
 
+const isDark = defineModel<boolean>("isDark")
 const isScrolled = ref(false);
 const isMobile = ref(false);
 const menu = ref();
@@ -128,6 +129,7 @@ onUnmounted(() => {
 
 const colorTheme = ref("white");
 const toggleColorScheme = () => {
+    isDark.value = !isDark.value;
     let color = sessionStorage.getItem("color") == "white" ? "dark" : "white";
     sessionStorage.setItem("color", color);
     const root = document.getElementsByTagName("html")[0];
@@ -171,6 +173,7 @@ onMounted(async () => {
             ? "dark"
             : "light");
     if (color == "dark") {
+        isDark.value = true;
         sessionStorage.setItem("color", color);
         const root = document.getElementsByTagName("html")[0];
         root.classList.toggle("p-dark");
@@ -182,7 +185,7 @@ onMounted(async () => {
     <div
         :class="[
             'fixed inset-x-0 top-0 z-10 flex items-center h-[4rem] transition-all duration-300',
-            isScrolled ? 'backdrop-blur shadow' : 'bg-transparent',
+            isScrolled ? 'backdrop-blur-lg shadow' : 'bg-transparent',
         ]"
     >
         <div class="mx-[2rem] flex justify-between w-full" id="navbar">

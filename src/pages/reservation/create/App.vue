@@ -256,7 +256,7 @@ const toast = useToast();
 const fetchReservations = async (selectedRoom: FormFieldState) => {
     reservations.value = (
         await postFetchReservations(null, selectedRoom.value)
-    ).data.filter((reservation: Reservation) => reservation.status != "rejected") as Reservation[];
+    ).data.filter((reservation: Reservation) => reservation.status != "rejected").sort((a: Reservation, b: Reservation) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 };
 
 const success = ref(false);
@@ -495,7 +495,7 @@ const termsVisible = ref(false);
                                         }}
                                     </template>
                                 </Column>
-                                <Column header="Times">
+                                <Column header="Time">
                                     <template #body="slotProps">
                                         {{
                                             `${String(

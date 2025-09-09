@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = process.env.BACKEND_URL;
 axios.defaults.withCredentials = true;
 
 export interface ReservationRequestInfo {
@@ -77,6 +77,38 @@ export interface Admin {
     id: number;
     email: string;
     name: string;
+}
+
+export interface Analytics {
+    today: {
+        requests: number;
+        reservations: number;
+        reservationCreations: number;
+        approvals: number;
+        rejections: number;
+    }
+    weekly: {
+        reservations: number[];
+        reservationCreations: number[];
+        approvals: number[];
+        rejections: number[];
+    }
+    monthly: {
+        reservations: number[];
+        reservationCreations: number[];
+        approvals: number[];
+        rejections: number[];
+    }
+    daily: {
+        requests: number[];
+        reservations: number[];
+        reservationCreations: number[];
+        approvals: number[];
+        rejections: number[];
+    },
+    cpu: number,
+    memory: number,
+    errorLogs: number
 }
 
 export async function getCampuses() {
@@ -328,4 +360,9 @@ export async function postEditAdminPassword(admin: number, newPassword: string) 
 export async function postDeleteAdmin(id: number) {
     const response = await axios.post<BasicResponse>('/admin/delete', { id });
     return response.data
+}
+
+export async function getAnalytics() {
+    const response = await axios.get<BasicResponse & { data: Analytics }>('/analytic/get');
+    return response.data;
 }

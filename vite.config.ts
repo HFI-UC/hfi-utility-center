@@ -5,6 +5,7 @@ import mpa from "vite-plugin-mpa";
 import path from "path";
 import components from "unplugin-vue-components/vite";
 import { PrimeVueResolver } from "@primevue/auto-import-resolver";
+import "dotenv/config"
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -21,4 +22,9 @@ export default defineConfig({
         },
     },
     assetsInclude: ["**/*.riv", "**/*.wasm"],
+    define: {
+        'process.env': {
+            BACKEND_URL: process.env.BACKEND_URL,
+        }
+    }
 });
