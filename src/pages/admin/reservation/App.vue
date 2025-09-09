@@ -382,7 +382,7 @@ const exportOptions = [
                     @click="(exportVisible = false), $form.reset()"
                     >Cancel</Button
                 >
-                <Button type="submit" severity="primary">Export</Button>
+                <Button type="submit" severity="primary"><Download></Download>Export</Button>
             </div>
         </Form>
     </Dialog>
