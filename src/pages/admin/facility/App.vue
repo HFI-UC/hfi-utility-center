@@ -1279,7 +1279,7 @@ const deleteApprover = async (id: number) => {
     </Dialog>
     <div class="mt-[6rem] mb-4 md:mx-[3rem] mx-4">
         <h1 class="text-3xl font-bold my-4">Facility Management</h1>
-        <div class="grid gap-4 grid-cols-6">
+        <div class="grid gap-4 grid-cols-6 items-start">
             <Card class="md:col-span-6 col-span-6">
                 <template #content>
                     <DataTable :value="rooms?.data" class="text-nowrap">
