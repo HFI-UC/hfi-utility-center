@@ -14,7 +14,7 @@ const dailyChartData = ref<any>(null)
 const weeklyChartData = ref<any>(null)
 const monthlyChartData = ref<any>(null)
 const dailyRequestChartData = ref<any>(null)
-const chartOptions = ref<any>(null)
+const chartOptions = computed(() => setChartOptions());
 
 const setDailyChartData = () => {
     if (!analytics.value) {
@@ -281,7 +281,6 @@ watch(analytics, () => {
             dailyRequestChartData.value.datasets[0].data[i] = setDailyRequestChartData().datasets[0].data[i];
         }
     }
-    if (!chartOptions.value) chartOptions.value = setChartOptions();
 }, { immediate: true });
 
 const formatBytes = (bytes: number | undefined): string | null => {
