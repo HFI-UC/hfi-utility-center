@@ -211,7 +211,6 @@ onMounted(async () => {
 const adminVerify = ref(false);
 
 const exportReservations = async (form: FormSubmitEvent) => {
-    console.log(form);
     if (!form.valid) {
         toast.add({
             severity: "error",
@@ -251,7 +250,6 @@ const exportReservations = async (form: FormSubmitEvent) => {
         endTime ? Math.floor(endTime.getTime() / 1000) : null
     );
     if (typeof response == "object" && !response.success) {
-        console.log(typeof response);
         toast.add({
             severity: "error",
             summary: "Error",

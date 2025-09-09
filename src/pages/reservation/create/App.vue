@@ -74,7 +74,6 @@ const classes = computed(() => {
             res.push({ campus: c.name, classes: campusClasses })
         }
     })
-    console.log(res)
     return res
 })
 const reservations = ref<Reservation[]>([] as Reservation[]);
@@ -223,7 +222,6 @@ const getEndTimeOptions = ({
     selectedRoom,
     selectedClass
 }: Record<string, FormFieldState | undefined>) => {
-    console.log(selectedClass?.value)
     if (!startTime?.value || !date?.value || !selectedRoom?.value || !selectedClass?.value) return [];
     const [startHours, startMinutes] = startTime.value.split(":").map(Number);
     return generateTimeOptions(
@@ -263,7 +261,6 @@ const success = ref(false);
 const successMessage = ref("");
 const submitLoading = ref(false);
 const onSubmitEvent = async (form: FormSubmitEvent) => {
-    console.log(form.values);
     if (!form.valid) {
         toast.add({
             severity: "error",
