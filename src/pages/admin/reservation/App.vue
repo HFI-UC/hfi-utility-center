@@ -19,7 +19,7 @@ import Navbar from "../../../components/Navbar.vue";
 import LoadingMask from "../../../components/LoadingMask.vue";
 
 const { data: futureReservations, run: fetchFutureReservations } = useRequest(
-    getRecentReservations
+    getRecentReservations,
 );
 
 const { data: allReservations, run: fetchAllReservations } =
@@ -31,7 +31,7 @@ const formatTime = (date: Date): string => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day} ${String(date.getHours()).padStart(
         2,
-        "0"
+        "0",
     )}:${String(date.getMinutes()).padStart(2, "0")}`;
 };
 
@@ -89,7 +89,7 @@ const rejectReservation = async (form: FormSubmitEvent) => {
     const response = await postApproveReservation(
         rejectId.value,
         false,
-        form.values.reason
+        form.values.reason,
     );
     loading.value = false;
     if (response.success) {
@@ -121,8 +121,8 @@ const rejectResolver = ref(
             reason: z
                 .string({ error: "Reason is required." })
                 .min(1, { error: "Reason is required." }),
-        })
-    )
+        }),
+    ),
 );
 const rejectInitialValues = ref({ reason: null });
 
@@ -174,8 +174,8 @@ const exportResolver = ref(
                         });
                     }
                 }
-            })
-    )
+            }),
+    ),
 );
 const exportInitialValues = ref({
     option: null,
@@ -201,7 +201,10 @@ onMounted(async () => {
                 detail: response.message,
                 life: 6000,
             });
-            setTimeout(() => (window.location.href = "/admin/reservation"), 6500);
+            setTimeout(
+                () => (window.location.href = "/admin/reservation"),
+                6500,
+            );
         }
     } else {
         adminVerify.value = true;
@@ -247,7 +250,7 @@ const exportReservations = async (form: FormSubmitEvent) => {
     }
     const response: any = await postExportReservations(
         startTime ? Math.floor(startTime.getTime() / 1000) : null,
-        endTime ? Math.floor(endTime.getTime() / 1000) : null
+        endTime ? Math.floor(endTime.getTime() / 1000) : null,
     );
     if (typeof response == "object" && !response.success) {
         toast.add({
@@ -382,7 +385,9 @@ const exportOptions = [
                     @click="(exportVisible = false), $form.reset()"
                     >Cancel</Button
                 >
-                <Button type="submit" severity="primary"><Download></Download>Export</Button>
+                <Button type="submit" severity="primary"
+                    ><Download></Download>Export</Button
+                >
             </div>
         </Form>
     </Dialog>
@@ -394,7 +399,11 @@ const exportOptions = [
             <template #content>
                 <DataView
                     layout="grid"
-                    :value="futureReservations?.data.sort((a: any) => (a.status === 'pending' ? -1 : 1))"
+                    :value="
+                        futureReservations?.data.sort((a: any) =>
+                            a.status === 'pending' ? -1 : 1,
+                        )
+                    "
                     paginator
                     :rows="6"
                 >
@@ -515,8 +524,8 @@ const exportOptions = [
                                                     {{
                                                         formatTime(
                                                             new Date(
-                                                                item.startTime
-                                                            )
+                                                                item.startTime,
+                                                            ),
                                                         )
                                                     }}
                                                 </p>
@@ -531,8 +540,8 @@ const exportOptions = [
                                                     {{
                                                         formatTime(
                                                             new Date(
-                                                                item.endTime
-                                                            )
+                                                                item.endTime,
+                                                            ),
                                                         )
                                                     }}
                                                 </p>

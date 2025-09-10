@@ -51,7 +51,7 @@ export interface Class {
     id: number;
     name: string;
     campus: number;
-    createdAt: string
+    createdAt: string;
 }
 
 export interface Campus {
@@ -70,7 +70,7 @@ export interface BasicResponse {
 export interface RoomApprover {
     id: number;
     room: number;
-    admin: number
+    admin: number;
 }
 
 export interface Admin {
@@ -86,29 +86,29 @@ export interface Analytics {
         reservationCreations: number;
         approvals: number;
         rejections: number;
-    }
+    };
     weekly: {
         reservations: number[];
         reservationCreations: number[];
         approvals: number[];
         rejections: number[];
-    }
+    };
     monthly: {
         reservations: number[];
         reservationCreations: number[];
         approvals: number[];
         rejections: number[];
-    }
+    };
     daily: {
         requests: number[];
         reservations: number[];
         reservationCreations: number[];
         approvals: number[];
         rejections: number[];
-    },
-    cpu: number,
-    memory: number,
-    errorLogs: number
+    };
+    cpu: number;
+    memory: number;
+    errorLogs: number;
 }
 
 export async function getCampuses() {
@@ -119,25 +119,29 @@ export async function getCampuses() {
 export async function getRooms() {
     const response = await axios.get<{
         success: boolean;
-        data: Room[]
+        data: Room[];
     }>("/room/list");
     return response.data;
 }
 
 export async function getClasses() {
-    const response = await axios.get<BasicResponse & { data: Class[] }>("/class/list");
+    const response = await axios.get<BasicResponse & { data: Class[] }>(
+        "/class/list",
+    );
     return response.data;
 }
 
 export async function getPolicies() {
-    const response = await axios.get<BasicResponse & { data: RoomPolicy[] }>("/policy/list");
+    const response = await axios.get<BasicResponse & { data: RoomPolicy[] }>(
+        "/policy/list",
+    );
     return response.data;
 }
 
 export async function postFetchReservations(
     keyword: string | null = null,
     room: number | null = null,
-    status: string | null = null
+    status: string | null = null,
 ) {
     const response = await axios.post<BasicResponse>("/reservation/get", {
         keyword: keyword == "" ? null : keyword,
@@ -155,7 +159,7 @@ function formatDate(date: Date): string {
 }
 
 export async function postCreateReservation(
-    reservation: ReservationRequestInfo
+    reservation: ReservationRequestInfo,
 ) {
     const data = {
         classId: reservation.classId,
@@ -165,26 +169,30 @@ export async function postCreateReservation(
         email: reservation.email,
         startTime:
             new Date(
-                `${formatDate(reservation.date)}T${reservation.startTime}`
+                `${formatDate(reservation.date)}T${reservation.startTime}`,
             ).getTime() / 1000,
         endTime:
             new Date(
-                `${formatDate(reservation.date)}T${reservation.endTime}`
+                `${formatDate(reservation.date)}T${reservation.endTime}`,
             ).getTime() / 1000,
         reason: reservation.reason,
     };
     const response = await axios.post<BasicResponse>(
         "/reservation/create",
-        data
+        data,
     );
     return response.data;
 }
 
-export async function postLogin(email: string | null, password: string | null, token: string | null) {
+export async function postLogin(
+    email: string | null,
+    password: string | null,
+    token: string | null,
+) {
     const response = await axios.post<BasicResponse>("/admin/login", {
         email,
         password,
-        token
+        token,
     });
     return response.data;
 }
@@ -196,7 +204,7 @@ export async function getCheckLogin() {
 
 export async function getRecentReservations() {
     const response = await axios.get<BasicResponse & { data: Reservation[] }>(
-        "/reservation/future"
+        "/reservation/future",
     );
     return response.data;
 }
@@ -204,7 +212,7 @@ export async function getRecentReservations() {
 export async function postApproveReservation(
     id: number,
     approved: boolean,
-    reason: string | null = null
+    reason: string | null = null,
 ) {
     const response = await axios.post<BasicResponse>(`/reservation/approval`, {
         id,
@@ -216,19 +224,19 @@ export async function postApproveReservation(
 
 export async function getAllReservations() {
     const response = await axios.get<BasicResponse & { data: Reservation[] }>(
-        "/reservation/all"
+        "/reservation/all",
     );
     return response.data;
 }
 
 export async function postExportReservations(
     startTime: number | null,
-    endTime: number | null
+    endTime: number | null,
 ) {
     const response = await axios.post<Blob>(
         "/reservation/export",
         { startTime, endTime },
-        { responseType: "blob" } as any
+        { responseType: "blob" } as any,
     );
 
     const blob = response.data as Blob;
@@ -258,111 +266,180 @@ export async function postExportReservations(
 }
 
 export async function postDeleteRoom(id: number) {
-    const response = await axios.post<BasicResponse>('/room/delete', { id });
+    const response = await axios.post<BasicResponse>("/room/delete", { id });
     return response.data;
 }
 
 export async function postDeleteCampus(id: number) {
-    const response = await axios.post<BasicResponse>('/campus/delete', { id });
+    const response = await axios.post<BasicResponse>("/campus/delete", { id });
     return response.data;
 }
 
 export async function postDeleteClass(id: number) {
-    const response = await axios.post<BasicResponse>('/class/delete', { id });
+    const response = await axios.post<BasicResponse>("/class/delete", { id });
     return response.data;
 }
 
-export async function postCreateRoom(name: string, campus: number, policy: RoomPolicy[]) {
-    const response = await axios.post<BasicResponse>('/room/create', { name, campus, policy });
+export async function postCreateRoom(
+    name: string,
+    campus: number,
+    policy: RoomPolicy[],
+) {
+    const response = await axios.post<BasicResponse>("/room/create", {
+        name,
+        campus,
+        policy,
+    });
     return response.data;
 }
 
 export async function postCreateCampus(name: string) {
-    const response = await axios.post<BasicResponse>('/campus/create', { name });
+    const response = await axios.post<BasicResponse>("/campus/create", {
+        name,
+    });
     return response.data;
 }
 
 export async function postCreateClass(name: string, campus: number) {
-    const response = await axios.post<BasicResponse>('/class/create', { name, campus });
+    const response = await axios.post<BasicResponse>("/class/create", {
+        name,
+        campus,
+    });
     return response.data;
 }
 
-export async function postCreatePolicy(room: number, startTime: number[], endTime: number[], days: number[]) {
-    const response = await axios.post<BasicResponse>('/policy/create', { room, startTime, endTime, days });
+export async function postCreatePolicy(
+    room: number,
+    startTime: number[],
+    endTime: number[],
+    days: number[],
+) {
+    const response = await axios.post<BasicResponse>("/policy/create", {
+        room,
+        startTime,
+        endTime,
+        days,
+    });
     return response.data;
 }
 
-export async function postEditPolicy(id: number, startTime: number[], endTime: number[], days: number[]) {
-    const response = await axios.post<BasicResponse>('/policy/edit', { id, startTime, endTime, days });
+export async function postEditPolicy(
+    id: number,
+    startTime: number[],
+    endTime: number[],
+    days: number[],
+) {
+    const response = await axios.post<BasicResponse>("/policy/edit", {
+        id,
+        startTime,
+        endTime,
+        days,
+    });
     return response.data;
 }
 
 export async function postDeletePolicy(id: number) {
-    const response = await axios.post<BasicResponse>('/policy/delete', { id });
+    const response = await axios.post<BasicResponse>("/policy/delete", { id });
     return response.data;
 }
 
 export async function postTogglePolicy(id: number) {
-    const response = await axios.post<BasicResponse>('/policy/toggle', { id });
+    const response = await axios.post<BasicResponse>("/policy/toggle", { id });
     return response.data;
 }
 
 export async function postEditClass(id: number, name: string, campus: number) {
-    const response = await axios.post<BasicResponse>('/class/edit', { id, name, campus });
+    const response = await axios.post<BasicResponse>("/class/edit", {
+        id,
+        name,
+        campus,
+    });
     return response.data;
 }
 
 export async function postEditRoom(id: number, name: string, campus: number) {
-    const response = await axios.post<BasicResponse>('/room/edit', { id, name, campus });
+    const response = await axios.post<BasicResponse>("/room/edit", {
+        id,
+        name,
+        campus,
+    });
     return response.data;
 }
 
 export async function postEditCampus(id: number, name: string) {
-    const response = await axios.post<BasicResponse>('/campus/edit', { id, name });
+    const response = await axios.post<BasicResponse>("/campus/edit", {
+        id,
+        name,
+    });
     return response.data;
 }
 
 export async function getLogOut() {
-    const response = await axios.get<BasicResponse>('/admin/logout');
+    const response = await axios.get<BasicResponse>("/admin/logout");
     return response.data;
 }
 
 export async function getApprovers() {
-    const response = await axios.get<BasicResponse & { data: RoomApprover[] }>('/approver/list');
+    const response = await axios.get<BasicResponse & { data: RoomApprover[] }>(
+        "/approver/list",
+    );
     return response.data;
 }
 
 export async function getAdmins() {
-    const response = await axios.get<BasicResponse & { data: Admin[] }>('/admin/list');
+    const response = await axios.get<BasicResponse & { data: Admin[] }>(
+        "/admin/list",
+    );
     return response.data;
 }
 
 export async function postCreateApprover(room: number, admin: number) {
-    const response = await axios.post<BasicResponse>('/approver/create', { room, admin });
-    return response.data
+    const response = await axios.post<BasicResponse>("/approver/create", {
+        room,
+        admin,
+    });
+    return response.data;
 }
 
 export async function postDeleteApprover(id: number) {
-    const response = await axios.post<BasicResponse>('/approver/delete', { id });
-    return response.data
+    const response = await axios.post<BasicResponse>("/approver/delete", {
+        id,
+    });
+    return response.data;
 }
 
-export async function postCreateAdmin(name: string, email: string, password: string) {
-    const response = await axios.post<BasicResponse>('/admin/create', { name, email, password });
-    return response.data
+export async function postCreateAdmin(
+    name: string,
+    email: string,
+    password: string,
+) {
+    const response = await axios.post<BasicResponse>("/admin/create", {
+        name,
+        email,
+        password,
+    });
+    return response.data;
 }
 
-export async function postEditAdminPassword(admin: number, newPassword: string) {
-    const response = await axios.post<BasicResponse>('/admin/edit-password', { admin, newPassword });
-    return response.data
+export async function postEditAdminPassword(
+    admin: number,
+    newPassword: string,
+) {
+    const response = await axios.post<BasicResponse>("/admin/edit-password", {
+        admin,
+        newPassword,
+    });
+    return response.data;
 }
 
 export async function postDeleteAdmin(id: number) {
-    const response = await axios.post<BasicResponse>('/admin/delete', { id });
-    return response.data
+    const response = await axios.post<BasicResponse>("/admin/delete", { id });
+    return response.data;
 }
 
 export async function getAnalytics() {
-    const response = await axios.get<BasicResponse & { data: Analytics }>('/analytic/get');
+    const response = await axios.get<BasicResponse & { data: Analytics }>(
+        "/analytic/get",
+    );
     return response.data;
 }

@@ -51,7 +51,7 @@ const formatTime = (date: Date): string => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day} ${String(date.getHours()).padStart(
         2,
-        "0"
+        "0",
     )}:${String(date.getMinutes()).padStart(2, "0")}`;
 };
 const loading = ref(false);
@@ -127,8 +127,8 @@ const newCampusResolver = ref(
             name: z
                 .string({ error: "Name is required." })
                 .min(1, { error: "Name is required." }),
-        })
-    )
+        }),
+    ),
 );
 const newCampusVisible = ref(false);
 const newCampusInitialValues = ref({});
@@ -171,19 +171,19 @@ const newRoomResolver = ref(
                 .string({ error: "Name is required." })
                 .min(1, { error: "Name is required." }),
             campus: z.number({ error: "Campus is required." }),
-        })
-    )
+        }),
+    ),
 );
 const newRoomVisible = ref(false);
 const newRoomInitialValues = ref({});
 const roomPolicy = computed(() => {
     return policies?.value?.data.filter(
-        (policy: RoomPolicy) => policy.room === room.value
+        (policy: RoomPolicy) => policy.room === room.value,
     );
 });
 const roomApprover = computed(() => {
     return approvers?.value?.data.filter(
-        (approver: RoomApprover) => approver.room === room.value
+        (approver: RoomApprover) => approver.room === room.value,
     );
 });
 const onNewRoomSubmit = async (form: FormSubmitEvent) => {
@@ -200,7 +200,7 @@ const onNewRoomSubmit = async (form: FormSubmitEvent) => {
     const response = await postCreateRoom(
         form.values.name,
         form.values.campus,
-        roomPolicy.value
+        roomPolicy.value,
     );
     loading.value = false;
     if (response.success) {
@@ -231,8 +231,8 @@ const newClassResolver = ref(
                 .string({ error: "Name is required." })
                 .min(1, { error: "Name is required." }),
             campus: z.number({ error: "Campus is required." }),
-        })
-    )
+        }),
+    ),
 );
 const newClassVisible = ref(false);
 const newClassInitialValues = ref({});
@@ -250,7 +250,7 @@ const onNewClassSubmit = async (form: FormSubmitEvent) => {
     loading.value = true;
     const response = await postCreateClass(
         form.values.name,
-        form.values.campus
+        form.values.campus,
     );
     loading.value = false;
     if (response.success) {
@@ -305,8 +305,8 @@ const newPolicyResolver = ref(
                 .min(1, { error: "At least one day must be selected." }),
             startTime: z.date({ error: "Start time is required." }),
             endTime: z.date({ error: "End time is required." }),
-        })
-    )
+        }),
+    ),
 );
 
 const newPolicyInitialValues = ref({});
@@ -326,7 +326,7 @@ const onNewPolicySubmit = async (form: FormSubmitEvent) => {
         room.value,
         [form.values.startTime.getHours(), form.values.startTime.getMinutes()],
         [form.values.endTime.getHours(), form.values.endTime.getMinutes()],
-        form.values.days.sort()
+        form.values.days.sort(),
     );
     loading.value = false;
     if (response.success) {
@@ -357,8 +357,8 @@ const editPolicyResolver = ref(
                 .min(1, { error: "At least one day must be selected." }),
             startTime: z.date({ error: "Start time is required." }),
             endTime: z.date({ error: "End time is required." }),
-        })
-    )
+        }),
+    ),
 );
 
 const editPolicy = ref({} as RoomPolicy);
@@ -370,14 +370,14 @@ const editPolicyInitialValues = computed(() => {
             0,
             0,
             editPolicy.value.startTime[0],
-            editPolicy.value.startTime[1]
+            editPolicy.value.startTime[1],
         ),
         endTime: new Date(
             0,
             0,
             0,
             editPolicy.value.endTime[0],
-            editPolicy.value.endTime[1]
+            editPolicy.value.endTime[1],
         ),
     };
 });
@@ -398,7 +398,7 @@ const onEditPolicySubmit = async (form: FormSubmitEvent) => {
         editPolicy.value.id,
         [form.values.startTime.getHours(), form.values.startTime.getMinutes()],
         [form.values.endTime.getHours(), form.values.endTime.getMinutes()],
-        form.values.days.sort()
+        form.values.days.sort(),
     );
     loading.value = false;
     if (response.success) {
@@ -472,8 +472,8 @@ const editClassResolver = ref(
             name: z
                 .string({ error: "Name is required." })
                 .min(1, { error: "Name is required." }),
-        })
-    )
+        }),
+    ),
 );
 
 const editClassInitialValues = ref({} as Class);
@@ -492,7 +492,7 @@ const onEditClassSubmit = async (form: FormSubmitEvent) => {
     const response = await postEditClass(
         editClassInitialValues.value.id,
         form.values.name,
-        form.values.campus
+        form.values.campus,
     );
     loading.value = false;
     if (response.success) {
@@ -522,8 +522,8 @@ const editRoomResolver = ref(
             name: z
                 .string({ error: "Name is required." })
                 .min(1, { error: "Name is required." }),
-        })
-    )
+        }),
+    ),
 );
 
 const editRoomInitialValues = ref({} as Room);
@@ -542,7 +542,7 @@ const onEditRoomSubmit = async (form: FormSubmitEvent) => {
     const response = await postEditRoom(
         editRoomInitialValues.value.id,
         form.values.name,
-        form.values.campus
+        form.values.campus,
     );
     loading.value = false;
     if (response.success) {
@@ -571,8 +571,8 @@ const editCampusResolver = ref(
             name: z
                 .string({ error: "Name is required." })
                 .min(1, { error: "Name is required." }),
-        })
-    )
+        }),
+    ),
 );
 
 const editCampusInitialValues = ref({} as Campus);
@@ -590,7 +590,7 @@ const onEditCampusSubmit = async (form: FormSubmitEvent) => {
     loading.value = true;
     const response = await postEditCampus(
         editCampusInitialValues.value.id,
-        form.values.name
+        form.values.name,
     );
     loading.value = false;
     if (response.success) {
@@ -616,13 +616,16 @@ const approverViewVisible = ref(false);
 const newApproverResolver = ref(
     zodResolver(
         z.object({
-            admin: z.object({
-                id: z.number(),
-                email: z.string(),
-                name: z.string()
-            }, { error: "Admin is required."})
-        })
-    )
+            admin: z.object(
+                {
+                    id: z.number(),
+                    email: z.string(),
+                    name: z.string(),
+                },
+                { error: "Admin is required." },
+            ),
+        }),
+    ),
 );
 
 const newApproverInitialValues = ref({});
@@ -845,16 +848,16 @@ const deleteApprover = async (id: number) => {
                     {{
                         `${String(slotProps.data.startTime[0]).padStart(
                             2,
-                            "0"
+                            "0",
                         )}:${String(slotProps.data.startTime[1]).padStart(
                             2,
-                            "0"
+                            "0",
                         )} - ${String(slotProps.data.endTime[0]).padStart(
                             2,
-                            "0"
+                            "0",
                         )}:${String(slotProps.data.endTime[1]).padStart(
                             2,
-                            "0"
+                            "0",
                         )}`
                     }}
                 </template>
@@ -916,7 +919,15 @@ const deleteApprover = async (id: number) => {
         >
             <div class="flex flex-col gap-4">
                 <Select
-                    :options="admins?.data.filter((admin: Admin) => !roomApprover?.some((approver: RoomApprover) => approver.admin === admin.id))"
+                    :options="
+                        admins?.data.filter(
+                            (admin: Admin) =>
+                                !roomApprover?.some(
+                                    (approver: RoomApprover) =>
+                                        approver.admin === admin.id,
+                                ),
+                        )
+                    "
                     placeholder="Admin"
                     name="admin"
                     fluid
@@ -986,7 +997,7 @@ const deleteApprover = async (id: number) => {
                 <template #body="slotProps">
                     {{
                         admins?.data.find(
-                            (admin: Admin) => admin.id === slotProps.data.admin
+                            (admin: Admin) => admin.id === slotProps.data.admin,
                         )?.name
                     }}
                 </template>
@@ -995,7 +1006,7 @@ const deleteApprover = async (id: number) => {
                 <template #body="slotProps">
                     {{
                         admins?.data.find(
-                            (admin: Admin) => admin.id === slotProps.data.admin
+                            (admin: Admin) => admin.id === slotProps.data.admin,
                         )?.email
                     }}
                 </template>
@@ -1303,7 +1314,7 @@ const deleteApprover = async (id: number) => {
                                 {{
                                     campuses?.data.find(
                                         (c: Campus) =>
-                                            c.id === slotProps.data.campus
+                                            c.id === slotProps.data.campus,
                                     )?.name
                                 }}
                             </template>
@@ -1338,7 +1349,7 @@ const deleteApprover = async (id: number) => {
                             <template #body="slotProps">
                                 {{
                                     formatTime(
-                                        new Date(slotProps.data.createdAt)
+                                        new Date(slotProps.data.createdAt),
                                     )
                                 }}
                             </template>
@@ -1392,7 +1403,7 @@ const deleteApprover = async (id: number) => {
                             <template #body="slotProps">
                                 {{
                                     formatTime(
-                                        new Date(slotProps.data.createdAt)
+                                        new Date(slotProps.data.createdAt),
                                     )
                                 }}
                             </template>
@@ -1445,7 +1456,7 @@ const deleteApprover = async (id: number) => {
                                 {{
                                     campuses?.data.find(
                                         (c: Campus) =>
-                                            c.id === slotProps.data.campus
+                                            c.id === slotProps.data.campus,
                                     )?.name
                                 }}
                             </template>
@@ -1454,7 +1465,7 @@ const deleteApprover = async (id: number) => {
                             <template #body="slotProps">
                                 {{
                                     formatTime(
-                                        new Date(slotProps.data.createdAt)
+                                        new Date(slotProps.data.createdAt),
                                     )
                                 }}
                             </template>

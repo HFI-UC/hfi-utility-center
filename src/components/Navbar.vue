@@ -14,13 +14,13 @@ import { getCheckLogin, getLogOut } from "../api";
 import { useToast } from "primevue";
 import { Rive, RuntimeLoader } from "@rive-app/canvas";
 // @ts-ignore
-import riveWASMResource from '@rive-app/canvas/rive.wasm';
+import riveWASMResource from "@rive-app/canvas/rive.wasm";
 // @ts-ignore
 import themeToggleUrl from "@/assets/theme-toggle.riv?inline";
 
-RuntimeLoader.setWasmUrl(riveWASMResource)
+RuntimeLoader.setWasmUrl(riveWASMResource);
 
-const isDark = defineModel<boolean>("isDark")
+const isDark = defineModel<boolean>("isDark");
 const isScrolled = ref(false);
 const isMobile = ref(false);
 const menu = ref();
@@ -39,7 +39,8 @@ const handleResize = () => {
     resizeTimeout.value = window.setTimeout(() => {
         if (
             riveInstance.value &&
-            typeof riveInstance.value.resizeDrawingSurfaceToCanvas === "function"
+            typeof riveInstance.value.resizeDrawingSurfaceToCanvas ===
+                "function"
         ) {
             riveInstance.value.resizeDrawingSurfaceToCanvas();
         }
@@ -111,6 +112,11 @@ const menuItems = computed(() => {
             to: "/admin/login",
         });
     } else {
+        items.push({
+            label: "Admin",
+            iconComponent: UserRound,
+            to: "/admin/dashboard",
+        });
         items.push({ label: "Logout", iconComponent: LogOut, to: "#" });
     }
     return items;
@@ -138,12 +144,12 @@ const toggleColorScheme = () => {
 };
 const stateChangeCount = ref(0);
 const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
-  const b64 = dataUrl.split(",")[1];
-  const binary = atob(b64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return bytes.buffer;
-}
+    const b64 = dataUrl.split(",")[1];
+    const binary = atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes.buffer;
+};
 onMounted(() => {
     const r = new Rive({
         buffer: dataUrlToArrayBuffer(themeToggleUrl),

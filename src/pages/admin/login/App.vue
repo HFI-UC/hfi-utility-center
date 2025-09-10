@@ -13,9 +13,8 @@ import LoadingMask from "../../../components/LoadingMask.vue";
 const resolver = zodResolver(
     z.object({
         email: z.email({ error: "Wrong E-mail format." }),
-        password: z
-            .string({ error: "Password is required." })
-    })
+        password: z.string({ error: "Password is required." }),
+    }),
 );
 
 const toast = useToast();
@@ -31,7 +30,11 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
         return;
     }
     submitLoading.value = true;
-    const response = await postLogin(form.values.email, form.values.password, null);
+    const response = await postLogin(
+        form.values.email,
+        form.values.password,
+        null,
+    );
     submitLoading.value = false;
     if (response.success) {
         toast.add({
@@ -44,7 +47,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
             () =>
                 (window.location.href =
                     getRedirect() != "" ? getRedirect() : "/admin/dashboard"),
-            2500
+            2500,
         );
     } else {
         toast.add({

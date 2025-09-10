@@ -14,7 +14,7 @@ const { data: reservations } = useRequest(
     {
         refreshDeps: [keyword, room, status],
         debounceInterval: 300,
-    }
+    },
 );
 
 const { data: rooms } = useRequest(() => getRooms());
@@ -25,7 +25,7 @@ const formatTime = (date: Date): string => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day} ${String(date.getHours()).padStart(
         2,
-        "0"
+        "0",
     )}:${String(date.getMinutes()).padStart(2, "0")}`;
 };
 

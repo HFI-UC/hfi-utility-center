@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { useRequest } from "vue-request";
 import AdminLogin from "../../../components/AdminLogin.vue";
-import { getAdmins, postCreateAdmin, postDeleteAdmin, postEditAdminPassword } from "../../../api";
+import {
+    getAdmins,
+    postCreateAdmin,
+    postDeleteAdmin,
+    postEditAdminPassword,
+} from "../../../api";
 import { PenLine, Plus, Trash2 } from "lucide-vue-next";
 import Navbar from "../../../components/Navbar.vue";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
@@ -18,7 +23,7 @@ const formatTime = (date: Date): string => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day} ${String(date.getHours()).padStart(
         2,
-        "0"
+        "0",
     )}:${String(date.getMinutes()).padStart(2, "0")}`;
 };
 
@@ -28,10 +33,14 @@ const newAdminResolver = ref(
     zodResolver(
         z.object({
             name: z.string("Name is required.").min(1, "Name is required."),
-            email: z.email("Invalid email format.").min(1, "Email is required."),
-            password: z.string("Name is required.").min(6, "Password must be at least 6 characters."),
-        })
-    )
+            email: z
+                .email("Invalid email format.")
+                .min(1, "Email is required."),
+            password: z
+                .string("Name is required.")
+                .min(6, "Password must be at least 6 characters."),
+        }),
+    ),
 );
 const newAdminInitialValues = ref({});
 const newAdminVisible = ref(false);
@@ -46,7 +55,11 @@ const onNewAdminSubmit = async (form: FormSubmitEvent) => {
         return;
     }
     loading.value = true;
-    const response = await postCreateAdmin(form.values.name, form.values.email, form.values.password);
+    const response = await postCreateAdmin(
+        form.values.name,
+        form.values.email,
+        form.values.password,
+    );
     loading.value = false;
     if (response.success) {
         toast.add({
@@ -72,9 +85,11 @@ const editAdminPasswordId = ref(-1);
 const editAdminPasswordResolver = ref(
     zodResolver(
         z.object({
-            password: z.string("Password is required.").min(6, "Password must be at least 6 characters."),
-        })
-    )
+            password: z
+                .string("Password is required.")
+                .min(6, "Password must be at least 6 characters."),
+        }),
+    ),
 );
 const editAdminPasswordInitialValues = ref({});
 const editAdminPasswordVisible = ref(false);
@@ -89,7 +104,10 @@ const onEditAdminPasswordSubmit = async (form: FormSubmitEvent) => {
         return;
     }
     loading.value = true;
-    const response = await postEditAdminPassword(editAdminPasswordId.value, form.values.password);
+    const response = await postEditAdminPassword(
+        editAdminPasswordId.value,
+        form.values.password,
+    );
     loading.value = false;
     if (response.success) {
         toast.add({
@@ -158,14 +176,25 @@ const deleteAdmin = async (id: number) => {
                     size="small"
                     >{{ $form.name.error?.message }}</Message
                 >
-                <InputText name="email" placeholder="E-mail" autocomplete="email" fluid></InputText>
+                <InputText
+                    name="email"
+                    placeholder="E-mail"
+                    autocomplete="email"
+                    fluid
+                ></InputText>
                 <Message
                     v-if="$form.email?.invalid"
                     severity="error"
                     size="small"
                     >{{ $form.email.error?.message }}</Message
                 >
-                <InputText name="password" placeholder="Password" autocomplete="password" type="password" fluid></InputText>
+                <InputText
+                    name="password"
+                    placeholder="Password"
+                    autocomplete="password"
+                    type="password"
+                    fluid
+                ></InputText>
                 <Message
                     v-if="$form.password?.invalid"
                     severity="error"
@@ -184,7 +213,7 @@ const deleteAdmin = async (id: number) => {
             </div>
         </Form>
     </Dialog>
-        <Dialog
+    <Dialog
         header="Edit Password"
         modal
         v-model:visible="editAdminPasswordVisible"
@@ -198,7 +227,13 @@ const deleteAdmin = async (id: number) => {
             @submit="onEditAdminPasswordSubmit"
         >
             <div class="flex flex-col gap-4">
-                <InputText name="password" placeholder="Password" autocomplete="password" type="password" fluid></InputText>
+                <InputText
+                    name="password"
+                    placeholder="Password"
+                    autocomplete="password"
+                    type="password"
+                    fluid
+                ></InputText>
                 <Message
                     v-if="$form.password?.invalid"
                     severity="error"
@@ -225,7 +260,9 @@ const deleteAdmin = async (id: number) => {
                     <template #header>
                         <div class="flex items-center justify-between">
                             <span class="text-lg font-bold">Admins</span>
-                            <Button size="small" @click="newAdminVisible = true"><Plus></Plus></Button>
+                            <Button size="small" @click="newAdminVisible = true"
+                                ><Plus></Plus
+                            ></Button>
                         </div>
                     </template>
                     <Column field="id" header="ID"></Column>
@@ -233,7 +270,15 @@ const deleteAdmin = async (id: number) => {
                     <Column field="email" header="Email"></Column>
                     <Column header="Password">
                         <template #body="slotProps">
-                            <Button size="small" @click="(editAdminPasswordVisible = true), (editAdminPasswordId = slotProps.data.id)"><PenLine></PenLine></Button>
+                            <Button
+                                size="small"
+                                @click="
+                                    (editAdminPasswordVisible = true),
+                                        (editAdminPasswordId =
+                                            slotProps.data.id)
+                                "
+                                ><PenLine></PenLine
+                            ></Button>
                         </template>
                     </Column>
                     <Column header="Creation Time">
@@ -245,7 +290,12 @@ const deleteAdmin = async (id: number) => {
                     </Column>
                     <Column header="Actions">
                         <template #body="slotProps">
-                            <Button size="small" @click="deleteAdmin(slotProps.data.id)" severity="danger"><Trash2></Trash2></Button>
+                            <Button
+                                size="small"
+                                @click="deleteAdmin(slotProps.data.id)"
+                                severity="danger"
+                                ><Trash2></Trash2
+                            ></Button>
                         </template>
                     </Column>
                 </DataTable>

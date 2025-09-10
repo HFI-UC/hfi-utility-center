@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Rive, RuntimeLoader } from "@rive-app/canvas";
 // @ts-ignore
-import riveWASMResource from '@rive-app/canvas/rive.wasm';
+import riveWASMResource from "@rive-app/canvas/rive.wasm";
 import { onMounted, ref } from "vue";
 // @ts-ignore
 import logoUrl from "@/assets/logo.riv?inline";
@@ -11,14 +11,14 @@ RuntimeLoader.setWasmUrl(riveWASMResource);
 const isLoading = ref(true);
 const isBackgroundVisible = ref(true);
 const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
-  const b64 = dataUrl.split(",")[1];
-  const binary = atob(b64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return bytes.buffer;
-}
+    const b64 = dataUrl.split(",")[1];
+    const binary = atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes.buffer;
+};
 onMounted(() => {
-    if (sessionStorage.getItem('skipLoadingMask') === 'true') {
+    if (sessionStorage.getItem("skipLoadingMask") === "true") {
         isLoading.value = false;
         return;
     }
@@ -35,7 +35,7 @@ onMounted(() => {
                 isBackgroundVisible.value = false;
                 setTimeout(() => {
                     isLoading.value = false;
-                    sessionStorage.setItem('skipLoadingMask', 'true');
+                    sessionStorage.setItem("skipLoadingMask", "true");
                 }, 600);
             }, 3000);
         },

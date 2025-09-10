@@ -17,11 +17,17 @@ import {
     type Class,
     type Campus,
     getPolicies,
-    type RoomPolicy
+    type RoomPolicy,
 } from "../../../api";
 import { computed, ref } from "vue";
 import { useRequest } from "vue-request";
-import { Check, Home, PartyPopper, PenSquare, RotateCcw } from "lucide-vue-next";
+import {
+    Check,
+    Home,
+    PartyPopper,
+    PenSquare,
+    RotateCcw,
+} from "lucide-vue-next";
 import confetti from "canvas-confetti";
 import { useToast } from "primevue";
 import Navbar from "../../../components/Navbar.vue";
@@ -56,7 +62,7 @@ const resolver = zodResolver(
             .refine((val) => val === true, {
                 message: "You must agree to the terms and conditions.",
             }),
-    })
+    }),
 );
 
 const { data: classData } = useRequest(getClasses);
@@ -65,22 +71,24 @@ const { data: room } = useRequest(getRooms);
 const { data: roomPolicies } = useRequest(getPolicies);
 
 const classes = computed(() => {
-    const _data = classData.value?.data
-    if (!_data) return []
-    const res: {campus: string, classes: any[]}[] = []
+    const _data = classData.value?.data;
+    if (!_data) return [];
+    const res: { campus: string; classes: any[] }[] = [];
     campus.value?.data.some((c: Campus) => {
-        const campusClasses = _data.filter((item: Class) => item.campus === c.id)
+        const campusClasses = _data.filter(
+            (item: Class) => item.campus === c.id,
+        );
         if (campusClasses.length) {
-            res.push({ campus: c.name, classes: campusClasses })
+            res.push({ campus: c.name, classes: campusClasses });
         }
-    })
-    return res
-})
+    });
+    return res;
+});
 const reservations = ref<Reservation[]>([] as Reservation[]);
 
 const formatTime = (date: Date): string =>
     `${String(date.getHours()).padStart(2, "0")}:${String(
-        date.getMinutes()
+        date.getMinutes(),
     ).padStart(2, "0")}`;
 
 const formatDate = (date: Date): string => {
@@ -94,7 +102,7 @@ const formatTableDate = (time: string) => {
     const date = new Date(time);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
-        "0"
+        "0",
     )}-${String(date.getDate()).padStart(2, "0")}`;
 };
 
@@ -113,7 +121,7 @@ const formatTableWeekDay = (days: number[]) => {
 
 const formatTableTime = (startTime: string, endTime: string) => {
     return `${formatTime(new Date(startTime))} - ${formatTime(
-        new Date(endTime)
+        new Date(endTime),
     )}`;
 };
 
@@ -124,7 +132,7 @@ const generateTimeOptions = (
     startMinute: number,
     endHour: number,
     endMinute: number,
-    selectedClass: number
+    selectedClass: number,
 ) => {
     const options: string[] = [];
     const start = new Date();
@@ -137,8 +145,12 @@ const generateTimeOptions = (
         start.setMinutes(start.getMinutes() + 15);
     }
 
-    const _class = classData.value?.data.find((item: Class) => item.id === selectedClass);
-    const _campus: Campus = campus.value?.data.find((item: Campus) => item.id === _class?.campus);
+    const _class = classData.value?.data.find(
+        (item: Class) => item.id === selectedClass,
+    );
+    const _campus: Campus = campus.value?.data.find(
+        (item: Campus) => item.id === _class?.campus,
+    );
     const res = options.filter((item) => {
         if (!date || !room || _campus.isPrivileged) return true;
         const time = new Date(`${formatDate(date)}T${item}`);
@@ -157,13 +169,17 @@ const validateTimeConflict = (time: Date): boolean => {
 
 const getRoomPolicyData = (id: number) => {
     if (!roomPolicies.value) return [];
-    const selectedRoomPolicy = roomPolicies.value.data.filter((policy: RoomPolicy) => policy.room === id && policy.enabled);
+    const selectedRoomPolicy = roomPolicies.value.data.filter(
+        (policy: RoomPolicy) => policy.room === id && policy.enabled,
+    );
     return selectedRoomPolicy || [];
 };
 
 const validatePolicy = (time: Date, selectedRoom: number): boolean => {
     if (!room.value || !roomPolicies.value) return true;
-    const selectedRoomPolicy: RoomPolicy[] = roomPolicies.value.data.filter((policy: RoomPolicy) => policy.room === selectedRoom && policy.enabled);
+    const selectedRoomPolicy: RoomPolicy[] = roomPolicies.value.data.filter(
+        (policy: RoomPolicy) => policy.room === selectedRoom && policy.enabled,
+    );
     if (selectedRoomPolicy.length === 0) return true;
     return !selectedRoomPolicy.some((rule) => {
         const days = rule.days;
@@ -185,9 +201,10 @@ const validatePolicy = (time: Date, selectedRoom: number): boolean => {
 const getStartTimeOptions = ({
     date,
     selectedRoom,
-    selectedClass
+    selectedClass,
 }: Record<string, FormFieldState | undefined>) => {
-    if (!date?.value || !selectedRoom?.value || !selectedClass?.value) return [];
+    if (!date?.value || !selectedRoom?.value || !selectedClass?.value)
+        return [];
 
     let startHour = 8;
     let startMinute = 0;
@@ -212,7 +229,7 @@ const getStartTimeOptions = ({
         startMinute,
         21,
         15,
-        selectedClass.value
+        selectedClass.value,
     );
 };
 
@@ -220,9 +237,15 @@ const getEndTimeOptions = ({
     startTime,
     date,
     selectedRoom,
-    selectedClass
+    selectedClass,
 }: Record<string, FormFieldState | undefined>) => {
-    if (!startTime?.value || !date?.value || !selectedRoom?.value || !selectedClass?.value) return [];
+    if (
+        !startTime?.value ||
+        !date?.value ||
+        !selectedRoom?.value ||
+        !selectedClass?.value
+    )
+        return [];
     const [startHours, startMinutes] = startTime.value.split(":").map(Number);
     return generateTimeOptions(
         date.value,
@@ -231,7 +254,7 @@ const getEndTimeOptions = ({
         startMinutes + 15,
         21 >= startHours + 2 ? startHours + 2 : 21,
         30 > startMinutes && 21 <= startHours + 2 ? 30 : startMinutes,
-        selectedClass.value
+        selectedClass.value,
     );
 };
 
@@ -254,7 +277,13 @@ const toast = useToast();
 const fetchReservations = async (selectedRoom: FormFieldState) => {
     reservations.value = (
         await postFetchReservations(null, selectedRoom.value)
-    ).data.filter((reservation: Reservation) => reservation.status != "rejected").sort((a: Reservation, b: Reservation) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+    ).data
+        .filter((reservation: Reservation) => reservation.status != "rejected")
+        .sort(
+            (a: Reservation, b: Reservation) =>
+                new Date(a.startTime).getTime() -
+                new Date(b.startTime).getTime(),
+        );
 };
 
 const success = ref(false);
@@ -272,7 +301,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     }
     submitLoading.value = true;
     const response = await postCreateReservation(
-        form.values as ReservationRequestInfo
+        form.values as ReservationRequestInfo,
     );
     submitLoading.value = false;
     if (response.success) {
@@ -304,20 +333,82 @@ const termsVisible = ref(false);
     <Toast></Toast>
     <Navbar></Navbar>
     <LoadingMask></LoadingMask>
-    <Dialog header="Classroom Regulations" v-model:visible="termsVisible" modal class="sm:w-[25rem] w-[23rem]">
+    <Dialog
+        header="Classroom Regulations"
+        v-model:visible="termsVisible"
+        modal
+        class="sm:w-[25rem] w-[23rem]"
+    >
         <ul class="list-disc pl-5">
-            <li>Do not bring food and drinks into the study area. Students are responsible for keeping the study room clean and tidy.</li>
-            <li>Students should take good care of their personal belongings (such as wallets, phones, and computers). Valuable items should be carried or locked in a secure place. When leaving the classroom, students should take their valuable items with them, as the school does not assume any responsibility for their safekeeping.</li>
-            <li>After leaving public areas, students should take their personal belongings with them. The administrative office will periodically clean the area, and the school will not be responsible for any lost items.</li>
-            <li>Students should consciously maintain the cleanliness of the classroom and public order.</li>
-            <li>Please take care of and use the teaching equipment responsibly. If any problems or losses are discovered, contact the administrative office as soon as possible. If a student causes equipment loss or maliciously damages the equipment, the student will be responsible for compensation.</li>
-            <li>When students leave the classroom, they should ensure that all electrical equipment (such as air conditioners, fans, and lights) is turned off, and the remote control is returned to the designated location.</li>
-            <li>Students are not allowed to move teaching equipment without permission.</li>
-            <li>Do not reserve seats in any way. If students need to leave their seats, they should take their personal belongings with them, or place their books in their bags and put them under the desk without affecting other students' use of the seat. The duty teacher will periodically inspect the area, and any reserved items found will be removed or taken away to make the seat available for others.</li>
-            <li>Be mindful of public decency and personal image, and do not lie down on benches or sofas.</li>
-            <li>Do not speak loudly in public places, and set your phone to silent mode. Please go outside to make phone calls.</li>
-            <li>It is forbidden to pull power sources privately or use high-powered electrical appliances. Do not move fire safety equipment without permission.</li>
-            <li>At any time, the study area must not be used for non-study-related activities (including but not limited to video games on phones/computers, board games, watching variety shows or movies, etc.). Violation of these rules will be handled according to the "Student Violation Management Regulations" based on the actual situation.</li>
+            <li>
+                Do not bring food and drinks into the study area. Students are
+                responsible for keeping the study room clean and tidy.
+            </li>
+            <li>
+                Students should take good care of their personal belongings
+                (such as wallets, phones, and computers). Valuable items should
+                be carried or locked in a secure place. When leaving the
+                classroom, students should take their valuable items with them,
+                as the school does not assume any responsibility for their
+                safekeeping.
+            </li>
+            <li>
+                After leaving public areas, students should take their personal
+                belongings with them. The administrative office will
+                periodically clean the area, and the school will not be
+                responsible for any lost items.
+            </li>
+            <li>
+                Students should consciously maintain the cleanliness of the
+                classroom and public order.
+            </li>
+            <li>
+                Please take care of and use the teaching equipment responsibly.
+                If any problems or losses are discovered, contact the
+                administrative office as soon as possible. If a student causes
+                equipment loss or maliciously damages the equipment, the student
+                will be responsible for compensation.
+            </li>
+            <li>
+                When students leave the classroom, they should ensure that all
+                electrical equipment (such as air conditioners, fans, and
+                lights) is turned off, and the remote control is returned to the
+                designated location.
+            </li>
+            <li>
+                Students are not allowed to move teaching equipment without
+                permission.
+            </li>
+            <li>
+                Do not reserve seats in any way. If students need to leave their
+                seats, they should take their personal belongings with them, or
+                place their books in their bags and put them under the desk
+                without affecting other students' use of the seat. The duty
+                teacher will periodically inspect the area, and any reserved
+                items found will be removed or taken away to make the seat
+                available for others.
+            </li>
+            <li>
+                Be mindful of public decency and personal image, and do not lie
+                down on benches or sofas.
+            </li>
+            <li>
+                Do not speak loudly in public places, and set your phone to
+                silent mode. Please go outside to make phone calls.
+            </li>
+            <li>
+                It is forbidden to pull power sources privately or use
+                high-powered electrical appliances. Do not move fire safety
+                equipment without permission.
+            </li>
+            <li>
+                At any time, the study area must not be used for
+                non-study-related activities (including but not limited to video
+                games on phones/computers, board games, watching variety shows
+                or movies, etc.). Violation of these rules will be handled
+                according to the "Student Violation Management Regulations"
+                based on the actual situation.
+            </li>
         </ul>
     </Dialog>
     <div class="flex items-center justify-center flex-col mt-[6rem] mb-4">
@@ -396,7 +487,11 @@ const termsVisible = ref(false);
                     <Fieldset legend="Room Information">
                         <div class="flex justify-center flex-col gap-4">
                             <Select
-                                @change="$form.room.value ? $form.room.value = null : undefined"
+                                @change="
+                                    $form.room.value
+                                        ? ($form.room.value = null)
+                                        : undefined
+                                "
                                 :options="campus?.data"
                                 placeholder="Campus"
                                 name="campus"
@@ -416,7 +511,7 @@ const termsVisible = ref(false);
                                 :options="
                                     room?.data.filter(
                                         (item) =>
-                                            item.campus === $form.campus.value
+                                            item.campus === $form.campus.value,
                                     ) || []
                                 "
                                 placeholder="Room"
@@ -426,7 +521,13 @@ const termsVisible = ref(false);
                                 optionValue="id"
                             >
                                 <template #empty>
-                                    <p v-if="!$form.campus.value" class="w-[18rem]">No available options. Please select the campus first.</p>
+                                    <p
+                                        v-if="!$form.campus.value"
+                                        class="w-[18rem]"
+                                    >
+                                        No available options. Please select the
+                                        campus first.
+                                    </p>
                                     <p v-else>No available options.</p>
                                 </template>
                             </Select>
@@ -457,10 +558,10 @@ const termsVisible = ref(false);
                                     <template #body="slotProps">
                                         {{
                                             `${formatTableDate(
-                                                slotProps.data.startTime
+                                                slotProps.data.startTime,
                                             )} / ${formatTableTime(
                                                 slotProps.data.startTime,
-                                                slotProps.data.endTime
+                                                slotProps.data.endTime,
                                             )}`
                                         }}
                                     </template>
@@ -487,7 +588,7 @@ const termsVisible = ref(false);
                                     <template #body="slotProps">
                                         {{
                                             formatTableWeekDay(
-                                                slotProps.data.days
+                                                slotProps.data.days,
                                             )
                                         }}
                                     </template>
@@ -496,13 +597,13 @@ const termsVisible = ref(false);
                                     <template #body="slotProps">
                                         {{
                                             `${String(
-                                                slotProps.data.startTime[0]
+                                                slotProps.data.startTime[0],
                                             ).padStart(2, "0")}:${String(
-                                                slotProps.data.startTime[1]
+                                                slotProps.data.startTime[1],
                                             ).padStart(2, "0")} - ${String(
-                                                slotProps.data.endTime[0]
+                                                slotProps.data.endTime[0],
                                             ).padStart(2, "0")}:${String(
-                                                slotProps.data.endTime[1]
+                                                slotProps.data.endTime[1],
                                             ).padStart(2, "0")}`
                                         }}
                                     </template>
@@ -525,7 +626,11 @@ const termsVisible = ref(false);
                                 >{{ $form.date.error?.message }}</Message
                             >
                             <Select
-                                @change="$form.endTime.value ? $form.endTime.value = null : undefined"
+                                @change="
+                                    $form.endTime.value
+                                        ? ($form.endTime.value = null)
+                                        : undefined
+                                "
                                 :options="
                                     getStartTimeOptions({
                                         date: $form.date,
@@ -538,7 +643,18 @@ const termsVisible = ref(false);
                                 fluid
                             >
                                 <template #empty>
-                                    <p v-if="!$form.campus.value || !$form.room.value || !$form.classId.value || !$form.date.value" class="w-[18rem]">No available options. Please select the campus, room, date, or class first.</p>
+                                    <p
+                                        v-if="
+                                            !$form.campus.value ||
+                                            !$form.room.value ||
+                                            !$form.classId.value ||
+                                            !$form.date.value
+                                        "
+                                        class="w-[18rem]"
+                                    >
+                                        No available options. Please select the
+                                        campus, room, date, or class first.
+                                    </p>
                                     <p v-else>No available options.</p>
                                 </template>
                             </Select>
@@ -562,7 +678,13 @@ const termsVisible = ref(false);
                                 fluid
                             >
                                 <template #empty>
-                                    <p v-if="!$form.startTime.value" class="w-[18rem]">No available options. Please select the start time first.</p>
+                                    <p
+                                        v-if="!$form.startTime.value"
+                                        class="w-[18rem]"
+                                    >
+                                        No available options. Please select the
+                                        start time first.
+                                    </p>
                                     <p v-else>No available options.</p>
                                 </template>
                             </Select>
@@ -589,7 +711,12 @@ const termsVisible = ref(false);
                     <div class="flex items-center justify-center mt-3">
                         <Checkbox name="isAgreed" :binary="true" />
                         <label class="ml-2 text-sm">
-                            I agree to the <a @click="termsVisible = true" class="text-sky-500 cursor-pointer">Classroom Regulations</a>.
+                            I agree to the
+                            <a
+                                @click="termsVisible = true"
+                                class="text-sky-500 cursor-pointer"
+                                >Classroom Regulations</a
+                            >.
                         </label>
                     </div>
                     <Message
@@ -614,11 +741,7 @@ const termsVisible = ref(false);
                     <Check class="text-green-500 !h-80 !w-25"></Check>
                     <p class="text-center">{{ successMessage }}</p>
                     <div class="flex flex-wrap gap-2">
-                        <Button
-                            severity="info"
-                            size="small"
-                            as="a"
-                            href="/"
+                        <Button severity="info" size="small" as="a" href="/"
                             ><Home></Home
                         ></Button>
                         <Button
