@@ -71,7 +71,7 @@ const classes = computed(() => [
             "Andrew",
             "Feifei",
             "Calatrava",
-            "Bendura",
+            "Bandura",
             "Gibson",
             "Loftus",
             "Seligman",
@@ -142,6 +142,10 @@ const getRooms = ({
             {
                 label: "605",
                 code: 605,
+            },
+            {
+                label: "303",
+                code: 303,
             },
             {
                 label: "206",
@@ -321,8 +325,12 @@ const getEndTimeOptions = ({
         selectedRoom.value,
         startHours,
         startMinutes + 15,
-        21 >= startHours + 2 ? startHours + 2 : 21,
-        30 > startMinutes && 21 <= startHours + 2 ? 30 : startMinutes,
+        Math.min(startHours + 2, 21),
+        Math.min(startHours + 2, 21) === 21
+            ? startHours + 2 === 21 && startMinutes === 0
+                ? 0
+                : Math.max(startMinutes, 30)
+            : startMinutes,
     );
 };
 
