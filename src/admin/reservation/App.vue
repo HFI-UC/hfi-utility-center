@@ -3,7 +3,7 @@ import { useRequest } from "vue-request";
 import AdminLogin from "../../components/AdminLogin.vue";
 import {
     getAllReservations,
-    postExportReservations,
+    getExportReservations,
     getRecentReservations,
     postApproveReservation,
     postLogin,
@@ -248,18 +248,31 @@ const exportReservations = async (form: FormSubmitEvent) => {
         startTime = form.values.startTime;
         endTime = form.values.endTime;
     }
-    const response: any = await postExportReservations(
+    if (startTime && endTime && allReservations?.value?.data) {
+        const rangeStart = startTime.getTime();
+        const rangeEnd = endTime.getTime();
+        const hasAny = allReservations.value.data.some((r: any) => {
+            const rs = new Date(r.startTime).getTime();
+            const re = new Date(r.endTime).getTime();
+            return rs <= rangeEnd && re >= rangeStart;
+        });
+        if (!hasAny) {
+            loading.value = false;
+            toast.add({
+                severity: "error",
+                summary: "No Reservations",
+                detail: "There are no reservations in the selected time range.",
+                life: 3000,
+            });
+            loading.value = false;
+            return;
+        }
+    }
+
+    getExportReservations(
         startTime ? Math.floor(startTime.getTime() / 1000) : null,
         endTime ? Math.floor(endTime.getTime() / 1000) : null,
     );
-    if (typeof response == "object" && !response.success) {
-        toast.add({
-            severity: "error",
-            summary: "Error",
-            detail: response?.message,
-            life: 2000,
-        });
-    }
     loading.value = false;
     exportVisible.value = false;
     form.reset();

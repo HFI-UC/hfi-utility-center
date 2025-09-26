@@ -1,25 +1,19 @@
 <script setup lang="ts">
-import { BookCheck, DoorClosed, UserRound } from "lucide-vue-next";
-import AdminLogin from "../components/AdminLogin.vue";
-import Navbar from "../components/Navbar.vue";
-import LoadingMask from "../components/LoadingMask.vue";
-import { useRequest } from "vue-request";
-import { type Analytics, getAnalytics } from "../api";
-import { computed, ref, watch } from "vue";
+import { useRequest } from 'vue-request';
+import { getGeneralAnalytics, type Analytics } from '../../../../api';
+import { computed, watch } from 'vue';
+import { ref } from 'vue';
 
-const isDark = ref(false);
-const { data: analyticsData } = useRequest(getAnalytics, {
-    pollingInterval: 60000,
-});
-const analytics = computed<Analytics>(() => analyticsData.value?.data || null);
-const dailyChartData = ref<any>(null);
-const weeklyChartData = ref<any>(null);
-const monthlyChartData = ref<any>(null);
-const dailyRequestChartData = ref<any>(null);
-const chartOptions = computed(() => setChartOptions());
+const { data: generalAnalyticsData } = useRequest(getGeneralAnalytics);
+const generalAnalytics = computed<Analytics>(() => generalAnalyticsData.value?.data || null);
+const generalDailyChartData = ref<any>(null);
+const generalWeeklyChartData = ref<any>(null);
+const generalMonthlyChartData = ref<any>(null);
+const generalDailyRequestChartData = ref<any>(null);
+const generalChartOptions = computed(() => setGeneralChartOptions());
 
-const setDailyChartData = () => {
-    if (!analytics.value) {
+const setGeneralDailyChartData = () => {
+    if (!generalAnalytics.value) {
         return {
             labels: [],
             datasets: [],
@@ -52,36 +46,36 @@ const setDailyChartData = () => {
                 label: "Reservations",
                 backgroundColor: "rgba(59, 130, 246, 0.5)",
                 borderColor: "rgba(59, 130, 246, 1)",
-                data: analytics.value.daily.reservations,
+                data: generalAnalytics.value.daily.reservations,
                 tension: 0.4,
             },
             {
                 label: "Reservation Creations",
                 backgroundColor: "rgba(16, 185, 129, 0.5)",
                 borderColor: "rgba(16, 185, 129, 1)",
-                data: analytics.value.daily.reservationCreations,
+                data: generalAnalytics.value.daily.reservationCreations,
                 tension: 0.4,
             },
             {
                 label: "Reservation Approvals",
                 backgroundColor: "rgba(234, 179, 8, 0.5)",
                 borderColor: "rgba(234, 179, 8, 1)",
-                data: analytics.value.daily.approvals,
+                data: generalAnalytics.value.daily.approvals,
                 tension: 0.4,
             },
             {
                 label: "Reservation Rejections",
                 backgroundColor: "rgba(239, 68, 68, 0.5)",
                 borderColor: "rgba(239, 68, 68, 1)",
-                data: analytics.value.daily.rejections,
+                data: generalAnalytics.value.daily.rejections,
                 tension: 0.4,
             },
         ],
     };
 };
 
-const setWeeklyChartData = () => {
-    if (!analytics.value) {
+const setGeneralWeeklyChartData = () => {
+    if (!generalAnalytics.value) {
         return {
             labels: [],
             datasets: [],
@@ -114,36 +108,36 @@ const setWeeklyChartData = () => {
                 label: "Reservations",
                 backgroundColor: "rgba(59, 130, 246, 0.5)",
                 borderColor: "rgba(59, 130, 246, 1)",
-                data: analytics.value.weekly.reservations,
+                data: generalAnalytics.value.weekly.reservations,
                 tension: 0.4,
             },
             {
                 label: "Reservation Creations",
                 backgroundColor: "rgba(16, 185, 129, 0.5)",
                 borderColor: "rgba(16, 185, 129, 1)",
-                data: analytics.value.weekly.reservationCreations,
+                data: generalAnalytics.value.weekly.reservationCreations,
                 tension: 0.4,
             },
             {
                 label: "Reservation Approvals",
                 backgroundColor: "rgba(234, 179, 8, 0.5)",
                 borderColor: "rgba(234, 179, 8, 1)",
-                data: analytics.value.weekly.approvals,
+                data: generalAnalytics.value.weekly.approvals,
                 tension: 0.4,
             },
             {
                 label: "Reservation Rejections",
                 backgroundColor: "rgba(239, 68, 68, 0.5)",
                 borderColor: "rgba(239, 68, 68, 1)",
-                data: analytics.value.weekly.rejections,
+                data: generalAnalytics.value.weekly.rejections,
                 tension: 0.4,
             },
         ],
     };
 };
 
-const setMonthlyChartData = () => {
-    if (!analytics.value) {
+const setGeneralMonthlyChartData = () => {
+    if (!generalAnalytics.value) {
         return {
             labels: [],
             datasets: [],
@@ -176,36 +170,36 @@ const setMonthlyChartData = () => {
                 label: "Reservations",
                 backgroundColor: "rgba(59, 130, 246, 0.5)",
                 borderColor: "rgba(59, 130, 246, 1)",
-                data: analytics.value.monthly.reservations,
+                data: generalAnalytics.value.monthly.reservations,
                 tension: 0.4,
             },
             {
                 label: "Reservation Creations",
                 backgroundColor: "rgba(16, 185, 129, 0.5)",
                 borderColor: "rgba(16, 185, 129, 1)",
-                data: analytics.value.monthly.reservationCreations,
+                data: generalAnalytics.value.monthly.reservationCreations,
                 tension: 0.4,
             },
             {
                 label: "Reservation Approvals",
                 backgroundColor: "rgba(234, 179, 8, 0.5)",
                 borderColor: "rgba(234, 179, 8, 1)",
-                data: analytics.value.monthly.approvals,
+                data: generalAnalytics.value.monthly.approvals,
                 tension: 0.4,
             },
             {
                 label: "Reservation Rejections",
                 backgroundColor: "rgba(239, 68, 68, 0.5)",
                 borderColor: "rgba(239, 68, 68, 1)",
-                data: analytics.value.monthly.rejections,
+                data: generalAnalytics.value.monthly.rejections,
                 tension: 0.4,
             },
         ],
     };
 };
 
-const setDailyRequestChartData = () => {
-    if (!analytics.value) {
+const setGeneralDailyRequestChartData = () => {
+    if (!generalAnalytics.value) {
         return {
             labels: [],
             datasets: [],
@@ -237,23 +231,17 @@ const setDailyRequestChartData = () => {
             {
                 label: "Requests",
                 backgroundColor: "rgba(239, 200, 68, 1)",
-                data: analytics.value.daily.requests,
+                data: generalAnalytics.value.daily.requests,
             },
         ],
     };
 };
 
-const setChartOptions = () => {
+const setGeneralChartOptions = () => {
     const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = isDark.value
-        ? documentStyle.getPropertyValue("--color-surface-300")
-        : documentStyle.getPropertyValue("--color-surface-900");
-    const textColorSecondary = isDark.value
-        ? documentStyle.getPropertyValue("--color-surface-200")
-        : documentStyle.getPropertyValue("--color-surface-500");
-    const surfaceBorder = isDark.value
-        ? documentStyle.getPropertyValue("--color-surface-700")
-        : documentStyle.getPropertyValue("--color-surface-200");
+    const textColor = documentStyle.getPropertyValue("--color-surface-900");
+    const textColorSecondary = documentStyle.getPropertyValue("--color-surface-500");
+    const surfaceBorder = documentStyle.getPropertyValue("--color-surface-200");
     return {
         responsive: true,
         maintainAspectRatio: false,
@@ -291,63 +279,63 @@ const setChartOptions = () => {
 };
 
 watch(
-    analytics,
+    generalAnalytics,
     () => {
-        if (!analytics.value) return;
-        if (!dailyChartData.value) dailyChartData.value = setDailyChartData();
+        if (!generalAnalytics.value) return;
+        if (!generalDailyChartData.value) generalDailyChartData.value = setGeneralDailyChartData();
         else {
             for (let i = 0; i < 30; i++) {
-                dailyChartData.value.labels[i] = setDailyChartData().labels[i];
-                dailyChartData.value.datasets[0].data[i] =
-                    setDailyChartData().datasets[0].data[i];
-                dailyChartData.value.datasets[1].data[i] =
-                    setDailyChartData().datasets[1].data[i];
-                dailyChartData.value.datasets[2].data[i] =
-                    setDailyChartData().datasets[2].data[i];
-                dailyChartData.value.datasets[3].data[i] =
-                    setDailyChartData().datasets[3].data[i];
+                generalDailyChartData.value.labels[i] = setGeneralDailyChartData().labels[i];
+                generalDailyChartData.value.datasets[0].data[i] =
+                    setGeneralDailyChartData().datasets[0].data[i];
+                generalDailyChartData.value.datasets[1].data[i] =
+                    setGeneralDailyChartData().datasets[1].data[i];
+                generalDailyChartData.value.datasets[2].data[i] =
+                    setGeneralDailyChartData().datasets[2].data[i];
+                generalDailyChartData.value.datasets[3].data[i] =
+                    setGeneralDailyChartData().datasets[3].data[i];
             }
         }
-        if (!weeklyChartData.value)
-            weeklyChartData.value = setWeeklyChartData();
+        if (!generalWeeklyChartData.value)
+            generalWeeklyChartData.value = setGeneralWeeklyChartData();
         else {
             for (let i = 0; i < 7; i++) {
-                weeklyChartData.value.labels[i] =
-                    setWeeklyChartData().labels[i];
-                weeklyChartData.value.datasets[0].data[i] =
-                    setWeeklyChartData().datasets[0].data[i];
-                weeklyChartData.value.datasets[1].data[i] =
-                    setWeeklyChartData().datasets[1].data[i];
-                weeklyChartData.value.datasets[2].data[i] =
-                    setWeeklyChartData().datasets[2].data[i];
-                weeklyChartData.value.datasets[3].data[i] =
-                    setWeeklyChartData().datasets[3].data[i];
+                generalWeeklyChartData.value.labels[i] =
+                    setGeneralWeeklyChartData().labels[i];
+                generalWeeklyChartData.value.datasets[0].data[i] =
+                    setGeneralWeeklyChartData().datasets[0].data[i];
+                generalWeeklyChartData.value.datasets[1].data[i] =
+                    setGeneralWeeklyChartData().datasets[1].data[i];
+                generalWeeklyChartData.value.datasets[2].data[i] =
+                    setGeneralWeeklyChartData().datasets[2].data[i];
+                generalWeeklyChartData.value.datasets[3].data[i] =
+                    setGeneralWeeklyChartData().datasets[3].data[i];
             }
         }
-        if (!monthlyChartData.value)
-            monthlyChartData.value = setMonthlyChartData();
+        if (!generalMonthlyChartData.value)
+            generalMonthlyChartData.value = setGeneralMonthlyChartData();
         else {
             for (let i = 0; i < 12; i++) {
-                monthlyChartData.value.labels[i] =
-                    setMonthlyChartData().labels[i];
-                monthlyChartData.value.datasets[0].data[i] =
-                    setMonthlyChartData().datasets[0].data[i];
-                monthlyChartData.value.datasets[1].data[i] =
-                    setMonthlyChartData().datasets[1].data[i];
-                monthlyChartData.value.datasets[2].data[i] =
-                    setMonthlyChartData().datasets[2].data[i];
-                monthlyChartData.value.datasets[3].data[i] =
-                    setMonthlyChartData().datasets[3].data[i];
+                generalMonthlyChartData.value.labels[i] =
+                    setGeneralMonthlyChartData().labels[i];
+                generalMonthlyChartData.value.datasets[0].data[i] =
+                    setGeneralMonthlyChartData().datasets[0].data[i];
+                generalMonthlyChartData.value.datasets[1].data[i] =
+                    setGeneralMonthlyChartData().datasets[1].data[i];
+                generalMonthlyChartData.value.datasets[2].data[i] =
+                    setGeneralMonthlyChartData().datasets[2].data[i];
+                generalMonthlyChartData.value.datasets[3].data[i] =
+                    setGeneralMonthlyChartData().datasets[3].data[i];
             }
         }
-        if (!dailyRequestChartData.value)
-            dailyRequestChartData.value = setDailyRequestChartData();
+        if (!generalDailyRequestChartData.value)
+            generalDailyRequestChartData.value = setGeneralDailyRequestChartData();
         else {
             for (let i = 0; i < 30; i++) {
-                dailyRequestChartData.value.labels[i] =
-                    setDailyRequestChartData().labels[i];
-                dailyRequestChartData.value.datasets[0].data[i] =
-                    setDailyRequestChartData().datasets[0].data[i];
+                generalDailyRequestChartData.value.labels[i] =
+                    setGeneralDailyRequestChartData().labels[i];
+                generalDailyRequestChartData.value.datasets[0].data[i] =
+                    setGeneralDailyRequestChartData().datasets[0].data[i];
             }
         }
     },
@@ -356,32 +344,14 @@ watch(
 </script>
 
 <template>
-    <AdminLogin :requireLogin="true"></AdminLogin>
-    <Navbar v-model:isDark="isDark"></Navbar>
-    <LoadingMask></LoadingMask>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
-        <h1 class="font-bold text-3xl my-4">Admin Dashboard</h1>
-        <h2 class="font-bold text-lg mt-8 mb-3">Application Entrance</h2>
-        <div class="flex flex-wrap gap-3 items-center">
-            <Button as="a" href="/admin/reservation/" size="small"
-                ><BookCheck></BookCheck>Reservation Management</Button
-            >
-            <Button as="a" href="/admin/facility/" size="small"
-                ><DoorClosed></DoorClosed>Facility Management</Button
-            >
-            <Button as="a" href="/admin/admin/" size="small"
-                ><UserRound></UserRound>Admin Management</Button
-            >
-        </div>
-        <h2 class="font-bold text-lg mt-8 mb-3 flex items-center gap-2">
-            Analytics<Tag value="Live" severity="success"></Tag>
-        </h2>
+    <div class="md:mx-[3rem] 2xl:mx-[8rem] mx-4">
+        <h1 class="font-bold md:text-3xl text-2xl my-4">Reservation Analytics</h1>
         <div class="grid grid-cols-4 gap-4">
             <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">Reservations (Today)</h3>
                     <p class="text-2xl font-bold">
-                        {{ analytics?.today.reservations }}
+                        {{ generalAnalytics?.today.reservations || "-" }}
                     </p>
                 </template>
             </Card>
@@ -389,7 +359,7 @@ watch(
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">Approvals (Today)</h3>
                     <p class="text-2xl font-bold">
-                        {{ analytics?.today.approvals }}
+                        {{ generalAnalytics?.today.approvals || "-" }}
                     </p>
                 </template>
             </Card>
@@ -397,7 +367,7 @@ watch(
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">Rejections (Today)</h3>
                     <p class="text-2xl font-bold">
-                        {{ analytics?.today.rejections }}
+                        {{ generalAnalytics?.today.rejections || "-" }}
                     </p>
                 </template>
             </Card>
@@ -407,7 +377,7 @@ watch(
                         Reservation Creations (Today)
                     </h3>
                     <p class="text-2xl font-bold">
-                        {{ analytics?.today.reservationCreations }}
+                        {{ generalAnalytics?.today.reservationCreations || "-" }}
                     </p>
                 </template>
             </Card>
@@ -416,8 +386,8 @@ watch(
                     <h3 class="font-bold text-lg mb-4">Weekly (Last 7 Days)</h3>
                     <Chart
                         type="line"
-                        :data="weeklyChartData"
-                        :options="chartOptions"
+                        :data="generalWeeklyChartData"
+                        :options="generalChartOptions"
                         :height="300"
                     ></Chart>
                 </template>
@@ -427,8 +397,8 @@ watch(
                     <h3 class="font-bold text-lg mb-4">Daily (Last 30 Days)</h3>
                     <Chart
                         type="line"
-                        :data="dailyChartData"
-                        :options="chartOptions"
+                        :data="generalDailyChartData"
+                        :options="generalChartOptions"
                         :height="300"
                     ></Chart>
                 </template>
@@ -440,8 +410,8 @@ watch(
                     </h3>
                     <Chart
                         type="line"
-                        :data="monthlyChartData"
-                        :options="chartOptions"
+                        :data="generalMonthlyChartData"
+                        :options="generalChartOptions"
                         :height="300"
                     ></Chart>
                 </template>
@@ -453,8 +423,8 @@ watch(
                     </h3>
                     <Chart
                         type="bar"
-                        :data="dailyRequestChartData"
-                        :options="chartOptions"
+                        :data="generalDailyRequestChartData"
+                        :options="generalChartOptions"
                         :height="300"
                     ></Chart>
                 </template>

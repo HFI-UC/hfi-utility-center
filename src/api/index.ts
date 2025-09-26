@@ -2,13 +2,7 @@ import axios from "axios";
 
 axios.defaults.baseURL = process.env.BACKEND_URL;
 axios.defaults.withCredentials = true;
-
-axios.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        return Promise.reject(error);
-    },
-);
+axios.defaults.validateStatus = () => true;
 
 export interface ReservationRequestInfo {
     classId: number;
@@ -240,40 +234,21 @@ export async function getAllReservations() {
     return response.data;
 }
 
-export async function postExportReservations(
+export function getExportReservations(
     startTime: number | null,
     endTime: number | null,
 ) {
-    const response = await axios.post<Blob>(
-        "/reservation/export",
-        { startTime, endTime },
-        { responseType: "blob" } as any,
+    const params: Record<string, number> = {};
+    params.startTime = startTime || -1;
+    params.endTime = endTime || -1;
+    const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
+    const stringParams: Record<string, string> = Object.fromEntries(
+        Object.entries(params).map(([k, v]) => [k, String(v)])
     );
-
-    const blob = response.data as Blob;
-
-    const contentType =
-        (response.headers &&
-            (response.headers["content-type"] ||
-                response.headers["Content-Type"])) ||
-        "";
-
-    const spreadsheetMime =
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    if (contentType.indexOf(spreadsheetMime) !== -1) {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `reservations_${Date.now()}.xlsx`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-    } else {
-        const text = await blob.text();
-        const parsed = JSON.parse(text) as BasicResponse;
-        return parsed;
-    }
+    const qs = new URLSearchParams(stringParams).toString();
+    const downloadUrl = `${base}/reservation/export${qs ? `?${qs}` : ""}`;
+    window.location.href = downloadUrl;
+    return;
 }
 
 export async function postDeleteRoom(id: number) {
@@ -448,9 +423,9 @@ export async function postDeleteAdmin(id: number) {
     return response.data;
 }
 
-export async function getAnalytics() {
+export async function getGeneralAnalytics() {
     const response = await axios.get<BasicResponse & { data: Analytics }>(
-        "/analytic/get",
+        "/analytic/general",
     );
     return response.data;
 }
