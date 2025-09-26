@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { useRequest } from "vue-request";
-import AdminLogin from "../../../components/AdminLogin.vue";
+import AdminLogin from "../../components/AdminLogin.vue";
 import {
     getAdmins,
     postCreateAdmin,
     postDeleteAdmin,
+    postEditAdmin,
     postEditAdminPassword,
-} from "../../../api";
+    type Admin,
+} from "../../api";
 import { PenLine, Plus, Trash2 } from "lucide-vue-next";
-import Navbar from "../../../components/Navbar.vue";
+import Navbar from "../../components/Navbar.vue";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import z from "zod";
 import type { FormSubmitEvent } from "@primevue/forms";
 import { useToast } from "primevue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 const { data: admins, run: fetchAdmins } = useRequest(getAdmins);
 
@@ -117,6 +119,56 @@ const onEditAdminPasswordSubmit = async (form: FormSubmitEvent) => {
             life: 2000,
         });
         editAdminPasswordVisible.value = false;
+        form.reset();
+        fetchAdmins();
+    } else {
+        toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: response.message || "Failed to edit admin password.",
+            life: 2000,
+        });
+    }
+};
+
+const editAdminId = ref(-1);
+const editAdminResolver = ref(
+    zodResolver(
+        z.object({
+            name: z.string("Name is required.").min(1, "Name is required."),
+            email: z
+                .email("Invalid email format.")
+                .min(1, "Email is required."),
+        }),
+    ),
+);
+const editAdminInitialValues = computed(() => (editAdminId.value != -1) ? { ...admins.value?.data.find((admin: Admin) => admin.id === editAdminId.value) } : {});
+const editAdminVisible = ref(false);
+const onEditAdminSubmit = async (form: FormSubmitEvent) => {
+    if (!form.valid) {
+        toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Please fill in all required fields.",
+            life: 2000,
+        });
+        return;
+    }
+    loading.value = true;
+    const response = await postEditAdmin(
+        editAdminId.value,
+        form.values.name,
+        form.values.email,
+    );
+    loading.value = false;
+    if (response.success) {
+        toast.add({
+            severity: "success",
+            summary: "Success",
+            detail: response.message,
+            life: 2000,
+        });
+        editAdminVisible.value = false;
         form.reset();
         fetchAdmins();
     } else {
@@ -252,6 +304,51 @@ const deleteAdmin = async (id: number) => {
             </div>
         </Form>
     </Dialog>
+    <Dialog
+        header="Edit Admin"
+        modal
+        v-model:visible="editAdminVisible"
+        :closable="false"
+        class="w-[23rem] mx-2"
+    >
+        <Form
+            :initialValues="editAdminInitialValues"
+            :resolver="editAdminResolver"
+            v-slot="$form"
+            @submit="onEditAdminSubmit"
+        >
+            <div class="flex flex-col gap-4">
+                <InputText name="name" placeholder="Name" fluid></InputText>
+                <Message
+                    v-if="$form.name?.invalid"
+                    severity="error"
+                    size="small"
+                    >{{ $form.name.error?.message }}</Message
+                >
+                <InputText
+                    name="email"
+                    placeholder="E-mail"
+                    autocomplete="email"
+                    fluid
+                ></InputText>
+                <Message
+                    v-if="$form.email?.invalid"
+                    severity="error"
+                    size="small"
+                    >{{ $form.email.error?.message }}</Message
+                >
+            </div>
+            <div class="justify-end items-center flex gap-2 mt-4">
+                <Button
+                    type="button"
+                    severity="secondary"
+                    @click="(editAdminVisible = false), $form.reset()"
+                    >Cancel</Button
+                >
+                <Button type="submit"><PenLine></PenLine>Edit</Button>
+            </div>
+        </Form>
+    </Dialog>
     <div class="mt-[6rem] mb-4 mx-[3rem]">
         <h1 class="font-bold text-3xl my-4">Admin Management</h1>
         <Card>
@@ -290,12 +387,19 @@ const deleteAdmin = async (id: number) => {
                     </Column>
                     <Column header="Actions">
                         <template #body="slotProps">
-                            <Button
-                                size="small"
-                                @click="deleteAdmin(slotProps.data.id)"
-                                severity="danger"
-                                ><Trash2></Trash2
-                            ></Button>
+                            <div class="flex gap-2">
+                                <Button
+                                    size="small"
+                                    @click="(editAdminVisible = true), (editAdminId = slotProps.data.id)"
+                                    ><PenLine></PenLine
+                                ></Button>
+                                <Button
+                                    size="small"
+                                    @click="deleteAdmin(slotProps.data.id)"
+                                    severity="danger"
+                                    ><Trash2></Trash2
+                                ></Button>
+                            </div>
                         </template>
                     </Column>
                 </DataTable>

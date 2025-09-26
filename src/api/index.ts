@@ -3,6 +3,13 @@ import axios from "axios";
 axios.defaults.baseURL = process.env.BACKEND_URL;
 axios.defaults.withCredentials = true;
 
+axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        return Promise.reject(error);
+    },
+);
+
 export interface ReservationRequestInfo {
     classId: number;
     studentName: string;
@@ -15,6 +22,7 @@ export interface ReservationRequestInfo {
     reason: string;
     campus: string;
     isAgreed: boolean;
+    turnstileToken: string;
 }
 
 export interface Reservation {
@@ -176,6 +184,7 @@ export async function postCreateReservation(
                 `${formatDate(reservation.date)}T${reservation.endTime}`,
             ).getTime() / 1000,
         reason: reservation.reason,
+        turnstileToken: reservation.turnstileToken
     };
     const response = await axios.post<BasicResponse>(
         "/reservation/create",
@@ -188,11 +197,13 @@ export async function postLogin(
     email: string | null,
     password: string | null,
     token: string | null,
+    turnstileToken: string | null,
 ) {
     const response = await axios.post<BasicResponse>("/admin/login", {
         email,
         password,
         token,
+        turnstileToken
     });
     return response.data;
 }
@@ -441,5 +452,18 @@ export async function getAnalytics() {
     const response = await axios.get<BasicResponse & { data: Analytics }>(
         "/analytic/get",
     );
+    return response.data;
+}
+
+export async function postEditAdmin(
+    id: number,
+    name: string,
+    email: string,
+) {
+    const response = await axios.post<BasicResponse>("/admin/edit", {
+        id,
+        name,
+        email,
+    });
     return response.data;
 }

@@ -84,12 +84,12 @@ const reservationsMenuItems = computed(() => {
         {
             label: "New Reservation",
             iconComponent: Book,
-            to: "/reservation/create",
+            to: "/reservation/create/",
         },
         {
             label: "Reservation Search",
             iconComponent: Search,
-            to: "/reservation/search",
+            to: "/reservation/search/",
         },
     ];
     return items;
@@ -109,13 +109,13 @@ const menuItems = computed(() => {
         items.push({
             label: "Login",
             iconComponent: LogIn,
-            to: "/admin/login",
+            to: "/admin/login/",
         });
     } else {
         items.push({
             label: "Admin",
             iconComponent: UserRound,
-            to: "/admin/dashboard",
+            to: "/admin/dashboard/",
         });
         items.push({ label: "Logout", iconComponent: LogOut, to: "#" });
     }
@@ -223,7 +223,7 @@ onMounted(async () => {
                         text
                         severity="contrast"
                         as="a"
-                        href="/admin/dashboard"
+                        href="/admin/dashboard/"
                     >
                         <UserRound></UserRound>Admin
                     </Button>
@@ -235,7 +235,7 @@ onMounted(async () => {
                     text
                     severity="contrast"
                     as="a"
-                    href="/admin/login"
+                    href="/admin/login/"
                 >
                     <LogIn></LogIn>Login
                 </Button>

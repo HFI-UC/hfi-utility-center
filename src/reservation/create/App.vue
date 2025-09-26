@@ -18,7 +18,7 @@ import {
     type Campus,
     getPolicies,
     type RoomPolicy,
-} from "../../../api";
+} from "../../api";
 import { computed, ref } from "vue";
 import { useRequest } from "vue-request";
 import {
@@ -30,9 +30,11 @@ import {
 } from "lucide-vue-next";
 import confetti from "canvas-confetti";
 import { useToast } from "primevue";
-import Navbar from "../../../components/Navbar.vue";
-import LoadingMask from "../../../components/LoadingMask.vue";
+import Navbar from "../../components/Navbar.vue";
+import LoadingMask from "../../components/LoadingMask.vue";
+import VueTurnstile from "vue-turnstile";
 
+const turnstileSiteKey = process.env.CLOUDFLARE_KEY || "";
 const resolver = zodResolver(
     z.object({
         classId: z.number({ error: "Class is required." }),
@@ -252,8 +254,12 @@ const getEndTimeOptions = ({
         selectedRoom.value,
         startHours,
         startMinutes + 15,
-        21 >= startHours + 2 ? startHours + 2 : 21,
-        30 > startMinutes && 21 <= startHours + 2 ? 30 : startMinutes,
+        Math.min(startHours + 2, 21),
+        Math.min(startHours + 2, 21) === 21
+            ? startHours + 2 === 21 && startMinutes === 0
+                ? 0
+                : Math.max(startMinutes, 30)
+            : startMinutes,
         selectedClass.value,
     );
 };
@@ -289,7 +295,10 @@ const fetchReservations = async (selectedRoom: FormFieldState) => {
 const success = ref(false);
 const successMessage = ref("");
 const submitLoading = ref(false);
+const turnstileToken = ref("");
+const turnstileRef = ref();
 const onSubmitEvent = async (form: FormSubmitEvent) => {
+    if (turnstileToken.value == "") return;
     if (!form.valid) {
         toast.add({
             severity: "error",
@@ -299,6 +308,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
         });
         return;
     }
+    form.values.turnstileToken = turnstileToken.value;
     submitLoading.value = true;
     const response = await postCreateReservation(
         form.values as ReservationRequestInfo,
@@ -321,6 +331,8 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
             detail: response.message,
             life: 3000,
         });
+        turnstileRef.value?.reset();
+        turnstileToken.value = "";
     }
 };
 const onMoreConfetti = () => {
@@ -726,11 +738,18 @@ const termsVisible = ref(false);
                         size="small"
                         >{{ $form.isAgreed.error.message }}</Message
                     >
+                    <p class="text-center text-sm mt-3">Let us know you're human</p>
+                    <VueTurnstile
+                        v-model="turnstileToken"
+                        :siteKey="turnstileSiteKey"
+                        ref="turnstileRef"
+                        class="flex justify-center mt-2"
+                    ></VueTurnstile>
                     <Button
                         type="submit"
                         fluid
                         class="mt-3"
-                        :disabled="submitLoading"
+                        :disabled="!turnstileToken || submitLoading"
                         ><PenSquare></PenSquare>Submit</Button
                     >
                 </Form>
@@ -754,7 +773,7 @@ const termsVisible = ref(false);
                             severity="warn"
                             size="small"
                             as="a"
-                            href="/reservation/create"
+                            href="/reservation/create/"
                             ><RotateCcw></RotateCcw> Create another
                             reservation</Button
                         >

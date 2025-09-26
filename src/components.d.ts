@@ -8,7 +8,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AdminLogin: typeof import('./src/components/AdminLogin.vue')['default']
     BlockUI: typeof import('primevue/blockui')['default']
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
@@ -23,11 +22,9 @@ declare module 'vue' {
     Fieldset: typeof import('primevue/fieldset')['default']
     Form: typeof import('@primevue/forms/form')['default']
     InputText: typeof import('primevue/inputtext')['default']
-    LoadingMask: typeof import('./src/components/LoadingMask.vue')['default']
     Menu: typeof import('primevue/menu')['default']
     Message: typeof import('primevue/message')['default']
     MultiSelect: typeof import('primevue/multiselect')['default']
-    Navbar: typeof import('./src/components/Navbar.vue')['default']
     Select: typeof import('primevue/select')['default']
     Tag: typeof import('primevue/tag')['default']
     Toast: typeof import('primevue/toast')['default']

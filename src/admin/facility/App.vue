@@ -28,16 +28,16 @@ import {
     type Room,
     type RoomApprover,
     type RoomPolicy,
-} from "../../../api";
+} from "../../api";
 import { PenLine, Plus, Trash2, Pause, Play } from "lucide-vue-next";
 import { computed, ref } from "vue";
 import { useToast } from "primevue";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { type FormSubmitEvent } from "@primevue/forms";
 import z from "zod";
-import AdminLogin from "../../../components/AdminLogin.vue";
-import Navbar from "../../../components/Navbar.vue";
-import LoadingMask from "../../../components/LoadingMask.vue";
+import AdminLogin from "../../components/AdminLogin.vue";
+import Navbar from "../../components/Navbar.vue";
+import LoadingMask from "../../components/LoadingMask.vue";
 
 const { data: rooms, run: fetchRooms } = useRequest(getRooms);
 const { data: campuses, run: fetchCampuses } = useRequest(getCampuses);
@@ -1288,7 +1288,7 @@ const deleteApprover = async (id: number) => {
             </div>
         </Form>
     </Dialog>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] mx-4">
+    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
         <h1 class="text-3xl font-bold my-4">Facility Management</h1>
         <div class="grid gap-4 grid-cols-6 items-start">
             <Card class="md:col-span-6 col-span-6">

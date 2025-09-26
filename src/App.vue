@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PenSquare, Search } from "lucide-vue-next";
-import LoadingMask from "../../components/LoadingMask.vue";
-import Navbar from "../../components/Navbar.vue";
+import LoadingMask from "./components/LoadingMask.vue";
+import Navbar from "./components/Navbar.vue";
 </script>
 <template>
     <LoadingMask />
@@ -14,12 +14,12 @@ import Navbar from "../../components/Navbar.vue";
         </h1>
         <h2 class="font-bold">by MAKERs'</h2>
         <div class="mt-8 flex gap-2 flex-wrap items-center justify-center">
-            <Button as="a" href="/reservation/create" size="small"
+            <Button as="a" href="/reservation/create/" size="small"
                 ><PenSquare></PenSquare>Book a room</Button
             >
             <Button
                 as="a"
-                href="/reservation/search"
+                href="/reservation/search/"
                 size="small"
                 severity="secondary"
                 ><Search></Search>Find your reservation</Button

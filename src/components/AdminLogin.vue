@@ -17,7 +17,7 @@ onMounted(async () => {
             });
             setTimeout(
                 () =>
-                    (window.location.href = `/admin/login?redirect=${encodeURIComponent(window.location.href)}`),
+                    (window.location.href = `/admin/login/?redirect=${encodeURIComponent(window.location.href)}`),
                 2500,
             );
         }
@@ -33,7 +33,7 @@ onMounted(async () => {
             setTimeout(
                 () =>
                     (window.location.href =
-                        props.redirect || "/admin/dashboard"),
+                        props.redirect || "/admin/dashboard/"),
                 2500,
             );
         }

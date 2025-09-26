@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { BookCheck, DoorClosed, UserRound } from "lucide-vue-next";
-import AdminLogin from "../../../components/AdminLogin.vue";
-import Navbar from "../../../components/Navbar.vue";
-import LoadingMask from "../../../components/LoadingMask.vue";
+import AdminLogin from "../../components/AdminLogin.vue";
+import Navbar from "../../components/Navbar.vue";
+import LoadingMask from "../../components/LoadingMask.vue";
 import { useRequest } from "vue-request";
-import { type Analytics, getAnalytics } from "../../../api";
+import { type Analytics, getAnalytics } from "../../api";
 import { computed, ref, watch } from "vue";
 
 const isDark = ref(false);
@@ -353,34 +353,23 @@ watch(
     },
     { immediate: true },
 );
-
-const formatBytes = (bytes: number | undefined): string | null => {
-    if (bytes === undefined) return null;
-    const units = ["iB", "KiB", "MiB", "GiB", "TiB"];
-    let i = 0;
-    while (bytes >= 1024 && i < units.length - 1) {
-        bytes /= 1024;
-        i++;
-    }
-    return `${bytes.toFixed(2)} ${units[i]}`;
-};
 </script>
 
 <template>
     <AdminLogin :requireLogin="true"></AdminLogin>
     <Navbar v-model:isDark="isDark"></Navbar>
     <LoadingMask></LoadingMask>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] mx-4">
+    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
         <h1 class="font-bold text-3xl my-4">Admin Dashboard</h1>
         <h2 class="font-bold text-lg mt-8 mb-3">Application Entrance</h2>
         <div class="flex flex-wrap gap-3 items-center">
-            <Button as="a" href="/admin/reservation" size="small"
+            <Button as="a" href="/admin/reservation/" size="small"
                 ><BookCheck></BookCheck>Reservation Management</Button
             >
-            <Button as="a" href="/admin/facility" size="small"
+            <Button as="a" href="/admin/facility/" size="small"
                 ><DoorClosed></DoorClosed>Facility Management</Button
             >
-            <Button as="a" href="/admin/admin" size="small"
+            <Button as="a" href="/admin/admin/" size="small"
                 ><UserRound></UserRound>Admin Management</Button
             >
         </div>
@@ -420,36 +409,6 @@ const formatBytes = (bytes: number | undefined): string | null => {
                     <p class="text-2xl font-bold">
                         {{ analytics?.today.reservationCreations }}
                     </p>
-                </template>
-            </Card>
-            <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
-                <template #content>
-                    <h3 class="font-bold text-lg mb-4">Requests (Today)</h3>
-                    <p class="text-2xl font-bold">
-                        {{ analytics?.today.requests }}
-                    </p>
-                </template>
-            </Card>
-            <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
-                <template #content>
-                    <h3 class="font-bold text-lg mb-4">CPU Usage</h3>
-                    <p class="text-2xl font-bold">
-                        {{ analytics?.cpu.toFixed(2) }}%
-                    </p>
-                </template>
-            </Card>
-            <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
-                <template #content>
-                    <h3 class="font-bold text-lg mb-4">Memory Usage</h3>
-                    <p class="text-2xl font-bold">
-                        {{ formatBytes(analytics?.memory) }}
-                    </p>
-                </template>
-            </Card>
-            <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
-                <template #content>
-                    <h3 class="font-bold text-lg mb-4">Error Logs</h3>
-                    <p class="text-2xl font-bold">{{ analytics?.errorLogs }}</p>
                 </template>
             </Card>
             <Card class="lg:col-span-2 col-span-4">

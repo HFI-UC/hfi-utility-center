@@ -5,11 +5,13 @@ import { LogIn } from "lucide-vue-next";
 import { useToast } from "primevue";
 import { ref } from "vue";
 import z from "zod";
-import { postLogin } from "../../../api";
-import AdminLogin from "../../../components/AdminLogin.vue";
-import Navbar from "../../../components/Navbar.vue";
-import LoadingMask from "../../../components/LoadingMask.vue";
+import { postLogin } from "../../api";
+import AdminLogin from "../../components/AdminLogin.vue";
+import Navbar from "../../components/Navbar.vue";
+import LoadingMask from "../../components/LoadingMask.vue";
+import VueTurnstile from "vue-turnstile";
 
+const turnstileSiteKey = process.env.CLOUDFLARE_KEY || "";
 const resolver = zodResolver(
     z.object({
         email: z.email({ error: "Wrong E-mail format." }),
@@ -19,7 +21,10 @@ const resolver = zodResolver(
 
 const toast = useToast();
 const submitLoading = ref(false);
+const turnstileToken = ref("");
+const turnstileRef = ref();
 const onSubmitEvent = async (form: FormSubmitEvent) => {
+    if (turnstileToken.value == "") return;
     if (!form.valid) {
         toast.add({
             severity: "error",
@@ -34,6 +39,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
         form.values.email,
         form.values.password,
         null,
+        turnstileToken.value,
     );
     submitLoading.value = false;
     if (response.success) {
@@ -46,7 +52,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
         setTimeout(
             () =>
                 (window.location.href =
-                    getRedirect() != "" ? getRedirect() : "/admin/dashboard"),
+                    getRedirect() != "" ? getRedirect() : "/admin/dashboard/"),
             2500,
         );
     } else {
@@ -56,6 +62,8 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
             detail: response.message,
             life: 2000,
         });
+        turnstileRef.value?.reset();
+        turnstileToken.value = "";
     }
 };
 
@@ -108,10 +116,17 @@ const initialValues = ref({ email: null, password: null });
                             size="small"
                             >{{ $form.password.error?.message }}</Message
                         >
+                        <p class="text-center text-sm mt-3">Let us know you're human</p>
+                        <VueTurnstile
+                            v-model="turnstileToken"
+                            :siteKey="turnstileSiteKey"
+                            ref="turnstileRef"
+                            class="flex justify-center mt-2"
+                        ></VueTurnstile>
                         <Button
                             type="submit"
                             severity="success"
-                            :disabled="submitLoading"
+                            :disabled="submitLoading || !turnstileToken"
                         >
                             <LogIn></LogIn>Login
                         </Button>

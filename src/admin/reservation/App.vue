@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useRequest } from "vue-request";
-import AdminLogin from "../../../components/AdminLogin.vue";
+import AdminLogin from "../../components/AdminLogin.vue";
 import {
     getAllReservations,
     postExportReservations,
     getRecentReservations,
     postApproveReservation,
     postLogin,
-} from "../../../api";
+} from "../../api";
 import { onMounted, ref } from "vue";
 import { Check, Download, SquareArrowOutUpRight, X } from "lucide-vue-next";
 import { useToast } from "primevue";
@@ -15,8 +15,8 @@ import { type FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { FilterMatchMode } from "@primevue/core/api";
 import z from "zod";
-import Navbar from "../../../components/Navbar.vue";
-import LoadingMask from "../../../components/LoadingMask.vue";
+import Navbar from "../../components/Navbar.vue";
+import LoadingMask from "../../components/LoadingMask.vue";
 
 const { data: futureReservations, run: fetchFutureReservations } = useRequest(
     getRecentReservations,
@@ -191,9 +191,9 @@ const getToken = () => {
 onMounted(async () => {
     const token = getToken();
     if (token != "") {
-        const response = await postLogin(null, null, token);
+        const response = await postLogin(null, null, token, null);
         if (response.success) {
-            window.location.href = "/admin/reservation";
+            window.location.href = "/admin/reservation/";
         } else {
             toast.add({
                 severity: "error",
@@ -202,7 +202,7 @@ onMounted(async () => {
                 life: 6000,
             });
             setTimeout(
-                () => (window.location.href = "/admin/reservation"),
+                () => (window.location.href = "/admin/reservation/"),
                 6500,
             );
         }
@@ -351,7 +351,7 @@ const exportOptions = [
                     v-if="$form.option?.value === 4"
                     showTime
                     showSeconds
-                    :maxDate="$form.endTime?.value"
+                    :maxDate="$form.endTime?.value || undefined"
                     name="startTime"
                     placeholder="Start Time"
                     fluid
@@ -366,7 +366,7 @@ const exportOptions = [
                     v-if="$form.option?.value === 4"
                     showTime
                     showSeconds
-                    :minDate="$form.startTime?.value"
+                    :minDate="$form.startTime?.value || undefined"
                     name="endTime"
                     placeholder="End Time"
                     fluid
@@ -391,7 +391,7 @@ const exportOptions = [
             </div>
         </Form>
     </Dialog>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] mx-4">
+    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
         <h1 class="font-bold md:text-3xl text-2xl my-4">
             Reservation Management
         </h1>

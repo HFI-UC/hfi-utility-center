@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { useRequest } from "vue-request";
-import { getRooms, postFetchReservations } from "../../../api";
+import { getRooms, postFetchReservations } from "../../api";
 import { ref } from "vue";
-import Navbar from "../../../components/Navbar.vue";
-import LoadingMask from "../../../components/LoadingMask.vue";
+import Navbar from "../../components/Navbar.vue";
+import LoadingMask from "../../components/LoadingMask.vue";
 
 const keyword = ref<string | null>(null);
 const status = ref<string | null>(null);
 const room = ref<number | null>(null);
+const rows = ref(10);
+const page = ref(0);
 
 const { data: reservations } = useRequest(
     () => postFetchReservations(keyword.value, room.value, status.value),
     {
-        refreshDeps: [keyword, room, status],
+        refreshDeps: [keyword, room, status, rows, page],
         debounceInterval: 300,
     },
 );
@@ -44,17 +46,19 @@ const statusOptions = [
     { id: "approved", name: "Approved" },
     { id: "rejected", name: "Rejected" },
 ];
+
 </script>
 <template>
     <LoadingMask></LoadingMask>
     <Navbar></Navbar>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] mx-4">
+    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
         <h1 class="font-bold md:text-3xl text-2xl my-4">Reservation Search</h1>
         <Card class="w-full mt-4">
             <template #content>
                 <DataTable
                     paginator
-                    :rows="10"
+                    :rows="rows"
+                    :first="page"
                     :value="reservations?.data"
                     class="text-nowrap"
                     removableSort
