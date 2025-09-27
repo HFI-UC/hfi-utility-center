@@ -12,9 +12,9 @@ const overviewDailyChartData = ref<any>(null);
 const overviewWeeklyChartData = ref<any>(null);
 const overviewMonthlyChartData = ref<any>(null);
 const overviewDailyRequestChartData = ref<any>(null);
-const overviewChartOptions = computed(() => setoverviewChartOptions());
+const overviewChartOptions = computed(() => setOverviewChartOptions());
 
-const setoverviewDailyChartData = () => {
+const setOverviewDailyChartData = () => {
     if (!overviewAnalytics.value) {
         return {
             labels: [],
@@ -76,7 +76,7 @@ const setoverviewDailyChartData = () => {
     };
 };
 
-const setoverviewWeeklyChartData = () => {
+const setOverviewWeeklyChartData = () => {
     if (!overviewAnalytics.value) {
         return {
             labels: [],
@@ -138,7 +138,7 @@ const setoverviewWeeklyChartData = () => {
     };
 };
 
-const setoverviewMonthlyChartData = () => {
+const setOverviewMonthlyChartData = () => {
     if (!overviewAnalytics.value) {
         return {
             labels: [],
@@ -200,7 +200,7 @@ const setoverviewMonthlyChartData = () => {
     };
 };
 
-const setoverviewDailyRequestChartData = () => {
+const setOverviewDailyRequestChartData = () => {
     if (!overviewAnalytics.value) {
         return {
             labels: [],
@@ -239,7 +239,7 @@ const setoverviewDailyRequestChartData = () => {
     };
 };
 
-const setoverviewChartOptions = () => {
+const setOverviewChartOptions = () => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--color-surface-900");
     const textColorSecondary = documentStyle.getPropertyValue(
@@ -287,62 +287,62 @@ watch(
     () => {
         if (!overviewAnalytics.value) return;
         if (!overviewDailyChartData.value)
-            overviewDailyChartData.value = setoverviewDailyChartData();
+            overviewDailyChartData.value = setOverviewDailyChartData();
         else {
             for (let i = 0; i < 30; i++) {
                 overviewDailyChartData.value.labels[i] =
-                    setoverviewDailyChartData().labels[i];
+                    setOverviewDailyChartData().labels[i];
                 overviewDailyChartData.value.datasets[0].data[i] =
-                    setoverviewDailyChartData().datasets[0].data[i];
+                    setOverviewDailyChartData().datasets[0].data[i];
                 overviewDailyChartData.value.datasets[1].data[i] =
-                    setoverviewDailyChartData().datasets[1].data[i];
+                    setOverviewDailyChartData().datasets[1].data[i];
                 overviewDailyChartData.value.datasets[2].data[i] =
-                    setoverviewDailyChartData().datasets[2].data[i];
+                    setOverviewDailyChartData().datasets[2].data[i];
                 overviewDailyChartData.value.datasets[3].data[i] =
-                    setoverviewDailyChartData().datasets[3].data[i];
+                    setOverviewDailyChartData().datasets[3].data[i];
             }
         }
         if (!overviewWeeklyChartData.value)
-            overviewWeeklyChartData.value = setoverviewWeeklyChartData();
+            overviewWeeklyChartData.value = setOverviewWeeklyChartData();
         else {
             for (let i = 0; i < 7; i++) {
                 overviewWeeklyChartData.value.labels[i] =
-                    setoverviewWeeklyChartData().labels[i];
+                    setOverviewWeeklyChartData().labels[i];
                 overviewWeeklyChartData.value.datasets[0].data[i] =
-                    setoverviewWeeklyChartData().datasets[0].data[i];
+                    setOverviewWeeklyChartData().datasets[0].data[i];
                 overviewWeeklyChartData.value.datasets[1].data[i] =
-                    setoverviewWeeklyChartData().datasets[1].data[i];
+                    setOverviewWeeklyChartData().datasets[1].data[i];
                 overviewWeeklyChartData.value.datasets[2].data[i] =
-                    setoverviewWeeklyChartData().datasets[2].data[i];
+                    setOverviewWeeklyChartData().datasets[2].data[i];
                 overviewWeeklyChartData.value.datasets[3].data[i] =
-                    setoverviewWeeklyChartData().datasets[3].data[i];
+                    setOverviewWeeklyChartData().datasets[3].data[i];
             }
         }
         if (!overviewMonthlyChartData.value)
-            overviewMonthlyChartData.value = setoverviewMonthlyChartData();
+            overviewMonthlyChartData.value = setOverviewMonthlyChartData();
         else {
             for (let i = 0; i < 12; i++) {
                 overviewMonthlyChartData.value.labels[i] =
-                    setoverviewMonthlyChartData().labels[i];
+                    setOverviewMonthlyChartData().labels[i];
                 overviewMonthlyChartData.value.datasets[0].data[i] =
-                    setoverviewMonthlyChartData().datasets[0].data[i];
+                    setOverviewMonthlyChartData().datasets[0].data[i];
                 overviewMonthlyChartData.value.datasets[1].data[i] =
-                    setoverviewMonthlyChartData().datasets[1].data[i];
+                    setOverviewMonthlyChartData().datasets[1].data[i];
                 overviewMonthlyChartData.value.datasets[2].data[i] =
-                    setoverviewMonthlyChartData().datasets[2].data[i];
+                    setOverviewMonthlyChartData().datasets[2].data[i];
                 overviewMonthlyChartData.value.datasets[3].data[i] =
-                    setoverviewMonthlyChartData().datasets[3].data[i];
+                    setOverviewMonthlyChartData().datasets[3].data[i];
             }
         }
         if (!overviewDailyRequestChartData.value)
             overviewDailyRequestChartData.value =
-                setoverviewDailyRequestChartData();
+                setOverviewDailyRequestChartData();
         else {
             for (let i = 0; i < 30; i++) {
                 overviewDailyRequestChartData.value.labels[i] =
-                    setoverviewDailyRequestChartData().labels[i];
+                    setOverviewDailyRequestChartData().labels[i];
                 overviewDailyRequestChartData.value.datasets[0].data[i] =
-                    setoverviewDailyRequestChartData().datasets[0].data[i];
+                    setOverviewDailyRequestChartData().datasets[0].data[i];
             }
         }
     },
