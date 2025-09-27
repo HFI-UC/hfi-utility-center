@@ -351,7 +351,7 @@ watch(
 </script>
 
 <template>
-    <div class="mx-[3rem] my-[5rem]">
+    <div class="mx-[3rem] my-[2rem]">
         <h1
             class="font-bold text-xl from-cyan-500 to-sky-500 bg-linear-to-r bg-clip-text text-transparent"
             >HFI Utility Center</h1
