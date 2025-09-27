@@ -423,9 +423,9 @@ export async function postDeleteAdmin(id: number) {
     return response.data;
 }
 
-export async function getGeneralAnalytics() {
+export async function getOverviewAnalytics() {
     const response = await axios.get<BasicResponse & { data: Analytics }>(
-        "/analytic/general",
+        "/analytics/overview",
     );
     return response.data;
 }
@@ -441,4 +441,9 @@ export async function postEditAdmin(
         email,
     });
     return response.data;
+}
+
+export async function getExportOverviewReservationsAnalytics(type: string, turnstileToken: string) {
+    const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
+    window.location.href = `${base}/analytic/general/export?type=${type}&turnstileToken=${turnstileToken}`;
 }
