@@ -353,7 +353,7 @@ watch(
 <template>
     <div class="mx-[3rem]">
         <h1
-            class="mt-8 font-bold text-xl from-cyan-500 to-sky-500 bg-linear-to-r bg-clip-text text-transparent"
+            class="font-bold text-xl from-cyan-500 to-sky-500 bg-linear-to-r bg-clip-text text-transparent"
             >HFI Utility Center</h1
         >
         <h1 class="font-bold text-3xl my-4">Reservation Analytics - Overview</h1>
