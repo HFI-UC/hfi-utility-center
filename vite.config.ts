@@ -63,6 +63,7 @@ export default defineConfig({
                 manualChunks: (id) => {
                     if (id.includes("LoadingMask.vue")) return "loading-mask";
                     if (id.includes("AdminLogin.vue")) return "admin-login";
+                    if (id.includes("Navbar.vue")) return "navbar";
                     if (id.includes("lucide")) return "lucide";
                     if (id.includes("primevue")) return "primevue";
                     if (id.includes("chart.js")) return "chartjs";
