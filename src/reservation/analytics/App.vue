@@ -390,6 +390,7 @@ const onExportOverview = async (type: string) => {
         :closable="false"
         v-model:visible="turnstileVisible"
         class="w-[23rem]"
+        modal
     >
         <p class="text-center text-sm mt-3">Let us know you're human</p>
         <VueTurnstile
@@ -417,6 +418,12 @@ const onExportOverview = async (type: string) => {
                     @click="onExportOverview('pdf')"
                     :disabled="overviewExportLoading"
                     ><Download></Download>Export (.pdf)</Button
+                >
+                <Button
+                    size="small"
+                    @click="onExportOverview('png')"
+                    :disabled="overviewExportLoading"
+                    ><Download></Download>Export (.png)</Button
                 >
             </div>
         </div>

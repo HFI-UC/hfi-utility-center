@@ -8,6 +8,7 @@ import {
     Book,
     Search,
     UserRound,
+    ChartNoAxesCombined,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
 import { getCheckLogin, getLogOut } from "../api";
@@ -91,6 +92,11 @@ const reservationsMenuItems = computed(() => {
             iconComponent: Search,
             to: "/reservation/search/",
         },
+        {
+            label: "Reservation Analytics",
+            iconComponent: ChartNoAxesCombined,
+            to: "/reservation/analytics/"
+        }
     ];
     return items;
 });
