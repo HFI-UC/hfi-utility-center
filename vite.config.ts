@@ -43,7 +43,7 @@ export default defineConfig({
                     "reservation/search/index.html"
                 ),
                 "reservation-analytics": resolve(__dirname, "reservation/analytics/index.html"),
-                "reservation-analytics-raw-general": resolve(__dirname, "reservation/analytics/raw/general/index.html"),
+                "reservation-analytics-raw-general": resolve(__dirname, "reservation/analytics/raw/overview/index.html"),
                 "admin-admin": resolve(__dirname, "admin/admin/index.html"),
                 "admin-login": resolve(__dirname, "admin/login/index.html"),
                 "admin-dashboard": resolve(
