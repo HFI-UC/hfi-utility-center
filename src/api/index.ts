@@ -445,5 +445,5 @@ export async function postEditAdmin(
 
 export async function getExportOverviewReservationsAnalytics(type: string, turnstileToken: string) {
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
-    window.location.href = `${base}/analytic/general/export?type=${type}&turnstileToken=${turnstileToken}`;
+    window.location.href = `${base}/analytics/overview/export?type=${type}&turnstileToken=${turnstileToken}`;
 }
