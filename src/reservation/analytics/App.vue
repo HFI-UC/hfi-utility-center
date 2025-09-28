@@ -375,6 +375,7 @@ const onExportOverview = async (type: string) => {
     while (overviewExportLoading.value && turnstileToken.value == "") {
         await new Promise((resolve) => setTimeout(resolve, 100));
     }
+    if (!overviewExportLoading.value) return;
     overviewExportLoading.value = false;
     turnstileVisible.value = false;
     await getExportOverviewReservationsAnalytics(type, turnstileToken.value);
