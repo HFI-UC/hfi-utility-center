@@ -174,8 +174,8 @@ const getRooms = ({
                 code: 513,
             },
             {
-                label: "524",
-                code: 524,
+                label: "501",
+                code: 501,
             },
         ],
     ];
