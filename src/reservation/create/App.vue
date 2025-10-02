@@ -16,7 +16,6 @@ import {
     postCreateReservation,
     type Class,
     type Campus,
-    getPolicies,
     type RoomPolicy,
 } from "../../api";
 import { computed, ref } from "vue";
@@ -70,7 +69,6 @@ const resolver = zodResolver(
 const { data: classData } = useRequest(getClasses);
 const { data: campus } = useRequest(getCampuses);
 const { data: room } = useRequest(getRooms);
-const { data: roomPolicies } = useRequest(getPolicies);
 
 const classes = computed(() => {
     const _data = classData.value?.data;
@@ -170,18 +168,14 @@ const validateTimeConflict = (time: Date): boolean => {
 };
 
 const getRoomPolicyData = (id: number) => {
-    if (!roomPolicies.value) return [];
-    const selectedRoomPolicy = roomPolicies.value.data.filter(
-        (policy: RoomPolicy) => policy.room === id && policy.enabled,
-    );
+    if (!room.value) return [];
+    const selectedRoomPolicy = room.value.data.find((room) => room.id == id)?.policies || [];
     return selectedRoomPolicy || [];
 };
 
 const validatePolicy = (time: Date, selectedRoom: number): boolean => {
-    if (!room.value || !roomPolicies.value) return true;
-    const selectedRoomPolicy: RoomPolicy[] = roomPolicies.value.data.filter(
-        (policy: RoomPolicy) => policy.room === selectedRoom && policy.enabled,
-    );
+    if (!room.value) return true;
+    const selectedRoomPolicy: RoomPolicy[] = room.value.data.find((room) => room.id == selectedRoom)?.policies || [];
     if (selectedRoomPolicy.length === 0) return true;
     return !selectedRoomPolicy.some((rule) => {
         const days = rule.days;

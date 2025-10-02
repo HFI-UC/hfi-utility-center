@@ -369,7 +369,7 @@ watch(
 
 const turnstileVisible = ref(false);
 const overviewExportLoading = ref(false);
-const onExportOverview = async (type: string) => {
+const handleTurnstile = async () => {
     turnstileVisible.value = true;
     overviewExportLoading.value = true;
     while (overviewExportLoading.value && turnstileToken.value == "") {
@@ -378,6 +378,9 @@ const onExportOverview = async (type: string) => {
     if (!overviewExportLoading.value) return;
     overviewExportLoading.value = false;
     turnstileVisible.value = false;
+}
+const onExportOverview = async (type: string) => {
+    await handleTurnstile();
     await getExportOverviewReservationsAnalytics(type, turnstileToken.value);
     turnstileToken.value = "";
 };

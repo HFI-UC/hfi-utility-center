@@ -2,10 +2,8 @@
 import { useRequest } from "vue-request";
 import {
     getAdmins,
-    getApprovers,
     getCampuses,
     getClasses,
-    getPolicies,
     getRooms,
     postCreateApprover,
     postCreateCampus,
@@ -42,8 +40,6 @@ import LoadingMask from "../../components/LoadingMask.vue";
 const { data: rooms, run: fetchRooms } = useRequest(getRooms);
 const { data: campuses, run: fetchCampuses } = useRequest(getCampuses);
 const { data: classes, run: fetchClasses } = useRequest(getClasses);
-const { data: policies, run: fetchPolicies } = useRequest(getPolicies);
-const { data: approvers, run: fetchApprovers } = useRequest(getApprovers);
 const { data: admins } = useRequest(getAdmins);
 const formatTime = (date: Date): string => {
     const year = date.getFullYear();
@@ -176,16 +172,6 @@ const newRoomResolver = ref(
 );
 const newRoomVisible = ref(false);
 const newRoomInitialValues = ref({});
-const roomPolicy = computed(() => {
-    return policies?.value?.data.filter(
-        (policy: RoomPolicy) => policy.room === room.value,
-    );
-});
-const roomApprover = computed(() => {
-    return approvers?.value?.data.filter(
-        (approver: RoomApprover) => approver.room === room.value,
-    );
-});
 const onNewRoomSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
@@ -200,7 +186,6 @@ const onNewRoomSubmit = async (form: FormSubmitEvent) => {
     const response = await postCreateRoom(
         form.values.name,
         form.values.campus,
-        roomPolicy.value,
     );
     loading.value = false;
     if (response.success) {
@@ -338,7 +323,7 @@ const onNewPolicySubmit = async (form: FormSubmitEvent) => {
         });
         newPolicyVisible.value = false;
         form.reset();
-        fetchPolicies();
+        fetchRooms();
     } else {
         toast.add({
             severity: "error",
@@ -410,7 +395,7 @@ const onEditPolicySubmit = async (form: FormSubmitEvent) => {
         });
         editPolicyVisible.value = false;
         form.reset();
-        fetchPolicies();
+        fetchRooms();
     } else {
         toast.add({
             severity: "error",
@@ -432,7 +417,7 @@ const deletePolicy = async (id: number) => {
             detail: response.message,
             life: 2000,
         });
-        fetchPolicies();
+        fetchRooms();
     } else {
         toast.add({
             severity: "error",
@@ -454,7 +439,7 @@ const togglePolicy = async (id: number) => {
             detail: response.message,
             life: 2000,
         });
-        fetchPolicies();
+        fetchRooms();
     } else {
         toast.add({
             severity: "error",
@@ -652,7 +637,7 @@ const onNewApproverSubmit = async (form: FormSubmitEvent) => {
         });
         newApproverVisible.value = false;
         form.reset();
-        fetchApprovers();
+        fetchRooms();
     } else {
         toast.add({
             severity: "error",
@@ -674,7 +659,7 @@ const deleteApprover = async (id: number) => {
             detail: response.message,
             life: 2000,
         });
-        fetchApprovers();
+        fetchRooms();
     } else {
         toast.add({
             severity: "error",
@@ -825,7 +810,7 @@ const deleteApprover = async (id: number) => {
         modal
         class="xl:w-[50rem] w-[calc(100%-2rem)]"
     >
-        <DataTable :value="roomPolicy" class="text-nowrap">
+        <DataTable :value="rooms?.data.find((_room) => _room.id === room)?.policies" class="text-nowrap">
             <template #header>
                 <div class="flex gap-2 justify-between">
                     <span class="text-lg font-bold">Room Policies</span>
@@ -922,9 +907,9 @@ const deleteApprover = async (id: number) => {
                     :options="
                         admins?.data.filter(
                             (admin: Admin) =>
-                                !roomApprover?.some(
+                                !rooms?.data.find((r: Room) => r.id === room)?.approvers.some(
                                     (approver: RoomApprover) =>
-                                        approver.admin === admin.id,
+                                        approver.adminId === admin.id,
                                 ),
                         )
                     "
@@ -978,9 +963,9 @@ const deleteApprover = async (id: number) => {
         header="Room Approvers"
         v-model:visible="approverViewVisible"
         modal
-        class="md:w-[33rem] w-[calc(100%-2rem)]"
+        class="md:w-[35rem] w-[calc(100%-2rem)]"
     >
-        <DataTable :value="roomApprover" class="text-nowrap">
+        <DataTable :value="rooms?.data.find((r) => r.id === room)?.approvers" class="text-nowrap">
             <template #header>
                 <div class="flex gap-2 justify-between">
                     <span class="text-lg font-bold">Room Approvers</span>
@@ -997,7 +982,7 @@ const deleteApprover = async (id: number) => {
                 <template #body="slotProps">
                     {{
                         admins?.data.find(
-                            (admin: Admin) => admin.id === slotProps.data.admin,
+                            (admin: Admin) => admin.id === slotProps.data.adminId,
                         )?.name
                     }}
                 </template>
@@ -1006,7 +991,7 @@ const deleteApprover = async (id: number) => {
                 <template #body="slotProps">
                     {{
                         admins?.data.find(
-                            (admin: Admin) => admin.id === slotProps.data.admin,
+                            (admin: Admin) => admin.id === slotProps.data.adminId,
                         )?.email
                     }}
                 </template>

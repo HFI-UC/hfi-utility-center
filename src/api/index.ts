@@ -36,7 +36,7 @@ export interface Reservation {
 
 export interface RoomPolicy {
     id: number;
-    room: number;
+    roomId: number;
     days: number[];
     startTime: number[];
     endTime: number[];
@@ -47,6 +47,8 @@ export interface Room {
     id: number;
     name: string;
     campus: number;
+    policies: RoomPolicy[];
+    approvers: RoomApprover[];
 }
 
 export interface Class {
@@ -63,7 +65,7 @@ export interface Campus {
     isPrivileged: boolean;
 }
 
-export interface BasicResponse {
+export interface ApiResponse {
     data: any;
     message: string | null;
     success: boolean;
@@ -71,8 +73,8 @@ export interface BasicResponse {
 
 export interface RoomApprover {
     id: number;
-    room: number;
-    admin: number;
+    roomId: number;
+    adminId: number;
 }
 
 export interface Admin {
@@ -114,7 +116,7 @@ export interface Analytics {
 }
 
 export async function getCampuses() {
-    const response = await axios.get<BasicResponse>("/campus/list");
+    const response = await axios.get<ApiResponse>("/campus/list");
     return response.data;
 }
 
@@ -127,15 +129,8 @@ export async function getRooms() {
 }
 
 export async function getClasses() {
-    const response = await axios.get<BasicResponse & { data: Class[] }>(
+    const response = await axios.get<ApiResponse & { data: Class[] }>(
         "/class/list",
-    );
-    return response.data;
-}
-
-export async function getPolicies() {
-    const response = await axios.get<BasicResponse & { data: RoomPolicy[] }>(
-        "/policy/list",
     );
     return response.data;
 }
@@ -145,7 +140,7 @@ export async function postFetchReservations(
     room: number | null = null,
     status: string | null = null,
 ) {
-    const response = await axios.post<BasicResponse>("/reservation/get", {
+    const response = await axios.post<ApiResponse>("/reservation/get", {
         keyword: keyword == "" ? null : keyword,
         room,
         status,
@@ -180,7 +175,7 @@ export async function postCreateReservation(
         reason: reservation.reason,
         turnstileToken: reservation.turnstileToken
     };
-    const response = await axios.post<BasicResponse>(
+    const response = await axios.post<ApiResponse>(
         "/reservation/create",
         data,
     );
@@ -193,7 +188,7 @@ export async function postLogin(
     token: string | null,
     turnstileToken: string | null,
 ) {
-    const response = await axios.post<BasicResponse>("/admin/login", {
+    const response = await axios.post<ApiResponse>("/admin/login", {
         email,
         password,
         token,
@@ -203,12 +198,12 @@ export async function postLogin(
 }
 
 export async function getCheckLogin() {
-    const response = await axios.get<BasicResponse>("/admin/check-login");
+    const response = await axios.get<ApiResponse>("/admin/check-login");
     return response.data;
 }
 
 export async function getRecentReservations() {
-    const response = await axios.get<BasicResponse & { data: Reservation[] }>(
+    const response = await axios.get<ApiResponse & { data: Reservation[] }>(
         "/reservation/future",
     );
     return response.data;
@@ -219,7 +214,7 @@ export async function postApproveReservation(
     approved: boolean,
     reason: string | null = null,
 ) {
-    const response = await axios.post<BasicResponse>(`/reservation/approval`, {
+    const response = await axios.post<ApiResponse>(`/reservation/approval`, {
         id,
         reason,
         approved,
@@ -228,7 +223,7 @@ export async function postApproveReservation(
 }
 
 export async function getAllReservations() {
-    const response = await axios.get<BasicResponse & { data: Reservation[] }>(
+    const response = await axios.get<ApiResponse & { data: Reservation[] }>(
         "/reservation/all",
     );
     return response.data;
@@ -252,42 +247,40 @@ export function getExportReservations(
 }
 
 export async function postDeleteRoom(id: number) {
-    const response = await axios.post<BasicResponse>("/room/delete", { id });
+    const response = await axios.post<ApiResponse>("/room/delete", { id });
     return response.data;
 }
 
 export async function postDeleteCampus(id: number) {
-    const response = await axios.post<BasicResponse>("/campus/delete", { id });
+    const response = await axios.post<ApiResponse>("/campus/delete", { id });
     return response.data;
 }
 
 export async function postDeleteClass(id: number) {
-    const response = await axios.post<BasicResponse>("/class/delete", { id });
+    const response = await axios.post<ApiResponse>("/class/delete", { id });
     return response.data;
 }
 
 export async function postCreateRoom(
     name: string,
     campus: number,
-    policy: RoomPolicy[],
 ) {
-    const response = await axios.post<BasicResponse>("/room/create", {
+    const response = await axios.post<ApiResponse>("/room/create", {
         name,
         campus,
-        policy,
     });
     return response.data;
 }
 
 export async function postCreateCampus(name: string) {
-    const response = await axios.post<BasicResponse>("/campus/create", {
+    const response = await axios.post<ApiResponse>("/campus/create", {
         name,
     });
     return response.data;
 }
 
 export async function postCreateClass(name: string, campus: number) {
-    const response = await axios.post<BasicResponse>("/class/create", {
+    const response = await axios.post<ApiResponse>("/class/create", {
         name,
         campus,
     });
@@ -300,7 +293,7 @@ export async function postCreatePolicy(
     endTime: number[],
     days: number[],
 ) {
-    const response = await axios.post<BasicResponse>("/policy/create", {
+    const response = await axios.post<ApiResponse>("/policy/create", {
         room,
         startTime,
         endTime,
@@ -315,7 +308,7 @@ export async function postEditPolicy(
     endTime: number[],
     days: number[],
 ) {
-    const response = await axios.post<BasicResponse>("/policy/edit", {
+    const response = await axios.post<ApiResponse>("/policy/edit", {
         id,
         startTime,
         endTime,
@@ -325,17 +318,17 @@ export async function postEditPolicy(
 }
 
 export async function postDeletePolicy(id: number) {
-    const response = await axios.post<BasicResponse>("/policy/delete", { id });
+    const response = await axios.post<ApiResponse>("/policy/delete", { id });
     return response.data;
 }
 
 export async function postTogglePolicy(id: number) {
-    const response = await axios.post<BasicResponse>("/policy/toggle", { id });
+    const response = await axios.post<ApiResponse>("/policy/toggle", { id });
     return response.data;
 }
 
 export async function postEditClass(id: number, name: string, campus: number) {
-    const response = await axios.post<BasicResponse>("/class/edit", {
+    const response = await axios.post<ApiResponse>("/class/edit", {
         id,
         name,
         campus,
@@ -344,7 +337,7 @@ export async function postEditClass(id: number, name: string, campus: number) {
 }
 
 export async function postEditRoom(id: number, name: string, campus: number) {
-    const response = await axios.post<BasicResponse>("/room/edit", {
+    const response = await axios.post<ApiResponse>("/room/edit", {
         id,
         name,
         campus,
@@ -353,7 +346,7 @@ export async function postEditRoom(id: number, name: string, campus: number) {
 }
 
 export async function postEditCampus(id: number, name: string) {
-    const response = await axios.post<BasicResponse>("/campus/edit", {
+    const response = await axios.post<ApiResponse>("/campus/edit", {
         id,
         name,
     });
@@ -361,26 +354,19 @@ export async function postEditCampus(id: number, name: string) {
 }
 
 export async function getLogOut() {
-    const response = await axios.get<BasicResponse>("/admin/logout");
-    return response.data;
-}
-
-export async function getApprovers() {
-    const response = await axios.get<BasicResponse & { data: RoomApprover[] }>(
-        "/approver/list",
-    );
+    const response = await axios.get<ApiResponse>("/admin/logout");
     return response.data;
 }
 
 export async function getAdmins() {
-    const response = await axios.get<BasicResponse & { data: Admin[] }>(
+    const response = await axios.get<ApiResponse & { data: Admin[] }>(
         "/admin/list",
     );
     return response.data;
 }
 
 export async function postCreateApprover(room: number, admin: number) {
-    const response = await axios.post<BasicResponse>("/approver/create", {
+    const response = await axios.post<ApiResponse>("/approver/create", {
         room,
         admin,
     });
@@ -388,7 +374,7 @@ export async function postCreateApprover(room: number, admin: number) {
 }
 
 export async function postDeleteApprover(id: number) {
-    const response = await axios.post<BasicResponse>("/approver/delete", {
+    const response = await axios.post<ApiResponse>("/approver/delete", {
         id,
     });
     return response.data;
@@ -399,7 +385,7 @@ export async function postCreateAdmin(
     email: string,
     password: string,
 ) {
-    const response = await axios.post<BasicResponse>("/admin/create", {
+    const response = await axios.post<ApiResponse>("/admin/create", {
         name,
         email,
         password,
@@ -411,7 +397,7 @@ export async function postEditAdminPassword(
     admin: number,
     newPassword: string,
 ) {
-    const response = await axios.post<BasicResponse>("/admin/edit-password", {
+    const response = await axios.post<ApiResponse>("/admin/edit-password", {
         admin,
         newPassword,
     });
@@ -419,12 +405,12 @@ export async function postEditAdminPassword(
 }
 
 export async function postDeleteAdmin(id: number) {
-    const response = await axios.post<BasicResponse>("/admin/delete", { id });
+    const response = await axios.post<ApiResponse>("/admin/delete", { id });
     return response.data;
 }
 
 export async function getOverviewAnalytics() {
-    const response = await axios.get<BasicResponse & { data: Analytics }>(
+    const response = await axios.get<ApiResponse & { data: Analytics }>(
         "/analytics/overview",
     );
     return response.data;
@@ -435,7 +421,7 @@ export async function postEditAdmin(
     name: string,
     email: string,
 ) {
-    const response = await axios.post<BasicResponse>("/admin/edit", {
+    const response = await axios.post<ApiResponse>("/admin/edit", {
         id,
         name,
         email,
