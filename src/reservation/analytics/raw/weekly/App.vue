@@ -472,7 +472,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
                         type="wordCloud"
                         :data="weeklyReasonChartData"
                         :options="weeklyReasonChartOptions"
-                        :height="700"
+                        :height="650"
                     ></Chart>
                 </template>
             </Card>
