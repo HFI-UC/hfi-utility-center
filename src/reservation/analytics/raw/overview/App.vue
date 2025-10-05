@@ -299,11 +299,7 @@ const setOverviewChartOptions = ():
 
 <template>
     <div class="mx-[3rem] my-[2rem]">
-        <h1
-            class="font-bold text-xl from-cyan-500 to-sky-500 bg-linear-to-r bg-clip-text text-transparent"
-        >
-            HFI Utility Center
-        </h1>
+        <h1 class="font-bold text-xl text-sky-500">HFI Utility Center</h1>
         <h1 class="font-bold text-3xl my-4">
             Reservation Analytics - Overview
         </h1>
@@ -395,3 +391,13 @@ const setOverviewChartOptions = ():
         </div>
     </div>
 </template>
+
+<style lang="css" scoped>
+.p-card,
+.p-card .p-card-body {
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid var(--color-surface-200) !important;
+}
+</style>

@@ -420,7 +420,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
 <template>
     <div class="mx-[3rem] my-[2rem]">
         <h1
-            class="font-bold text-xl from-cyan-500 to-sky-500 bg-linear-to-r bg-clip-text text-transparent"
+            class="font-bold text-xl text-sky-500"
         >
             HFI Utility Center
         </h1>
@@ -536,3 +536,13 @@ const setWeeklyDailyReservationCreationsChartOptions =
         </div>
     </div>
 </template>
+
+<style lang="css" scoped>
+.p-card,
+.p-card .p-card-body {
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid var(--color-surface-200) !important;
+}
+</style>
