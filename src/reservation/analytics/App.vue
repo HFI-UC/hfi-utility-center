@@ -730,15 +730,15 @@ const setWeeklyDailyReservationCreationsChartOptions =
     };
 
 const turnstileVisible = ref(false);
-const overviewExportLoading = ref(false);
+const exportLoading = ref(false);
 const handleTurnstile = async () => {
     turnstileVisible.value = true;
-    overviewExportLoading.value = true;
-    while (overviewExportLoading.value && turnstileToken.value == "") {
+    exportLoading.value = true;
+    while (exportLoading.value && turnstileToken.value == "") {
         await new Promise((resolve) => setTimeout(resolve, 100));
     }
-    if (!overviewExportLoading.value) return;
-    overviewExportLoading.value = false;
+    if (!exportLoading.value) return;
+    exportLoading.value = false;
     turnstileVisible.value = false;
 };
 const onExportOverview = async (type: string) => {
@@ -774,7 +774,7 @@ const onExportWeekly = async (type: string) => {
         <Button
             fluid
             severity="secondary"
-            @click="(overviewExportLoading = false), (turnstileVisible = false)"
+            @click="(exportLoading = false), (turnstileVisible = false)"
             ><X></X>Cancel</Button
         >
     </Dialog>
@@ -788,13 +788,13 @@ const onExportWeekly = async (type: string) => {
                 <Button
                     size="small"
                     @click="onExportOverview('pdf')"
-                    :disabled="overviewExportLoading"
+                    :disabled="exportLoading"
                     ><Download></Download>Export (.pdf)</Button
                 >
                 <Button
                     size="small"
                     @click="onExportOverview('png')"
-                    :disabled="overviewExportLoading"
+                    :disabled="exportLoading"
                     ><Download></Download>Export (.png)</Button
                 >
             </div>
@@ -891,13 +891,13 @@ const onExportWeekly = async (type: string) => {
                 <Button
                     size="small"
                     @click="onExportWeekly('pdf')"
-                    :disabled="overviewExportLoading"
+                    :disabled="exportLoading"
                     ><Download></Download>Export (.pdf)</Button
                 >
                 <Button
                     size="small"
                     @click="onExportWeekly('png')"
-                    :disabled="overviewExportLoading"
+                    :disabled="exportLoading"
                     ><Download></Download>Export (.png)</Button
                 >
             </div>
