@@ -472,7 +472,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
                         type="wordCloud"
                         :data="weeklyReasonChartData"
                         :options="weeklyReasonChartOptions"
-                        :height="400"
+                        :height="700"
                     ></Chart>
                 </template>
             </Card>
@@ -483,7 +483,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
                         type="bar"
                         :data="weeklyHourlyReservationsChartData"
                         :options="weeklyHourlyReservationsChartOptions"
-                        :height="250"
+                        :height="300"
                     ></Chart>
                 </template>
             </Card>
@@ -494,7 +494,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
                         type="line"
                         :data="weeklyDailyReservationsChartData"
                         :options="weeklyDailyReservationsChartOptions"
-                        :height="250"
+                        :height="300"
                     ></Chart>
                 </template>
             </Card>
@@ -507,7 +507,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
                         type="line"
                         :data="weeklyDailyReservationCreationsChartData"
                         :options="weeklyDailyReservationCreationsChartOptions"
-                        :height="250"
+                        :height="300"
                     ></Chart>
                 </template>
             </Card>
