@@ -8,6 +8,7 @@ import { Sky } from "@/theme";
 import { Chart } from "chart.js";
 import { WordCloudController, WordElement } from 'chartjs-chart-wordcloud';
 
+Chart.defaults.font.family = '"Inter", "Noto Sans SC", sans-serif';
 Chart.register(WordCloudController, WordElement);
 const app = createApp(App);
 app.use(PrimeVue, {
