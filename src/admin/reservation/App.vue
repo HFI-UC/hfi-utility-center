@@ -144,43 +144,13 @@ const exportResolver = ref(
         z
             .object({
                 option: z.number({ error: "Format is required." }),
-                startTime: z.date().nullable().optional(),
-                endTime: z.date().nullable().optional(),
+                time: z.array(z.date().nullable()).length(2),
             })
-            .superRefine((data, context) => {
-                if (data.option == 4) {
-                    if (!data.startTime)
-                        context.addIssue({
-                            code: "custom",
-                            path: ["startTime"],
-                            message: "Start time is required.",
-                        });
-                    if (!data.endTime) {
-                        context.addIssue({
-                            code: "custom",
-                            path: ["endTime"],
-                            message: "End time is required.",
-                        });
-                    }
-                    if (
-                        data.startTime &&
-                        data.endTime &&
-                        data.startTime > data.endTime
-                    ) {
-                        context.addIssue({
-                            code: "custom",
-                            path: ["endTime"],
-                            message: "End time must be after start time.",
-                        });
-                    }
-                }
-            }),
     ),
 );
 const exportInitialValues = ref({
     option: null,
-    startTime: null,
-    endTime: null,
+    time: [null, null],
 });
 
 const getToken = () => {
@@ -245,8 +215,8 @@ const exportReservations = async (form: FormSubmitEvent) => {
         startTime = null;
         endTime = null;
     } else {
-        startTime = form.values.startTime;
-        endTime = form.values.endTime;
+        startTime = form.values.time[0];
+        endTime = form.values.time[1];
     }
     if (startTime && endTime && allReservations?.value?.data) {
         const rangeStart = startTime.getTime();
@@ -363,34 +333,18 @@ const exportOptions = [
                 <DatePicker
                     v-if="$form.option?.value === 4"
                     showTime
-                    showSeconds
-                    :maxDate="$form.endTime?.value || undefined"
-                    name="startTime"
-                    placeholder="Start Time"
+                    name="time"
+                    placeholder="Time"
+                    selectionMode="range"
                     updateModelType="date"
+                    dateFormat="yy/mm/dd"
                     fluid
                 ></DatePicker>
                 <Message
-                    v-if="$form.startTime?.invalid"
+                    v-if="$form.time?.invalid"
                     severity="error"
                     size="small"
-                    >{{ $form.startTime.error?.message }}</Message
-                >
-                <DatePicker
-                    v-if="$form.option?.value === 4"
-                    showTime
-                    showSeconds
-                    :minDate="$form.startTime?.value || undefined"
-                    name="endTime"
-                    placeholder="End Time"
-                    updateModelType="date"
-                    fluid
-                ></DatePicker>
-                <Message
-                    v-if="$form.endTime?.invalid"
-                    severity="error"
-                    size="small"
-                    >{{ $form.endTime.error?.message }}</Message
+                    >{{ $form.time.error?.message }}</Message
                 >
             </div>
             <div class="justify-end items-center flex gap-2 mt-4">
@@ -698,7 +652,13 @@ const exportOptions = [
                             {{ formatTime(new Date(slotProps.data.endTime)) }}
                         </template>
                     </Column>
-                    <Column field="reason" header="Reason"></Column>
+                    <Column field="reason" header="Reason" sortable>
+                        <template #body="slotProps">
+                            <div class="whitespace-normal w-[30rem]">
+                                {{ slotProps.data.reason }}
+                            </div>
+                        </template>
+                    </Column>
                     <Column field="createdAt" header="Creation Time" sortable>
                         <template #body="slotProps">
                             {{ formatTime(new Date(slotProps.data.createdAt)) }}

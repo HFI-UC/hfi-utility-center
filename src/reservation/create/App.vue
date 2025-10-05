@@ -651,7 +651,7 @@ const termsVisible = ref(false);
                                 v-if="$form.date?.invalid"
                                 severity="error"
                                 size="small"
-                                date-format="yy/mm/dd"
+                                dateFormat="yy/mm/dd"
                                 >{{ $form.date.error?.message }}</Message
                             >
                             <IftaLabel>
