@@ -782,7 +782,7 @@ const onExportWeekly = async (type: string) => {
         <h1 class="font-bold md:text-3xl text-2xl my-4">
             Reservation Analytics
         </h1>
-        <div class="flex items-center justify-between mt-8 mb-3">
+        <div class="flex items-center justify-between mt-8 mb-3 flex-wrap gap-4">
             <h2 class="text-xl font-bold">Overview</h2>
             <div class="flex gap-2 items-center">
                 <Button
@@ -885,7 +885,7 @@ const onExportWeekly = async (type: string) => {
                 </template>
             </Card>
         </div>
-        <div class="flex items-center justify-between mt-8 mb-3">
+        <div class="flex items-center justify-between mt-8 mb-3 flex-wrap gap-4">
             <h2 class="text-xl font-bold">Weekly (Last Week)</h2>
             <div class="flex gap-2 items-center">
                 <Button
