@@ -14,7 +14,7 @@ app.use(PrimeVue, {
     theme: {
         preset: Sky,
         options: {
-            darkModeSelector: ".p-dark",
+            darkModeSelector: "",
         },
     },
 });

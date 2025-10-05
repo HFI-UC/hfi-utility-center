@@ -367,6 +367,7 @@ const exportOptions = [
                     :maxDate="$form.endTime?.value || undefined"
                     name="startTime"
                     placeholder="Start Time"
+                    updateModelType="date"
                     fluid
                 ></DatePicker>
                 <Message
@@ -382,6 +383,7 @@ const exportOptions = [
                     :minDate="$form.startTime?.value || undefined"
                     name="endTime"
                     placeholder="End Time"
+                    updateModelType="date"
                     fluid
                 ></DatePicker>
                 <Message

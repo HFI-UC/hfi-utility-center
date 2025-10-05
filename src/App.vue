@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar.vue";
         >
             HFI Utility Center
         </h1>
+        <span class="text-sky-300 mt-[-82px] z-[-1] text-[3.5em] font-extrabold blur-[3rem] select-none" data-nosnippet aria-hidden="true">HFI Utility Center</span>
         <h2 class="font-bold">by MAKERs'</h2>
         <div class="mt-8 flex gap-2 flex-wrap items-center justify-center">
             <Button as="a" href="/reservation/create/" size="small"

@@ -808,6 +808,7 @@ const deleteApprover = async (id: number) => {
         header="Room Policies"
         v-model:visible="policyViewVisible"
         modal
+        maximizable
         class="xl:w-[50rem] w-[calc(100%-2rem)]"
     >
         <DataTable :value="rooms?.data.find((_room) => _room.id === room)?.policies" class="text-nowrap">
@@ -963,6 +964,7 @@ const deleteApprover = async (id: number) => {
         header="Room Approvers"
         v-model:visible="approverViewVisible"
         modal
+        maximizable
         class="md:w-[35rem] w-[calc(100%-2rem)]"
     >
         <DataTable :value="rooms?.data.find((r) => r.id === room)?.approvers" class="text-nowrap">
@@ -1043,6 +1045,7 @@ const deleteApprover = async (id: number) => {
                     timeOnly
                     name="startTime"
                     :maxDate="$form.endTime?.value"
+                    updateModelType="date"
                     placeholder="Start Time"
                     :manualInput="false"
                 ></DatePicker>
@@ -1057,6 +1060,7 @@ const deleteApprover = async (id: number) => {
                     timeOnly
                     name="endTime"
                     placeholder="End Time"
+                    updateModelType="date"
                     :minDate="$form.startTime?.value"
                     :manualInput="false"
                 ></DatePicker>
@@ -1111,6 +1115,7 @@ const deleteApprover = async (id: number) => {
                     timeOnly
                     name="startTime"
                     :maxDate="$form.endTime?.value"
+                    updateModelType="date"
                     placeholder="Start Time"
                     :manualInput="false"
                 ></DatePicker>
@@ -1124,6 +1129,7 @@ const deleteApprover = async (id: number) => {
                     showTime
                     timeOnly
                     name="endTime"
+                    updateModelType="date"
                     placeholder="End Time"
                     :minDate="$form.startTime?.value"
                     :manualInput="false"

@@ -65,8 +65,8 @@ export interface Campus {
     isPrivileged: boolean;
 }
 
-export interface ApiResponse {
-    data: any;
+export interface ApiResponse<T = any> {
+    data: T;
     message: string | null;
     success: boolean;
 }
@@ -83,7 +83,7 @@ export interface Admin {
     name: string;
 }
 
-export interface Analytics {
+export interface OverviewAnalytics {
     today: {
         requests: number;
         reservations: number;
@@ -115,6 +115,22 @@ export interface Analytics {
     errorLogs: number;
 }
 
+export interface WeeklyAnalytics {
+    rooms: {
+        roomName: string;
+        reservations: number;
+        reservationCreations: number;
+    }[];
+    totalReservations: number;
+    totalReservationCreations: number;
+    totalApprovals: number;
+    totalRejections: number;
+    reasons: { word: string; count: number }[];
+    hourlyReservations: number[];
+    dailyReservations: number[];
+    dailyReservationCreations: number[];
+}
+
 export async function getCampuses() {
     const response = await axios.get<ApiResponse>("/campus/list");
     return response.data;
@@ -129,16 +145,14 @@ export async function getRooms() {
 }
 
 export async function getClasses() {
-    const response = await axios.get<ApiResponse & { data: Class[] }>(
-        "/class/list",
-    );
+    const response = await axios.get<ApiResponse<Class[]>>("/class/list");
     return response.data;
 }
 
 export async function postFetchReservations(
     keyword: string | null = null,
     room: number | null = null,
-    status: string | null = null,
+    status: string | null = null
 ) {
     const response = await axios.post<ApiResponse>("/reservation/get", {
         keyword: keyword == "" ? null : keyword,
@@ -156,7 +170,7 @@ function formatDate(date: Date): string {
 }
 
 export async function postCreateReservation(
-    reservation: ReservationRequestInfo,
+    reservation: ReservationRequestInfo
 ) {
     const data = {
         classId: reservation.classId,
@@ -166,19 +180,16 @@ export async function postCreateReservation(
         email: reservation.email,
         startTime:
             new Date(
-                `${formatDate(reservation.date)}T${reservation.startTime}`,
+                `${formatDate(reservation.date)}T${reservation.startTime}`
             ).getTime() / 1000,
         endTime:
             new Date(
-                `${formatDate(reservation.date)}T${reservation.endTime}`,
+                `${formatDate(reservation.date)}T${reservation.endTime}`
             ).getTime() / 1000,
         reason: reservation.reason,
-        turnstileToken: reservation.turnstileToken
+        turnstileToken: reservation.turnstileToken,
     };
-    const response = await axios.post<ApiResponse>(
-        "/reservation/create",
-        data,
-    );
+    const response = await axios.post<ApiResponse>("/reservation/create", data);
     return response.data;
 }
 
@@ -186,13 +197,13 @@ export async function postLogin(
     email: string | null,
     password: string | null,
     token: string | null,
-    turnstileToken: string | null,
+    turnstileToken: string | null
 ) {
     const response = await axios.post<ApiResponse>("/admin/login", {
         email,
         password,
         token,
-        turnstileToken
+        turnstileToken,
     });
     return response.data;
 }
@@ -203,8 +214,8 @@ export async function getCheckLogin() {
 }
 
 export async function getRecentReservations() {
-    const response = await axios.get<ApiResponse & { data: Reservation[] }>(
-        "/reservation/future",
+    const response = await axios.get<ApiResponse<Reservation[]>>(
+        "/reservation/future"
     );
     return response.data;
 }
@@ -212,7 +223,7 @@ export async function getRecentReservations() {
 export async function postApproveReservation(
     id: number,
     approved: boolean,
-    reason: string | null = null,
+    reason: string | null = null
 ) {
     const response = await axios.post<ApiResponse>(`/reservation/approval`, {
         id,
@@ -223,15 +234,15 @@ export async function postApproveReservation(
 }
 
 export async function getAllReservations() {
-    const response = await axios.get<ApiResponse & { data: Reservation[] }>(
-        "/reservation/all",
+    const response = await axios.get<ApiResponse<Reservation[]>>(
+        "/reservation/all"
     );
     return response.data;
 }
 
 export function getExportReservations(
     startTime: number | null,
-    endTime: number | null,
+    endTime: number | null
 ) {
     const params: Record<string, number> = {};
     params.startTime = startTime || -1;
@@ -261,10 +272,7 @@ export async function postDeleteClass(id: number) {
     return response.data;
 }
 
-export async function postCreateRoom(
-    name: string,
-    campus: number,
-) {
+export async function postCreateRoom(name: string, campus: number) {
     const response = await axios.post<ApiResponse>("/room/create", {
         name,
         campus,
@@ -291,7 +299,7 @@ export async function postCreatePolicy(
     room: number,
     startTime: number[],
     endTime: number[],
-    days: number[],
+    days: number[]
 ) {
     const response = await axios.post<ApiResponse>("/policy/create", {
         room,
@@ -306,7 +314,7 @@ export async function postEditPolicy(
     id: number,
     startTime: number[],
     endTime: number[],
-    days: number[],
+    days: number[]
 ) {
     const response = await axios.post<ApiResponse>("/policy/edit", {
         id,
@@ -360,7 +368,7 @@ export async function getLogOut() {
 
 export async function getAdmins() {
     const response = await axios.get<ApiResponse & { data: Admin[] }>(
-        "/admin/list",
+        "/admin/list"
     );
     return response.data;
 }
@@ -383,7 +391,7 @@ export async function postDeleteApprover(id: number) {
 export async function postCreateAdmin(
     name: string,
     email: string,
-    password: string,
+    password: string
 ) {
     const response = await axios.post<ApiResponse>("/admin/create", {
         name,
@@ -395,7 +403,7 @@ export async function postCreateAdmin(
 
 export async function postEditAdminPassword(
     admin: number,
-    newPassword: string,
+    newPassword: string
 ) {
     const response = await axios.post<ApiResponse>("/admin/edit-password", {
         admin,
@@ -410,17 +418,20 @@ export async function postDeleteAdmin(id: number) {
 }
 
 export async function getOverviewAnalytics() {
-    const response = await axios.get<ApiResponse & { data: Analytics }>(
-        "/analytics/overview",
+    const response = await axios.get<ApiResponse<OverviewAnalytics>>(
+        "/analytics/overview"
     );
     return response.data;
 }
 
-export async function postEditAdmin(
-    id: number,
-    name: string,
-    email: string,
-) {
+export async function getWeeklyAnalytics() {
+    const response = await axios.get<ApiResponse<WeeklyAnalytics>>(
+        "/analytics/weekly"
+    );
+    return response.data;
+}
+
+export async function postEditAdmin(id: number, name: string, email: string) {
     const response = await axios.post<ApiResponse>("/admin/edit", {
         id,
         name,
@@ -429,7 +440,18 @@ export async function postEditAdmin(
     return response.data;
 }
 
-export async function getExportOverviewReservationsAnalytics(type: string, turnstileToken: string) {
+export async function getExportOverviewReservationsAnalytics(
+    type: string,
+    turnstileToken: string
+) {
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
     window.location.href = `${base}/analytics/overview/export?type=${type}&turnstileToken=${turnstileToken}`;
+}
+
+export async function getExportWeeklyReservationsAnalytics(
+    type: string,
+    turnstileToken: string
+) {
+    const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
+    window.location.href = `${base}/analytics/weekly/export?type=${type}&turnstileToken=${turnstileToken}`;
 }

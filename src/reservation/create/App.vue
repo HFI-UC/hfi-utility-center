@@ -63,7 +63,7 @@ const resolver = zodResolver(
             .refine((val) => val === true, {
                 message: "You must agree to the terms and conditions.",
             }),
-    }),
+    })
 );
 
 const { data: classData } = useRequest(getClasses);
@@ -76,7 +76,7 @@ const classes = computed(() => {
     const res: { campus: string; classes: any[] }[] = [];
     campus.value?.data.some((c: Campus) => {
         const campusClasses = _data.filter(
-            (item: Class) => item.campus === c.id,
+            (item: Class) => item.campus === c.id
         );
         if (campusClasses.length) {
             res.push({ campus: c.name, classes: campusClasses });
@@ -88,7 +88,7 @@ const reservations = ref<Reservation[]>([] as Reservation[]);
 
 const formatTime = (date: Date): string =>
     `${String(date.getHours()).padStart(2, "0")}:${String(
-        date.getMinutes(),
+        date.getMinutes()
     ).padStart(2, "0")}`;
 
 const formatDate = (date: Date): string => {
@@ -102,7 +102,7 @@ const formatTableDate = (time: string) => {
     const date = new Date(time);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
-        "0",
+        "0"
     )}-${String(date.getDate()).padStart(2, "0")}`;
 };
 
@@ -121,7 +121,7 @@ const formatTableWeekDay = (days: number[]) => {
 
 const formatTableTime = (startTime: string, endTime: string) => {
     return `${formatTime(new Date(startTime))} - ${formatTime(
-        new Date(endTime),
+        new Date(endTime)
     )}`;
 };
 
@@ -132,7 +132,7 @@ const generateTimeOptions = (
     startMinute: number,
     endHour: number,
     endMinute: number,
-    selectedClass: number,
+    selectedClass: number
 ) => {
     const options: string[] = [];
     const start = new Date();
@@ -146,10 +146,10 @@ const generateTimeOptions = (
     }
 
     const _class = classData.value?.data.find(
-        (item: Class) => item.id === selectedClass,
+        (item: Class) => item.id === selectedClass
     );
     const _campus: Campus = campus.value?.data.find(
-        (item: Campus) => item.id === _class?.campus,
+        (item: Campus) => item.id === _class?.campus
     );
     const res = options.filter((item) => {
         if (!date || !room || _campus.isPrivileged) return true;
@@ -169,13 +169,19 @@ const validateTimeConflict = (time: Date): boolean => {
 
 const getRoomPolicyData = (id: number) => {
     if (!room.value) return [];
-    const selectedRoomPolicy = room.value.data.find((room) => room.id == id)?.policies || [];
-    return selectedRoomPolicy || [];
+    return (
+        room.value.data
+            .find((room) => room.id == id)
+            ?.policies.filter((policy) => policy.enabled) || []
+    );
 };
 
 const validatePolicy = (time: Date, selectedRoom: number): boolean => {
     if (!room.value) return true;
-    const selectedRoomPolicy: RoomPolicy[] = room.value.data.find((room) => room.id == selectedRoom)?.policies || [];
+    const selectedRoomPolicy: RoomPolicy[] =
+        room.value.data
+            .find((room) => room.id == selectedRoom)
+            ?.policies.filter((policy) => policy.enabled) || [];
     if (selectedRoomPolicy.length === 0) return true;
     return !selectedRoomPolicy.some((rule) => {
         const days = rule.days;
@@ -225,7 +231,7 @@ const getStartTimeOptions = ({
         startMinute,
         21,
         15,
-        selectedClass.value,
+        selectedClass.value
     );
 };
 
@@ -254,7 +260,7 @@ const getEndTimeOptions = ({
                 ? 0
                 : Math.max(startMinutes, 30)
             : startMinutes,
-        selectedClass.value,
+        selectedClass.value
     );
 };
 
@@ -282,7 +288,7 @@ const fetchReservations = async (selectedRoom: FormFieldState) => {
         .sort(
             (a: Reservation, b: Reservation) =>
                 new Date(a.startTime).getTime() -
-                new Date(b.startTime).getTime(),
+                new Date(b.startTime).getTime()
         );
 };
 
@@ -305,7 +311,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     form.values.turnstileToken = turnstileToken.value;
     submitLoading.value = true;
     const response = await postCreateReservation(
-        form.values as ReservationRequestInfo,
+        form.values as ReservationRequestInfo
     );
     submitLoading.value = false;
     if (response.success) {
@@ -429,69 +435,81 @@ const termsVisible = ref(false);
                     @submit="onSubmitEvent"
                 >
                     <Fieldset legend="Personal Information">
-                        <div class="flex justify-center flex-col gap-4">
-                            <InputText
-                                type="text"
-                                name="studentName"
-                                placeholder="Name"
-                                fluid
-                            ></InputText>
+                        <div class="flex flex-col gap-4">
+                            <IftaLabel
+                                ><label>Name</label>
+                                <InputText
+                                    type="text"
+                                    name="studentName"
+                                    fluid
+                                ></InputText
+                            ></IftaLabel>
                             <Message
                                 v-if="$form.studentName?.invalid"
                                 severity="error"
                                 size="small"
                                 >{{ $form.studentName.error?.message }}</Message
                             >
-                            <Select
-                                optionGroupLabel="campus"
-                                optionGroupChildren="classes"
-                                optionLabel="name"
-                                optionValue="id"
-                                filter
-                                :options="classes"
-                                placeholder="Class"
-                                name="classId"
-                                fluid
-                            >
-                                <template #optiongroup="slotProps">
-                                    <div class="flex items-center">
-                                        <div>{{ slotProps.option.campus }}</div>
-                                    </div>
-                                </template>
-                            </Select>
+                            <IftaLabel>
+                                <Select
+                                    optionGroupLabel="campus"
+                                    optionGroupChildren="classes"
+                                    optionLabel="name"
+                                    optionValue="id"
+                                    filter
+                                    :options="classes"
+                                    name="classId"
+                                    fluid
+                                >
+                                    <template #optiongroup="slotProps">
+                                        <div class="flex items-center">
+                                            <div>
+                                                {{ slotProps.option.campus }}
+                                            </div>
+                                        </div>
+                                    </template>
+                                </Select>
+                                <label>Class</label>
+                            </IftaLabel>
                             <Message
                                 v-if="$form.class?.invalid"
                                 severity="error"
                                 size="small"
-                                >{{ $form.class.error?.message }}</Message
-                            >
-                            <InputText
-                                type="text"
-                                name="studentId"
-                                placeholder="Student ID"
-                                fluid
-                            ></InputText>
+                                >{{ $form.class.error?.message }}
+                            </Message>
+                            <IftaLabel>
+                                <InputText
+                                    type="text"
+                                    name="studentId"
+                                    fluid
+                                ></InputText>
+                                <label>Student ID</label>
+                            </IftaLabel>
                             <Message
                                 v-if="$form.studentId?.invalid"
                                 severity="error"
                                 size="small"
-                                >{{ $form.studentId.error?.message }}</Message
-                            ><InputText
-                                type="text"
-                                name="email"
-                                placeholder="E-mail"
-                                fluid
-                            ></InputText>
+                                >{{ $form.studentId.error?.message }}
+                            </Message>
+                            <IftaLabel>
+                                <InputText
+                                    type="text"
+                                    name="email"
+                                    fluid
+                                ></InputText>
+                                <label>E-mail</label>
+                            </IftaLabel>
                             <Message
                                 v-if="$form.email?.invalid"
                                 severity="error"
                                 size="small"
-                                >{{ $form.email.error?.message }}</Message
-                            >
+                                >{{ $form.email.error?.message }}
+                            </Message>
                         </div>
                     </Fieldset>
                     <Fieldset legend="Room Information">
-                        <div class="flex justify-center flex-col gap-4">
+                        <div class="flex flex-col gap-4">
+                            <IftaLabel>
                             <Select
                                 @change="
                                     $form.room.value
@@ -499,28 +517,29 @@ const termsVisible = ref(false);
                                         : undefined
                                 "
                                 :options="campus?.data"
-                                placeholder="Campus"
                                 name="campus"
                                 optionLabel="name"
                                 optionValue="id"
                                 fluid
                             >
                             </Select>
+                            <label>Campus</label>
+                            </IftaLabel>
                             <Message
                                 v-if="$form.campus?.invalid"
                                 severity="error"
                                 size="small"
                                 >{{ $form.campus.error?.message }}</Message
                             >
+                            <IftaLabel>
                             <Select
                                 @change="fetchReservations($form.room)"
                                 :options="
                                     room?.data.filter(
                                         (item) =>
-                                            item.campus === $form.campus.value,
+                                            item.campus === $form.campus.value
                                     ) || []
                                 "
-                                placeholder="Room"
                                 name="room"
                                 fluid
                                 optionLabel="name"
@@ -531,12 +550,13 @@ const termsVisible = ref(false);
                                         v-if="!$form.campus.value"
                                         class="w-[18rem]"
                                     >
-                                        No available options. Please select the
-                                        campus first.
+                                        No available options. Please fill in the below field.
                                     </p>
                                     <p v-else>No available options.</p>
                                 </template>
                             </Select>
+                            <label>Room</label>
+                            </IftaLabel>
                             <Message
                                 v-if="$form.room?.invalid"
                                 severity="error"
@@ -564,10 +584,10 @@ const termsVisible = ref(false);
                                     <template #body="slotProps">
                                         {{
                                             `${formatTableDate(
-                                                slotProps.data.startTime,
+                                                slotProps.data.startTime
                                             )} / ${formatTableTime(
                                                 slotProps.data.startTime,
-                                                slotProps.data.endTime,
+                                                slotProps.data.endTime
                                             )}`
                                         }}
                                     </template>
@@ -594,7 +614,7 @@ const termsVisible = ref(false);
                                     <template #body="slotProps">
                                         {{
                                             formatTableWeekDay(
-                                                slotProps.data.days,
+                                                slotProps.data.days
                                             )
                                         }}
                                     </template>
@@ -603,27 +623,30 @@ const termsVisible = ref(false);
                                     <template #body="slotProps">
                                         {{
                                             `${String(
-                                                slotProps.data.startTime[0],
+                                                slotProps.data.startTime[0]
                                             ).padStart(2, "0")}:${String(
-                                                slotProps.data.startTime[1],
+                                                slotProps.data.startTime[1]
                                             ).padStart(2, "0")} - ${String(
-                                                slotProps.data.endTime[0],
+                                                slotProps.data.endTime[0]
                                             ).padStart(2, "0")}:${String(
-                                                slotProps.data.endTime[1],
+                                                slotProps.data.endTime[1]
                                             ).padStart(2, "0")}`
                                         }}
                                     </template>
                                 </Column>
                             </DataTable>
+                            <IftaLabel>
                             <DatePicker
-                                placeholder="Date"
                                 name="date"
+                                updateModelType="date"
                                 :manualInput="false"
                                 :minDate
                                 :maxDate
                                 fluid
                             >
                             </DatePicker>
+                            <label>Date</label>
+                            </IftaLabel>
                             <Message
                                 v-if="$form.date?.invalid"
                                 severity="error"
@@ -631,6 +654,7 @@ const termsVisible = ref(false);
                                 date-format="yy/mm/dd"
                                 >{{ $form.date.error?.message }}</Message
                             >
+                            <IftaLabel>
                             <Select
                                 @change="
                                     $form.endTime.value
@@ -644,7 +668,6 @@ const termsVisible = ref(false);
                                         selectedClass: $form.classId,
                                     })
                                 "
-                                placeholder="Start Time"
                                 name="startTime"
                                 fluid
                             >
@@ -658,18 +681,20 @@ const termsVisible = ref(false);
                                         "
                                         class="w-[18rem]"
                                     >
-                                        No available options. Please select the
-                                        campus, room, date, or class first.
+                                        No available options. Please fill in the below field.
                                     </p>
                                     <p v-else>No available options.</p>
                                 </template>
                             </Select>
+                            <label>Start Time</label>
+                            </IftaLabel>
                             <Message
                                 v-if="$form.startTime?.invalid"
                                 severity="error"
                                 size="small"
                                 >{{ $form.startTime.error?.message }}</Message
                             >
+                            <IftaLabel>
                             <Select
                                 :options="
                                     getEndTimeOptions({
@@ -679,7 +704,6 @@ const termsVisible = ref(false);
                                         selectedClass: $form.classId,
                                     })
                                 "
-                                placeholder="End Time"
                                 name="endTime"
                                 fluid
                             >
@@ -688,24 +712,27 @@ const termsVisible = ref(false);
                                         v-if="!$form.startTime.value"
                                         class="w-[18rem]"
                                     >
-                                        No available options. Please select the
-                                        start time first.
+                                        No available options. Please fill in the below field.
                                     </p>
                                     <p v-else>No available options.</p>
                                 </template>
                             </Select>
+                            <label>End Time</label>
+                            </IftaLabel>
                             <Message
                                 v-if="$form.endTime?.invalid"
                                 severity="error"
                                 size="small"
                                 >{{ $form.endTime.error?.message }}</Message
                             >
+                            <IftaLabel>
                             <InputText
                                 type="text"
                                 name="reason"
-                                placeholder="Reason"
                                 fluid
                             ></InputText>
+                            <label>Reason</label>
+                            </IftaLabel>
                             <Message
                                 v-if="$form.reason?.invalid"
                                 severity="error"
@@ -732,7 +759,9 @@ const termsVisible = ref(false);
                         size="small"
                         >{{ $form.isAgreed.error.message }}</Message
                     >
-                    <p class="text-center text-sm mt-3">Let us know you're human</p>
+                    <p class="text-center text-sm mt-3">
+                        Let us know you're human
+                    </p>
                     <VueTurnstile
                         v-model="turnstileToken"
                         :siteKey="turnstileSiteKey"
