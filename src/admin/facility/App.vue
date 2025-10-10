@@ -507,6 +507,7 @@ const editRoomResolver = ref(
             name: z
                 .string({ error: "Name is required." })
                 .min(1, { error: "Name is required." }),
+            enabled: z.boolean({ error: "Enabled is required." }),
         }),
     ),
 );
@@ -528,6 +529,7 @@ const onEditRoomSubmit = async (form: FormSubmitEvent) => {
         editRoomInitialValues.value.id,
         form.values.name,
         form.values.campus,
+        form.values.enabled
     );
     loading.value = false;
     if (response.success) {
@@ -1234,6 +1236,16 @@ const deleteApprover = async (id: number) => {
                     size="small"
                     >{{ $form.campus.error?.message }}</Message
                 >
+                <div class="flex items-center gap-4 justify-center">
+                    <span>Enabled</span>
+                    <ToggleSwitch name="enabled"></ToggleSwitch>
+                </div>
+                <Message
+                    v-if="$form.enabled?.invalid"
+                    severity="error"
+                    size="small"
+                    >{{ $form.enabled.error?.message }}</Message
+                >
             </div>
             <div class="justify-end items-center flex gap-2 mt-4">
                 <Button
@@ -1247,7 +1259,7 @@ const deleteApprover = async (id: number) => {
         </Form>
     </Dialog>
     <Dialog
-        header="Edit Room"
+        header="Edit Campus"
         modal
         v-model:visible="editCampusVisible"
         :closable="false"
@@ -1300,6 +1312,23 @@ const deleteApprover = async (id: number) => {
                         </template>
                         <Column field="id" header="ID"></Column>
                         <Column field="name" header="Name"></Column>
+                        <Column header="Status">
+                            <template #body="slotProps">
+                                <Tag
+                                    :value="
+                                        slotProps.data.enabled
+                                            ? 'Enabled'
+                                            : 'Disabled'
+                                    "
+                                    :severity="
+                                        slotProps.data.enabled
+                                            ? 'success'
+                                            : 'danger'
+                                    "
+                                ></Tag>
+
+                            </template>
+                        </Column>
                         <Column header="Campus">
                             <template #body="slotProps">
                                 {{

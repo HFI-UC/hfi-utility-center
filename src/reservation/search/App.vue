@@ -8,13 +8,11 @@ import LoadingMask from "../../components/LoadingMask.vue";
 const keyword = ref<string | null>(null);
 const status = ref<string | null>(null);
 const room = ref<number | null>(null);
-const rows = ref(10);
-const page = ref(0);
 
-const { data: reservations } = useRequest(
+const { data: reservations, loading: reservationsLoading } = useRequest(
     () => postFetchReservations(keyword.value, room.value, status.value),
     {
-        refreshDeps: [keyword, room, status, rows, page],
+        refreshDeps: [keyword, room, status],
         debounceInterval: 300,
     },
 );
@@ -57,9 +55,9 @@ const statusOptions = [
             <template #content>
                 <DataTable
                     paginator
-                    :rows="rows"
-                    :first="page"
                     :value="reservations?.data"
+                    :loading="reservationsLoading"
+                    :rows="10"
                     class="text-nowrap"
                     removableSort
                 >

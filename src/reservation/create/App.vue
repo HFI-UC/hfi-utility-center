@@ -43,7 +43,8 @@ const resolver = zodResolver(
         room: z.number({ error: "Room is required." }),
         studentId: z
             .string({ error: "Student ID is required." })
-            .min(1, { error: "Student ID is required." }),
+            .min(10, { error: "Student ID must be at least 10 characters long (e.g. GJ12345678)." })
+            .startsWith("GJ", { error: "Student ID must start with 'GJ'." }),
         email: z
             .email({ error: "Wrong E-mail format." })
             .min(1, { error: "E-mail is required." }),
@@ -68,8 +69,8 @@ const resolver = zodResolver(
 
 const { data: classData } = useRequest(getClasses);
 const { data: campus } = useRequest(getCampuses);
-const { data: room } = useRequest(getRooms);
-
+const { data: roomData } = useRequest(getRooms);
+const room = computed(() => roomData.value?.data.filter((room) => room.enabled) || []);
 const classes = computed(() => {
     const _data = classData.value?.data;
     if (!_data) return [];
@@ -170,7 +171,7 @@ const validateTimeConflict = (time: Date): boolean => {
 const getRoomPolicyData = (id: number) => {
     if (!room.value) return [];
     return (
-        room.value.data
+        room.value
             .find((room) => room.id == id)
             ?.policies.filter((policy) => policy.enabled) || []
     );
@@ -179,7 +180,7 @@ const getRoomPolicyData = (id: number) => {
 const validatePolicy = (time: Date, selectedRoom: number): boolean => {
     if (!room.value) return true;
     const selectedRoomPolicy: RoomPolicy[] =
-        room.value.data
+        room.value
             .find((room) => room.id == selectedRoom)
             ?.policies.filter((policy) => policy.enabled) || [];
     if (selectedRoomPolicy.length === 0) return true;
@@ -535,7 +536,7 @@ const termsVisible = ref(false);
                             <Select
                                 @change="fetchReservations($form.room)"
                                 :options="
-                                    room?.data.filter(
+                                    room.filter(
                                         (item) =>
                                             item.campus === $form.campus.value
                                     ) || []

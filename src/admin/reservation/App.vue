@@ -22,7 +22,7 @@ const { data: futureReservations, run: fetchFutureReservations } = useRequest(
     getRecentReservations,
 );
 
-const { data: allReservations, run: fetchAllReservations } =
+const { data: allReservations, run: fetchAllReservations, loading: allReservationsLoading } =
     useRequest(getAllReservations);
 
 const formatTime = (date: Date): string => {
@@ -582,6 +582,7 @@ const exportOptions = [
                     paginator
                     :rows="10"
                     :value="allReservations?.data"
+                    :loading="allReservationsLoading"
                     class="text-nowrap"
                     removableSort
                     v-model:filters="filters"

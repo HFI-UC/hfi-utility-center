@@ -49,6 +49,7 @@ export interface Room {
     campus: number;
     policies: RoomPolicy[];
     approvers: RoomApprover[];
+    enabled: boolean;
 }
 
 export interface Class {
@@ -344,11 +345,12 @@ export async function postEditClass(id: number, name: string, campus: number) {
     return response.data;
 }
 
-export async function postEditRoom(id: number, name: string, campus: number) {
+export async function postEditRoom(id: number, name: string, campus: number, enabled: boolean) {
     const response = await axios.post<ApiResponse>("/room/edit", {
         id,
         name,
         campus,
+        enabled
     });
     return response.data;
 }
