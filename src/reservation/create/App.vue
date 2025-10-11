@@ -280,8 +280,9 @@ const maxDate = computed(() => {
 });
 
 const toast = useToast();
-
+const reservationsFetchLoading = ref(false)
 const fetchReservations = async (selectedRoom: FormFieldState) => {
+    reservationsFetchLoading.value = true
     reservations.value = (
         await getReservations(null, selectedRoom.value)
     ).data.reservations
@@ -291,6 +292,7 @@ const fetchReservations = async (selectedRoom: FormFieldState) => {
                 new Date(a.startTime).getTime() -
                 new Date(b.startTime).getTime()
         );
+    reservationsFetchLoading.value = false
 };
 
 const success = ref(false);
@@ -567,6 +569,7 @@ const termsVisible = ref(false);
                             <DataTable
                                 v-if="$form.room && $form.room.value"
                                 :value="reservations"
+                                :loading="reservationsFetchLoading"
                             >
                                 <template #header>
                                     <span class="font-bold"
