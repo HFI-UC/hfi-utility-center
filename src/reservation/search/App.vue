@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { useRequest } from "vue-request";
-import { getRooms, postFetchReservations } from "../../api";
-import { ref } from "vue";
+import { getRooms, getReservations } from "../../api";
+import { ref, computed } from "vue";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
 
 const keyword = ref<string | null>(null);
 const status = ref<string | null>(null);
 const room = ref<number | null>(null);
+const pageOffset = ref(0);
+const page = computed(() => Math.floor(pageOffset.value / 20));
 
 const { data: reservations, loading: reservationsLoading } = useRequest(
-    () => postFetchReservations(keyword.value, room.value, status.value),
+    () => getReservations(keyword.value, room.value, status.value, page.value),
     {
-        refreshDeps: [keyword, room, status],
+        refreshDeps: [keyword, room, status, page],
         debounceInterval: 300,
-    },
+    }
 );
 
 const { data: rooms } = useRequest(() => getRooms());
@@ -55,9 +57,12 @@ const statusOptions = [
             <template #content>
                 <DataTable
                     paginator
-                    :value="reservations?.data"
+                    lazy
+                    :value="reservations?.data.reservations || []"
+                    :totalRecords="reservations?.data.total"
                     :loading="reservationsLoading"
-                    :rows="10"
+                    :rows="20"
+                    v-model:first="pageOffset"
                     class="text-nowrap"
                     removableSort
                 >

@@ -11,7 +11,7 @@ import {
     getClasses,
     getRooms,
     type ReservationRequestInfo,
-    postFetchReservations,
+    getReservations,
     type Reservation,
     postCreateReservation,
     type Class,
@@ -283,7 +283,7 @@ const toast = useToast();
 
 const fetchReservations = async (selectedRoom: FormFieldState) => {
     reservations.value = (
-        await postFetchReservations(null, selectedRoom.value)
+        await getReservations(null, selectedRoom.value)
     ).data
         .filter((reservation: Reservation) => reservation.status != "rejected")
         .sort(

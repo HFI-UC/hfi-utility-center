@@ -150,15 +150,19 @@ export async function getClasses() {
     return response.data;
 }
 
-export async function postFetchReservations(
+export async function getReservations(
     keyword: string | null = null,
-    room: number | null = null,
-    status: string | null = null
+    roomId: number | null = null,
+    status: string | null = null,
+    page: number = 0,
 ) {
-    const response = await axios.post<ApiResponse>("/reservation/get", {
-        keyword: keyword == "" ? null : keyword,
-        room,
-        status,
+    const response = await axios.get<ApiResponse>("/reservation/get", {
+        params: {
+            keyword: keyword == "" ? null : keyword,
+            roomId,
+            status,
+            page,
+        },
     });
     return response.data;
 }
@@ -214,7 +218,7 @@ export async function getCheckLogin() {
     return response.data;
 }
 
-export async function getRecentReservations() {
+export async function getFutureReservations() {
     const response = await axios.get<ApiResponse<Reservation[]>>(
         "/reservation/future"
     );

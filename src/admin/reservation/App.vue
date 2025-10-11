@@ -4,7 +4,7 @@ import AdminLogin from "../../components/AdminLogin.vue";
 import {
     getAllReservations,
     getExportReservations,
-    getRecentReservations,
+    getFutureReservations,
     postApproveReservation,
     postLogin,
 } from "../../api";
@@ -19,7 +19,7 @@ import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
 
 const { data: futureReservations, run: fetchFutureReservations } = useRequest(
-    getRecentReservations,
+    getFutureReservations,
 );
 
 const { data: allReservations, run: fetchAllReservations, loading: allReservationsLoading } =
