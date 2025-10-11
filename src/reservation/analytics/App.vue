@@ -724,24 +724,36 @@ const setWeeklyDailyReservationCreationsChartOptions =
 
 const turnstileVisible = ref(false);
 const exportLoading = ref(false);
+const turnstileCancelled = ref(false);
 const handleTurnstile = async () => {
     turnstileVisible.value = true;
     exportLoading.value = true;
     while (exportLoading.value && turnstileToken.value == "") {
         await new Promise((resolve) => setTimeout(resolve, 100));
     }
-    if (!exportLoading.value) return;
+    if (!exportLoading.value) {
+        turnstileCancelled.value = true;
+        return;
+    }
     exportLoading.value = false;
     turnstileVisible.value = false;
 };
 const onExportOverview = async (type: string) => {
     await handleTurnstile();
+    if (turnstileCancelled.value) {
+        turnstileCancelled.value = false;
+        return;
+    }
     await getExportOverviewReservationsAnalytics(type, turnstileToken.value);
     turnstileToken.value = "";
 };
 
 const onExportWeekly = async (type: string) => {
     await handleTurnstile();
+    if (turnstileCancelled.value) {
+        turnstileCancelled.value = false;
+        return;
+    }
     await getExportWeeklyReservationsAnalytics(type, turnstileToken.value);
     turnstileToken.value = "";
 };
