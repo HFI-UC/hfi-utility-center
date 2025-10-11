@@ -284,7 +284,7 @@ const toast = useToast();
 const fetchReservations = async (selectedRoom: FormFieldState) => {
     reservations.value = (
         await getReservations(null, selectedRoom.value)
-    ).data
+    ).data.reservations
         .filter((reservation: Reservation) => reservation.status != "rejected")
         .sort(
             (a: Reservation, b: Reservation) =>
@@ -517,7 +517,7 @@ const termsVisible = ref(false);
                                         ? ($form.room.value = null)
                                         : undefined
                                 "
-                                :options="campus?.data"
+                                :options="campus?.data.filter((campus: Campus) => !campus.isPrivileged)"
                                 name="campus"
                                 optionLabel="name"
                                 optionValue="id"
