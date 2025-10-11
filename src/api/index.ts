@@ -155,6 +155,8 @@ export async function getReservations(
     roomId: number | null = null,
     status: string | null = null,
     page: number = 0,
+    startTime: Date | null = null,
+    endTime: Date | null = null
 ) {
     const response = await axios.get<ApiResponse>("/reservation/get", {
         params: {
@@ -162,6 +164,8 @@ export async function getReservations(
             roomId,
             status,
             page,
+            startTime: startTime ? Math.floor(startTime.getTime() / 1000) : null,
+            endTime: endTime ? Math.floor(endTime.getTime() / 1000) : null,
         },
     });
     return response.data;
