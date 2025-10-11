@@ -120,7 +120,7 @@ const setWeeklyReasonChartData =
                 {
                     label: "",
                     data: weeklyAnalytics.value.data.reasons.map(
-                        (reason) => reason.count
+                        (reason) => reason.count * 10 + 10
                     ),
                 },
             ],
@@ -137,6 +137,13 @@ const setWeeklyReasonChartOptions =
             plugins: {
                 legend: {
                     display: false,
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context: any) => {
+                            return `${(context.raw - 10) / 10}`;
+                        },
+                    },
                 },
             },
             elements: {
