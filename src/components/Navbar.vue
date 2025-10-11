@@ -9,6 +9,8 @@ import {
     Search,
     UserRound,
     ChartNoAxesCombined,
+    BookCheck,
+    DoorClosed,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
 import { getCheckLogin, getLogOut } from "../api";
@@ -52,8 +54,13 @@ const toggleMenu = (event: Event) => {
 };
 
 const reservationsMenu = ref();
+const adminMenu = ref();
 const toggleReservationsMenu = (event: Event) => {
     reservationsMenu.value.toggle(event);
+};
+
+const toggleAdminMenu = (event: Event) => {
+    adminMenu.value.toggle(event);
 };
 
 const toast = useToast();
@@ -101,6 +108,27 @@ const reservationsMenuItems = computed(() => {
     return items;
 });
 
+const adminMenuItems = computed(() => {
+    const items = [
+        {
+            label: "Reservation Management",
+            iconComponent: BookCheck,
+            to: "/admin/reservation/",
+        },
+        {
+            label: "Facility Management",
+            iconComponent: DoorClosed,
+            to: "/admin/facility/",
+        },
+        {
+            label: "Admin Management",
+            iconComponent: UserRound,
+            to: "/admin/admin/",
+        },
+    ];
+    return items;
+});
+
 const menuItems = computed(() => {
     const items: any = [
         { label: "Home", iconComponent: Home, to: "/" },
@@ -121,7 +149,7 @@ const menuItems = computed(() => {
         items.push({
             label: "Admin",
             iconComponent: UserRound,
-            to: "/admin/dashboard/",
+            items: adminMenuItems.value,
         });
         items.push({ label: "Logout", iconComponent: LogOut, to: "#" });
     }
@@ -228,8 +256,9 @@ onMounted(async () => {
                         v-if="loginData?.success"
                         text
                         severity="contrast"
-                        as="a"
-                        href="/admin/dashboard/"
+                        @click="toggleAdminMenu"
+                        aria-haspopup="true"
+                        aria-controls="adminMenu"
                     >
                         <UserRound></UserRound>Admin
                     </Button>
@@ -263,7 +292,17 @@ onMounted(async () => {
                     aria-controls="menu"
                     severity="contrast"
                 >
-                    <MenuIcon class="duration-200 w-5 h-5" />
+                    <MenuIcon></MenuIcon>
+                </Button>
+                <Button
+                    @click="toggleMenu"
+                    aria-label="Menu"
+                    text
+                    aria-haspopup="true"
+                    aria-controls="menu"
+                    severity="contrast"
+                >
+                    <MenuIcon></MenuIcon>
                 </Button>
                 <Menu
                     ref="menu"
@@ -322,6 +361,28 @@ onMounted(async () => {
                 ref="reservationsMenu"
                 id="reservationsMenu"
                 :model="reservationsMenuItems"
+                popup
+                class="!top-15"
+                appendTo="#navbar"
+            >
+                <template #item="slotProps">
+                    <a
+                        class="flex items-center gap-2 px-3 py-2"
+                        :href="slotProps.item.to"
+                    >
+                        <component
+                            :is="slotProps.item.iconComponent"
+                            class="w-4 h-4"
+                            v-if="slotProps.item.iconComponent"
+                        />
+                        {{ slotProps.item.label }}
+                    </a>
+                </template>
+            </Menu>
+            <Menu
+                ref="adminMenu"
+                id="adminMenu"
+                :model="adminMenuItems"
                 popup
                 class="!top-15"
                 appendTo="#navbar"
