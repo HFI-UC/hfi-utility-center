@@ -650,7 +650,7 @@ const exportOptions = [
             <template #content>
                 <DataTable
                     paginator
-                    :rows="10"
+                    :rows="20"
                     :value="allReservations?.data.reservations"
                     :loading="allReservationsLoading"
                     lazy
