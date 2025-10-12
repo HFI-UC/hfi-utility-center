@@ -689,7 +689,7 @@ const exportOptions = [
                                     placeholder="Status"
                                     :options="statusOptions"
                                     size="small"
-                                    class="sm:col-span-2 md:col-span-2 col-span-9"
+                                    class="sm:col-span-3 md:col-span-2 col-span-9"
                                     fluid
                                 >
                                     <template #value="slotProps">
