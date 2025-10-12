@@ -297,7 +297,7 @@ const deleteAdmin = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(newAdminVisible = false), $form.reset()"
+                    @click="(editAdminPasswordVisible = false), $form.reset()"
                     >Cancel</Button
                 >
                 <Button type="submit"><PenLine></PenLine>Edit</Button>
@@ -353,7 +353,7 @@ const deleteAdmin = async (id: number) => {
         <h1 class="font-bold text-3xl my-4">Admin Management</h1>
         <Card>
             <template #content>
-                <DataTable :value="admins?.data">
+                <DataTable :value="admins?.data" class="text-nowrap">
                     <template #header>
                         <div class="flex items-center justify-between">
                             <span class="text-lg font-bold">Admins</span>
