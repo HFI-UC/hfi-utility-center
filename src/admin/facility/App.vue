@@ -37,9 +37,9 @@ import AdminLogin from "../../components/AdminLogin.vue";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
 
-const { data: rooms, run: fetchRooms } = useRequest(getRooms);
-const { data: campuses, run: fetchCampuses } = useRequest(getCampuses);
-const { data: classes, run: fetchClasses } = useRequest(getClasses);
+const { data: rooms, run: fetchRooms, loading: roomsLoading } = useRequest(getRooms);
+const { data: campuses, run: fetchCampuses, loading: campusesLoading } = useRequest(getCampuses);
+const { data: classes, run: fetchClasses, loading: classesLoading } = useRequest(getClasses);
 const { data: admins } = useRequest(getAdmins);
 const formatTime = (date: Date): string => {
     const year = date.getFullYear();
@@ -815,6 +815,7 @@ const deleteApprover = async (id: number) => {
         class="xl:w-[50rem] w-[calc(100%-2rem)]"
     >
         <DataTable
+            :loading="roomsLoading"
             :value="rooms?.data.find((_room) => _room.id === room)?.policies"
             class="text-nowrap"
         >
@@ -976,6 +977,7 @@ const deleteApprover = async (id: number) => {
         class="md:w-[35rem] w-[calc(100%-2rem)]"
     >
         <DataTable
+            :loading="roomsLoading"
             :value="rooms?.data.find((r) => r.id === room)?.approvers"
             class="text-nowrap"
         >
@@ -1299,7 +1301,7 @@ const deleteApprover = async (id: number) => {
         <div class="flex flex-col gap-4">
             <Card>
                 <template #content>
-                    <DataTable :value="rooms?.data" class="text-nowrap">
+                    <DataTable :value="rooms?.data" class="text-nowrap" :loading="roomsLoading">
                         <template #header>
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-lg">Rooms</span>
@@ -1404,7 +1406,7 @@ const deleteApprover = async (id: number) => {
             </Card>
             <Card>
                 <template #content>
-                    <DataTable :value="campuses?.data" class="text-nowrap">
+                    <DataTable :value="campuses?.data" class="text-nowrap" :loading="campusesLoading">
                         <template #header>
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-lg">Campuses</span>
@@ -1457,7 +1459,7 @@ const deleteApprover = async (id: number) => {
             </Card>
             <Card>
                 <template #content>
-                    <DataTable :value="classes?.data" class="text-nowrap">
+                    <DataTable :value="classes?.data" class="text-nowrap" :loading="classesLoading">
                         <template #header>
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-lg">Classes</span>
