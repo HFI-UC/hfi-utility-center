@@ -7,18 +7,26 @@ import LoadingMask from "../../components/LoadingMask.vue";
 import { SquareArrowOutUpRight } from "lucide-vue-next";
 
 const keyword = ref<string | null>(null);
-const status = ref<{id: string, name: string, severity: string} | null>(null);
+const status = ref<{ id: string; name: string; severity: string } | null>(null);
 const room = ref<number | null>(null);
 const time = ref<Date[] | null>(null);
 const pageOffset = ref(0);
 const page = computed(() => Math.floor(pageOffset.value / 20));
 
 const { data: reservations, loading: reservationsLoading } = useRequest(
-    () => getReservations(keyword.value, room.value, status.value?.id, page.value, time.value ? time.value[0] : null, time.value ? time.value[1] : null),
+    () =>
+        getReservations(
+            keyword.value,
+            room.value,
+            status.value?.id,
+            page.value,
+            time.value ? time.value[0] : null,
+            time.value ? time.value[1] : null,
+        ),
     {
         refreshDeps: [keyword, room, status, page, time],
         debounceInterval: 300,
-    }
+    },
 );
 
 const { data: rooms } = useRequest(() => getRooms());
@@ -29,7 +37,7 @@ const formatTime = (date: Date): string => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day} ${String(date.getHours()).padStart(
         2,
-        "0"
+        "0",
     )}:${String(date.getMinutes()).padStart(2, "0")}`;
 };
 
@@ -67,9 +75,7 @@ const statusOptions = [
                     class="text-nowrap"
                 >
                     <template #header>
-                        <div
-                            class="flex justify-between flex-col gap-4"
-                        >
+                        <div class="flex justify-between flex-col gap-4">
                             <span class="font-bold text-lg">Reservations</span>
                             <div class="grid grid-cols-9 gap-2">
                                 <InputText
@@ -101,15 +107,25 @@ const statusOptions = [
                                     fluid
                                 >
                                     <template #value="slotProps">
-                                        <div
-                                            v-if="slotProps.value"
-                                        >
-                                            <Tag :value="slotProps.value.name" :severity="slotProps.value.severity" class="h-5 !text-xs"></Tag>
+                                        <div v-if="slotProps.value">
+                                            <Tag
+                                                :value="slotProps.value.name"
+                                                :severity="
+                                                    slotProps.value.severity
+                                                "
+                                                class="h-5 !text-xs"
+                                            ></Tag>
                                         </div>
                                     </template>
                                     <template #option="slotProps">
                                         <div class="flex flex-col">
-                                            <Tag :value="slotProps.option.name" :severity="slotProps.option.severity" class="h-5 !text-xs"></Tag>
+                                            <Tag
+                                                :value="slotProps.option.name"
+                                                :severity="
+                                                    slotProps.option.severity
+                                                "
+                                                class="h-5 !text-xs"
+                                            ></Tag>
                                         </div>
                                     </template>
                                 </Select>
@@ -125,11 +141,12 @@ const statusOptions = [
                                     showTime
                                     dateFormat="yy/mm/dd"
                                 >
-                                <template #footer>
-                                    <span class="text-sm flex justify-center mt-4"
-                                        >*Select two time</span
-                                    >
-                                </template>
+                                    <template #footer>
+                                        <span
+                                            class="text-sm flex justify-center mt-4"
+                                            >*Select two time</span
+                                        >
+                                    </template>
                                 </DatePicker>
                             </div>
                         </div>

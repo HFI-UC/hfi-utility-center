@@ -142,7 +142,15 @@ const editAdminResolver = ref(
         }),
     ),
 );
-const editAdminInitialValues = computed(() => (editAdminId.value != -1) ? { ...admins.value?.data.find((admin: Admin) => admin.id === editAdminId.value) } : {});
+const editAdminInitialValues = computed(() =>
+    editAdminId.value != -1
+        ? {
+              ...admins.value?.data.find(
+                  (admin: Admin) => admin.id === editAdminId.value,
+              ),
+          }
+        : {},
+);
 const editAdminVisible = ref(false);
 const onEditAdminSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
@@ -390,7 +398,10 @@ const deleteAdmin = async (id: number) => {
                             <div class="flex gap-2">
                                 <Button
                                     size="small"
-                                    @click="(editAdminVisible = true), (editAdminId = slotProps.data.id)"
+                                    @click="
+                                        (editAdminVisible = true),
+                                            (editAdminId = slotProps.data.id)
+                                    "
                                     ><PenLine></PenLine
                                 ></Button>
                                 <Button

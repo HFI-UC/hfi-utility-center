@@ -116,13 +116,17 @@ const initialValues = ref({ email: null, password: null });
                             size="small"
                             >{{ $form.password.error?.message }}</Message
                         >
-                        <p class="text-center text-sm mt-3">Let us know you're human</p>
-                        <VueTurnstile
-                            v-model="turnstileToken"
-                            :siteKey="turnstileSiteKey"
-                            ref="turnstileRef"
-                            class="flex justify-center mt-2"
-                        ></VueTurnstile>
+                        <div class="flex items-center gap-2 flex-col">
+                            <p class="text-center text-sm mt-3">
+                                Let us know you're human
+                            </p>
+                            <VueTurnstile
+                                v-model="turnstileToken"
+                                :siteKey="turnstileSiteKey"
+                                ref="turnstileRef"
+                                class="flex justify-center mt-2"
+                            ></VueTurnstile>
+                        </div>
                         <Button
                             type="submit"
                             severity="success"

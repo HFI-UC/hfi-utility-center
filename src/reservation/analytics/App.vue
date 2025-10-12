@@ -24,14 +24,14 @@ const turnstileSiteKey = process.env.CLOUDFLARE_KEY || "";
 const turnstileToken = ref("");
 const turnstileRef = ref();
 const overviewAnalytics = computed<OverviewAnalytics | null>(
-    () => overviewAnalyticsData.value?.data || null
+    () => overviewAnalyticsData.value?.data || null,
 );
 
 const overviewDailyChartData = computed(() => setOverviewDailyChartData());
 const overviewWeeklyChartData = computed(() => setOverviewWeeklyChartData());
 const overviewMonthlyChartData = computed(() => setOverviewMonthlyChartData());
 const overviewDailyRequestChartData = computed(() =>
-    setOverviewDailyRequestChartData()
+    setOverviewDailyRequestChartData(),
 );
 const overviewChartOptions = computed(() => setOverviewChartOptions());
 
@@ -314,22 +314,22 @@ const weeklyRoomChartOptions = computed(() => setWeeklyRoomChartOptions());
 const weeklyReasonChartData = computed(() => setWeeklyReasonChartData());
 const weeklyReasonChartOptions = computed(() => setWeeklyReasonChartOptions());
 const weeklyHourlyReservationsChartData = computed(() =>
-    setWeeklyHourlyReservationsChartData()
+    setWeeklyHourlyReservationsChartData(),
 );
 const weeklyHourlyReservationsChartOptions = computed(() =>
-    setWeeklyHourlyReservationsChartOptions()
+    setWeeklyHourlyReservationsChartOptions(),
 );
 const weeklyDailyReservationsChartData = computed(() =>
-    setWeeklyDailyReservationsChartData()
+    setWeeklyDailyReservationsChartData(),
 );
 const weeklyDailyReservationsChartOptions = computed(() =>
-    setWeeklyDailyReservationsChartOptions()
+    setWeeklyDailyReservationsChartOptions(),
 );
 const weeklyDailyReservationCreationsChartData = computed(() =>
-    setWeeklyDailyReservationCreationsChartData()
+    setWeeklyDailyReservationCreationsChartData(),
 );
 const weeklyDailyReservationCreationsChartOptions = computed(() =>
-    setWeeklyDailyReservationCreationsChartOptions()
+    setWeeklyDailyReservationCreationsChartOptions(),
 );
 
 const setWeeklyRoomChartData = (): ChartConfiguration<"bar">["data"] => {
@@ -337,7 +337,7 @@ const setWeeklyRoomChartData = (): ChartConfiguration<"bar">["data"] => {
         return { labels: [], datasets: [] };
     }
     const labels = weeklyAnalytics.value.data.rooms.map(
-        (room) => room.roomName
+        (room) => room.roomName,
     );
     return {
         labels,
@@ -346,7 +346,7 @@ const setWeeklyRoomChartData = (): ChartConfiguration<"bar">["data"] => {
                 label: "Reservations",
                 backgroundColor: "rgba(59, 130, 246, 1)",
                 data: weeklyAnalytics.value.data.rooms.map(
-                    (room) => room.reservations
+                    (room) => room.reservations,
                 ),
                 borderRadius: 5,
             },
@@ -354,7 +354,7 @@ const setWeeklyRoomChartData = (): ChartConfiguration<"bar">["data"] => {
                 label: "Reservation Creations",
                 backgroundColor: "rgba(16, 185, 129, 1)",
                 data: weeklyAnalytics.value.data.rooms.map(
-                    (room) => room.reservationCreations
+                    (room) => room.reservationCreations,
                 ),
                 borderRadius: 5,
             },
@@ -419,7 +419,7 @@ const setWeeklyReasonChartData =
             return { labels: [], datasets: [] };
         }
         const labels = weeklyAnalytics.value.data.reasons.map(
-            (reason) => reason.word
+            (reason) => reason.word,
         );
         return {
             labels,
@@ -427,7 +427,7 @@ const setWeeklyReasonChartData =
                 {
                     label: "",
                     data: weeklyAnalytics.value.data.reasons.map(
-                        (reason) => reason.count * 10 + 10
+                        (reason) => reason.count * 10 + 10,
                     ),
                 },
             ],
@@ -794,7 +794,9 @@ const onExportWeekly = async (type: string) => {
         <h1 class="font-bold md:text-3xl text-2xl my-4">
             Reservation Analytics
         </h1>
-        <div class="flex items-center justify-between mt-8 mb-3 flex-wrap gap-4">
+        <div
+            class="flex items-center justify-between mt-8 mb-3 flex-wrap gap-4"
+        >
             <h2 class="text-xl font-bold">Overview</h2>
             <div class="flex gap-2 items-center">
                 <Button
@@ -897,7 +899,9 @@ const onExportWeekly = async (type: string) => {
                 </template>
             </Card>
         </div>
-        <div class="flex items-center justify-between mt-8 mb-3 flex-wrap gap-4">
+        <div
+            class="flex items-center justify-between mt-8 mb-3 flex-wrap gap-4"
+        >
             <h2 class="text-xl font-bold">Weekly (Last Week)</h2>
             <div class="flex gap-2 items-center">
                 <Button

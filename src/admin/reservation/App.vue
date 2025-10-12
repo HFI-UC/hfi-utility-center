@@ -27,7 +27,7 @@ const {
 const searchKeyword = ref<string | null>(null);
 const searchTime = ref<Date[] | null>(null);
 const searchStatus = ref<{ id: string; name: string; severity: string } | null>(
-    null
+    null,
 );
 const searchRoom = ref<number | null>(null);
 const statusOptions = [
@@ -50,12 +50,18 @@ const {
             searchStatus.value?.id,
             page.value,
             searchTime.value ? searchTime.value[0] : null,
-            searchTime.value ? searchTime.value[1] : null
+            searchTime.value ? searchTime.value[1] : null,
         ),
     {
-        refreshDeps: [searchKeyword, searchTime, searchStatus, searchRoom, page],
+        refreshDeps: [
+            searchKeyword,
+            searchTime,
+            searchStatus,
+            searchRoom,
+            page,
+        ],
         debounceInterval: 300,
-    }
+    },
 );
 
 const { data: rooms } = useRequest(getRooms);
@@ -65,7 +71,7 @@ const formatTime = (date: Date): string => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day} ${String(date.getHours()).padStart(
         2,
-        "0"
+        "0",
     )}:${String(date.getMinutes()).padStart(2, "0")}`;
 };
 
@@ -119,7 +125,7 @@ const rejectReservation = async (form: FormSubmitEvent) => {
     const response = await postApproveReservation(
         rejectId.value,
         false,
-        form.values.reason
+        form.values.reason,
     );
     loading.value = false;
     if (response.success) {
@@ -151,8 +157,8 @@ const rejectResolver = ref(
             reason: z
                 .string({ error: "Reason is required." })
                 .min(1, { error: "Reason is required." }),
-        })
-    )
+        }),
+    ),
 );
 const rejectInitialValues = ref({ reason: null });
 
@@ -174,15 +180,15 @@ const exportResolver = ref(
         z.object({
             option: z.number({ error: "Format is required." }),
             time: z.array(z.date().nullable()).length(2).optional(),
-            mode: z.literal(["by-room", "single-sheet"])
-        })
-    )
+            mode: z.literal(["by-room", "single-sheet"]),
+        }),
+    ),
 );
 
 const modeOptions = [
     { label: "By room", code: "by-room" },
     { label: "Single sheet", code: "single-sheet" },
-]
+];
 const exportInitialValues = ref({
     option: null,
     time: [null, null],
@@ -209,7 +215,7 @@ onMounted(async () => {
             });
             setTimeout(
                 () => (window.location.href = "/admin/reservation/"),
-                6500
+                6500,
             );
         }
     } else {
@@ -260,18 +266,16 @@ const exportReservations = async (form: FormSubmitEvent) => {
         searchStatus.value?.id,
         0,
         startTime,
-        endTime
+        endTime,
     );
     if (startTime && endTime && _allReservations?.data) {
         const rangeStart = startTime.getTime();
         const rangeEnd = endTime.getTime();
-        const hasAny = _allReservations.data.reservations.some(
-            (r: any) => {
-                const rs = new Date(r.startTime).getTime();
-                const re = new Date(r.endTime).getTime();
-                return rs <= rangeEnd && re >= rangeStart;
-            }
-        );
+        const hasAny = _allReservations.data.reservations.some((r: any) => {
+            const rs = new Date(r.startTime).getTime();
+            const re = new Date(r.endTime).getTime();
+            return rs <= rangeEnd && re >= rangeStart;
+        });
         if (!hasAny) {
             loading.value = false;
             toast.add({
@@ -286,9 +290,13 @@ const exportReservations = async (form: FormSubmitEvent) => {
     }
 
     getExportReservations(
-        startTime && form.values.option == 4 ? Math.floor(startTime.getTime() / 1000) : null,
-        endTime && form.values.option == 4 ? Math.floor(endTime.getTime() / 1000) : null,
-        form.values.mode
+        startTime && form.values.option == 4
+            ? Math.floor(startTime.getTime() / 1000)
+            : null,
+        endTime && form.values.option == 4
+            ? Math.floor(endTime.getTime() / 1000)
+            : null,
+        form.values.mode,
     );
     loading.value = false;
     exportVisible.value = false;
@@ -555,8 +563,8 @@ const exportOptions = [
                                                     {{
                                                         formatTime(
                                                             new Date(
-                                                                item.startTime
-                                                            )
+                                                                item.startTime,
+                                                            ),
                                                         )
                                                     }}
                                                 </p>
@@ -571,8 +579,8 @@ const exportOptions = [
                                                     {{
                                                         formatTime(
                                                             new Date(
-                                                                item.endTime
-                                                            )
+                                                                item.endTime,
+                                                            ),
                                                         )
                                                     }}
                                                 </p>

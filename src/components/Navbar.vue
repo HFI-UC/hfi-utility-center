@@ -102,8 +102,8 @@ const reservationsMenuItems = computed(() => {
         {
             label: "Reservation Analytics",
             iconComponent: ChartNoAxesCombined,
-            to: "/reservation/analytics/"
-        }
+            to: "/reservation/analytics/",
+        },
     ];
     return items;
 });

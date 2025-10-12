@@ -156,7 +156,7 @@ export async function getReservations(
     status: string | null = null,
     page: number = 0,
     startTime: Date | null = null,
-    endTime: Date | null = null
+    endTime: Date | null = null,
 ) {
     const response = await axios.get<ApiResponse>("/reservation/get", {
         params: {
@@ -181,7 +181,7 @@ function formatDate(date: Date): string {
 }
 
 export async function postCreateReservation(
-    reservation: ReservationRequestInfo
+    reservation: ReservationRequestInfo,
 ) {
     const data = {
         classId: reservation.classId,
@@ -191,11 +191,11 @@ export async function postCreateReservation(
         email: reservation.email,
         startTime:
             new Date(
-                `${formatDate(reservation.date)}T${reservation.startTime}`
+                `${formatDate(reservation.date)}T${reservation.startTime}`,
             ).getTime() / 1000,
         endTime:
             new Date(
-                `${formatDate(reservation.date)}T${reservation.endTime}`
+                `${formatDate(reservation.date)}T${reservation.endTime}`,
             ).getTime() / 1000,
         reason: reservation.reason,
         turnstileToken: reservation.turnstileToken,
@@ -208,7 +208,7 @@ export async function postLogin(
     email: string | null,
     password: string | null,
     token: string | null,
-    turnstileToken: string | null
+    turnstileToken: string | null,
 ) {
     const response = await axios.post<ApiResponse>("/admin/login", {
         email,
@@ -226,7 +226,7 @@ export async function getCheckLogin() {
 
 export async function getFutureReservations() {
     const response = await axios.get<ApiResponse<Reservation[]>>(
-        "/reservation/future"
+        "/reservation/future",
     );
     return response.data;
 }
@@ -234,7 +234,7 @@ export async function getFutureReservations() {
 export async function postApproveReservation(
     id: number,
     approved: boolean,
-    reason: string | null = null
+    reason: string | null = null,
 ) {
     const response = await axios.post<ApiResponse>(`/reservation/approval`, {
         id,
@@ -250,38 +250,37 @@ export async function getAllReservations(
     status: string | null = null,
     page: number = 0,
     startTime: Date | null = null,
-    endTime: Date | null = null
+    endTime: Date | null = null,
 ) {
-    const response = await axios.get<ApiResponse<{reservations: Reservation[], total: number}>>(
-        "/reservation/all",
-        {
-            params: {
-                keyword: keyword == "" ? null : keyword,
-                roomId,
-                status,
-                page,
-                startTime: startTime
-                    ? Math.floor(startTime.getTime() / 1000)
-                    : null,
-                endTime: endTime ? Math.floor(endTime.getTime() / 1000) : null,
-            },
-        }
-    );
+    const response = await axios.get<
+        ApiResponse<{ reservations: Reservation[]; total: number }>
+    >("/reservation/all", {
+        params: {
+            keyword: keyword == "" ? null : keyword,
+            roomId,
+            status,
+            page,
+            startTime: startTime
+                ? Math.floor(startTime.getTime() / 1000)
+                : null,
+            endTime: endTime ? Math.floor(endTime.getTime() / 1000) : null,
+        },
+    });
     return response.data;
 }
 
 export function getExportReservations(
     startTime: number | null,
     endTime: number | null,
-    mode: string = "by-room"
+    mode: string = "by-room",
 ) {
     const params: Record<string, any> = {};
     if (startTime) params.startTime = startTime;
     if (endTime) params.endTime = endTime;
-    params.mode = mode
+    params.mode = mode;
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
     const stringParams: Record<string, string> = Object.fromEntries(
-        Object.entries(params).map(([k, v]) => [k, String(v)])
+        Object.entries(params).map(([k, v]) => [k, String(v)]),
     );
     const qs = new URLSearchParams(stringParams).toString();
     const downloadUrl = `${base}/reservation/export${qs ? `?${qs}` : ""}`;
@@ -331,7 +330,7 @@ export async function postCreatePolicy(
     room: number,
     startTime: number[],
     endTime: number[],
-    days: number[]
+    days: number[],
 ) {
     const response = await axios.post<ApiResponse>("/policy/create", {
         room,
@@ -346,7 +345,7 @@ export async function postEditPolicy(
     id: number,
     startTime: number[],
     endTime: number[],
-    days: number[]
+    days: number[],
 ) {
     const response = await axios.post<ApiResponse>("/policy/edit", {
         id,
@@ -380,7 +379,7 @@ export async function postEditRoom(
     id: number,
     name: string,
     campus: number,
-    enabled: boolean
+    enabled: boolean,
 ) {
     const response = await axios.post<ApiResponse>("/room/edit", {
         id,
@@ -406,7 +405,7 @@ export async function getLogOut() {
 
 export async function getAdmins() {
     const response = await axios.get<ApiResponse & { data: Admin[] }>(
-        "/admin/list"
+        "/admin/list",
     );
     return response.data;
 }
@@ -429,7 +428,7 @@ export async function postDeleteApprover(id: number) {
 export async function postCreateAdmin(
     name: string,
     email: string,
-    password: string
+    password: string,
 ) {
     const response = await axios.post<ApiResponse>("/admin/create", {
         name,
@@ -441,7 +440,7 @@ export async function postCreateAdmin(
 
 export async function postEditAdminPassword(
     admin: number,
-    newPassword: string
+    newPassword: string,
 ) {
     const response = await axios.post<ApiResponse>("/admin/edit-password", {
         admin,
@@ -457,15 +456,14 @@ export async function postDeleteAdmin(id: number) {
 
 export async function getOverviewAnalytics() {
     const response = await axios.get<ApiResponse<OverviewAnalytics>>(
-        "/analytics/overview"
+        "/analytics/overview",
     );
     return response.data;
 }
 
 export async function getWeeklyAnalytics() {
-    const response = await axios.get<ApiResponse<WeeklyAnalytics>>(
-        "/analytics/weekly"
-    );
+    const response =
+        await axios.get<ApiResponse<WeeklyAnalytics>>("/analytics/weekly");
     return response.data;
 }
 
@@ -480,7 +478,7 @@ export async function postEditAdmin(id: number, name: string, email: string) {
 
 export async function getExportOverviewReservationsAnalytics(
     type: string,
-    turnstileToken: string
+    turnstileToken: string,
 ) {
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
     window.location.href = `${base}/analytics/overview/export?type=${type}&turnstileToken=${turnstileToken}`;
@@ -488,7 +486,7 @@ export async function getExportOverviewReservationsAnalytics(
 
 export async function getExportWeeklyReservationsAnalytics(
     type: string,
-    turnstileToken: string
+    turnstileToken: string,
 ) {
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
     window.location.href = `${base}/analytics/weekly/export?type=${type}&turnstileToken=${turnstileToken}`;

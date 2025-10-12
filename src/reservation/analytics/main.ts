@@ -6,7 +6,7 @@ import ToastService from "primevue/toastservice";
 // @ts-ignore
 import { Sky } from "@/theme";
 import { Chart } from "chart.js";
-import { WordCloudController, WordElement } from 'chartjs-chart-wordcloud';
+import { WordCloudController, WordElement } from "chartjs-chart-wordcloud";
 
 Chart.register(WordCloudController, WordElement);
 const app = createApp(App);

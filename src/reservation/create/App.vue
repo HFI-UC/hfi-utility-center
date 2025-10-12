@@ -43,7 +43,9 @@ const resolver = zodResolver(
         room: z.number({ error: "Room is required." }),
         studentId: z
             .string({ error: "Student ID is required." })
-            .min(10, { error: "Student ID must be at least 10 characters long (e.g. GJ12345678)." })
+            .min(10, {
+                error: "Student ID must be at least 10 characters long (e.g. GJ12345678).",
+            })
             .startsWith("GJ", { error: "Student ID must start with 'GJ'." }),
         email: z
             .email({ error: "Wrong E-mail format." })
@@ -64,20 +66,22 @@ const resolver = zodResolver(
             .refine((val) => val === true, {
                 message: "You must agree to the terms and conditions.",
             }),
-    })
+    }),
 );
 
 const { data: classData } = useRequest(getClasses);
 const { data: campus } = useRequest(getCampuses);
 const { data: roomData } = useRequest(getRooms);
-const room = computed(() => roomData.value?.data.filter((room) => room.enabled) || []);
+const room = computed(
+    () => roomData.value?.data.filter((room) => room.enabled) || [],
+);
 const classes = computed(() => {
     const _data = classData.value?.data;
     if (!_data) return [];
     const res: { campus: string; classes: any[] }[] = [];
     campus.value?.data.some((c: Campus) => {
         const campusClasses = _data.filter(
-            (item: Class) => item.campus === c.id
+            (item: Class) => item.campus === c.id,
         );
         if (campusClasses.length) {
             res.push({ campus: c.name, classes: campusClasses });
@@ -89,7 +93,7 @@ const reservations = ref<Reservation[]>([] as Reservation[]);
 
 const formatTime = (date: Date): string =>
     `${String(date.getHours()).padStart(2, "0")}:${String(
-        date.getMinutes()
+        date.getMinutes(),
     ).padStart(2, "0")}`;
 
 const formatDate = (date: Date): string => {
@@ -103,7 +107,7 @@ const formatTableDate = (time: string) => {
     const date = new Date(time);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
-        "0"
+        "0",
     )}-${String(date.getDate()).padStart(2, "0")}`;
 };
 
@@ -122,7 +126,7 @@ const formatTableWeekDay = (days: number[]) => {
 
 const formatTableTime = (startTime: string, endTime: string) => {
     return `${formatTime(new Date(startTime))} - ${formatTime(
-        new Date(endTime)
+        new Date(endTime),
     )}`;
 };
 
@@ -133,7 +137,7 @@ const generateTimeOptions = (
     startMinute: number,
     endHour: number,
     endMinute: number,
-    selectedClass: number
+    selectedClass: number,
 ) => {
     const options: string[] = [];
     const start = new Date();
@@ -147,10 +151,10 @@ const generateTimeOptions = (
     }
 
     const _class = classData.value?.data.find(
-        (item: Class) => item.id === selectedClass
+        (item: Class) => item.id === selectedClass,
     );
     const _campus: Campus = campus.value?.data.find(
-        (item: Campus) => item.id === _class?.campus
+        (item: Campus) => item.id === _class?.campus,
     );
     const res = options.filter((item) => {
         if (!date || !room || _campus.isPrivileged) return true;
@@ -232,7 +236,7 @@ const getStartTimeOptions = ({
         startMinute,
         21,
         15,
-        selectedClass.value
+        selectedClass.value,
     );
 };
 
@@ -261,7 +265,7 @@ const getEndTimeOptions = ({
                 ? 0
                 : Math.max(startMinutes, 30)
             : startMinutes,
-        selectedClass.value
+        selectedClass.value,
     );
 };
 
@@ -280,19 +284,23 @@ const maxDate = computed(() => {
 });
 
 const toast = useToast();
-const reservationsFetchLoading = ref(false)
+const reservationsFetchLoading = ref(false);
 const fetchReservations = async (selectedRoom: FormFieldState) => {
-    reservationsFetchLoading.value = true
+    reservationsFetchLoading.value = true;
     reservations.value = (
         await getReservations(null, selectedRoom.value)
     ).data.reservations
-        .filter((reservation: Reservation) => reservation.status != "rejected" && new Date(reservation.startTime) >= new Date())
+        .filter(
+            (reservation: Reservation) =>
+                reservation.status != "rejected" &&
+                new Date(reservation.startTime) >= new Date(),
+        )
         .sort(
             (a: Reservation, b: Reservation) =>
                 new Date(a.startTime).getTime() -
-                new Date(b.startTime).getTime()
+                new Date(b.startTime).getTime(),
         );
-    reservationsFetchLoading.value = false
+    reservationsFetchLoading.value = false;
 };
 
 const success = ref(false);
@@ -314,7 +322,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     form.values.turnstileToken = turnstileToken.value;
     submitLoading.value = true;
     const response = await postCreateReservation(
-        form.values as ReservationRequestInfo
+        form.values as ReservationRequestInfo,
     );
     submitLoading.value = false;
     if (response.success) {
@@ -513,20 +521,25 @@ const termsVisible = ref(false);
                     <Fieldset legend="Room Information">
                         <div class="flex flex-col gap-4">
                             <IftaLabel>
-                            <Select
-                                @change="
-                                    $form.room.value
-                                        ? ($form.room.value = null)
-                                        : undefined
-                                "
-                                :options="campus?.data.filter((campus: Campus) => !campus.isPrivileged)"
-                                name="campus"
-                                optionLabel="name"
-                                optionValue="id"
-                                fluid
-                            >
-                            </Select>
-                            <label>Campus</label>
+                                <Select
+                                    @change="
+                                        $form.room.value
+                                            ? ($form.room.value = null)
+                                            : undefined
+                                    "
+                                    :options="
+                                        campus?.data.filter(
+                                            (campus: Campus) =>
+                                                !campus.isPrivileged,
+                                        )
+                                    "
+                                    name="campus"
+                                    optionLabel="name"
+                                    optionValue="id"
+                                    fluid
+                                >
+                                </Select>
+                                <label>Campus</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.campus?.invalid"
@@ -535,30 +548,32 @@ const termsVisible = ref(false);
                                 >{{ $form.campus.error?.message }}</Message
                             >
                             <IftaLabel>
-                            <Select
-                                @change="fetchReservations($form.room)"
-                                :options="
-                                    room.filter(
-                                        (item) =>
-                                            item.campus === $form.campus.value
-                                    ) || []
-                                "
-                                name="room"
-                                fluid
-                                optionLabel="name"
-                                optionValue="id"
-                            >
-                                <template #empty>
-                                    <p
-                                        v-if="!$form.campus.value"
-                                        class="w-[18rem]"
-                                    >
-                                        No available options. Please fill in the below field.
-                                    </p>
-                                    <p v-else>No available options.</p>
-                                </template>
-                            </Select>
-                            <label>Room</label>
+                                <Select
+                                    @change="fetchReservations($form.room)"
+                                    :options="
+                                        room.filter(
+                                            (item) =>
+                                                item.campus ===
+                                                $form.campus.value,
+                                        ) || []
+                                    "
+                                    name="room"
+                                    fluid
+                                    optionLabel="name"
+                                    optionValue="id"
+                                >
+                                    <template #empty>
+                                        <p
+                                            v-if="!$form.campus.value"
+                                            class="w-[18rem]"
+                                        >
+                                            No available options. Please fill in
+                                            the below field.
+                                        </p>
+                                        <p v-else>No available options.</p>
+                                    </template>
+                                </Select>
+                                <label>Room</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.room?.invalid"
@@ -588,10 +603,10 @@ const termsVisible = ref(false);
                                     <template #body="slotProps">
                                         {{
                                             `${formatTableDate(
-                                                slotProps.data.startTime
+                                                slotProps.data.startTime,
                                             )} / ${formatTableTime(
                                                 slotProps.data.startTime,
-                                                slotProps.data.endTime
+                                                slotProps.data.endTime,
                                             )}`
                                         }}
                                     </template>
@@ -618,7 +633,7 @@ const termsVisible = ref(false);
                                     <template #body="slotProps">
                                         {{
                                             formatTableWeekDay(
-                                                slotProps.data.days
+                                                slotProps.data.days,
                                             )
                                         }}
                                     </template>
@@ -627,29 +642,29 @@ const termsVisible = ref(false);
                                     <template #body="slotProps">
                                         {{
                                             `${String(
-                                                slotProps.data.startTime[0]
+                                                slotProps.data.startTime[0],
                                             ).padStart(2, "0")}:${String(
-                                                slotProps.data.startTime[1]
+                                                slotProps.data.startTime[1],
                                             ).padStart(2, "0")} - ${String(
-                                                slotProps.data.endTime[0]
+                                                slotProps.data.endTime[0],
                                             ).padStart(2, "0")}:${String(
-                                                slotProps.data.endTime[1]
+                                                slotProps.data.endTime[1],
                                             ).padStart(2, "0")}`
                                         }}
                                     </template>
                                 </Column>
                             </DataTable>
                             <IftaLabel>
-                            <DatePicker
-                                name="date"
-                                updateModelType="date"
-                                :manualInput="false"
-                                :minDate
-                                :maxDate
-                                fluid
-                            >
-                            </DatePicker>
-                            <label>Date</label>
+                                <DatePicker
+                                    name="date"
+                                    updateModelType="date"
+                                    :manualInput="false"
+                                    :minDate
+                                    :maxDate
+                                    fluid
+                                >
+                                </DatePicker>
+                                <label>Date</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.date?.invalid"
@@ -659,38 +674,39 @@ const termsVisible = ref(false);
                                 >{{ $form.date.error?.message }}</Message
                             >
                             <IftaLabel>
-                            <Select
-                                @change="
-                                    $form.endTime.value
-                                        ? ($form.endTime.value = null)
-                                        : undefined
-                                "
-                                :options="
-                                    getStartTimeOptions({
-                                        date: $form.date,
-                                        selectedRoom: $form.room,
-                                        selectedClass: $form.classId,
-                                    })
-                                "
-                                name="startTime"
-                                fluid
-                            >
-                                <template #empty>
-                                    <p
-                                        v-if="
-                                            !$form.campus.value ||
-                                            !$form.room.value ||
-                                            !$form.classId.value ||
-                                            !$form.date.value
-                                        "
-                                        class="w-[18rem]"
-                                    >
-                                        No available options. Please fill in the below field.
-                                    </p>
-                                    <p v-else>No available options.</p>
-                                </template>
-                            </Select>
-                            <label>Start Time</label>
+                                <Select
+                                    @change="
+                                        $form.endTime.value
+                                            ? ($form.endTime.value = null)
+                                            : undefined
+                                    "
+                                    :options="
+                                        getStartTimeOptions({
+                                            date: $form.date,
+                                            selectedRoom: $form.room,
+                                            selectedClass: $form.classId,
+                                        })
+                                    "
+                                    name="startTime"
+                                    fluid
+                                >
+                                    <template #empty>
+                                        <p
+                                            v-if="
+                                                !$form.campus.value ||
+                                                !$form.room.value ||
+                                                !$form.classId.value ||
+                                                !$form.date.value
+                                            "
+                                            class="w-[18rem]"
+                                        >
+                                            No available options. Please fill in
+                                            the below field.
+                                        </p>
+                                        <p v-else>No available options.</p>
+                                    </template>
+                                </Select>
+                                <label>Start Time</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.startTime?.invalid"
@@ -699,29 +715,30 @@ const termsVisible = ref(false);
                                 >{{ $form.startTime.error?.message }}</Message
                             >
                             <IftaLabel>
-                            <Select
-                                :options="
-                                    getEndTimeOptions({
-                                        startTime: $form.startTime,
-                                        date: $form.date,
-                                        selectedRoom: $form.room,
-                                        selectedClass: $form.classId,
-                                    })
-                                "
-                                name="endTime"
-                                fluid
-                            >
-                                <template #empty>
-                                    <p
-                                        v-if="!$form.startTime.value"
-                                        class="w-[18rem]"
-                                    >
-                                        No available options. Please fill in the below field.
-                                    </p>
-                                    <p v-else>No available options.</p>
-                                </template>
-                            </Select>
-                            <label>End Time</label>
+                                <Select
+                                    :options="
+                                        getEndTimeOptions({
+                                            startTime: $form.startTime,
+                                            date: $form.date,
+                                            selectedRoom: $form.room,
+                                            selectedClass: $form.classId,
+                                        })
+                                    "
+                                    name="endTime"
+                                    fluid
+                                >
+                                    <template #empty>
+                                        <p
+                                            v-if="!$form.startTime.value"
+                                            class="w-[18rem]"
+                                        >
+                                            No available options. Please fill in
+                                            the below field.
+                                        </p>
+                                        <p v-else>No available options.</p>
+                                    </template>
+                                </Select>
+                                <label>End Time</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.endTime?.invalid"
@@ -730,12 +747,12 @@ const termsVisible = ref(false);
                                 >{{ $form.endTime.error?.message }}</Message
                             >
                             <IftaLabel>
-                            <InputText
-                                type="text"
-                                name="reason"
-                                fluid
-                            ></InputText>
-                            <label>Reason</label>
+                                <InputText
+                                    type="text"
+                                    name="reason"
+                                    fluid
+                                ></InputText>
+                                <label>Reason</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.reason?.invalid"

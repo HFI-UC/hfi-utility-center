@@ -183,10 +183,7 @@ const onNewRoomSubmit = async (form: FormSubmitEvent) => {
         return;
     }
     loading.value = true;
-    const response = await postCreateRoom(
-        form.values.name,
-        form.values.campus,
-    );
+    const response = await postCreateRoom(form.values.name, form.values.campus);
     loading.value = false;
     if (response.success) {
         toast.add({
@@ -533,7 +530,7 @@ const onEditRoomSubmit = async (form: FormSubmitEvent) => {
         editRoomInitialValues.value.id,
         form.values.name,
         form.values.campus,
-        form.values.enabled
+        form.values.enabled,
     );
     loading.value = false;
     if (response.success) {
@@ -817,7 +814,10 @@ const deleteApprover = async (id: number) => {
         maximizable
         class="xl:w-[50rem] w-[calc(100%-2rem)]"
     >
-        <DataTable :value="rooms?.data.find((_room) => _room.id === room)?.policies" class="text-nowrap">
+        <DataTable
+            :value="rooms?.data.find((_room) => _room.id === room)?.policies"
+            class="text-nowrap"
+        >
             <template #header>
                 <div class="flex gap-2 justify-between">
                     <span class="text-lg font-bold">Room Policies</span>
@@ -914,10 +914,12 @@ const deleteApprover = async (id: number) => {
                     :options="
                         admins?.data.filter(
                             (admin: Admin) =>
-                                !rooms?.data.find((r: Room) => r.id === room)?.approvers.some(
-                                    (approver: RoomApprover) =>
-                                        approver.adminId === admin.id,
-                                ),
+                                !rooms?.data
+                                    .find((r: Room) => r.id === room)
+                                    ?.approvers.some(
+                                        (approver: RoomApprover) =>
+                                            approver.adminId === admin.id,
+                                    ),
                         )
                     "
                     placeholder="Admin"
@@ -973,7 +975,10 @@ const deleteApprover = async (id: number) => {
         maximizable
         class="md:w-[35rem] w-[calc(100%-2rem)]"
     >
-        <DataTable :value="rooms?.data.find((r) => r.id === room)?.approvers" class="text-nowrap">
+        <DataTable
+            :value="rooms?.data.find((r) => r.id === room)?.approvers"
+            class="text-nowrap"
+        >
             <template #header>
                 <div class="flex gap-2 justify-between">
                     <span class="text-lg font-bold">Room Approvers</span>
@@ -990,7 +995,8 @@ const deleteApprover = async (id: number) => {
                 <template #body="slotProps">
                     {{
                         admins?.data.find(
-                            (admin: Admin) => admin.id === slotProps.data.adminId,
+                            (admin: Admin) =>
+                                admin.id === slotProps.data.adminId,
                         )?.name
                     }}
                 </template>
@@ -999,7 +1005,8 @@ const deleteApprover = async (id: number) => {
                 <template #body="slotProps">
                     {{
                         admins?.data.find(
-                            (admin: Admin) => admin.id === slotProps.data.adminId,
+                            (admin: Admin) =>
+                                admin.id === slotProps.data.adminId,
                         )?.email
                     }}
                 </template>
@@ -1322,7 +1329,6 @@ const deleteApprover = async (id: number) => {
                                             : 'danger'
                                     "
                                 ></Tag>
-
                             </template>
                         </Column>
                         <Column header="Campus">

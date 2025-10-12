@@ -42,9 +42,18 @@ export default defineConfig({
                     __dirname,
                     "reservation/search/index.html"
                 ),
-                "reservation-analytics": resolve(__dirname, "reservation/analytics/index.html"),
-                "reservation-analytics-raw-general": resolve(__dirname, "reservation/analytics/raw/overview/index.html"),
-                "reservation-analytics-raw-weekly": resolve(__dirname, "reservation/analytics/raw/weekly/index.html"),
+                "reservation-analytics": resolve(
+                    __dirname,
+                    "reservation/analytics/index.html"
+                ),
+                "reservation-analytics-raw-general": resolve(
+                    __dirname,
+                    "reservation/analytics/raw/overview/index.html"
+                ),
+                "reservation-analytics-raw-weekly": resolve(
+                    __dirname,
+                    "reservation/analytics/raw/weekly/index.html"
+                ),
                 "admin-admin": resolve(__dirname, "admin/admin/index.html"),
                 "admin-login": resolve(__dirname, "admin/login/index.html"),
                 "admin-reservation": resolve(

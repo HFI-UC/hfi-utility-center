@@ -11,22 +11,22 @@ const weeklyRoomChartOptions = computed(() => setWeeklyRoomChartOptions());
 const weeklyReasonChartData = computed(() => setWeeklyReasonChartData());
 const weeklyReasonChartOptions = computed(() => setWeeklyReasonChartOptions());
 const weeklyHourlyReservationsChartData = computed(() =>
-    setWeeklyHourlyReservationsChartData()
+    setWeeklyHourlyReservationsChartData(),
 );
 const weeklyHourlyReservationsChartOptions = computed(() =>
-    setWeeklyHourlyReservationsChartOptions()
+    setWeeklyHourlyReservationsChartOptions(),
 );
 const weeklyDailyReservationsChartData = computed(() =>
-    setWeeklyDailyReservationsChartData()
+    setWeeklyDailyReservationsChartData(),
 );
 const weeklyDailyReservationsChartOptions = computed(() =>
-    setWeeklyDailyReservationsChartOptions()
+    setWeeklyDailyReservationsChartOptions(),
 );
 const weeklyDailyReservationCreationsChartData = computed(() =>
-    setWeeklyDailyReservationCreationsChartData()
+    setWeeklyDailyReservationCreationsChartData(),
 );
 const weeklyDailyReservationCreationsChartOptions = computed(() =>
-    setWeeklyDailyReservationCreationsChartOptions()
+    setWeeklyDailyReservationCreationsChartOptions(),
 );
 
 const setWeeklyRoomChartData = (): ChartConfiguration<"bar">["data"] => {
@@ -34,7 +34,7 @@ const setWeeklyRoomChartData = (): ChartConfiguration<"bar">["data"] => {
         return { labels: [], datasets: [] };
     }
     const labels = weeklyAnalytics.value.data.rooms.map(
-        (room) => room.roomName
+        (room) => room.roomName,
     );
     return {
         labels,
@@ -43,7 +43,7 @@ const setWeeklyRoomChartData = (): ChartConfiguration<"bar">["data"] => {
                 label: "Reservations",
                 backgroundColor: "rgba(59, 130, 246, 1)",
                 data: weeklyAnalytics.value.data.rooms.map(
-                    (room) => room.reservations
+                    (room) => room.reservations,
                 ),
                 borderRadius: 5,
             },
@@ -51,7 +51,7 @@ const setWeeklyRoomChartData = (): ChartConfiguration<"bar">["data"] => {
                 label: "Reservation Creations",
                 backgroundColor: "rgba(16, 185, 129, 1)",
                 data: weeklyAnalytics.value.data.rooms.map(
-                    (room) => room.reservationCreations
+                    (room) => room.reservationCreations,
                 ),
                 borderRadius: 5,
             },
@@ -63,7 +63,7 @@ const setWeeklyRoomChartOptions = (): ChartConfiguration<"bar">["options"] => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--color-surface-900");
     const textColorSecondary = documentStyle.getPropertyValue(
-        "--color-surface-500"
+        "--color-surface-500",
     );
     const surfaceBorder = documentStyle.getPropertyValue("--color-surface-200");
     return {
@@ -112,7 +112,7 @@ const setWeeklyReasonChartData =
             return { labels: [], datasets: [] };
         }
         const labels = weeklyAnalytics.value.data.reasons.map(
-            (reason) => reason.word
+            (reason) => reason.word,
         );
         return {
             labels,
@@ -120,7 +120,7 @@ const setWeeklyReasonChartData =
                 {
                     label: "",
                     data: weeklyAnalytics.value.data.reasons.map(
-                        (reason) => reason.count * 10 + 10
+                        (reason) => reason.count * 10 + 10,
                     ),
                 },
             ],
@@ -131,7 +131,7 @@ const setWeeklyReasonChartOptions =
     (): ChartConfiguration<"wordCloud">["options"] => {
         const documentStyle = getComputedStyle(document.documentElement);
         const textColorSecondary = documentStyle.getPropertyValue(
-            "--color-surface-500"
+            "--color-surface-500",
         );
         return {
             plugins: {
@@ -181,10 +181,10 @@ const setWeeklyHourlyReservationsChartOptions =
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue("--color-surface-900");
         const textColorSecondary = documentStyle.getPropertyValue(
-            "--color-surface-500"
+            "--color-surface-500",
         );
         const surfaceBorder = documentStyle.getPropertyValue(
-            "--color-surface-200"
+            "--color-surface-200",
         );
         return {
             maintainAspectRatio: false,
@@ -283,10 +283,10 @@ const setWeeklyDailyReservationsChartOptions =
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue("--color-surface-900");
         const textColorSecondary = documentStyle.getPropertyValue(
-            "--color-surface-500"
+            "--color-surface-500",
         );
         const surfaceBorder = documentStyle.getPropertyValue(
-            "--color-surface-200"
+            "--color-surface-200",
         );
         return {
             maintainAspectRatio: false,
@@ -372,10 +372,10 @@ const setWeeklyDailyReservationCreationsChartOptions =
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue("--color-surface-900");
         const textColorSecondary = documentStyle.getPropertyValue(
-            "--color-surface-500"
+            "--color-surface-500",
         );
         const surfaceBorder = documentStyle.getPropertyValue(
-            "--color-surface-200"
+            "--color-surface-200",
         );
         return {
             maintainAspectRatio: false,
@@ -419,11 +419,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
 
 <template>
     <div class="mx-[3rem] my-[2rem]">
-        <h1
-            class="font-bold text-xl text-sky-500"
-        >
-            HFI Utility Center
-        </h1>
+        <h1 class="font-bold text-xl text-sky-500">HFI Utility Center</h1>
         <h1 class="font-bold text-3xl my-4">
             Reservation Analytics - Weekly (Last Week)
         </h1>

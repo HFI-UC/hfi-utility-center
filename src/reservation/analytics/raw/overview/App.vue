@@ -6,13 +6,13 @@ import type { ChartConfiguration } from "chart.js";
 
 const { data: overviewAnalyticsData } = useRequest(getOverviewAnalytics);
 const overviewAnalytics = computed<OverviewAnalytics | null>(
-    () => overviewAnalyticsData.value?.data || null
+    () => overviewAnalyticsData.value?.data || null,
 );
 const overviewDailyChartData = computed(() => setOverviewDailyChartData());
 const overviewWeeklyChartData = computed(() => setOverviewWeeklyChartData());
 const overviewMonthlyChartData = computed(() => setOverviewMonthlyChartData());
 const overviewDailyRequestChartData = computed(() =>
-    setOverviewDailyRequestChartData()
+    setOverviewDailyRequestChartData(),
 );
 const overviewChartOptions = computed(() => setOverviewChartOptions());
 
@@ -249,7 +249,7 @@ const setOverviewChartOptions = ():
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--color-surface-900");
     const textColorSecondary = documentStyle.getPropertyValue(
-        "--color-surface-500"
+        "--color-surface-500",
     );
     const surfaceBorder = documentStyle.getPropertyValue("--color-surface-200");
     return {
