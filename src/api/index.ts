@@ -164,7 +164,9 @@ export async function getReservations(
             roomId,
             status,
             page,
-            startTime: startTime ? Math.floor(startTime.getTime() / 1000) : null,
+            startTime: startTime
+                ? Math.floor(startTime.getTime() / 1000)
+                : null,
             endTime: endTime ? Math.floor(endTime.getTime() / 1000) : null,
         },
     });
@@ -242,20 +244,41 @@ export async function postApproveReservation(
     return response.data;
 }
 
-export async function getAllReservations() {
-    const response = await axios.get<ApiResponse<Reservation[]>>(
-        "/reservation/all"
+export async function getAllReservations(
+    keyword: string | null = null,
+    roomId: number | null = null,
+    status: string | null = null,
+    page: number = 0,
+    startTime: Date | null = null,
+    endTime: Date | null = null
+) {
+    const response = await axios.get<ApiResponse<{reservations: Reservation[], total: number}>>(
+        "/reservation/all",
+        {
+            params: {
+                keyword: keyword == "" ? null : keyword,
+                roomId,
+                status,
+                page,
+                startTime: startTime
+                    ? Math.floor(startTime.getTime() / 1000)
+                    : null,
+                endTime: endTime ? Math.floor(endTime.getTime() / 1000) : null,
+            },
+        }
     );
     return response.data;
 }
 
 export function getExportReservations(
     startTime: number | null,
-    endTime: number | null
+    endTime: number | null,
+    mode: string = "by-room"
 ) {
-    const params: Record<string, number> = {};
-    params.startTime = startTime || -1;
-    params.endTime = endTime || -1;
+    const params: Record<string, any> = {};
+    if (startTime) params.startTime = startTime;
+    if (endTime) params.endTime = endTime;
+    params.mode = mode
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
     const stringParams: Record<string, string> = Object.fromEntries(
         Object.entries(params).map(([k, v]) => [k, String(v)])
@@ -353,12 +376,17 @@ export async function postEditClass(id: number, name: string, campus: number) {
     return response.data;
 }
 
-export async function postEditRoom(id: number, name: string, campus: number, enabled: boolean) {
+export async function postEditRoom(
+    id: number,
+    name: string,
+    campus: number,
+    enabled: boolean
+) {
     const response = await axios.post<ApiResponse>("/room/edit", {
         id,
         name,
         campus,
-        enabled
+        enabled,
     });
     return response.data;
 }

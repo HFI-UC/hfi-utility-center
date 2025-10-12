@@ -306,6 +306,15 @@ const onNewPolicySubmit = async (form: FormSubmitEvent) => {
         });
         return;
     }
+    if (form.values.startTime >= form.values.endTime) {
+        toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Start time must be before end time.",
+            life: 2000,
+        });
+        return;
+    }
     loading.value = true;
     const response = await postCreatePolicy(
         room.value,
@@ -350,20 +359,6 @@ const editPolicy = ref({} as RoomPolicy);
 const editPolicyInitialValues = computed(() => {
     return {
         days: editPolicy.value.days,
-        startTime: new Date(
-            0,
-            0,
-            0,
-            editPolicy.value.startTime[0],
-            editPolicy.value.startTime[1],
-        ),
-        endTime: new Date(
-            0,
-            0,
-            0,
-            editPolicy.value.endTime[0],
-            editPolicy.value.endTime[1],
-        ),
     };
 });
 const editPolicyVisible = ref(false);
@@ -374,6 +369,15 @@ const onEditPolicySubmit = async (form: FormSubmitEvent) => {
             severity: "error",
             summary: "Error",
             detail: "Please fill in all required fields.",
+            life: 2000,
+        });
+        return;
+    }
+    if (form.values.startTime >= form.values.endTime) {
+        toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Start time must be before end time.",
             life: 2000,
         });
         return;
@@ -1043,13 +1047,11 @@ const deleteApprover = async (id: number) => {
                     >{{ $form.days.error?.message }}</Message
                 >
                 <DatePicker
-                    showTime
                     timeOnly
                     name="startTime"
-                    :maxDate="$form.endTime?.value"
-                    updateModelType="date"
                     placeholder="Start Time"
                     :manualInput="false"
+                    fluid
                 ></DatePicker>
                 <Message
                     v-if="$form.startTime?.invalid"
@@ -1058,13 +1060,11 @@ const deleteApprover = async (id: number) => {
                     >{{ $form.startTime.error?.message }}</Message
                 >
                 <DatePicker
-                    showTime
                     timeOnly
                     name="endTime"
                     placeholder="End Time"
-                    updateModelType="date"
-                    :minDate="$form.startTime?.value"
                     :manualInput="false"
+                    fluid
                 ></DatePicker>
                 <Message
                     v-if="$form.endTime?.invalid"
@@ -1113,13 +1113,11 @@ const deleteApprover = async (id: number) => {
                     >{{ $form.days.error?.message }}</Message
                 >
                 <DatePicker
-                    showTime
                     timeOnly
                     name="startTime"
-                    :maxDate="$form.endTime?.value"
-                    updateModelType="date"
                     placeholder="Start Time"
                     :manualInput="false"
+                    fluid
                 ></DatePicker>
                 <Message
                     v-if="$form.startTime?.invalid"
@@ -1128,13 +1126,11 @@ const deleteApprover = async (id: number) => {
                     >{{ $form.startTime.error?.message }}</Message
                 >
                 <DatePicker
-                    showTime
                     timeOnly
                     name="endTime"
-                    updateModelType="date"
                     placeholder="End Time"
-                    :minDate="$form.startTime?.value"
                     :manualInput="false"
+                    fluid
                 ></DatePicker>
                 <Message
                     v-if="$form.endTime?.invalid"

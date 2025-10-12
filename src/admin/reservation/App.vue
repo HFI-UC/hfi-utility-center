@@ -5,33 +5,67 @@ import {
     getAllReservations,
     getExportReservations,
     getFutureReservations,
+    getRooms,
     postApproveReservation,
     postLogin,
 } from "../../api";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { Check, Download, SquareArrowOutUpRight, X } from "lucide-vue-next";
 import { useToast } from "primevue";
 import { type FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
-import { FilterMatchMode } from "@primevue/core/api";
 import z from "zod";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
 
-const { data: futureReservations, run: fetchFutureReservations } = useRequest(
-    getFutureReservations,
+const {
+    data: futureReservations,
+    run: fetchFutureReservations,
+    loading: futureReservationsLoading,
+} = useRequest(getFutureReservations);
+
+const searchKeyword = ref<string | null>(null);
+const searchTime = ref<Date[] | null>(null);
+const searchStatus = ref<{ id: string; name: string; severity: string } | null>(
+    null
+);
+const searchRoom = ref<number | null>(null);
+const statusOptions = [
+    { id: "pending", name: "Pending", severity: "info" },
+    { id: "approved", name: "Approved", severity: "success" },
+    { id: "rejected", name: "Rejected", severity: "danger" },
+];
+const pageOffset = ref(0);
+const page = computed(() => Math.floor(pageOffset.value / 20));
+
+const {
+    data: allReservations,
+    run: fetchAllReservations,
+    loading: allReservationsLoading,
+} = useRequest(
+    () =>
+        getAllReservations(
+            searchKeyword.value,
+            searchRoom.value,
+            searchStatus.value?.id,
+            page.value,
+            searchTime.value ? searchTime.value[0] : null,
+            searchTime.value ? searchTime.value[1] : null
+        ),
+    {
+        refreshDeps: [searchKeyword, searchTime, searchStatus, searchRoom, page],
+        debounceInterval: 300,
+    }
 );
 
-const { data: allReservations, run: fetchAllReservations, loading: allReservationsLoading } =
-    useRequest(getAllReservations);
-
+const { data: rooms } = useRequest(getRooms);
 const formatTime = (date: Date): string => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day} ${String(date.getHours()).padStart(
         2,
-        "0",
+        "0"
     )}:${String(date.getMinutes()).padStart(2, "0")}`;
 };
 
@@ -71,10 +105,6 @@ const approveReservation = async (id: number) => {
     }
 };
 
-const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
-
 const rejectReservation = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
@@ -89,7 +119,7 @@ const rejectReservation = async (form: FormSubmitEvent) => {
     const response = await postApproveReservation(
         rejectId.value,
         false,
-        form.values.reason,
+        form.values.reason
     );
     loading.value = false;
     if (response.success) {
@@ -121,8 +151,8 @@ const rejectResolver = ref(
             reason: z
                 .string({ error: "Reason is required." })
                 .min(1, { error: "Reason is required." }),
-        }),
-    ),
+        })
+    )
 );
 const rejectInitialValues = ref({ reason: null });
 
@@ -141,16 +171,22 @@ const reasons = ref([
 const exportVisible = ref(false);
 const exportResolver = ref(
     zodResolver(
-        z
-            .object({
-                option: z.number({ error: "Format is required." }),
-                time: z.array(z.date().nullable()).length(2),
-            })
-    ),
+        z.object({
+            option: z.number({ error: "Format is required." }),
+            time: z.array(z.date().nullable()).length(2).optional(),
+            mode: z.literal(["by-room", "single-sheet"])
+        })
+    )
 );
+
+const modeOptions = [
+    { label: "By room", code: "by-room" },
+    { label: "Single sheet", code: "single-sheet" },
+]
 const exportInitialValues = ref({
     option: null,
     time: [null, null],
+    mode: null,
 });
 
 const getToken = () => {
@@ -173,7 +209,7 @@ onMounted(async () => {
             });
             setTimeout(
                 () => (window.location.href = "/admin/reservation/"),
-                6500,
+                6500
             );
         }
     } else {
@@ -218,14 +254,24 @@ const exportReservations = async (form: FormSubmitEvent) => {
         startTime = form.values.time[0];
         endTime = form.values.time[1];
     }
-    if (startTime && endTime && allReservations?.value?.data) {
+    const _allReservations = await getAllReservations(
+        searchKeyword.value,
+        searchRoom.value,
+        searchStatus.value?.id,
+        0,
+        startTime,
+        endTime
+    );
+    if (startTime && endTime && _allReservations?.data) {
         const rangeStart = startTime.getTime();
         const rangeEnd = endTime.getTime();
-        const hasAny = allReservations.value.data.some((r: any) => {
-            const rs = new Date(r.startTime).getTime();
-            const re = new Date(r.endTime).getTime();
-            return rs <= rangeEnd && re >= rangeStart;
-        });
+        const hasAny = _allReservations.data.reservations.some(
+            (r: any) => {
+                const rs = new Date(r.startTime).getTime();
+                const re = new Date(r.endTime).getTime();
+                return rs <= rangeEnd && re >= rangeStart;
+            }
+        );
         if (!hasAny) {
             loading.value = false;
             toast.add({
@@ -240,8 +286,9 @@ const exportReservations = async (form: FormSubmitEvent) => {
     }
 
     getExportReservations(
-        startTime ? Math.floor(startTime.getTime() / 1000) : null,
-        endTime ? Math.floor(endTime.getTime() / 1000) : null,
+        startTime && form.values.option == 4 ? Math.floor(startTime.getTime() / 1000) : null,
+        endTime && form.values.option == 4 ? Math.floor(endTime.getTime() / 1000) : null,
+        form.values.mode
     );
     loading.value = false;
     exportVisible.value = false;
@@ -346,6 +393,20 @@ const exportOptions = [
                     size="small"
                     >{{ $form.time.error?.message }}</Message
                 >
+                <Select
+                    name="mode"
+                    fluid
+                    optionLabel="label"
+                    optionValue="code"
+                    placeholder="Select an export mode"
+                    :options="modeOptions"
+                ></Select>
+                <Message
+                    v-if="$form.mode?.invalid"
+                    severity="error"
+                    size="small"
+                    >{{ $form.mode.error?.message }}</Message
+                >
             </div>
             <div class="justify-end items-center flex gap-2 mt-4">
                 <Button
@@ -373,6 +434,7 @@ const exportOptions = [
                             a.status === 'pending' ? -1 : 1,
                         )
                     "
+                    :loading="futureReservationsLoading"
                     paginator
                     :rows="6"
                 >
@@ -493,8 +555,8 @@ const exportOptions = [
                                                     {{
                                                         formatTime(
                                                             new Date(
-                                                                item.startTime,
-                                                            ),
+                                                                item.startTime
+                                                            )
                                                         )
                                                     }}
                                                 </p>
@@ -509,8 +571,8 @@ const exportOptions = [
                                                     {{
                                                         formatTime(
                                                             new Date(
-                                                                item.endTime,
-                                                            ),
+                                                                item.endTime
+                                                            )
                                                         )
                                                     }}
                                                 </p>
@@ -581,35 +643,98 @@ const exportOptions = [
                 <DataTable
                     paginator
                     :rows="10"
-                    :value="allReservations?.data"
+                    :value="allReservations?.data.reservations"
                     :loading="allReservationsLoading"
+                    lazy
+                    :totalRecords="allReservations?.data.total"
                     class="text-nowrap"
-                    removableSort
-                    v-model:filters="filters"
+                    v-model:first="pageOffset"
                 >
                     <template #header>
-                        <div
-                            class="flex items-center justify-between flex-wrap gap-4"
-                        >
+                        <div class="flex flex-col gap-4">
                             <span class="font-bold text-lg"
                                 >All Reservations</span
                             >
-                            <div
-                                class="flex gap-2 flex-col w-full sm:w-auto sm:flex-row"
-                            >
+                            <div class="grid grid-cols-9 gap-2">
                                 <InputText
-                                    v-model="filters['global'].value"
-                                    placeholder="Keyword Search"
+                                    v-model="searchKeyword"
+                                    placeholder="Keyword"
                                     size="small"
-                                    class="sm:w-auto w-full"
-                                />
+                                    class="sm:col-span-3 md:col-span-2 col-span-9"
+                                    fluid
+                                ></InputText>
+                                <Select
+                                    showClear
+                                    v-model="searchRoom"
+                                    placeholder="Room"
+                                    optionLabel="name"
+                                    optionValue="id"
+                                    :options="rooms?.data"
+                                    size="small"
+                                    class="sm:col-span-3 md:col-span-2 col-span-9"
+                                    fluid
+                                >
+                                </Select>
+                                <Select
+                                    showClear
+                                    v-model="searchStatus"
+                                    placeholder="Status"
+                                    :options="statusOptions"
+                                    size="small"
+                                    class="sm:col-span-2 md:col-span-2 col-span-9"
+                                    fluid
+                                >
+                                    <template #value="slotProps">
+                                        <div v-if="slotProps.value">
+                                            <Tag
+                                                :value="slotProps.value.name"
+                                                :severity="
+                                                    slotProps.value.severity
+                                                "
+                                                class="h-5 !text-xs"
+                                            ></Tag>
+                                        </div>
+                                    </template>
+                                    <template #option="slotProps">
+                                        <div class="flex flex-col">
+                                            <Tag
+                                                :value="slotProps.option.name"
+                                                :severity="
+                                                    slotProps.option.severity
+                                                "
+                                                class="h-5 !text-xs"
+                                            ></Tag>
+                                        </div>
+                                    </template>
+                                </Select>
+                                <DatePicker
+                                    showClear
+                                    v-model="searchTime"
+                                    selectionMode="range"
+                                    placeholder="Time Range"
+                                    size="small"
+                                    class="md:col-span-3 col-span-9"
+                                    updateModelType="date"
+                                    fluid
+                                    showTime
+                                    dateFormat="yy/mm/dd"
+                                >
+                                    <template #footer>
+                                        <span
+                                            class="text-sm flex justify-center mt-4"
+                                            >*Select two time</span
+                                        >
+                                    </template>
+                                </DatePicker>
                                 <Button
                                     @click="exportVisible = true"
                                     size="small"
                                     :disabled="
-                                        allReservations?.data.length === 0
+                                        allReservations?.data.reservations
+                                            .length === 0
                                     "
-                                    class="sm:w-auto w-full"
+                                    class="md:col-span-3 lg:col-span-2 xl:col-span-1 col-span-9"
+                                    fluid
                                     ><Download></Download>Export (.xlsx)</Button
                                 >
                             </div>
@@ -618,18 +743,10 @@ const exportOptions = [
                     <template #empty>
                         <p class="py-1">No available reservations.</p>
                     </template>
-                    <Column field="id" header="ID" sortable></Column>
-                    <Column
-                        field="studentName"
-                        header="Student Name"
-                        sortable
-                    ></Column>
-                    <Column
-                        field="studentId"
-                        header="Student ID"
-                        sortable
-                    ></Column>
-                    <Column field="email" header="E-mail" sortable>
+                    <Column field="id" header="ID"></Column>
+                    <Column field="studentName" header="Student Name"></Column>
+                    <Column field="studentId" header="Student ID"></Column>
+                    <Column field="email" header="E-mail">
                         <template #body="slotProps">
                             <a
                                 :href="`mailto:${slotProps.data.email}`"
@@ -641,35 +758,31 @@ const exportOptions = [
                             ></a>
                         </template>
                     </Column>
-                    <Column field="className" header="Class" sortable></Column>
-                    <Column field="roomName" header="Room" sortable></Column>
-                    <Column field="startTime" header="Start Time" sortable>
+                    <Column field="className" header="Class"></Column>
+                    <Column field="roomName" header="Room"></Column>
+                    <Column field="startTime" header="Start Time">
                         <template #body="slotProps">
                             {{ formatTime(new Date(slotProps.data.startTime)) }}
                         </template>
                     </Column>
-                    <Column field="endTime" header="End Time" sortable>
+                    <Column field="endTime" header="End Time">
                         <template #body="slotProps">
                             {{ formatTime(new Date(slotProps.data.endTime)) }}
                         </template>
                     </Column>
-                    <Column field="reason" header="Reason" sortable>
+                    <Column field="reason" header="Reason">
                         <template #body="slotProps">
                             <div class="whitespace-normal w-[30rem]">
                                 {{ slotProps.data.reason }}
                             </div>
                         </template>
                     </Column>
-                    <Column field="createdAt" header="Creation Time" sortable>
+                    <Column field="createdAt" header="Creation Time">
                         <template #body="slotProps">
                             {{ formatTime(new Date(slotProps.data.createdAt)) }}
                         </template>
                     </Column>
-                    <Column
-                        field="latestExecutor"
-                        header="Latest Executor"
-                        sortable
-                    >
+                    <Column field="latestExecutor" header="Latest Executor">
                         <template #body="slotProps">
                             <a
                                 v-if="slotProps.data.latestExecutor"
@@ -683,7 +796,7 @@ const exportOptions = [
                             <span v-else> - </span>
                         </template>
                     </Column>
-                    <Column field="status" header="Status" sortable>
+                    <Column field="status" header="Status">
                         <template #body="slotProps">
                             <Tag
                                 :value="statusMapping[slotProps.data.status]"

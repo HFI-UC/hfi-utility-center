@@ -52,7 +52,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
         setTimeout(
             () =>
                 (window.location.href =
-                    getRedirect() != "" ? getRedirect() : "/admin/dashboard/"),
+                    getRedirect() != "" ? getRedirect() : "/"),
             2500,
         );
     } else {

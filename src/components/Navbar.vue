@@ -294,16 +294,6 @@ onMounted(async () => {
                 >
                     <MenuIcon></MenuIcon>
                 </Button>
-                <Button
-                    @click="toggleMenu"
-                    aria-label="Menu"
-                    text
-                    aria-haspopup="true"
-                    aria-controls="menu"
-                    severity="contrast"
-                >
-                    <MenuIcon></MenuIcon>
-                </Button>
                 <Menu
                     ref="menu"
                     id="menu"
