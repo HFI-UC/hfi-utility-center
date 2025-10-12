@@ -1296,8 +1296,8 @@ const deleteApprover = async (id: number) => {
     </Dialog>
     <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
         <h1 class="text-3xl font-bold my-4">Facility Management</h1>
-        <div class="grid gap-4 grid-cols-6 items-start">
-            <Card class="md:col-span-6 col-span-6">
+        <div class="flex flex-col gap-4">
+            <Card>
                 <template #content>
                     <DataTable :value="rooms?.data" class="text-nowrap">
                         <template #header>
@@ -1402,7 +1402,7 @@ const deleteApprover = async (id: number) => {
                     </DataTable>
                 </template>
             </Card>
-            <Card class="md:col-span-3 col-span-6">
+            <Card>
                 <template #content>
                     <DataTable :value="campuses?.data" class="text-nowrap">
                         <template #header>
@@ -1455,7 +1455,7 @@ const deleteApprover = async (id: number) => {
                     </DataTable>
                 </template>
             </Card>
-            <Card class="md:col-span-3 col-span-6">
+            <Card>
                 <template #content>
                     <DataTable :value="classes?.data" class="text-nowrap">
                         <template #header>
