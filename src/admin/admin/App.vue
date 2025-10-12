@@ -17,7 +17,7 @@ import type { FormSubmitEvent } from "@primevue/forms";
 import { useToast } from "primevue";
 import { computed, ref } from "vue";
 
-const { data: admins, run: fetchAdmins } = useRequest(getAdmins);
+const { data: admins, run: fetchAdmins, loading: adminsLoading } = useRequest(getAdmins);
 
 const formatTime = (date: Date): string => {
     const year = date.getFullYear();
@@ -361,7 +361,7 @@ const deleteAdmin = async (id: number) => {
         <h1 class="font-bold text-3xl my-4">Admin Management</h1>
         <Card>
             <template #content>
-                <DataTable :value="admins?.data" class="text-nowrap">
+                <DataTable :value="admins?.data" class="text-nowrap" :loading="adminsLoading">
                     <template #header>
                         <div class="flex items-center justify-between">
                             <span class="text-lg font-bold">Admins</span>
