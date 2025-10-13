@@ -2,7 +2,7 @@
 import { useRequest } from "vue-request";
 import AdminLogin from "../../components/AdminLogin.vue";
 import {
-    getAllReservations,
+    getReservations,
     getExportReservations,
     getFutureReservations,
     getRooms,
@@ -21,7 +21,6 @@ import LoadingMask from "../../components/LoadingMask.vue";
 const {
     data: futureReservations,
     run: fetchFutureReservations,
-    loading: futureReservationsLoading,
 } = useRequest(getFutureReservations);
 
 const searchKeyword = ref<string | null>(null);
@@ -44,7 +43,7 @@ const {
     loading: allReservationsLoading,
 } = useRequest(
     () =>
-        getAllReservations(
+        getReservations(
             searchKeyword.value,
             searchRoom.value,
             searchStatus.value?.id,
@@ -260,7 +259,7 @@ const exportReservations = async (form: FormSubmitEvent) => {
         startTime = form.values.time[0];
         endTime = form.values.time[1];
     }
-    const _allReservations = await getAllReservations(
+    const _allReservations = await getReservations(
         searchKeyword.value,
         searchRoom.value,
         searchStatus.value?.id,
@@ -442,7 +441,6 @@ const exportOptions = [
                             a.status === 'pending' ? -1 : 1,
                         )
                     "
-                    :loading="futureReservationsLoading"
                     paginator
                     :rows="6"
                 >

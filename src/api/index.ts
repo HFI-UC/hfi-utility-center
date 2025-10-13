@@ -76,6 +76,7 @@ export interface RoomApprover {
     id: number;
     roomId: number;
     adminId: number;
+    notificationsEnabled: boolean;
 }
 
 export interface Admin {
@@ -158,7 +159,7 @@ export async function getReservations(
     startTime: Date | null = null,
     endTime: Date | null = null,
 ) {
-    const response = await axios.get<ApiResponse>("/reservation/get", {
+    const response = await axios.get<ApiResponse<{ reservations: Reservation[]; total: number }>>("/reservation/get", {
         params: {
             keyword: keyword == "" ? null : keyword,
             roomId,
@@ -240,31 +241,6 @@ export async function postApproveReservation(
         id,
         reason,
         approved,
-    });
-    return response.data;
-}
-
-export async function getAllReservations(
-    keyword: string | null = null,
-    roomId: number | null = null,
-    status: string | null = null,
-    page: number = 0,
-    startTime: Date | null = null,
-    endTime: Date | null = null,
-) {
-    const response = await axios.get<
-        ApiResponse<{ reservations: Reservation[]; total: number }>
-    >("/reservation/all", {
-        params: {
-            keyword: keyword == "" ? null : keyword,
-            roomId,
-            status,
-            page,
-            startTime: startTime
-                ? Math.floor(startTime.getTime() / 1000)
-                : null,
-            endTime: endTime ? Math.floor(endTime.getTime() / 1000) : null,
-        },
     });
     return response.data;
 }
@@ -491,3 +467,11 @@ export async function getExportWeeklyReservationsAnalytics(
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
     window.location.href = `${base}/analytics/weekly/export?type=${type}&turnstileToken=${turnstileToken}`;
 }
+
+export async function postToggleApproverNotificationsEnabled(id: number) {
+    const response = await axios.post<ApiResponse>(
+        "/approver/toggle-notification",
+        { id },
+    );
+    return response.data;
+} 

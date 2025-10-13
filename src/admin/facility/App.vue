@@ -19,6 +19,7 @@ import {
     postEditClass,
     postEditPolicy,
     postEditRoom,
+    postToggleApproverNotificationsEnabled,
     postTogglePolicy,
     type Admin,
     type Campus,
@@ -27,7 +28,7 @@ import {
     type RoomApprover,
     type RoomPolicy,
 } from "../../api";
-import { PenLine, Plus, Trash2, Pause, Play } from "lucide-vue-next";
+import { PenLine, Plus, Trash2, Pause, Play, BellOff, Bell } from "lucide-vue-next";
 import { computed, ref } from "vue";
 import { useToast } from "primevue";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
@@ -651,6 +652,29 @@ const onNewApproverSubmit = async (form: FormSubmitEvent) => {
     }
 };
 
+const toggleApproverNotificationsEnabled = async (id: number) => {
+    loading.value = true;
+    const response = await postToggleApproverNotificationsEnabled(id);
+    loading.value = false;
+    if (response.success) {
+        toast.add({
+            severity: "success",
+            summary: "Success",
+            detail: response.message,
+            life: 2000,
+        });
+        fetchRooms();
+    } else {
+        toast.add({
+            severity: "error",
+            summary: "Error",
+            detail:
+                response.message || "Failed to toggle approver notifications.",
+            life: 2000,
+        });
+    }
+}
+
 const deleteApprover = async (id: number) => {
     loading.value = true;
     const response = await postDeleteApprover(id);
@@ -1016,6 +1040,10 @@ const deleteApprover = async (id: number) => {
             <Column header="Actions">
                 <template #body="slotProps">
                     <div class="flex gap-2">
+                        <Button @click="toggleApproverNotificationsEnabled(slotProps.data.id)" size="small" :severity="slotProps.data.notificationsEnabled ? 'warn' : 'success'">
+                            <BellOff v-if="!slotProps.data.notificationsEnabled"></BellOff>
+                            <Bell v-else></Bell>
+                        </Button>
                         <Button
                             @click="deleteApprover(slotProps.data.id)"
                             size="small"
