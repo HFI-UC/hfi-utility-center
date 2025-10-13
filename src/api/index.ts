@@ -1,10 +1,7 @@
 import axios, { isAxiosError } from "axios";
 import COS, { Credentials } from "cos-js-sdk-v5";
 
-axios.defaults.baseURL =
-    process.env.VERCEL_ENV == "production"
-        ? "https://api.hfiuc.org"
-        : "https://preview-api.hfiuc.org/";
+axios.defaults.baseURL = "https://api.old.hfiuc.org/"
 
 export interface ApplicationInfo {
     selectedClass: string;
