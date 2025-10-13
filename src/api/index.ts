@@ -1,607 +1,477 @@
-import axios, { isAxiosError } from "axios";
-import COS, { Credentials } from "cos-js-sdk-v5";
+import axios from "axios";
 
-axios.defaults.baseURL = "https://api.old.hfiuc.org/"
+axios.defaults.baseURL = process.env.BACKEND_URL;
+axios.defaults.withCredentials = true;
+axios.defaults.validateStatus = () => true;
 
-export interface ApplicationInfo {
-    selectedClass: string;
+export interface ReservationRequestInfo {
+    classId: number;
     studentName: string;
-    selectedRoom: number | null;
+    room: number;
     studentId: string;
     email: string;
-    date: Date | null;
+    date: Date;
     startTime: string;
     endTime: string;
     reason: string;
-    selectedCampus: string;
+    campus: string;
     isAgreed: boolean;
+    turnstileToken: string;
 }
 
-export interface MaintenanceInfo {
-    id?: number;
+export interface Reservation {
     studentName: string;
-    subject: string;
-    detail: string;
-    location: string;
+    studentId?: string;
     email: string;
-    campus: string;
-    filePath: string | null;
-    addTime?: number;
-    status?: number;
-}
-
-export interface RoomPolicyInfo {
-    id?: number;
-    unavailable?: boolean;
-    classroom: string;
-    days: string;
-    start_time: string;
-    end_time: string;
-}
-
-export interface Clue {
-    id?: number;
-    campus: string;
-    detail: string;
-    location: string;
-    filePath: string | null;
-    contact: string;
+    startTime: string;
+    endTime: string;
+    className: string;
+    roomName: string;
+    reason: string;
     createdAt?: string;
+    campusName?: string;
+    latestExecutor?: string;
+    status?: "pending" | "approved" | "rejected";
 }
 
-export interface LostAndFoundInfo {
-    id?: number;
-    studentName: string;
-    detail: string;
-    location: string;
-    email: string;
-    campus: string;
-    filePath: string | null;
-    password: string;
-    type: string;
-    eventTime: string;
-    createdAt?: string;
-    lastUpdated?: string;
-    reward?: string;
-    altContact?: string;
-    clues?: Clue[];
-    isFound?: number;
+export interface RoomPolicy {
+    id: number;
+    roomId: number;
+    days: number[];
+    startTime: number[];
+    endTime: number[];
+    enabled: boolean;
 }
 
-export interface ReservationInfo {
+export interface Room {
+    id: number;
+    name: string;
+    campus: number;
+    policies: RoomPolicy[];
+    approvers: RoomApprover[];
+    enabled: boolean;
+}
+
+export interface Class {
+    id: number;
+    name: string;
+    campus: number;
+    createdAt: string;
+}
+
+export interface Campus {
+    id: number;
+    name: string;
+    createdAt: string;
+    isPrivileged: boolean;
+}
+
+export interface ApiResponse<T = any> {
+    data: T;
+    message: string | null;
     success: boolean;
-    data: {
-        id?: number;
-        name: string;
-        email: string;
-        time: string;
-        reason: string;
-        room: number;
-        sid?: number;
-        addTime?: string;
-        operator?: string;
-        auth: string;
-    }[];
 }
 
-export async function fetchPolicy() {
-    const res = await axios.get<{ policy: RoomPolicyInfo[] }>(
-        "/api/fetchPolicy.php",
-    );
-    return res.data;
+export interface RoomApprover {
+    id: number;
+    roomId: number;
+    adminId: number;
+    notificationsEnabled: boolean;
 }
 
-export async function postReservation({
-    query = undefined,
-    room = undefined,
-    token = undefined,
-    time = undefined,
-}: {
-    query?: string;
-    room?: string;
-    token?: string;
-    time?: Date;
-}) {
-    const data = new FormData();
-    if (query) {
-        data.set("query", query);
-    }
-    if (time) {
-        data.set("time", time.getTime().toString());
-    }
-    if (room) {
-        data.set("room", room);
-    }
-    if (token) {
-        data.set("token", token);
-        const res = await axios.post<ReservationInfo>(
-            "/api/adminSearch.php",
-            data,
-        );
-        return res.data;
-    }
-    const res = await axios.post<ReservationInfo>("/api/inquiry.php", data);
-    return res.data;
+export interface Admin {
+    id: number;
+    email: string;
+    name: string;
 }
 
-export async function postApplication(application: ApplicationInfo) {
-    const formatDate = (date: Date): string => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
+export interface OverviewAnalytics {
+    today: {
+        requests: number;
+        reservations: number;
+        reservationCreations: number;
+        approvals: number;
+        rejections: number;
     };
-    const startTime = new Date(
-        `${formatDate(application.date as Date)}T${application.startTime}`,
-    );
-    const endTime = new Date(
-        `${formatDate(application.date as Date)}T${application.endTime}`,
-    );
-
-    const data = new FormData();
-    data.append("room", application.selectedRoom?.toString() as string);
-    data.append("email", application.email);
-    data.append("time", `${startTime.getTime()}-${endTime.getTime()}`);
-    data.append(
-        "name",
-        `${application.studentName} / ${application.selectedClass}`,
-    );
-    data.append("reason", application.reason);
-    data.append("sid", application.studentId);
-    try {
-        const res = await axios.post<{ success: boolean; message: string }>(
-            "/api/addres.php",
-            data,
-        );
-        return res.data;
-    } catch (err) {
-        if (axios.isAxiosError(err) && err.response) {
-            return err.response.data;
-        }
-    }
+    weekly: {
+        reservations: number[];
+        reservationCreations: number[];
+        approvals: number[];
+        rejections: number[];
+    };
+    monthly: {
+        reservations: number[];
+        reservationCreations: number[];
+        approvals: number[];
+        rejections: number[];
+    };
+    daily: {
+        requests: number[];
+        reservations: number[];
+        reservationCreations: number[];
+        approvals: number[];
+        rejections: number[];
+    };
+    cpu: number;
+    memory: number;
+    errorLogs: number;
 }
 
-export async function postLogin(user: string, password: string, token: string) {
-    const data = new FormData();
-    data.set("username", user);
-    data.set("password", password);
-    data.set("cf_token", token);
-    try {
-        const res = await axios.post<{
-            success: boolean;
-            message: string;
-            token?: string;
-        }>("/api/login.php", data);
-        return res.data;
-    } catch (err) {
-        if (axios.isAxiosError(err) && err.response) {
-            return err.response.data;
-        }
-    }
+export interface WeeklyAnalytics {
+    rooms: {
+        roomName: string;
+        reservations: number;
+        reservationCreations: number;
+    }[];
+    totalReservations: number;
+    totalReservationCreations: number;
+    totalApprovals: number;
+    totalRejections: number;
+    reasons: { word: string; count: number }[];
+    hourlyReservations: number[];
+    dailyReservations: number[];
+    dailyReservationCreations: number[];
 }
 
-export async function verifyAdmin(token: string): Promise<boolean> {
-    const data = new FormData();
-    data.set("token", token);
-    try {
-        const res = await axios.post<{ success: boolean }>(
-            "/api/verify_admin.php",
-            data,
-        );
-        return res.data.success;
-    } catch (err) {
-        if (axios.isAxiosError(err) && err.response) {
-            return err.response.data.success;
-        }
-        return false;
-    }
+export async function getCampuses() {
+    const response = await axios.get<ApiResponse>("/campus/list");
+    return response.data;
 }
 
-export async function getAction(token: string, action: string) {
-    const data = new FormData();
-    data.set("token", token);
-    data.set("action", action);
-    try {
-        const res = await axios.post<{
-            success: boolean;
-            data?: {
-                addTime: string;
-                email: string;
-                reason: string;
-                room: number;
-            };
-            message?: string;
-        }>("/api/approval_action.php", data);
-        return res.data;
-    } catch (err) {
-        if (axios.isAxiosError(err) && err.response) {
-            return err.response.data;
-        }
-    }
-}
-
-export async function postAdminReservation(token: string) {
-    if (token == "") return { data: [], success: false } as ReservationInfo;
-    const data = new FormData();
-    data.set("token", token);
-    const res = await axios.post<ReservationInfo>("/api/getrequests.php", data);
-    return res.data;
-}
-
-export async function postReservationAccept(token: string, id: number) {
-    const data = new FormData();
-    data.set("token", token);
-    data.set("Id", id.toString());
-    try {
-        const res = await axios.post<{ success: boolean; message: string }>(
-            "/api/accept.php",
-            data,
-        );
-        return res.data;
-    } catch (err) {
-        if (isAxiosError(err) && err.response) {
-            return err.response.data;
-        }
-    }
-}
-
-export async function postReservationReject(
-    token: string,
-    id: number,
-    reason: string,
-) {
-    const data = new FormData();
-    data.set("token", token);
-    data.set("Id", id.toString());
-    data.set("Reason", reason);
-    try {
-        const res = await axios.post<{ success: boolean; message: string }>(
-            "/api/reject.php",
-            data,
-        );
-        return res.data;
-    } catch (err) {
-        if (isAxiosError(err) && err.response) {
-            return err.response.data;
-        }
-    }
-}
-
-export async function postPolicy(token: string) {
-    if (token == "") return { success: false, policy: [] as RoomPolicyInfo[] };
-    const data = new FormData();
-    data.set("token", token);
-    const res = await axios.post<{
+export async function getRooms() {
+    const response = await axios.get<{
         success: boolean;
-        policy: RoomPolicyInfo[];
-    }>("/api/getDisabledClassroomDetails.php", data);
-    return res.data;
+        data: Room[];
+    }>("/room/list");
+    return response.data;
 }
 
-export async function postPolicyResume(token: string, id: number) {
-    const data = new FormData();
-    data.set("token", token);
-    data.set("id", id.toString());
-    const res = await axios.post<{ success: boolean }>(
-        "/api/resumeDisabledClassroom.php",
-        data,
-    );
-    return res.data;
+export async function getClasses() {
+    const response = await axios.get<ApiResponse<Class[]>>("/class/list");
+    return response.data;
 }
 
-export async function postPolicyPause(token: string, id: number) {
-    const data = new FormData();
-    data.set("token", token);
-    data.set("id", id.toString());
-    const res = await axios.post<{ success: boolean }>(
-        "/api/pauseDisableClassroom.php",
-        data,
-    );
-    return res.data;
-}
-
-export async function postPolicyDelete(token: string, id: number) {
-    const data = new FormData();
-    data.set("token", token);
-    data.set("id", id.toString());
-    const res = await axios.post<{ success: boolean }>(
-        "/api/enableClassroom.php",
-        data,
-    );
-    return res.data;
-}
-
-export async function postPolicyAdd(
-    token: string,
-    room: number,
-    days: number[],
-    start_time: Date,
-    end_time: Date,
+export async function getReservations(
+    keyword: string | null = null,
+    roomId: number | null = null,
+    status: string | null = null,
+    page: number = 0,
+    startTime: Date | null = null,
+    endTime: Date | null = null,
 ) {
-    const startTime = `${start_time.getHours().toString().padStart(2, "0")}:${start_time.getMinutes().toString().padStart(2, "0")}:00`;
-    const endTime = `${end_time.getHours()}:${end_time.getMinutes()}:00`;
-    const data = new FormData();
-    data.set("token", token);
-    data.set("classroom", room.toString());
-    days.some((item) => {
-        data.append("days[]", item.toString());
-    });
-    data.set("start_time", startTime);
-    data.set("end_time", endTime);
-    const res = await axios.post<{ success: boolean }>(
-        "/api/submit_classroom.php",
-        data,
-    );
-    return res.data;
-}
-
-export async function uploadCOS(
-    file: File,
-): Promise<{ success: boolean; message: string; path: string }> {
-    const data = new FormData();
-    data.append("file-name", file.name);
-    data.set("cosKey", "/"); // nothing to do here but to make the backend server work properly.
-    const { SessionToken: SecurityToken, Key: Key, ...rest } = (
-        await axios.post<{
-            credentials: { SessionToken: string, Key: string } & Credentials;
-        }>("/api/keygen.php", data)
-    ).data.credentials;
-    const cos = new COS({
-        getAuthorization: async (_, callback) => {
-            callback({ SecurityToken, ...rest });
+    const response = await axios.get<ApiResponse<{ reservations: Reservation[]; total: number }>>("/reservation/get", {
+        params: {
+            keyword: keyword == "" ? null : keyword,
+            roomId,
+            status,
+            page,
+            startTime: startTime
+                ? Math.floor(startTime.getTime() / 1000)
+                : null,
+            endTime: endTime ? Math.floor(endTime.getTime() / 1000) : null,
         },
     });
-    return new Promise(async (resolve) => {
-        cos.uploadFile(
-            {
-                Bucket: "repair-1304562386",
-                Region: "ap-guangzhou",
-                Key: Key,
-                Body: await file.arrayBuffer(),
-                ContentType: file.type
-            },
-            (err, data) => {
-                if (err) {
-                    resolve({
-                        success: false,
-                        message: err.message,
-                        path: Key
-                    });
-                } else {
-                    resolve({
-                        success: true,
-                        message: JSON.stringify(data),
-                        path: Key
-                    });
-                }
-            },
-        );
+    return response.data;
+}
+
+function formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
+export async function postCreateReservation(
+    reservation: ReservationRequestInfo,
+) {
+    const data = {
+        classId: reservation.classId,
+        studentName: reservation.studentName,
+        room: reservation.room,
+        studentId: reservation.studentId,
+        email: reservation.email,
+        startTime:
+            new Date(
+                `${formatDate(reservation.date)}T${reservation.startTime}`,
+            ).getTime() / 1000,
+        endTime:
+            new Date(
+                `${formatDate(reservation.date)}T${reservation.endTime}`,
+            ).getTime() / 1000,
+        reason: reservation.reason,
+        turnstileToken: reservation.turnstileToken,
+    };
+    const response = await axios.post<ApiResponse>("/reservation/create", data);
+    return response.data;
+}
+
+export async function postLogin(
+    email: string | null,
+    password: string | null,
+    token: string | null,
+    turnstileToken: string | null,
+) {
+    const response = await axios.post<ApiResponse>("/admin/login", {
+        email,
+        password,
+        token,
+        turnstileToken,
     });
+    return response.data;
 }
 
-export async function getCOS(filePath: string) {
-    const data = new FormData();
-    data.set("file_key", filePath);
-    const res = await axios.post<string>("/api/cos_preview_url_gen.php", data);
-    return res.data;
+export async function getCheckLogin() {
+    const response = await axios.get<ApiResponse>("/admin/check-login");
+    return response.data;
 }
 
-export async function postMaintenance(
-    maintenance: MaintenanceInfo,
-): Promise<{ success: boolean; message: string }> {
-    const data = new FormData();
-    data.set("studentName", maintenance.studentName);
-    data.set("subject", maintenance.subject);
-    data.set("detail", maintenance.detail);
-    data.set("campus", maintenance.campus);
-    data.set("filePath", maintenance.filePath as string);
-    data.set("location", maintenance.location);
-    data.set("email", maintenance.email);
-    try {
-        const res = await axios.post<{ success: boolean; message: string }>(
-            "/api/submit_repair.php",
-            data,
-        );
-        return res.data;
-    } catch (err) {
-        if (isAxiosError(err) && err.response) {
-            return err.response.data as { success: boolean; message: string };
-        } else {
-            return {
-                success: false,
-                message: "Error.",
-            };
-        }
-    }
-}
-function delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export async function getMaintenance(token: string) {
-    const res =
-        token == ""
-            ? await axios.get<{ success: boolean; data: MaintenanceInfo[] }>(
-                  "/api/inquiry_repair.php",
-              )
-            : await axios.post<{ success: boolean; data: MaintenanceInfo[] }>(
-                  "/api/get_repair.php",
-                  new URLSearchParams({ token }),
-              );
-    const { data } = res;
-    data.data = await Promise.all(
-        data.data.map(async (item, index) => {
-            await delay(index * 100);
-            return {
-                ...item,
-                filePath: await getCOS(item.filePath as string),
-            };
-        }),
+export async function getFutureReservations() {
+    const response = await axios.get<ApiResponse<Reservation[]>>(
+        "/reservation/future",
     );
-    return data;
+    return response.data;
 }
 
-export async function postMaintenanceAction(
-    token: string,
+export async function postApproveReservation(
     id: number,
-    action: number,
+    approved: boolean,
+    reason: string | null = null,
 ) {
-    const data = new FormData();
-    data.set("token", token);
-    data.set("id", id.toString());
-    data.set("action", action.toString());
-    const res = await axios.post<{ success: boolean; message: string }>(
-        "/api/process_repair.php",
-        data,
-    );
-    return res.data;
+    const response = await axios.post<ApiResponse>(`/reservation/approval`, {
+        id,
+        reason,
+        approved,
+    });
+    return response.data;
 }
 
-export async function getHitokoto() {
-    const query = new URLSearchParams("c=a&c=b&c=c&c=f&c=h&c=j&c=l");
-    const res = await axios.get<{
-        hitokoto: string;
-        from_who: string;
-        from: string;
-    }>("https://v1.hitokoto.cn", { params: query });
-    return res.data;
-}
-
-export async function postLostAndFound(lostnfound: LostAndFoundInfo) {
-    const data = new FormData();
-    data.set("type", lostnfound.type);
-    data.set("email", lostnfound.email);
-    data.set("student_name", lostnfound.studentName);
-    data.set("detail", lostnfound.detail);
-    data.set("file_path", lostnfound.filePath as string);
-    data.set("location", lostnfound.location);
-    data.set("password", lostnfound.password);
-    data.set("event_time", lostnfound.eventTime);
-    data.set("campus", lostnfound.campus);
-    if (lostnfound.altContact) data.set("alt_contact", lostnfound.altContact);
-    if (lostnfound.reward) data.set("reward", lostnfound.reward);
-    try {
-        const res = await axios.post<{ success: boolean; message: string }>(
-            "/api/submit_lnf.php",
-            data,
-        );
-        return res.data;
-    } catch (err) {
-        if (isAxiosError(err) && err.response) {
-            return err.response.data as { success: boolean; message: string };
-        } else {
-            return {
-                success: false,
-                message: "Error.",
-            };
-        }
-    }
-}
-
-export async function getLostAndFound(
-    page: number,
-    query: string,
-    token: string,
-    clue?: boolean,
+export function getExportReservations(
+    startTime: number | null,
+    endTime: number | null,
+    mode: string = "by-room",
 ) {
-    const params = new URLSearchParams();
-    params.set("page", page.toString());
-    if (token !== "") params.set("token", token);
-    if (clue) params.set("include_clues", "true");
-    if (query !== "") params.set("query", query);
-    const { data } = await axios.get<{
-        success: boolean;
-        data: LostAndFoundInfo[];
-        totalPages: number;
-    }>("/api/fetch_lnf.php", { params: params });
-    data.data = await Promise.all(
-        data.data.map(async (item, index) => {
-            await delay(index * 100);
-            return {
-                ...item,
-                filePath: await getCOS(item.filePath as string),
-            };
-        }),
+    const params: Record<string, any> = {};
+    if (startTime) params.startTime = startTime;
+    if (endTime) params.endTime = endTime;
+    params.mode = mode;
+    const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
+    const stringParams: Record<string, string> = Object.fromEntries(
+        Object.entries(params).map(([k, v]) => [k, String(v)]),
     );
-    return data;
+    const qs = new URLSearchParams(stringParams).toString();
+    const downloadUrl = `${base}/reservation/export${qs ? `?${qs}` : ""}`;
+    window.location.href = downloadUrl;
+    return;
 }
 
-export async function postClue(clue: Clue, id: number) {
-    const data = new FormData();
-    data.set("detail", clue.detail);
-    data.set("filePath", clue.filePath as string);
-    data.set("location", clue.location);
-    data.set("campus", clue.campus);
-    data.set("contact", clue.contact);
-    data.set("lost_info_id", id.toString());
-    try {
-        const res = await axios.post<{ success: boolean; message: string }>(
-            "/api/submit_clue.php",
-            data,
-        );
-        return res.data;
-    } catch (err) {
-        if (isAxiosError(err) && err.response) {
-            return err.response.data as { success: boolean; message: string };
-        } else {
-            return {
-                success: false,
-                message: "Error.",
-            };
-        }
-    }
+export async function postDeleteRoom(id: number) {
+    const response = await axios.post<ApiResponse>("/room/delete", { id });
+    return response.data;
 }
 
-export async function postLostAndFoundAction(
+export async function postDeleteCampus(id: number) {
+    const response = await axios.post<ApiResponse>("/campus/delete", { id });
+    return response.data;
+}
+
+export async function postDeleteClass(id: number) {
+    const response = await axios.post<ApiResponse>("/class/delete", { id });
+    return response.data;
+}
+
+export async function postCreateRoom(name: string, campus: number) {
+    const response = await axios.post<ApiResponse>("/room/create", {
+        name,
+        campus,
+    });
+    return response.data;
+}
+
+export async function postCreateCampus(name: string) {
+    const response = await axios.post<ApiResponse>("/campus/create", {
+        name,
+    });
+    return response.data;
+}
+
+export async function postCreateClass(name: string, campus: number) {
+    const response = await axios.post<ApiResponse>("/class/create", {
+        name,
+        campus,
+    });
+    return response.data;
+}
+
+export async function postCreatePolicy(
+    room: number,
+    startTime: number[],
+    endTime: number[],
+    days: number[],
+) {
+    const response = await axios.post<ApiResponse>("/policy/create", {
+        room,
+        startTime,
+        endTime,
+        days,
+    });
+    return response.data;
+}
+
+export async function postEditPolicy(
     id: number,
-    action: number,
+    startTime: number[],
+    endTime: number[],
+    days: number[],
+) {
+    const response = await axios.post<ApiResponse>("/policy/edit", {
+        id,
+        startTime,
+        endTime,
+        days,
+    });
+    return response.data;
+}
+
+export async function postDeletePolicy(id: number) {
+    const response = await axios.post<ApiResponse>("/policy/delete", { id });
+    return response.data;
+}
+
+export async function postTogglePolicy(id: number) {
+    const response = await axios.post<ApiResponse>("/policy/toggle", { id });
+    return response.data;
+}
+
+export async function postEditClass(id: number, name: string, campus: number) {
+    const response = await axios.post<ApiResponse>("/class/edit", {
+        id,
+        name,
+        campus,
+    });
+    return response.data;
+}
+
+export async function postEditRoom(
+    id: number,
+    name: string,
+    campus: number,
+    enabled: boolean,
+) {
+    const response = await axios.post<ApiResponse>("/room/edit", {
+        id,
+        name,
+        campus,
+        enabled,
+    });
+    return response.data;
+}
+
+export async function postEditCampus(id: number, name: string) {
+    const response = await axios.post<ApiResponse>("/campus/edit", {
+        id,
+        name,
+    });
+    return response.data;
+}
+
+export async function getLogOut() {
+    const response = await axios.get<ApiResponse>("/admin/logout");
+    return response.data;
+}
+
+export async function getAdmins() {
+    const response = await axios.get<ApiResponse & { data: Admin[] }>(
+        "/admin/list",
+    );
+    return response.data;
+}
+
+export async function postCreateApprover(room: number, admin: number) {
+    const response = await axios.post<ApiResponse>("/approver/create", {
+        room,
+        admin,
+    });
+    return response.data;
+}
+
+export async function postDeleteApprover(id: number) {
+    const response = await axios.post<ApiResponse>("/approver/delete", {
+        id,
+    });
+    return response.data;
+}
+
+export async function postCreateAdmin(
+    name: string,
+    email: string,
     password: string,
 ) {
-    const data = new FormData();
-    const actions = ["not_found", "found", "hidden"];
-    data.set("id", id.toString());
-    data.set("password", password);
-    data.set("action", actions[action].toString());
-    try {
-        const res = await axios.post<{ success: boolean; message: string }>(
-            "/api/update_lnf_status.php",
-            data,
-        );
-        return res.data;
-    } catch (err) {
-        if (isAxiosError(err) && err.response) {
-            return err.response.data as { success: boolean; message: string };
-        } else {
-            return {
-                success: false,
-                message: "Error.",
-            };
-        }
-    }
+    const response = await axios.post<ApiResponse>("/admin/create", {
+        name,
+        email,
+        password,
+    });
+    return response.data;
 }
 
-export async function getAbsurdCount() {
-    const { data } = await axios.get<{
-        cnt: number;
-    }>("/api/getHellVisits.php");
-    return data.cnt;
+export async function postEditAdminPassword(
+    admin: number,
+    newPassword: string,
+) {
+    const response = await axios.post<ApiResponse>("/admin/edit-password", {
+        admin,
+        newPassword,
+    });
+    return response.data;
 }
 
-export async function postAbsurdAdd(cf_token: string) {
-    const data = { cf_token: cf_token }
-    try {
-        const res = await axios.post<{ success: boolean }>(
-            "/api/visitHell.php",
-            data,
-        );
-        return res.data;
-    } catch (err) {
-        if (isAxiosError(err) && err.response) {
-            return err.response.data as { success: boolean };
-        } else {
-            return {
-                success: false,
-            };
-        }
-    }
+export async function postDeleteAdmin(id: number) {
+    const response = await axios.post<ApiResponse>("/admin/delete", { id });
+    return response.data;
 }
+
+export async function getOverviewAnalytics() {
+    const response = await axios.get<ApiResponse<OverviewAnalytics>>(
+        "/analytics/overview",
+    );
+    return response.data;
+}
+
+export async function getWeeklyAnalytics() {
+    const response =
+        await axios.get<ApiResponse<WeeklyAnalytics>>("/analytics/weekly");
+    return response.data;
+}
+
+export async function postEditAdmin(id: number, name: string, email: string) {
+    const response = await axios.post<ApiResponse>("/admin/edit", {
+        id,
+        name,
+        email,
+    });
+    return response.data;
+}
+
+export async function getExportOverviewReservationsAnalytics(
+    type: string,
+    turnstileToken: string,
+) {
+    const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
+    window.location.href = `${base}/analytics/overview/export?type=${type}&turnstileToken=${turnstileToken}`;
+}
+
+export async function getExportWeeklyReservationsAnalytics(
+    type: string,
+    turnstileToken: string,
+) {
+    const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
+    window.location.href = `${base}/analytics/weekly/export?type=${type}&turnstileToken=${turnstileToken}`;
+}
+
+export async function postToggleApproverNotificationsEnabled(id: number) {
+    const response = await axios.post<ApiResponse>(
+        "/approver/toggle-notification",
+        { id },
+    );
+    return response.data;
+} 

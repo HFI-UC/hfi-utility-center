@@ -1,0 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+SC:wght@100..900&display=swap");
+@import "tailwindcss";
+@import "tailwindcss-primeui";
+@custom-variant dark (&:where(.p-dark, .p-dark *));
+
+.lucide {
+    height: 17px;
+    width: 17px;
+    stroke-width: 1.8px;
+}
+
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+.animate-gradient {
+    animation: gradient-shift 15s ease infinite;
+}
+
+:root {
+    font-family: "Inter", "Noto Sans SC", sans-serif;
+}
