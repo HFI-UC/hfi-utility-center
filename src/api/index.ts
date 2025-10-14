@@ -159,7 +159,9 @@ export async function getReservations(
     startTime: Date | null = null,
     endTime: Date | null = null,
 ) {
-    const response = await axios.get<ApiResponse<{ reservations: Reservation[]; total: number }>>("/reservation/get", {
+    const response = await axios.get<
+        ApiResponse<{ reservations: Reservation[]; total: number }>
+    >("/reservation/get", {
         params: {
             keyword: keyword == "" ? null : keyword,
             roomId,
@@ -474,4 +476,4 @@ export async function postToggleApproverNotificationsEnabled(id: number) {
         { id },
     );
     return response.data;
-} 
+}

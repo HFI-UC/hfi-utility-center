@@ -17,7 +17,11 @@ import type { FormSubmitEvent } from "@primevue/forms";
 import { useToast } from "primevue";
 import { computed, ref } from "vue";
 
-const { data: admins, run: fetchAdmins, loading: adminsLoading } = useRequest(getAdmins);
+const {
+    data: admins,
+    run: fetchAdmins,
+    loading: adminsLoading,
+} = useRequest(getAdmins);
 
 const formatTime = (date: Date): string => {
     const year = date.getFullYear();
@@ -266,7 +270,7 @@ const deleteAdmin = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(newAdminVisible = false), $form.reset()"
+                    @click="((newAdminVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><Plus></Plus>Create</Button>
@@ -305,7 +309,7 @@ const deleteAdmin = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(editAdminPasswordVisible = false), $form.reset()"
+                    @click="((editAdminPasswordVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><PenLine></PenLine>Edit</Button>
@@ -350,7 +354,7 @@ const deleteAdmin = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(editAdminVisible = false), $form.reset()"
+                    @click="((editAdminVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><PenLine></PenLine>Edit</Button>
@@ -361,7 +365,11 @@ const deleteAdmin = async (id: number) => {
         <h1 class="font-bold text-3xl my-4">Admin Management</h1>
         <Card>
             <template #content>
-                <DataTable :value="admins?.data" class="text-nowrap" :loading="adminsLoading">
+                <DataTable
+                    :value="admins?.data"
+                    class="text-nowrap"
+                    :loading="adminsLoading"
+                >
                     <template #header>
                         <div class="flex items-center justify-between">
                             <span class="text-lg font-bold">Admins</span>
@@ -378,9 +386,8 @@ const deleteAdmin = async (id: number) => {
                             <Button
                                 size="small"
                                 @click="
-                                    (editAdminPasswordVisible = true),
-                                        (editAdminPasswordId =
-                                            slotProps.data.id)
+                                    ((editAdminPasswordVisible = true),
+                                    (editAdminPasswordId = slotProps.data.id))
                                 "
                                 ><PenLine></PenLine
                             ></Button>
@@ -399,8 +406,8 @@ const deleteAdmin = async (id: number) => {
                                 <Button
                                     size="small"
                                     @click="
-                                        (editAdminVisible = true),
-                                            (editAdminId = slotProps.data.id)
+                                        ((editAdminVisible = true),
+                                        (editAdminId = slotProps.data.id))
                                     "
                                     ><PenLine></PenLine
                                 ></Button>

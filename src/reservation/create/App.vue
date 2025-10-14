@@ -43,10 +43,13 @@ const resolver = zodResolver(
         room: z.number({ error: "Room is required." }),
         studentId: z
             .string({ error: "Student ID is required." })
+            .startsWith("GJ", { error: "Student ID must start with 'GJ'." })
             .min(10, {
                 error: "Student ID must be at least 10 characters long (e.g. GJ12345678).",
             })
-            .startsWith("GJ", { error: "Student ID must start with 'GJ'." }),
+            .refine((val) => /^\d{8}$/.test(val.slice(-8)), {
+                message: "The last 8 characters of Student ID must be numbers.",
+            }),
         email: z
             .email({ error: "Wrong E-mail format." })
             .min(1, { error: "E-mail is required." }),

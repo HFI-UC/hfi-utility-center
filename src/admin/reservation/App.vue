@@ -18,10 +18,9 @@ import z from "zod";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
 
-const {
-    data: futureReservations,
-    run: fetchFutureReservations,
-} = useRequest(getFutureReservations);
+const { data: futureReservations, run: fetchFutureReservations } = useRequest(
+    getFutureReservations,
+);
 
 const searchKeyword = ref<string | null>(null);
 const searchTime = ref<Date[] | null>(null);
@@ -348,7 +347,7 @@ const exportOptions = [
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(rejectVisible = false), $form.reset()"
+                    @click="((rejectVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit" severity="danger"><X></X>Reject</Button>
@@ -419,7 +418,7 @@ const exportOptions = [
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(exportVisible = false), $form.reset()"
+                    @click="((exportVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit" severity="primary"
@@ -629,8 +628,8 @@ const exportOptions = [
                                             v-if="item.status != 'rejected'"
                                             fluid
                                             @click="
-                                                (rejectVisible = true),
-                                                    (rejectId = item.id)
+                                                ((rejectVisible = true),
+                                                (rejectId = item.id))
                                             "
                                             size="small"
                                             severity="danger"
