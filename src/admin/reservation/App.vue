@@ -385,7 +385,6 @@ const exportOptions = [
                 >
                 <DatePicker
                     v-if="$form.option?.value === 4"
-                    showTime
                     name="time"
                     placeholder="Time"
                     selectionMode="range"
@@ -721,7 +720,6 @@ const exportOptions = [
                                     class="md:col-span-3 col-span-9"
                                     updateModelType="date"
                                     fluid
-                                    showTime
                                     dateFormat="yy/mm/dd"
                                 >
                                     <template #footer>
