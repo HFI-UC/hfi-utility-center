@@ -136,9 +136,8 @@ const statusOptions = [
                                     placeholder="Time Range"
                                     size="small"
                                     class="md:col-span-3 col-span-9"
-                                    updateModelType="date"
+                                    :manualInput="false"
                                     fluid
-                                    showTime
                                     dateFormat="yy/mm/dd"
                                 >
                                     <template #footer>

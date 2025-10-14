@@ -786,7 +786,7 @@ const onExportWeekly = async (type: string) => {
         <Button
             fluid
             severity="secondary"
-            @click="(exportLoading = false), (turnstileVisible = false)"
+            @click="((exportLoading = false), (turnstileVisible = false))"
             ><X></X>Cancel</Button
         >
     </Dialog>

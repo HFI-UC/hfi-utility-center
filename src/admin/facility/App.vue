@@ -28,7 +28,15 @@ import {
     type RoomApprover,
     type RoomPolicy,
 } from "../../api";
-import { PenLine, Plus, Trash2, Pause, Play, BellOff, Bell } from "lucide-vue-next";
+import {
+    PenLine,
+    Plus,
+    Trash2,
+    Pause,
+    Play,
+    BellOff,
+    Bell,
+} from "lucide-vue-next";
 import { computed, ref } from "vue";
 import { useToast } from "primevue";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
@@ -38,9 +46,21 @@ import AdminLogin from "../../components/AdminLogin.vue";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
 
-const { data: rooms, run: fetchRooms, loading: roomsLoading } = useRequest(getRooms);
-const { data: campuses, run: fetchCampuses, loading: campusesLoading } = useRequest(getCampuses);
-const { data: classes, run: fetchClasses, loading: classesLoading } = useRequest(getClasses);
+const {
+    data: rooms,
+    run: fetchRooms,
+    loading: roomsLoading,
+} = useRequest(getRooms);
+const {
+    data: campuses,
+    run: fetchCampuses,
+    loading: campusesLoading,
+} = useRequest(getCampuses);
+const {
+    data: classes,
+    run: fetchClasses,
+    loading: classesLoading,
+} = useRequest(getClasses);
 const { data: admins } = useRequest(getAdmins);
 const formatTime = (date: Date): string => {
     const year = date.getFullYear();
@@ -673,7 +693,7 @@ const toggleApproverNotificationsEnabled = async (id: number) => {
             life: 2000,
         });
     }
-}
+};
 
 const deleteApprover = async (id: number) => {
     loading.value = true;
@@ -730,7 +750,7 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(newCampusVisible = false), $form.reset()"
+                    @click="((newCampusVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><Plus></Plus>Create</Button>
@@ -777,7 +797,7 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(newRoomVisible = false), $form.reset()"
+                    @click="((newRoomVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><Plus></Plus>Create</Button>
@@ -824,7 +844,7 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(newClassVisible = false), $form.reset()"
+                    @click="((newClassVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><Plus></Plus>Create</Button>
@@ -904,8 +924,8 @@ const deleteApprover = async (id: number) => {
                         </Button>
                         <Button
                             @click="
-                                (editPolicyVisible = true),
-                                    (editPolicy = slotProps.data)
+                                ((editPolicyVisible = true),
+                                (editPolicy = slotProps.data))
                             "
                             size="small"
                             ><PenLine></PenLine
@@ -986,7 +1006,7 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(newApproverVisible = false), $form.reset()"
+                    @click="((newApproverVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><Plus></Plus>Create</Button>
@@ -1040,8 +1060,22 @@ const deleteApprover = async (id: number) => {
             <Column header="Actions">
                 <template #body="slotProps">
                     <div class="flex gap-2">
-                        <Button @click="toggleApproverNotificationsEnabled(slotProps.data.id)" size="small" :severity="slotProps.data.notificationsEnabled ? 'warn' : 'success'">
-                            <BellOff v-if="!slotProps.data.notificationsEnabled"></BellOff>
+                        <Button
+                            @click="
+                                toggleApproverNotificationsEnabled(
+                                    slotProps.data.id,
+                                )
+                            "
+                            size="small"
+                            :severity="
+                                slotProps.data.notificationsEnabled
+                                    ? 'warn'
+                                    : 'success'
+                            "
+                        >
+                            <BellOff
+                                v-if="!slotProps.data.notificationsEnabled"
+                            ></BellOff>
                             <Bell v-else></Bell>
                         </Button>
                         <Button
@@ -1114,7 +1148,7 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(newPolicyVisible = false), $form.reset()"
+                    @click="((newPolicyVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><Plus></Plus>Create</Button>
@@ -1180,7 +1214,7 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(editPolicyVisible = false), $form.reset()"
+                    @click="((editPolicyVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><PenLine></PenLine>Edit</Button>
@@ -1227,7 +1261,7 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(editClassVisible = false), $form.reset()"
+                    @click="((editClassVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><PenLine></PenLine>Edit</Button>
@@ -1284,7 +1318,7 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(editRoomVisible = false), $form.reset()"
+                    @click="((editRoomVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><PenLine></PenLine>Edit</Button>
@@ -1317,7 +1351,7 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="(editCampusVisible = false), $form.reset()"
+                    @click="((editCampusVisible = false), $form.reset())"
                     >Cancel</Button
                 >
                 <Button type="submit"><PenLine></PenLine>Edit</Button>
@@ -1329,7 +1363,11 @@ const deleteApprover = async (id: number) => {
         <div class="flex flex-col gap-4">
             <Card>
                 <template #content>
-                    <DataTable :value="rooms?.data" class="text-nowrap" :loading="roomsLoading">
+                    <DataTable
+                        :value="rooms?.data"
+                        class="text-nowrap"
+                        :loading="roomsLoading"
+                    >
                         <template #header>
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-lg">Rooms</span>
@@ -1376,8 +1414,8 @@ const deleteApprover = async (id: number) => {
                                 <Button
                                     size="small"
                                     @click="
-                                        (policyViewVisible = true),
-                                            (room = slotProps.data.id)
+                                        ((policyViewVisible = true),
+                                        (room = slotProps.data.id))
                                     "
                                 >
                                     <PenLine></PenLine>
@@ -1389,8 +1427,8 @@ const deleteApprover = async (id: number) => {
                                 <Button
                                     size="small"
                                     @click="
-                                        (approverViewVisible = true),
-                                            (room = slotProps.data.id)
+                                        ((approverViewVisible = true),
+                                        (room = slotProps.data.id))
                                     "
                                 >
                                     <PenLine></PenLine>
@@ -1412,10 +1450,10 @@ const deleteApprover = async (id: number) => {
                                     <Button
                                         size="small"
                                         @click="
-                                            (editRoomVisible = true),
-                                                (editRoomInitialValues = {
-                                                    ...slotProps.data,
-                                                })
+                                            ((editRoomVisible = true),
+                                            (editRoomInitialValues = {
+                                                ...slotProps.data,
+                                            }))
                                         "
                                     >
                                         <PenLine></PenLine
@@ -1434,7 +1472,11 @@ const deleteApprover = async (id: number) => {
             </Card>
             <Card>
                 <template #content>
-                    <DataTable :value="campuses?.data" class="text-nowrap" :loading="campusesLoading">
+                    <DataTable
+                        :value="campuses?.data"
+                        class="text-nowrap"
+                        :loading="campusesLoading"
+                    >
                         <template #header>
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-lg">Campuses</span>
@@ -1466,10 +1508,10 @@ const deleteApprover = async (id: number) => {
                                     <Button
                                         size="small"
                                         @click="
-                                            (editCampusVisible = true),
-                                                (editCampusInitialValues = {
-                                                    ...slotProps.data,
-                                                })
+                                            ((editCampusVisible = true),
+                                            (editCampusInitialValues = {
+                                                ...slotProps.data,
+                                            }))
                                         "
                                         ><PenLine></PenLine
                                     ></Button>
@@ -1487,7 +1529,11 @@ const deleteApprover = async (id: number) => {
             </Card>
             <Card>
                 <template #content>
-                    <DataTable :value="classes?.data" class="text-nowrap" :loading="classesLoading">
+                    <DataTable
+                        :value="classes?.data"
+                        class="text-nowrap"
+                        :loading="classesLoading"
+                    >
                         <template #header>
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-lg">Classes</span>
@@ -1528,10 +1574,10 @@ const deleteApprover = async (id: number) => {
                                     <Button
                                         size="small"
                                         @click="
-                                            (editClassVisible = true),
-                                                (editClassInitialValues = {
-                                                    ...slotProps.data,
-                                                })
+                                            ((editClassVisible = true),
+                                            (editClassInitialValues = {
+                                                ...slotProps.data,
+                                            }))
                                         "
                                         ><PenLine></PenLine
                                     ></Button>
