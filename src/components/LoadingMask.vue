@@ -62,7 +62,7 @@ onMounted(() => {
         <div
             :class="{
                 'scale-0': isExiting,
-                'scale-300': !isExiting,
+                'scale-500': !isExiting,
                 'opacity-0': isFading,
                 'opacity-100': !isFading,
             }"
