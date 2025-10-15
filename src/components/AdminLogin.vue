@@ -40,6 +40,3 @@ onMounted(async () => {
     }
 });
 </script>
-<template>
-    <Toast></Toast>
-</template>
