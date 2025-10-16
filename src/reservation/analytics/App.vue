@@ -767,6 +767,7 @@ const onExportWeekly = async (type: string) => {
 </script>
 
 <template>
+    <Toast></Toast>
     <Navbar v-model:isDark="isDark"></Navbar>
     <LoadingMask></LoadingMask>
     <Dialog

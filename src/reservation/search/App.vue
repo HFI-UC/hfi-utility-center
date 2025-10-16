@@ -60,6 +60,7 @@ const statusOptions = [
 <template>
     <LoadingMask></LoadingMask>
     <Navbar></Navbar>
+    <Toast></Toast>
     <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
         <h1 class="font-bold md:text-3xl text-2xl my-4">Reservation Search</h1>
         <Card class="w-full mt-4">
