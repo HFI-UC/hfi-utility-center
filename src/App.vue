@@ -4,6 +4,7 @@ import LoadingMask from "./components/LoadingMask.vue";
 import Navbar from "./components/Navbar.vue";
 </script>
 <template>
+    <Toast></Toast>
     <LoadingMask />
     <Navbar></Navbar>
     <div class="flex items-center justify-center h-[100svh] flex-col">

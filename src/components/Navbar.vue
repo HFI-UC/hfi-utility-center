@@ -13,6 +13,8 @@ import {
     DoorClosed,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
+import { SpeedInsights } from '@vercel/speed-insights/vue';
+import { Analytics } from '@vercel/analytics/vue';
 import { getCheckLogin, getLogOut } from "../api";
 import { useToast } from "primevue";
 import { Rive, RuntimeLoader } from "@rive-app/canvas";
@@ -222,6 +224,8 @@ onMounted(async () => {
 });
 </script>
 <template>
+    <SpeedInsights></SpeedInsights>
+    <Analytics></Analytics>
     <div
         :class="[
             'fixed inset-x-0 top-0 z-10 flex items-center h-[4rem] transition-all duration-300',

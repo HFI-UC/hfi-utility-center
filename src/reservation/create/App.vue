@@ -141,6 +141,7 @@ const generateTimeOptions = (
     endHour: number,
     endMinute: number,
     selectedClass: number,
+    validate = true,
 ) => {
     const options: string[] = [];
     const start = new Date();
@@ -152,6 +153,8 @@ const generateTimeOptions = (
         options.push(formatTime(new Date(start)));
         start.setMinutes(start.getMinutes() + 15);
     }
+
+    if (!validate) return options;
 
     const _class = classData.value?.data.find(
         (item: Class) => item.id === selectedClass,
@@ -167,11 +170,17 @@ const generateTimeOptions = (
     return res;
 };
 
-const validateTimeConflict = (time: Date): boolean => {
+const validateTimeConflict = (
+    startTime: Date,
+    endTime: Date | null = null,
+): boolean => {
     return !reservations.value.some((reservation) => {
-        const startDate = new Date(reservation.startTime);
-        const endDate = new Date(reservation.endTime);
-        return endDate >= time && startDate <= time;
+        const existingStart = new Date(reservation.startTime);
+        const existingEnd = new Date(reservation.endTime);
+        if (endTime) {
+            return existingEnd > startTime && existingStart < endTime;
+        }
+        return existingEnd > startTime && existingStart < startTime;
     });
 };
 
@@ -184,25 +193,33 @@ const getRoomPolicyData = (id: number) => {
     );
 };
 
-const validatePolicy = (time: Date, selectedRoom: number): boolean => {
+const validatePolicy = (
+    startTime: Date,
+    selectedRoom: number,
+    endTime: Date | null = null,
+): boolean => {
     if (!room.value) return true;
     const selectedRoomPolicy: RoomPolicy[] =
         room.value
             .find((room) => room.id == selectedRoom)
             ?.policies.filter((policy) => policy.enabled) || [];
     if (selectedRoomPolicy.length === 0) return true;
+
     return !selectedRoomPolicy.some((rule) => {
         const days = rule.days;
-        const day = time.getDay();
+        const day = startTime.getDay();
         if (days.includes(day)) {
             const [startHour, startMinute] = rule.startTime;
             const [endHour, endMinute] = rule.endTime;
-            return (
-                new Date(time.getTime()).setHours(startHour, startMinute) <=
-                    time.getTime() &&
-                new Date(time.getTime()).setHours(endHour, endMinute) >=
-                    time.getTime()
-            );
+            const policyStart = new Date(startTime.getTime());
+            policyStart.setHours(startHour, startMinute, 0, 0);
+            const policyEnd = new Date(startTime.getTime());
+            policyEnd.setHours(endHour, endMinute, 0, 0);
+
+            if (endTime) {
+                return policyEnd > startTime && policyStart < endTime;
+            }
+            return policyEnd > startTime && policyStart < startTime;
         }
         return false;
     });
@@ -257,7 +274,7 @@ const getEndTimeOptions = ({
     )
         return [];
     const [startHours, startMinutes] = startTime.value.split(":").map(Number);
-    return generateTimeOptions(
+    const options = generateTimeOptions(
         date.value,
         selectedRoom.value,
         startHours,
@@ -269,7 +286,28 @@ const getEndTimeOptions = ({
                 : Math.max(startMinutes, 30)
             : startMinutes,
         selectedClass.value,
+        false,
     );
+
+    const _class = classData.value?.data.find(
+        (item: Class) => item.id === selectedClass.value,
+    );
+    const _campus: Campus | undefined = campus.value?.data.find(
+        (item: Campus) => item.id === _class?.campus,
+    );
+
+    return options.filter((endTimeString) => {
+        if (!date.value || !selectedRoom.value || _campus?.isPrivileged)
+            return true;
+        const start = new Date(
+            `${formatDate(date.value)}T${startTime.value}`,
+        );
+        const end = new Date(`${formatDate(date.value)}T${endTimeString}`);
+        return (
+            validatePolicy(start, selectedRoom.value, end) &&
+            validateTimeConflict(start, end)
+        );
+    });
 };
 
 const minDate = computed(() => {
@@ -283,6 +321,7 @@ const minDate = computed(() => {
 const maxDate = computed(() => {
     const time = new Date();
     time.setMonth(time.getMonth() + 1);
+    time.setDate(time.getDate() - 1);
     return time;
 });
 

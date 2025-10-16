@@ -216,6 +216,7 @@ const deleteAdmin = async (id: number) => {
 };
 </script>
 <template>
+    <Toast></Toast>
     <Navbar></Navbar>
     <AdminLogin :requireLogin="true"></AdminLogin>
     <BlockUI :blocked="loading" fullScreen></BlockUI>
