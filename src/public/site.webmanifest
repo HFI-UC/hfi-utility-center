@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "HFI Utility Center",
+  "short_name": "HFI-UC",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
