@@ -516,10 +516,10 @@ const termsVisible = ref(false);
                                 <label>Class</label>
                             </IftaLabel>
                             <Message
-                                v-if="$form.class?.invalid"
+                                v-if="$form.classId?.invalid"
                                 severity="error"
                                 size="small"
-                                >{{ $form.class.error?.message }}
+                                >{{ $form.classId.error?.message }}
                             </Message>
                             <IftaLabel>
                                 <InputText
