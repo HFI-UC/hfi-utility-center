@@ -347,7 +347,7 @@ const setOverviewChartOptions = ():
                         type="line"
                         :data="overviewWeeklyChartData"
                         :options="overviewChartOptions"
-                        :height="250"
+                        :height="245"
                     ></Chart>
                 </template>
             </Card>
@@ -358,7 +358,7 @@ const setOverviewChartOptions = ():
                         type="line"
                         :data="overviewDailyChartData"
                         :options="overviewChartOptions"
-                        :height="250"
+                        :height="245"
                     ></Chart>
                 </template>
             </Card>
@@ -371,7 +371,7 @@ const setOverviewChartOptions = ():
                         type="line"
                         :data="overviewMonthlyChartData"
                         :options="overviewChartOptions"
-                        :height="250"
+                        :height="245"
                     ></Chart>
                 </template>
             </Card>
@@ -384,7 +384,7 @@ const setOverviewChartOptions = ():
                         type="bar"
                         :data="overviewDailyRequestChartData"
                         :options="overviewChartOptions"
-                        :height="250"
+                        :height="245"
                     ></Chart>
                 </template>
             </Card>
