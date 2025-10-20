@@ -16,7 +16,6 @@ export interface ReservationRequestInfo {
     reason: string;
     campus: string;
     isAgreed: boolean;
-    turnstileToken: string;
 }
 
 export interface Reservation {
@@ -201,7 +200,6 @@ export async function postCreateReservation(
                 `${formatDate(reservation.date)}T${reservation.endTime}`,
             ).getTime() / 1000,
         reason: reservation.reason,
-        turnstileToken: reservation.turnstileToken,
     };
     const response = await axios.post<ApiResponse>("/reservation/create", data);
     return response.data;

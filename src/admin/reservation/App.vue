@@ -288,10 +288,10 @@ const exportReservations = async (form: FormSubmitEvent) => {
     }
 
     getExportReservations(
-        startTime && form.values.option == 4
+        startTime
             ? Math.floor(startTime.getTime() / 1000)
             : null,
-        endTime && form.values.option == 4
+        endTime
             ? Math.floor(endTime.getTime() / 1000)
             : null,
         form.values.mode,

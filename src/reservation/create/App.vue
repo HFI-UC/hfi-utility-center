@@ -31,9 +31,6 @@ import confetti from "canvas-confetti";
 import { useToast } from "primevue";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
-import VueTurnstile from "vue-turnstile";
-
-const turnstileSiteKey = process.env.CLOUDFLARE_KEY || "";
 const resolver = zodResolver(
     z.object({
         classId: z.number({ error: "Class is required." }),
@@ -348,10 +345,7 @@ const fetchReservations = async (selectedRoom: FormFieldState) => {
 const success = ref(false);
 const successMessage = ref("");
 const submitLoading = ref(false);
-const turnstileToken = ref("");
-const turnstileRef = ref();
 const onSubmitEvent = async (form: FormSubmitEvent) => {
-    if (turnstileToken.value == "") return;
     if (!form.valid) {
         toast.add({
             severity: "error",
@@ -361,7 +355,6 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
         });
         return;
     }
-    form.values.turnstileToken = turnstileToken.value;
     submitLoading.value = true;
     const response = await postCreateReservation(
         form.values as ReservationRequestInfo,
@@ -384,8 +377,6 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
             detail: response.message,
             life: 3000,
         });
-        turnstileRef.value?.reset();
-        turnstileToken.value = "";
     }
 };
 const onMoreConfetti = () => {
@@ -525,10 +516,10 @@ const termsVisible = ref(false);
                                 <label>Class</label>
                             </IftaLabel>
                             <Message
-                                v-if="$form.class?.invalid"
+                                v-if="$form.classId?.invalid"
                                 severity="error"
                                 size="small"
-                                >{{ $form.class.error?.message }}
+                                >{{ $form.classId.error?.message }}
                             </Message>
                             <IftaLabel>
                                 <InputText
@@ -822,20 +813,11 @@ const termsVisible = ref(false);
                         size="small"
                         >{{ $form.isAgreed.error.message }}</Message
                     >
-                    <p class="text-center text-sm mt-3">
-                        Let us know you're human
-                    </p>
-                    <VueTurnstile
-                        v-model="turnstileToken"
-                        :siteKey="turnstileSiteKey"
-                        ref="turnstileRef"
-                        class="flex justify-center mt-2"
-                    ></VueTurnstile>
                     <Button
                         type="submit"
                         fluid
                         class="mt-3"
-                        :disabled="!turnstileToken || submitLoading"
+                        :disabled="submitLoading"
                         ><PenSquare></PenSquare>Submit</Button
                     >
                 </Form>
