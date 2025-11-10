@@ -315,6 +315,8 @@ onMounted(async () => {
                     v-model="selectedLocale"
                     optionValue="code"
                     optionLabel="key"
+                    appendTo="#navbar"
+                    overlayClass="!top-15"
                 >
                     <template #dropdownicon>
                         <Globe></Globe>
@@ -365,6 +367,8 @@ onMounted(async () => {
                             optionValue="code"
                             optionLabel="key"
                             fluid
+                            appendTo="#navbar"
+                            overlayClass="!top-30"
                             class="my-2"
                         >
                             <template #dropdownicon>
