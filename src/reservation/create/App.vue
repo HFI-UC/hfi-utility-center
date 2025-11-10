@@ -31,49 +31,70 @@ import confetti from "canvas-confetti";
 import { useToast } from "primevue";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
+import { useI18n } from "vue-i18n";
+
+const { t, tm } = useI18n();
 const resolver = zodResolver(
     z.object({
-        classId: z.number({ error: "Class is required." }),
+        classId: z.number({
+            error: t("reservation.create.form.invalid.classId"),
+        }),
         studentName: z
-            .string({ error: "Student name is required." })
-            .min(1, { error: "Student name is required." }),
-        room: z.number({ error: "Room is required." }),
+            .string({ error: t("reservation.create.form.invalid.studentName") })
+            .min(1, {
+                message: t("reservation.create.form.invalid.studentName"),
+            }),
+        room: z.number({ error: t("reservation.create.form.invalid.room") }),
         studentId: z
-            .string({ error: "Student ID is required." })
-            .startsWith("GJ", { error: "Student ID must start with 'GJ'." })
+            .string({
+                error: t("reservation.create.form.invalid.studentId.required"),
+            })
+            .startsWith("GJ", {
+                message: t("reservation.create.form.invalid.studentId.prefix"),
+            })
             .min(10, {
-                error: "Student ID must be at least 10 characters long (e.g. GJ12345678).",
+                message: t(
+                    "reservation.create.form.invalid.studentId.minLength"
+                ),
             })
             .refine((val) => /^\d{8}$/.test(val.slice(-8)), {
-                message: "The last 8 characters of Student ID must be numbers.",
+                message: t("reservation.create.form.invalid.studentId.digits"),
             }),
         email: z
-            .email({ error: "Wrong E-mail format." })
-            .min(1, { error: "E-mail is required." }),
-        date: z.date({ error: "Date is required." }),
-        startTime: z
-            .string({ error: "Start time is required." })
-            .min(1, { error: "Start time is required." }),
-        endTime: z
-            .string({ error: "End time is required." })
-            .min(1, { error: "End time is required." }),
-        reason: z
-            .string({ error: "Reason is required." })
-            .min(1, { error: "Reason is required." }),
-        campus: z.number({ error: "Campus is required." }),
-        isAgreed: z
-            .boolean({ error: "Please fill out this field." })
-            .refine((val) => val === true, {
-                message: "You must agree to the terms and conditions.",
+            .email({
+                message: t("reservation.create.form.invalid.email.format"),
+            })
+            .min(1, {
+                message: t("reservation.create.form.invalid.email.required"),
             }),
-    }),
+        date: z.date({ error: t("reservation.create.form.invalid.date") }),
+        startTime: z
+            .string({ error: t("reservation.create.form.invalid.startTime") })
+            .min(1, {
+                message: t("reservation.create.form.invalid.startTime"),
+            }),
+        endTime: z
+            .string({ error: t("reservation.create.form.invalid.endTime") })
+            .min(1, { message: t("reservation.create.form.invalid.endTime") }),
+        reason: z
+            .string({ error: t("reservation.create.form.invalid.reason") })
+            .min(1, { message: t("reservation.create.form.invalid.reason") }),
+        campus: z.number({
+            error: t("reservation.create.form.invalid.campus"),
+        }),
+        isAgreed: z
+            .boolean({ error: t("reservation.create.form.invalid.isAgreed") })
+            .refine((val) => val === true, {
+                message: t("reservation.create.form.invalid.isAgreed"),
+            }),
+    })
 );
 
 const { data: classData } = useRequest(getClasses);
 const { data: campus } = useRequest(getCampuses);
 const { data: roomData } = useRequest(getRooms);
 const room = computed(
-    () => roomData.value?.data.filter((room) => room.enabled) || [],
+    () => roomData.value?.data.filter((room) => room.enabled) || []
 );
 const classes = computed(() => {
     const _data = classData.value?.data;
@@ -81,7 +102,7 @@ const classes = computed(() => {
     const res: { campus: string; classes: any[] }[] = [];
     campus.value?.data.some((c: Campus) => {
         const campusClasses = _data.filter(
-            (item: Class) => item.campus === c.id,
+            (item: Class) => item.campus === c.id
         );
         if (campusClasses.length) {
             res.push({ campus: c.name, classes: campusClasses });
@@ -93,7 +114,7 @@ const reservations = ref<Reservation[]>([] as Reservation[]);
 
 const formatTime = (date: Date): string =>
     `${String(date.getHours()).padStart(2, "0")}:${String(
-        date.getMinutes(),
+        date.getMinutes()
     ).padStart(2, "0")}`;
 
 const formatDate = (date: Date): string => {
@@ -107,7 +128,7 @@ const formatTableDate = (time: string) => {
     const date = new Date(time);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
-        "0",
+        "0"
     )}-${String(date.getDate()).padStart(2, "0")}`;
 };
 
@@ -126,7 +147,7 @@ const formatTableWeekDay = (days: number[]) => {
 
 const formatTableTime = (startTime: string, endTime: string) => {
     return `${formatTime(new Date(startTime))} - ${formatTime(
-        new Date(endTime),
+        new Date(endTime)
     )}`;
 };
 
@@ -138,7 +159,7 @@ const generateTimeOptions = (
     endHour: number,
     endMinute: number,
     selectedClass: number,
-    validate = true,
+    validate = true
 ) => {
     const options: string[] = [];
     const start = new Date();
@@ -154,10 +175,10 @@ const generateTimeOptions = (
     if (!validate) return options;
 
     const _class = classData.value?.data.find(
-        (item: Class) => item.id === selectedClass,
+        (item: Class) => item.id === selectedClass
     );
     const _campus: Campus = campus.value?.data.find(
-        (item: Campus) => item.id === _class?.campus,
+        (item: Campus) => item.id === _class?.campus
     );
     const res = options.filter((item) => {
         if (!date || !room || _campus.isPrivileged) return true;
@@ -169,7 +190,7 @@ const generateTimeOptions = (
 
 const validateTimeConflict = (
     startTime: Date,
-    endTime: Date | null = null,
+    endTime: Date | null = null
 ): boolean => {
     return !reservations.value.some((reservation) => {
         const existingStart = new Date(reservation.startTime);
@@ -193,7 +214,7 @@ const getRoomPolicyData = (id: number) => {
 const validatePolicy = (
     startTime: Date,
     selectedRoom: number,
-    endTime: Date | null = null,
+    endTime: Date | null = null
 ): boolean => {
     if (!room.value) return true;
     const selectedRoomPolicy: RoomPolicy[] =
@@ -253,7 +274,7 @@ const getStartTimeOptions = ({
         startMinute,
         21,
         15,
-        selectedClass.value,
+        selectedClass.value
     );
 };
 
@@ -283,22 +304,20 @@ const getEndTimeOptions = ({
                 : Math.max(startMinutes, 30)
             : startMinutes,
         selectedClass.value,
-        false,
+        false
     );
 
     const _class = classData.value?.data.find(
-        (item: Class) => item.id === selectedClass.value,
+        (item: Class) => item.id === selectedClass.value
     );
     const _campus: Campus | undefined = campus.value?.data.find(
-        (item: Campus) => item.id === _class?.campus,
+        (item: Campus) => item.id === _class?.campus
     );
 
     return options.filter((endTimeString) => {
         if (!date.value || !selectedRoom.value || _campus?.isPrivileged)
             return true;
-        const start = new Date(
-            `${formatDate(date.value)}T${startTime.value}`,
-        );
+        const start = new Date(`${formatDate(date.value)}T${startTime.value}`);
         const end = new Date(`${formatDate(date.value)}T${endTimeString}`);
         return (
             validatePolicy(start, selectedRoom.value, end) &&
@@ -332,12 +351,12 @@ const fetchReservations = async (selectedRoom: FormFieldState) => {
         .filter(
             (reservation: Reservation) =>
                 reservation.status != "rejected" &&
-                new Date(reservation.startTime) >= new Date(),
+                new Date(reservation.startTime) >= new Date()
         )
         .sort(
             (a: Reservation, b: Reservation) =>
                 new Date(a.startTime).getTime() -
-                new Date(b.startTime).getTime(),
+                new Date(b.startTime).getTime()
         );
     reservationsFetchLoading.value = false;
 };
@@ -349,22 +368,22 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill in all required fields.",
+            summary: t("toast.error"),
+            detail: t("toast.details.fillInAllFields"),
             life: 2000,
         });
         return;
     }
     submitLoading.value = true;
     const response = await postCreateReservation(
-        form.values as ReservationRequestInfo,
+        form.values as ReservationRequestInfo
     );
     submitLoading.value = false;
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: "Reservation Created",
-            detail: "Your reservation has been created successfully.",
+            summary: t("toast.success"),
+            detail: t("toast.details.reservationCreated"),
             life: 3000,
         });
         successMessage.value = response.message as string;
@@ -373,12 +392,15 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: "Error",
+            summary: t("toast.error"),
             detail: response.message,
             life: 3000,
         });
     }
 };
+const terms = computed(
+    () => tm("reservation.create.terms.content") as string[]
+);
 const onMoreConfetti = () => {
     confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
 };
@@ -390,85 +412,19 @@ const termsVisible = ref(false);
     <Navbar></Navbar>
     <LoadingMask></LoadingMask>
     <Dialog
-        header="Classroom Regulations"
+        :header="$t('reservation.create.terms.title')"
         v-model:visible="termsVisible"
         modal
         class="sm:w-[25rem] w-[23rem]"
     >
         <ul class="list-disc pl-5">
-            <li>
-                Do not bring food and drinks into the study area. Students are
-                responsible for keeping the study room clean and tidy.
-            </li>
-            <li>
-                Students should take good care of their personal belongings
-                (such as wallets, phones, and computers). Valuable items should
-                be carried or locked in a secure place. When leaving the
-                classroom, students should take their valuable items with them,
-                as the school does not assume any responsibility for their
-                safekeeping.
-            </li>
-            <li>
-                After leaving public areas, students should take their personal
-                belongings with them. The administrative office will
-                periodically clean the area, and the school will not be
-                responsible for any lost items.
-            </li>
-            <li>
-                Students should consciously maintain the cleanliness of the
-                classroom and public order.
-            </li>
-            <li>
-                Please take care of and use the teaching equipment responsibly.
-                If any problems or losses are discovered, contact the
-                administrative office as soon as possible. If a student causes
-                equipment loss or maliciously damages the equipment, the student
-                will be responsible for compensation.
-            </li>
-            <li>
-                When students leave the classroom, they should ensure that all
-                electrical equipment (such as air conditioners, fans, and
-                lights) is turned off, and the remote control is returned to the
-                designated location.
-            </li>
-            <li>
-                Students are not allowed to move teaching equipment without
-                permission.
-            </li>
-            <li>
-                Do not reserve seats in any way. If students need to leave their
-                seats, they should take their personal belongings with them, or
-                place their books in their bags and put them under the desk
-                without affecting other students' use of the seat. The duty
-                teacher will periodically inspect the area, and any reserved
-                items found will be removed or taken away to make the seat
-                available for others.
-            </li>
-            <li>
-                Be mindful of public decency and personal image, and do not lie
-                down on benches or sofas.
-            </li>
-            <li>
-                Do not speak loudly in public places, and set your phone to
-                silent mode. Please go outside to make phone calls.
-            </li>
-            <li>
-                It is forbidden to pull power sources privately or use
-                high-powered electrical appliances. Do not move fire safety
-                equipment without permission.
-            </li>
-            <li>
-                At any time, the study area must not be used for
-                non-study-related activities (including but not limited to video
-                games on phones/computers, board games, watching variety shows
-                or movies, etc.). Violation of these rules will be handled
-                according to the "Student Violation Management Regulations"
-                based on the actual situation.
-            </li>
+            <li v-for="item in terms">{{ item }}</li>
         </ul>
     </Dialog>
     <div class="flex items-center justify-center flex-col mt-[6rem] mb-4">
-        <h1 class="font-bold text-3xl my-4">New Reservation</h1>
+        <h1 class="font-bold text-3xl my-4">
+            {{ $t("reservation.create.title") }}
+        </h1>
         <Card class="sm:w-[25rem] w-[23rem]">
             <template #content>
                 <Form
@@ -480,14 +436,16 @@ const termsVisible = ref(false);
                 >
                     <Fieldset legend="Personal Information">
                         <div class="flex flex-col gap-4">
-                            <IftaLabel
-                                ><label>Name</label>
+                            <IftaLabel>
                                 <InputText
                                     type="text"
                                     name="studentName"
                                     fluid
                                 ></InputText
-                            ></IftaLabel>
+                                ><label>{{
+                                    $t("reservation.create.form.studentName")
+                                }}</label></IftaLabel
+                            >
                             <Message
                                 v-if="$form.studentName?.invalid"
                                 severity="error"
@@ -513,7 +471,9 @@ const termsVisible = ref(false);
                                         </div>
                                     </template>
                                 </Select>
-                                <label>Class</label>
+                                <label>{{
+                                    $t("reservation.create.form.class")
+                                }}</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.classId?.invalid"
@@ -527,7 +487,9 @@ const termsVisible = ref(false);
                                     name="studentId"
                                     fluid
                                 ></InputText>
-                                <label>Student ID</label>
+                                <label>{{
+                                    $t("reservation.create.form.studentId")
+                                }}</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.studentId?.invalid"
@@ -541,7 +503,9 @@ const termsVisible = ref(false);
                                     name="email"
                                     fluid
                                 ></InputText>
-                                <label>E-mail</label>
+                                <label>{{
+                                    $t("reservation.create.form.email")
+                                }}</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.email?.invalid"
@@ -551,7 +515,7 @@ const termsVisible = ref(false);
                             </Message>
                         </div>
                     </Fieldset>
-                    <Fieldset legend="Room Information">
+                    <Fieldset v-if="$form.studentName?.value && $form.classId?.value && $form.studentId?.value && $form.email?.value" legend="Room Information">
                         <div class="flex flex-col gap-4">
                             <IftaLabel>
                                 <Select
@@ -572,7 +536,9 @@ const termsVisible = ref(false);
                                     fluid
                                 >
                                 </Select>
-                                <label>Campus</label>
+                                <label>{{
+                                    $t("reservation.create.form.campus")
+                                }}</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.campus?.invalid"
@@ -587,7 +553,7 @@ const termsVisible = ref(false);
                                         room.filter(
                                             (item) =>
                                                 item.campus ===
-                                                $form.campus.value,
+                                                $form.campus?.value
                                         ) || []
                                     "
                                     name="room"
@@ -606,7 +572,9 @@ const termsVisible = ref(false);
                                         <p v-else>No available options.</p>
                                     </template>
                                 </Select>
-                                <label>Room</label>
+                                <label>{{
+                                    $t("reservation.create.form.room")
+                                }}</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.room?.invalid"
@@ -625,21 +593,21 @@ const termsVisible = ref(false);
                                     >
                                 </template>
                                 <template #empty>
-                                    <p>No available reservation.</p>
+                                    <p>{{ $t("reservation.create.tables.reservations.empty") }}</p>
                                 </template>
-                                <Column header="Name">
+                                <Column :header="$t('reservation.create.tables.reservations.name')">
                                     <template #body="slotProps">
                                         {{ slotProps.data.studentName }}
                                     </template>
                                 </Column>
-                                <Column header="Date / Time">
+                                <Column :header="$t('reservation.create.tables.reservations.time')">
                                     <template #body="slotProps">
                                         {{
                                             `${formatTableDate(
-                                                slotProps.data.startTime,
+                                                slotProps.data.startTime
                                             )} / ${formatTableTime(
                                                 slotProps.data.startTime,
-                                                slotProps.data.endTime,
+                                                slotProps.data.endTime
                                             )}`
                                         }}
                                     </template>
@@ -656,32 +624,32 @@ const termsVisible = ref(false);
                             >
                                 <template #header>
                                     <span class="font-bold"
-                                        >Disabled Times</span
+                                        >{{ $t("reservation.create.tables.policy.header") }}</span
                                     >
                                 </template>
                                 <template #empty>
-                                    <p>No policy available for this room.</p>
+                                    <p>{{ $t("reservation.create.tables.policy.empty") }}</p>
                                 </template>
-                                <Column header="Weekdays">
+                                <Column :header="$t('reservation.create.tables.policy.weekdays')">
                                     <template #body="slotProps">
                                         {{
                                             formatTableWeekDay(
-                                                slotProps.data.days,
+                                                slotProps.data.days
                                             )
                                         }}
                                     </template>
                                 </Column>
-                                <Column header="Time">
+                                <Column :header="$t('reservation.create.tables.policy.time')">
                                     <template #body="slotProps">
                                         {{
                                             `${String(
-                                                slotProps.data.startTime[0],
+                                                slotProps.data.startTime[0]
                                             ).padStart(2, "0")}:${String(
-                                                slotProps.data.startTime[1],
+                                                slotProps.data.startTime[1]
                                             ).padStart(2, "0")} - ${String(
-                                                slotProps.data.endTime[0],
+                                                slotProps.data.endTime[0]
                                             ).padStart(2, "0")}:${String(
-                                                slotProps.data.endTime[1],
+                                                slotProps.data.endTime[1]
                                             ).padStart(2, "0")}`
                                         }}
                                     </template>
@@ -697,7 +665,9 @@ const termsVisible = ref(false);
                                     fluid
                                 >
                                 </DatePicker>
-                                <label>Date</label>
+                                <label>{{
+                                    $t("reservation.create.form.date")
+                                }}</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.date?.invalid"
@@ -706,10 +676,10 @@ const termsVisible = ref(false);
                                 dateFormat="yy/mm/dd"
                                 >{{ $form.date.error?.message }}</Message
                             >
-                            <IftaLabel>
+                            <IftaLabel v-if="$form.date?.value">
                                 <Select
                                     @change="
-                                        $form.endTime.value
+                                        $form.endTime?.value
                                             ? ($form.endTime.value = null)
                                             : undefined
                                     "
@@ -723,23 +693,10 @@ const termsVisible = ref(false);
                                     name="startTime"
                                     fluid
                                 >
-                                    <template #empty>
-                                        <p
-                                            v-if="
-                                                !$form.campus.value ||
-                                                !$form.room.value ||
-                                                !$form.classId.value ||
-                                                !$form.date.value
-                                            "
-                                            class="w-[18rem]"
-                                        >
-                                            No available options. Please fill in
-                                            the below field.
-                                        </p>
-                                        <p v-else>No available options.</p>
-                                    </template>
                                 </Select>
-                                <label>Start Time</label>
+                                <label>{{
+                                    $t("reservation.create.form.startTime")
+                                }}</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.startTime?.invalid"
@@ -747,7 +704,7 @@ const termsVisible = ref(false);
                                 size="small"
                                 >{{ $form.startTime.error?.message }}</Message
                             >
-                            <IftaLabel>
+                            <IftaLabel v-if="$form.startTime?.value">
                                 <Select
                                     :options="
                                         getEndTimeOptions({
@@ -760,18 +717,10 @@ const termsVisible = ref(false);
                                     name="endTime"
                                     fluid
                                 >
-                                    <template #empty>
-                                        <p
-                                            v-if="!$form.startTime.value"
-                                            class="w-[18rem]"
-                                        >
-                                            No available options. Please fill in
-                                            the below field.
-                                        </p>
-                                        <p v-else>No available options.</p>
-                                    </template>
                                 </Select>
-                                <label>End Time</label>
+                                <label>{{
+                                    $t("reservation.create.form.endTime")
+                                }}</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.endTime?.invalid"
@@ -785,7 +734,9 @@ const termsVisible = ref(false);
                                     name="reason"
                                     fluid
                                 ></InputText>
-                                <label>Reason</label>
+                                <label>{{
+                                    $t("reservation.create.form.reason")
+                                }}</label>
                             </IftaLabel>
                             <Message
                                 v-if="$form.reason?.invalid"
@@ -797,14 +748,13 @@ const termsVisible = ref(false);
                     </Fieldset>
                     <div class="flex items-center justify-center mt-3">
                         <Checkbox name="isAgreed" :binary="true" />
-                        <label class="ml-2 text-sm">
-                            I agree to the
+                        <i18n-t keypath="reservation.create.form.termsAgreement" tag="label" class="ml-2 text-sm">
                             <a
                                 @click="termsVisible = true"
                                 class="text-sky-500 cursor-pointer"
-                                >Classroom Regulations</a
+                                >{{ $t('reservation.create.form.termsAndConditions') }}</a
                             >.
-                        </label>
+                        </i18n-t>
                     </div>
                     <Message
                         v-if="$form.isAgreed?.invalid"
@@ -818,7 +768,8 @@ const termsVisible = ref(false);
                         fluid
                         class="mt-3"
                         :disabled="submitLoading"
-                        ><PenSquare></PenSquare>Submit</Button
+                        ><PenSquare></PenSquare
+                        >{{ $t("reservation.create.form.submit") }}</Button
                     >
                 </Form>
                 <div
@@ -842,8 +793,7 @@ const termsVisible = ref(false);
                             size="small"
                             as="a"
                             href="/reservation/create/"
-                            ><RotateCcw></RotateCcw> Create another
-                            reservation</Button
+                            ><RotateCcw></RotateCcw> {{ $t("reservation.create.buttons.anotherReservation") }}</Button
                         >
                     </div>
                 </div>

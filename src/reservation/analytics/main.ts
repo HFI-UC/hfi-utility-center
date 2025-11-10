@@ -7,9 +7,21 @@ import ToastService from "primevue/toastservice";
 import { Sky } from "@/theme";
 import { Chart } from "chart.js";
 import { WordCloudController, WordElement } from "chartjs-chart-wordcloud";
+// @ts-ignore
+import en_US from "@/assets/i18n/en-US.json";
+import { createI18n } from "vue-i18n";
 
 Chart.register(WordCloudController, WordElement);
+
 const app = createApp(App);
+const i18n = createI18n({
+    legacy: false,
+    locale: "en_US",
+    messages: {
+        en_US,
+    },
+});
+app.use(i18n);
 app.use(PrimeVue, {
     theme: {
         preset: Sky,
