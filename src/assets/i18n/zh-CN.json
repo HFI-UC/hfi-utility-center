@@ -70,8 +70,8 @@
         "create": {
             "title": "新预约",
             "subtitles": {
-                "personalInfo": "Personal Information",
-                "reservationInfo": "Reservation Information"
+                "personalInfo": "个人信息",
+                "reservationInfo": "预约信息"
             },
             "form": {
                 "class": "班级",
