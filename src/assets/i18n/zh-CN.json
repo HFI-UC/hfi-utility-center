@@ -1,0 +1,145 @@
+{
+    "home": {
+        "title": "HFI Utility Center",
+        "subtitle": "by MAKERs'",
+        "buttons": {
+            "bookRoom": "Book a room",
+            "viewReservations": "View reservations"
+        }
+    },
+    "navbar": {
+        "title": "HFI Utility Center",
+        "home": "Home",
+        "reservations": {
+            "reservations": "Reservations",
+            "create": "New Reservation",
+            "search": "Search Reservation",
+            "analytics": "Reservation Analytics"
+        },
+        "admin": {
+            "admin": "Admin",
+            "reservationManagement": "Reservation Management",
+            "facilityManagement": "Facility Management",
+            "adminManagement": "Admin Management"
+        },
+        "login": "Login",
+        "logout": "Logout"
+    },
+    "toast": {
+        "success": "Success",
+        "error": "Error",
+        "info": "Info",
+        "details": {
+            "loginSuccessful": "Login successful.",
+            "logoutSuccessful": "Logout successful.",
+            "fillInAllFields": "Please fill in all required fields.",
+            "reservationCreated": "Your reservation has been created successfully.",
+            "alreadyLoggedIn": "You are already logged in.",
+            "notLoggedIn": "You are not logged in."
+        }
+    },
+    "reservation": {
+        "search": {
+            "title": "Search Reservations",
+            "status": {
+                "pending": "Pending",
+                "approved": "Approved",
+                "rejected": "Rejected"
+            },
+            "placeholders": {
+                "keyword": "Keyword",
+                "room": "Room",
+                "status": "Status",
+                "time": "Time Range"
+            },
+            "reservations": "Reservations",
+            "selectTwoDates": "Please select two dates",
+            "noReservations": "No reservations found.",
+            "table": {
+                "id": "ID",
+                "studentName": "Student Name",
+                "room": "Room",
+                "class": "Class",
+                "status": "Status",
+                "startTime": "Start Time",
+                "endTime": "End Time",
+                "email": "E-mail",
+                "reason": "Reason"
+            }
+        },
+        "create": {
+            "title": "New Reservation",
+            "form": {
+                "class": "Class",
+                "room": "Room",
+                "startTime": "Start Time",
+                "endTime": "End Time",
+                "reason": "Reason",
+                "studentName": "Name",
+                "studentId": "Student ID",
+                "email": "E-mail",
+                "date": "Date",
+                "campus": "Campus",
+                "submit": "Submit",
+                "termsAgreement": "I agree to the {0}.",
+                "termsAndConditions": "Terms and Conditions",
+                "invalid": {
+                    "class": "Please select a class.",
+                    "classId": "Please select a class.",
+                    "studentName": "Student name is required.",
+                    "room": "Please select a room.",
+                    "studentId": {
+                        "required": "Student ID is required.",
+                        "prefix": "Student ID must start with 'GJ'.",
+                        "minLength": "Student ID must be at least 10 characters long (e.g. GJ12345678).",
+                        "digits": "The last 8 characters of Student ID must be numbers."
+                    },
+                    "email": {
+                        "required": "E-mail is required.",
+                        "format": "Wrong E-mail format."
+                    },
+                    "date": "Please select a date.",
+                    "startTime": "Please select a start time.",
+                    "endTime": "Please select an end time.",
+                    "reason": "Please provide a reason for the reservation.",
+                    "campus": "Please select a campus.",
+                    "isAgreed": "You must agree to the terms and conditions."
+                }
+            },
+            "tables": {
+                "policy": {
+                    "header": "Disabled Periods",
+                    "empty": "No available disabled periods.",
+                    "weekdays": "Weekdays",
+                    "time": "Time"
+                },
+                "reservations": {
+                    "header": "Reservations Info",
+                    "empty": "No reservations available.",
+                    "name": "Name",
+                    "time": "Date / Time"
+                }
+            },
+            "terms": {
+                "title": "Terms and Conditions",
+                "content": [
+                    "Do not bring food and drinks into the study area. Students are responsible for keeping the study room clean and tidy.",
+                    "Students should take good care of their personal belongings (such as wallets, phones, and computers). Valuable items should be carried or locked in a secure place. When leaving the classroom, students should take their valuable items with them, as the school does not assume any responsibility for their safekeeping.",
+                    "After leaving public areas, students should take their personal belongings with them. The administrative office will periodically clean the area, and the school will not be responsible for any lost items.",
+                    "Students should consciously maintain the cleanliness of the classroom and public order.",
+                    "Please take care of and use the teaching equipment responsibly. If any problems or losses are discovered, contact the administrative office as soon as possible. If a student causes equipment loss or maliciously damages the equipment, the student will be responsible for compensation.",
+                    "When students leave the classroom, they should ensure that all electrical equipment (such as air conditioners, fans, and lights) is turned off, and the remote control is returned to the designated location.",
+                    "Students are not allowed to move teaching equipment without permission.",
+                    "Do not reserve seats in any way. If students need to leave their seats, they should take their personal belongings with them, or place their books in their bags and put them under the desk without affecting other students' use of the seat. The duty teacher will periodically inspect the area, and any reserved items found will be removed to make the seat available for others.",
+                    "Be mindful of public decency and personal image, and do not lie down on benches or sofas.",
+                    "Do not speak loudly in public places, and set your phone to silent mode. Please go outside to make phone calls.",
+                    "It is forbidden to pull power sources privately or use high-powered electrical appliances. Do not move fire safety equipment without permission.",
+                    "The study area must not be used for non-study-related activities (including but not limited to video games on phones or computers, board games, watching variety shows or movies, etc.). Violations will be handled according to the Student Violation Management Regulations based on the actual situation."
+                ]
+            },
+            "buttons": {
+                "anotherReservation": "Make another reservation"
+            }
+        }
+    }
+}
