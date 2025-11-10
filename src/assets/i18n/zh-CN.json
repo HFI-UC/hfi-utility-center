@@ -69,6 +69,10 @@
         },
         "create": {
             "title": "新预约",
+            "subtitles": {
+                "personalInfo": "Personal Information",
+                "reservationInfo": "Reservation Information"
+            },
             "form": {
                 "class": "班级",
                 "room": "教室",
