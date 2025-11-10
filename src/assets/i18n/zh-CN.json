@@ -1,144 +1,144 @@
 {
     "home": {
         "title": "HFI Utility Center",
-        "subtitle": "by MAKERs'",
+        "subtitle": "由 MAKERs' 制作",
         "buttons": {
-            "bookRoom": "Book a room",
-            "viewReservations": "View reservations"
+            "bookRoom": "预约一个教室",
+            "viewReservations": "查看预约"
         }
     },
     "navbar": {
         "title": "HFI Utility Center",
-        "home": "Home",
+        "home": "主页",
         "reservations": {
-            "reservations": "Reservations",
-            "create": "New Reservation",
-            "search": "Search Reservation",
-            "analytics": "Reservation Analytics"
+            "reservations": "预约",
+            "create": "新预约",
+            "search": "搜索预约",
+            "analytics": "预约分析"
         },
         "admin": {
-            "admin": "Admin",
-            "reservationManagement": "Reservation Management",
-            "facilityManagement": "Facility Management",
-            "adminManagement": "Admin Management"
+            "admin": "管理员功能",
+            "reservationManagement": "预约管理",
+            "facilityManagement": "设施管理",
+            "adminManagement": "管理员管理"
         },
-        "login": "Login",
-        "logout": "Logout"
+        "login": "登录",
+        "logout": "登出"
     },
     "toast": {
-        "success": "Success",
-        "error": "Error",
-        "info": "Info",
+        "success": "成功",
+        "error": "错误",
+        "info": "信息",
         "details": {
-            "loginSuccessful": "Login successful.",
-            "logoutSuccessful": "Logout successful.",
-            "fillInAllFields": "Please fill in all required fields.",
-            "reservationCreated": "Your reservation has been created successfully.",
-            "alreadyLoggedIn": "You are already logged in.",
-            "notLoggedIn": "You are not logged in."
+            "loginSuccessful": "登录成功。",
+            "logoutSuccessful": "登出成功。",
+            "fillInAllFields": "请填写所有必填的字段。",
+            "reservationCreated": "你的预订已成功创建。",
+            "alreadyLoggedIn": "你已登录。",
+            "notLoggedIn": "你还没有登录。"
         }
     },
     "reservation": {
         "search": {
-            "title": "Search Reservations",
+            "title": "搜索预约",
             "status": {
-                "pending": "Pending",
-                "approved": "Approved",
-                "rejected": "Rejected"
+                "pending": "审核中",
+                "approved": "已通过",
+                "rejected": "已打回"
             },
             "placeholders": {
-                "keyword": "Keyword",
-                "room": "Room",
-                "status": "Status",
-                "time": "Time Range"
+                "keyword": "关键词",
+                "room": "教室",
+                "status": "状态",
+                "time": "时间范围"
             },
-            "reservations": "Reservations",
-            "selectTwoDates": "Please select two dates",
-            "noReservations": "No reservations found.",
+            "reservations": "预约",
+            "selectTwoDates": "请选择两个日期",
+            "noReservations": "无可用预约。",
             "table": {
                 "id": "ID",
-                "studentName": "Student Name",
-                "room": "Room",
-                "class": "Class",
-                "status": "Status",
-                "startTime": "Start Time",
-                "endTime": "End Time",
-                "email": "E-mail",
-                "reason": "Reason"
+                "studentName": "学生姓名",
+                "room": "教室",
+                "class": "班级",
+                "status": "状态",
+                "startTime": "开始时间",
+                "endTime": "结束时间",
+                "email": "邮箱",
+                "reason": "原因"
             }
         },
         "create": {
-            "title": "New Reservation",
+            "title": "新预约",
             "form": {
-                "class": "Class",
-                "room": "Room",
-                "startTime": "Start Time",
-                "endTime": "End Time",
-                "reason": "Reason",
-                "studentName": "Name",
-                "studentId": "Student ID",
-                "email": "E-mail",
-                "date": "Date",
-                "campus": "Campus",
-                "submit": "Submit",
-                "termsAgreement": "I agree to the {0}.",
-                "termsAndConditions": "Terms and Conditions",
+                "class": "班级",
+                "room": "教室",
+                "startTime": "开始时间",
+                "endTime": "结束时间",
+                "reason": "原因",
+                "studentName": "姓名",
+                "studentId": "学号",
+                "email": "邮箱",
+                "date": "日期",
+                "campus": "校区",
+                "submit": "提交",
+                "termsAgreement": "我同意 {0}。",
+                "termsAndConditions": "条款和条件",
                 "invalid": {
-                    "class": "Please select a class.",
-                    "classId": "Please select a class.",
-                    "studentName": "Student name is required.",
-                    "room": "Please select a room.",
+                    "class": "请选择一个班级。",
+                    "classId": "请选择一个班级。",
+                    "studentName": "请输入姓名。",
+                    "room": "请选择一个教室。",
                     "studentId": {
-                        "required": "Student ID is required.",
-                        "prefix": "Student ID must start with 'GJ'.",
-                        "minLength": "Student ID must be at least 10 characters long (e.g. GJ12345678).",
-                        "digits": "The last 8 characters of Student ID must be numbers."
+                        "required": "请输入学号。",
+                        "prefix": "学号必须以“GJ”开始。",
+                        "minLength": "学号必须至少为 10 个字符（例如，GJ12345678）。",
+                        "digits": "学号的最后 8 个字符必须是数字。"
                     },
                     "email": {
-                        "required": "E-mail is required.",
-                        "format": "Wrong E-mail format."
+                        "required": "请输入邮箱。",
+                        "format": "错误的邮箱格式。"
                     },
-                    "date": "Please select a date.",
-                    "startTime": "Please select a start time.",
-                    "endTime": "Please select an end time.",
-                    "reason": "Please provide a reason for the reservation.",
-                    "campus": "Please select a campus.",
-                    "isAgreed": "You must agree to the terms and conditions."
+                    "date": "请选择一个日期。",
+                    "startTime": "请选择开始时间。",
+                    "endTime": "请选择结束时间。",
+                    "reason": "请说明预约的理由。",
+                    "campus": "请选择一个校区。",
+                    "isAgreed": "您必须同意条款和条件。"
                 }
             },
             "tables": {
                 "policy": {
-                    "header": "Disabled Periods",
-                    "empty": "No available disabled periods.",
-                    "weekdays": "Weekdays",
-                    "time": "Time"
+                    "header": "停用时间",
+                    "empty": "没有可用的停用时间。",
+                    "weekdays": "工作日",
+                    "time": "时间"
                 },
                 "reservations": {
-                    "header": "Reservations Info",
-                    "empty": "No reservations available.",
-                    "name": "Name",
-                    "time": "Date / Time"
+                    "header": "预约信息",
+                    "empty": "没有可用的预约。",
+                    "name": "姓名",
+                    "time": "日期 / 时间"
                 }
             },
             "terms": {
-                "title": "Terms and Conditions",
+                "title": "条款和条件",
                 "content": [
-                    "Do not bring food and drinks into the study area. Students are responsible for keeping the study room clean and tidy.",
-                    "Students should take good care of their personal belongings (such as wallets, phones, and computers). Valuable items should be carried or locked in a secure place. When leaving the classroom, students should take their valuable items with them, as the school does not assume any responsibility for their safekeeping.",
-                    "After leaving public areas, students should take their personal belongings with them. The administrative office will periodically clean the area, and the school will not be responsible for any lost items.",
-                    "Students should consciously maintain the cleanliness of the classroom and public order.",
-                    "Please take care of and use the teaching equipment responsibly. If any problems or losses are discovered, contact the administrative office as soon as possible. If a student causes equipment loss or maliciously damages the equipment, the student will be responsible for compensation.",
-                    "When students leave the classroom, they should ensure that all electrical equipment (such as air conditioners, fans, and lights) is turned off, and the remote control is returned to the designated location.",
-                    "Students are not allowed to move teaching equipment without permission.",
-                    "Do not reserve seats in any way. If students need to leave their seats, they should take their personal belongings with them, or place their books in their bags and put them under the desk without affecting other students' use of the seat. The duty teacher will periodically inspect the area, and any reserved items found will be removed to make the seat available for others.",
-                    "Be mindful of public decency and personal image, and do not lie down on benches or sofas.",
-                    "Do not speak loudly in public places, and set your phone to silent mode. Please go outside to make phone calls.",
-                    "It is forbidden to pull power sources privately or use high-powered electrical appliances. Do not move fire safety equipment without permission.",
-                    "The study area must not be used for non-study-related activities (including but not limited to video games on phones or computers, board games, watching variety shows or movies, etc.). Violations will be handled according to the Student Violation Management Regulations based on the actual situation."
+                    "请勿携带食品和饮料进入自习区域饮食，学生有责任保持自习室干净整洁。",
+                    "学生应保管好个人物品（如钱包、手机、电脑），请将贵重物品随身携带或锁在安全的地方。离开课室时，请带走贵重物品，学校不承担保管义务。",
+                    "离开公共区域后，学生应将个人物品随身带走，行政办会定期清理场地卫生，如有遗失，学校不承担任何责任。",
+                    "学生需自觉维护好课室保洁、公共秩序。",
+                    "请爱护并合理使用教学设备，如果发现有问题或遗失，请尽快联系行政办；如果因学生原因造成设备遗失或学生恶意、损坏教学设备，学生应负责赔偿。",
+                    "学生离开课室时，应确保所有电器设备（如空调、风扇、灯）被关闭，并且遥控板被归还到指定位置。",
+                    "未经允许，学生不可以移动教学设备。",
+                    "请勿以任何方式占座，学生若需离开座位，请自觉将个人物品带离；或将桌面的书本收到书包里，放置在桌椅下方的侧边，不影响其它同学使用座位；值班老师将定期巡查，一旦发现有占座现象，占座物品将被移开或收走，以腾出座位给其他同学。",
+                    "注意公德和个人形象，勿在长椅或沙发上躺卧。",
+                    "公共场合不得大声喧哗，同时请将手机调为静音状态，自觉到室外接打电话。",
+                    "禁止私拉电源和使用高功率电器，未经批准请勿挪动消防设施。",
+                    "任何时段，自习区域不得进行与学习无关的事项（包括但不限于手机/电脑等电子游戏（APP）、棋牌、观看综艺/影视等）违反以上要求及规定，将结合实际情况，按照《学生违规管理条例》执行。"
                 ]
             },
             "buttons": {
-                "anotherReservation": "Make another reservation"
+                "anotherReservation": "创建另一个预约"
             }
         }
     }
