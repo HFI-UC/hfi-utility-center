@@ -14,8 +14,8 @@ import {
     Globe,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
-import { SpeedInsights } from '@vercel/speed-insights/vue';
-import { Analytics } from '@vercel/analytics/vue';
+import { SpeedInsights } from "@vercel/speed-insights/vue";
+import { Analytics } from "@vercel/analytics/vue";
 import { getCheckLogin, getLogOut } from "../api";
 import { usePrimeVue, useToast } from "primevue";
 import en from "primelocale/en.json";
@@ -29,7 +29,7 @@ import { useI18n } from "vue-i18n";
 
 RuntimeLoader.setWasmUrl(riveWASMResource);
 
-const { t, locale } = useI18n()
+const { t, locale } = useI18n();
 const isDark = defineModel<boolean>("isDark");
 const isScrolled = ref(false);
 const isMobile = ref(false);
@@ -158,7 +158,11 @@ const menuItems = computed(() => {
             iconComponent: UserRound,
             items: adminMenuItems.value,
         });
-        items.push({ label: t("navbar.logout"), iconComponent: LogOut, to: "#" });
+        items.push({
+            label: t("navbar.logout"),
+            iconComponent: LogOut,
+            to: "#",
+        });
     }
     return items;
 });
@@ -219,7 +223,6 @@ const localeOptions = ref([
     },
 ]);
 
-
 onMounted(() => {
     const r = new Rive({
         buffer: dataUrlToArrayBuffer(themeToggleUrl),
@@ -244,7 +247,7 @@ onMounted(() => {
 
 onMounted(async () => {
     selectedLocale.value = localStorage.getItem("locale") || "en-US";
-    changeLocale(selectedLocale.value)
+    changeLocale(selectedLocale.value);
     const color =
         sessionStorage.getItem("color") ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -290,7 +293,8 @@ onMounted(async () => {
                         aria-haspopup="true"
                         aria-controls="reservationsMenu"
                     >
-                        <Book></Book>{{ $t("navbar.reservations.reservations") }}
+                        <Book></Book
+                        >{{ $t("navbar.reservations.reservations") }}
                     </Button>
                     <Button
                         v-if="loginData?.success"
@@ -335,17 +339,6 @@ onMounted(async () => {
                 </Button>
             </div>
             <div v-else class="flex items-center gap-2">
-                <Select
-                    @change="changeLocale(selectedLocale)"
-                    :options="localeOptions"
-                    v-model="selectedLocale"
-                    optionValue="code"
-                    optionLabel="key"
-                >
-                    <template #dropdownicon>
-                        <Globe></Globe>
-                    </template>
-                </Select>
                 <Button
                     @click="toggleMenu"
                     text
@@ -363,6 +356,23 @@ onMounted(async () => {
                     popup
                     appendTo="#navbar"
                 >
+                    <template #start>
+                        <div class="mx-3">
+                        <Select
+                            @change="changeLocale(selectedLocale)"
+                            :options="localeOptions"
+                            v-model="selectedLocale"
+                            optionValue="code"
+                            optionLabel="key"
+                            fluid
+                            class="my-2"
+                        >
+                            <template #dropdownicon>
+                                <Globe></Globe>
+                            </template>
+                        </Select>
+                        </div>
+                    </template>
                     <template #item="slotProps">
                         <a
                             v-if="

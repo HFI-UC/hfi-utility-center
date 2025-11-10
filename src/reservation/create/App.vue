@@ -434,7 +434,7 @@ const termsVisible = ref(false);
                     :initialValues
                     @submit="onSubmitEvent"
                 >
-                    <Fieldset legend="Personal Information">
+                    <Fieldset :legend="$t('reservation.create.subtitles.personalInfo')">
                         <div class="flex flex-col gap-4">
                             <IftaLabel>
                                 <InputText
@@ -515,7 +515,7 @@ const termsVisible = ref(false);
                             </Message>
                         </div>
                     </Fieldset>
-                    <Fieldset v-if="$form.studentName?.value && $form.classId?.value && $form.studentId?.value && $form.email?.value" legend="Room Information">
+                    <Fieldset v-if="$form.studentName?.value && $form.classId?.value && $form.studentId?.value && $form.email?.value" :legend="$t('reservation.create.subtitles.reservationInfo')">
                         <div class="flex flex-col gap-4">
                             <IftaLabel>
                                 <Select
@@ -561,16 +561,6 @@ const termsVisible = ref(false);
                                     optionLabel="name"
                                     optionValue="id"
                                 >
-                                    <template #empty>
-                                        <p
-                                            v-if="!$form.campus.value"
-                                            class="w-[18rem]"
-                                        >
-                                            No available options. Please fill in
-                                            the below field.
-                                        </p>
-                                        <p v-else>No available options.</p>
-                                    </template>
                                 </Select>
                                 <label>{{
                                     $t("reservation.create.form.room")

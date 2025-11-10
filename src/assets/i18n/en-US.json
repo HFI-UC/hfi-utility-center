@@ -69,6 +69,10 @@
         },
         "create": {
             "title": "New Reservation",
+            "subtitles": {
+                "personalInfo": "Personal Information",
+                "reservationInfo": "Reservation Information"
+            },
             "form": {
                 "class": "Class",
                 "room": "Room",
