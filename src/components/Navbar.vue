@@ -11,12 +11,15 @@ import {
     ChartNoAxesCombined,
     BookCheck,
     DoorClosed,
+    Globe,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
 import { SpeedInsights } from '@vercel/speed-insights/vue';
 import { Analytics } from '@vercel/analytics/vue';
 import { getCheckLogin, getLogOut } from "../api";
-import { useToast } from "primevue";
+import { usePrimeVue, useToast } from "primevue";
+import en from "primelocale/en.json";
+import zh_cn from "primelocale/zh-CN.json";
 import { Rive, RuntimeLoader } from "@rive-app/canvas";
 // @ts-ignore
 import riveWASMResource from "@rive-app/canvas/rive.wasm";
@@ -26,7 +29,7 @@ import { useI18n } from "vue-i18n";
 
 RuntimeLoader.setWasmUrl(riveWASMResource);
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const isDark = defineModel<boolean>("isDark");
 const isScrolled = ref(false);
 const isMobile = ref(false);
@@ -188,6 +191,35 @@ const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     return bytes.buffer;
 };
+
+const primeVue = usePrimeVue();
+const primeVueLocales: Record<string, any> = {
+    "zh-CN": zh_cn["zh-CN"],
+    "zh-MS": zh_cn["zh-CN"],
+    "en-US": en["en"],
+};
+const selectedLocale = ref("");
+const changeLocale = (lang: string) => {
+    localStorage.setItem("locale", lang);
+    locale.value = lang;
+    primeVue.config.locale = { ...primeVueLocales[lang] };
+};
+const localeOptions = ref([
+    {
+        key: "简体中文",
+        code: "zh-CN",
+    },
+    {
+        key: "English",
+        code: "en-US",
+    },
+    {
+        key: "微软中文",
+        code: "zh-MS",
+    },
+]);
+
+
 onMounted(() => {
     const r = new Rive({
         buffer: dataUrlToArrayBuffer(themeToggleUrl),
@@ -211,6 +243,7 @@ onMounted(() => {
 });
 
 onMounted(async () => {
+    selectedLocale.value = localStorage.getItem("locale") || "en-US";
     const color =
         sessionStorage.getItem("color") ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -270,7 +303,18 @@ onMounted(async () => {
                     </Button>
                 </template>
             </div>
-            <div class="flex gap-8 items-center" v-if="!isMobile">
+            <div class="flex gap-4 items-center" v-if="!isMobile">
+                <Select
+                    @change="changeLocale(selectedLocale)"
+                    :options="localeOptions"
+                    v-model="selectedLocale"
+                    optionValue="code"
+                    optionLabel="key"
+                >
+                    <template #dropdownicon>
+                        <Globe></Globe>
+                    </template>
+                </Select>
                 <Button
                     v-if="!loginData?.success"
                     text
@@ -290,6 +334,17 @@ onMounted(async () => {
                 </Button>
             </div>
             <div v-else class="flex items-center gap-2">
+                <Select
+                    @change="changeLocale(selectedLocale)"
+                    :options="localeOptions"
+                    v-model="selectedLocale"
+                    optionValue="code"
+                    optionLabel="key"
+                >
+                    <template #dropdownicon>
+                        <Globe></Globe>
+                    </template>
+                </Select>
                 <Button
                     @click="toggleMenu"
                     text
