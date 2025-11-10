@@ -247,6 +247,9 @@ onMounted(() => {
 
 onMounted(async () => {
     selectedLocale.value = localStorage.getItem("locale") || "en-US";
+    if (!localeOptions.value.find((o: any) => o.code === selectedLocale.value)) {
+        selectedLocale.value = "en-US";
+    }
     changeLocale(selectedLocale.value);
     const color =
         sessionStorage.getItem("color") ||
@@ -315,6 +318,8 @@ onMounted(async () => {
                     v-model="selectedLocale"
                     optionValue="code"
                     optionLabel="key"
+                    appendTo="#navbar"
+                    overlayClass="!top-15"
                 >
                     <template #dropdownicon>
                         <Globe></Globe>
@@ -365,6 +370,8 @@ onMounted(async () => {
                             optionValue="code"
                             optionLabel="key"
                             fluid
+                            appendTo="#navbar"
+                            overlayClass="!top-30"
                             class="my-2"
                         >
                             <template #dropdownicon>
