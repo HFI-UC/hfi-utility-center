@@ -244,6 +244,7 @@ onMounted(() => {
 
 onMounted(async () => {
     selectedLocale.value = localStorage.getItem("locale") || "en-US";
+    changeLocale(selectedLocale.value)
     const color =
         sessionStorage.getItem("color") ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches
