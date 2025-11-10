@@ -11,20 +11,25 @@ import {
     ChartNoAxesCombined,
     BookCheck,
     DoorClosed,
+    Globe,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
-import { SpeedInsights } from '@vercel/speed-insights/vue';
-import { Analytics } from '@vercel/analytics/vue';
+import { SpeedInsights } from "@vercel/speed-insights/vue";
+import { Analytics } from "@vercel/analytics/vue";
 import { getCheckLogin, getLogOut } from "../api";
-import { useToast } from "primevue";
+import { usePrimeVue, useToast } from "primevue";
+import en from "primelocale/en.json";
+import zh_cn from "primelocale/zh-CN.json";
 import { Rive, RuntimeLoader } from "@rive-app/canvas";
 // @ts-ignore
 import riveWASMResource from "@rive-app/canvas/rive.wasm";
 // @ts-ignore
 import themeToggleUrl from "@/assets/theme-toggle.riv?inline";
+import { useI18n } from "vue-i18n";
 
 RuntimeLoader.setWasmUrl(riveWASMResource);
 
+const { t, locale } = useI18n();
 const isDark = defineModel<boolean>("isDark");
 const isScrolled = ref(false);
 const isMobile = ref(false);
@@ -72,14 +77,14 @@ const onLogOutEvent = async () => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: "Success",
-            detail: "Logout successful.",
+            summary: t("toast.success"),
+            detail: t("toast.details.logoutSuccessful"),
             life: 3000,
         });
     } else {
         toast.add({
             severity: "error",
-            summary: "Error",
+            summary: t("toast.error"),
             detail: response.message,
             life: 3000,
         });
@@ -92,17 +97,17 @@ const onLogOutEvent = async () => {
 const reservationsMenuItems = computed(() => {
     const items = [
         {
-            label: "New Reservation",
+            label: t("navbar.reservations.create"),
             iconComponent: Book,
             to: "/reservation/create/",
         },
         {
-            label: "Reservation Search",
+            label: t("navbar.reservations.search"),
             iconComponent: Search,
             to: "/reservation/search/",
         },
         {
-            label: "Reservation Analytics",
+            label: t("navbar.reservations.analytics"),
             iconComponent: ChartNoAxesCombined,
             to: "/reservation/analytics/",
         },
@@ -113,17 +118,17 @@ const reservationsMenuItems = computed(() => {
 const adminMenuItems = computed(() => {
     const items = [
         {
-            label: "Reservation Management",
+            label: t("navbar.admin.reservationManagement"),
             iconComponent: BookCheck,
             to: "/admin/reservation/",
         },
         {
-            label: "Facility Management",
+            label: t("navbar.admin.facilityManagement"),
             iconComponent: DoorClosed,
             to: "/admin/facility/",
         },
         {
-            label: "Admin Management",
+            label: t("navbar.admin.adminManagement"),
             iconComponent: UserRound,
             to: "/admin/admin/",
         },
@@ -133,9 +138,9 @@ const adminMenuItems = computed(() => {
 
 const menuItems = computed(() => {
     const items: any = [
-        { label: "Home", iconComponent: Home, to: "/" },
+        { label: t("navbar.home"), iconComponent: Home, to: "/" },
         {
-            label: "Reservations",
+            label: t("navbar.reservations.reservations"),
             iconComponent: Book,
             items: reservationsMenuItems.value,
         },
@@ -143,17 +148,21 @@ const menuItems = computed(() => {
     items.push({ separator: true });
     if (!loginData.value?.success) {
         items.push({
-            label: "Login",
+            label: t("navbar.login"),
             iconComponent: LogIn,
             to: "/admin/login/",
         });
     } else {
         items.push({
-            label: "Admin",
+            label: t("navbar.admin.admin"),
             iconComponent: UserRound,
             items: adminMenuItems.value,
         });
-        items.push({ label: "Logout", iconComponent: LogOut, to: "#" });
+        items.push({
+            label: t("navbar.logout"),
+            iconComponent: LogOut,
+            to: "#",
+        });
     }
     return items;
 });
@@ -186,6 +195,34 @@ const dataUrlToArrayBuffer = (dataUrl: string): ArrayBuffer => {
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     return bytes.buffer;
 };
+
+const primeVue = usePrimeVue();
+const primeVueLocales: Record<string, any> = {
+    "zh-CN": zh_cn["zh-CN"],
+    "zh-MS": zh_cn["zh-CN"],
+    "en-US": en["en"],
+};
+const selectedLocale = ref("");
+const changeLocale = (lang: string) => {
+    localStorage.setItem("locale", lang);
+    locale.value = lang;
+    primeVue.config.locale = { ...primeVueLocales[lang] };
+};
+const localeOptions = ref([
+    {
+        key: "简体中文",
+        code: "zh-CN",
+    },
+    {
+        key: "English",
+        code: "en-US",
+    },
+    {
+        key: "微软中文",
+        code: "zh-MS",
+    },
+]);
+
 onMounted(() => {
     const r = new Rive({
         buffer: dataUrlToArrayBuffer(themeToggleUrl),
@@ -209,6 +246,8 @@ onMounted(() => {
 });
 
 onMounted(async () => {
+    selectedLocale.value = localStorage.getItem("locale") || "en-US";
+    changeLocale(selectedLocale.value);
     const color =
         sessionStorage.getItem("color") ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -237,7 +276,7 @@ onMounted(async () => {
                 <a
                     class="font-bold md:text-lg text-md from-cyan-500 to-sky-500 bg-linear-to-r bg-clip-text text-transparent"
                     href="/"
-                    >HFI Utility Center</a
+                    >{{ $t("navbar.title") }}</a
                 >
                 <canvas
                     id="theme-canvas"
@@ -245,7 +284,7 @@ onMounted(async () => {
                 ></canvas>
                 <template v-if="!isMobile">
                     <Button text severity="contrast" as="a" href="/">
-                        <Home></Home>Home
+                        <Home></Home>{{ $t("navbar.home") }}
                     </Button>
                     <Button
                         text
@@ -254,7 +293,8 @@ onMounted(async () => {
                         aria-haspopup="true"
                         aria-controls="reservationsMenu"
                     >
-                        <Book></Book>Reservations
+                        <Book></Book
+                        >{{ $t("navbar.reservations.reservations") }}
                     </Button>
                     <Button
                         v-if="loginData?.success"
@@ -264,11 +304,22 @@ onMounted(async () => {
                         aria-haspopup="true"
                         aria-controls="adminMenu"
                     >
-                        <UserRound></UserRound>Admin
+                        <UserRound></UserRound>{{ $t("navbar.admin.admin") }}
                     </Button>
                 </template>
             </div>
-            <div class="flex gap-8 items-center" v-if="!isMobile">
+            <div class="flex gap-4 items-center" v-if="!isMobile">
+                <Select
+                    @change="changeLocale(selectedLocale)"
+                    :options="localeOptions"
+                    v-model="selectedLocale"
+                    optionValue="code"
+                    optionLabel="key"
+                >
+                    <template #dropdownicon>
+                        <Globe></Globe>
+                    </template>
+                </Select>
                 <Button
                     v-if="!loginData?.success"
                     text
@@ -276,7 +327,7 @@ onMounted(async () => {
                     as="a"
                     href="/admin/login/"
                 >
-                    <LogIn></LogIn>Login
+                    <LogIn></LogIn>{{ $t("navbar.login") }}
                 </Button>
                 <Button
                     v-if="loginData?.success"
@@ -284,13 +335,12 @@ onMounted(async () => {
                     severity="contrast"
                     @click="onLogOutEvent"
                 >
-                    <LogOut></LogOut>Logout
+                    <LogOut></LogOut>{{ $t("navbar.logout") }}
                 </Button>
             </div>
             <div v-else class="flex items-center gap-2">
                 <Button
                     @click="toggleMenu"
-                    aria-label="Menu"
                     text
                     aria-haspopup="true"
                     aria-controls="menu"
@@ -306,6 +356,23 @@ onMounted(async () => {
                     popup
                     appendTo="#navbar"
                 >
+                    <template #start>
+                        <div class="mx-3">
+                        <Select
+                            @change="changeLocale(selectedLocale)"
+                            :options="localeOptions"
+                            v-model="selectedLocale"
+                            optionValue="code"
+                            optionLabel="key"
+                            fluid
+                            class="my-2"
+                        >
+                            <template #dropdownicon>
+                                <Globe></Globe>
+                            </template>
+                        </Select>
+                        </div>
+                    </template>
                     <template #item="slotProps">
                         <a
                             v-if="

@@ -2,7 +2,9 @@
 import { onMounted } from "vue";
 import { getCheckLogin } from "../api";
 import { useToast } from "primevue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n()
 const props = defineProps<{ requireLogin: boolean; redirect?: string }>();
 const toast = useToast();
 onMounted(async () => {
@@ -11,8 +13,8 @@ onMounted(async () => {
         if (!response.success) {
             toast.add({
                 severity: "error",
-                summary: "Error",
-                detail: "You must be logged in to access this page.",
+                summary: t("toast.error"),
+                detail: t("toast.details.alreadyLoggedIn"),
                 life: 2000,
             });
             setTimeout(
@@ -26,8 +28,8 @@ onMounted(async () => {
         if (response.success) {
             toast.add({
                 severity: "error",
-                summary: "Error",
-                detail: "You have already logged in! Redirecting...",
+                summary: t("toast.error"),
+                detail: t("toast.details.notLoggedIn"),
                 life: 2000,
             });
             setTimeout(

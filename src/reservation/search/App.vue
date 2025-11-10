@@ -5,7 +5,9 @@ import { ref, computed } from "vue";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
 import { SquareArrowOutUpRight } from "lucide-vue-next";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n()
 const keyword = ref<string | null>(null);
 const status = ref<{ id: string; name: string; severity: string } | null>(null);
 const room = ref<number | null>(null);
@@ -41,28 +43,29 @@ const formatTime = (date: Date): string => {
     )}:${String(date.getMinutes()).padStart(2, "0")}`;
 };
 
-const statusMapping: Record<string, string> = {
-    pending: "Pending",
-    approved: "Approved",
-    rejected: "Rejected",
-};
+const statusMapping = computed<Record<string, string>>(() => ({
+    pending: t("reservation.search.status.pending"),
+    approved: t("reservation.search.status.approved"),
+    rejected: t("reservation.search.status.rejected"),
+}));
+
 const severityMapping: Record<string, string> = {
     pending: "info",
     approved: "success",
     rejected: "danger",
 };
-const statusOptions = [
-    { id: "pending", name: "Pending", severity: "info" },
-    { id: "approved", name: "Approved", severity: "success" },
-    { id: "rejected", name: "Rejected", severity: "danger" },
-];
+const statusOptions = computed(() => [
+    { id: "pending", name: t("reservation.search.status.pending"), severity: "info" },
+    { id: "approved", name: t("reservation.search.status.approved"), severity: "success" },
+    { id: "rejected", name: t("reservation.search.status.rejected"), severity: "danger" },
+]);
 </script>
 <template>
     <LoadingMask></LoadingMask>
     <Navbar></Navbar>
     <Toast></Toast>
     <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
-        <h1 class="font-bold md:text-3xl text-2xl my-4">Reservation Search</h1>
+        <h1 class="font-bold md:text-3xl text-2xl my-4">{{ $t("reservation.search.title") }}</h1>
         <Card class="w-full mt-4">
             <template #content>
                 <DataTable
@@ -77,11 +80,11 @@ const statusOptions = [
                 >
                     <template #header>
                         <div class="flex justify-between flex-col gap-4">
-                            <span class="font-bold text-lg">Reservations</span>
+                            <span class="font-bold text-lg">{{ $t("reservation.search.reservations") }}</span>
                             <div class="grid grid-cols-9 gap-2">
                                 <InputText
                                     v-model="keyword"
-                                    placeholder="Keyword"
+                                    :placeholder="$t('reservation.search.placeholders.keyword')"
                                     size="small"
                                     class="sm:col-span-3 md:col-span-2 col-span-9"
                                     fluid
@@ -89,7 +92,7 @@ const statusOptions = [
                                 <Select
                                     showClear
                                     v-model="room"
-                                    placeholder="Room"
+                                    :placeholder="$t('reservation.search.placeholders.room')"
                                     optionLabel="name"
                                     optionValue="id"
                                     :options="rooms?.data"
@@ -101,7 +104,7 @@ const statusOptions = [
                                 <Select
                                     showClear
                                     v-model="status"
-                                    placeholder="Status"
+                                    :placeholder="$t('reservation.search.placeholders.status')"
                                     :options="statusOptions"
                                     size="small"
                                     class="sm:col-span-3 md:col-span-2 col-span-9"
@@ -134,7 +137,7 @@ const statusOptions = [
                                     showClear
                                     v-model="time"
                                     selectionMode="range"
-                                    placeholder="Time Range"
+                                    :placeholder="$t('reservation.search.placeholders.time')"
                                     size="small"
                                     class="md:col-span-3 col-span-9"
                                     :manualInput="false"
@@ -144,7 +147,7 @@ const statusOptions = [
                                     <template #footer>
                                         <span
                                             class="text-sm flex justify-center mt-4"
-                                            >*Select two time</span
+                                            >{{ $t('reservation.search.selectTwoDates') }}</span
                                         >
                                     </template>
                                 </DatePicker>
@@ -152,11 +155,11 @@ const statusOptions = [
                         </div>
                     </template>
                     <template #empty>
-                        <p class="py-1">No available reservations.</p>
+                        <p class="py-1">{{ $t('reservation.search.noReservations') }}</p>
                     </template>
-                    <Column field="id" header="ID"></Column>
-                    <Column field="studentName" header="Student Name"></Column>
-                    <Column field="email" header="E-mail">
+                    <Column field="id" :header="$t('reservation.search.table.id')"></Column>
+                    <Column field="studentName" :header="$t('reservation.search.table.studentName')"></Column>
+                    <Column field="email" :header="$t('reservation.search.table.email')">
                         <template #body="slotProps">
                             <a
                                 :href="`mailto:${slotProps.data.email}`"
@@ -168,20 +171,20 @@ const statusOptions = [
                             ></a>
                         </template>
                     </Column>
-                    <Column field="className" header="Class"></Column>
-                    <Column field="roomName" header="Room"></Column>
-                    <Column field="startTime" header="Start Time">
+                    <Column field="className" :header="$t('reservation.search.table.class')"></Column>
+                    <Column field="roomName" :header="$t('reservation.search.table.room')"></Column>
+                    <Column field="startTime" :header="$t('reservation.search.table.startTime')">
                         <template #body="slotProps">
                             {{ formatTime(new Date(slotProps.data.startTime)) }}
                         </template>
                     </Column>
-                    <Column field="endTime" header="End Time">
+                    <Column field="endTime" :header="$t('reservation.search.table.endTime')">
                         <template #body="slotProps">
                             {{ formatTime(new Date(slotProps.data.endTime)) }}
                         </template>
                     </Column>
-                    <Column field="reason" header="Reason"></Column>
-                    <Column field="status" header="Status">
+                    <Column field="reason" :header="$t('reservation.search.table.reason')"></Column>
+                    <Column field="status" :header="$t('reservation.search.table.status')">
                         <template #body="slotProps">
                             <Tag
                                 :value="statusMapping[slotProps.data.status]"
