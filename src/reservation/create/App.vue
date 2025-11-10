@@ -579,7 +579,7 @@ const termsVisible = ref(false);
                             >
                                 <template #header>
                                     <span class="font-bold"
-                                        >Reservation Info</span
+                                        >{{ $t("reservation.create.tables.reservations.header") }}</span
                                     >
                                 </template>
                                 <template #empty>
