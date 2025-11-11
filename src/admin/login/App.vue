@@ -10,14 +10,19 @@ import AdminLogin from "../../components/AdminLogin.vue";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
 import VueTurnstile from "vue-turnstile";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const turnstileSiteKey = process.env.CLOUDFLARE_KEY || "";
-const resolver = zodResolver(
-    z.object({
-        email: z.email({ error: "Wrong E-mail format." }),
-        password: z.string({ error: "Password is required." }),
-    }),
-);
+const resolver = (values: any) => {
+    const schema = z.object({
+        email: z.email({
+            error: t("reservation.create.form.invalid.email.format"),
+        }),
+        password: z.string({ error: t("admin.login.form.password") }),
+    });
+    return zodResolver(schema)(values);
+};
 
 const toast = useToast();
 const submitLoading = ref(false);
@@ -28,8 +33,8 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill in all required fields.",
+            summary: t("toast.error"),
+            detail: t("toast.details.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -45,8 +50,8 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: "Success",
-            detail: "Login successful.",
+            summary: t("toast.success"),
+            detail: t("toast.details.loginSuccessful"),
             life: 2000,
         });
         setTimeout(
@@ -58,7 +63,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: "Error",
+            summary: t("toast.error"),
             detail: response.message,
             life: 2000,
         });
@@ -80,12 +85,12 @@ const initialValues = ref({ email: null, password: null });
     <LoadingMask></LoadingMask>
     <AdminLogin :requireLogin="false" :redirect="getRedirect()"></AdminLogin>
     <div class="flex items-center justify-center flex-col mt-[6rem] mb-4">
-        <h1 class="font-bold text-3xl my-4">Admin Login</h1>
+        <h1 class="font-bold text-3xl my-4">{{ $t("admin.login.title") }}</h1>
         <Card class="sm:w-[25rem] w-[23rem]">
             <template #content>
                 <Form
                     v-slot="$form"
-                    :resolver
+                    :resolver="resolver"
                     :initialValues
                     @submit="onSubmitEvent"
                 >
@@ -93,7 +98,7 @@ const initialValues = ref({ email: null, password: null });
                         <InputText
                             type="text"
                             name="email"
-                            placeholder="E-mail"
+                            :placeholder="$t('admin.login.form.email')"
                             autocomplete="email"
                             fluid
                         ></InputText>
@@ -106,7 +111,7 @@ const initialValues = ref({ email: null, password: null });
                         <InputText
                             type="password"
                             name="password"
-                            placeholder="Password"
+                            :placeholder="$t('admin.login.form.password')"
                             autocomplete="current-password"
                             fluid
                         ></InputText>
@@ -118,7 +123,7 @@ const initialValues = ref({ email: null, password: null });
                         >
                         <div class="flex items-center gap-2 flex-col">
                             <p class="text-center text-sm mt-3">
-                                Let us know you're human
+                                {{ $t("admin.login.humanVerification") }}
                             </p>
                             <VueTurnstile
                                 v-model="turnstileToken"
@@ -132,7 +137,7 @@ const initialValues = ref({ email: null, password: null });
                             severity="success"
                             :disabled="submitLoading || !turnstileToken"
                         >
-                            <LogIn></LogIn>Login
+                            <LogIn></LogIn>{{ $t("admin.login.form.submit") }}
                         </Button>
                     </div>
                 </Form>
@@ -140,3 +145,4 @@ const initialValues = ref({ email: null, password: null });
         </Card>
     </div>
 </template>
+

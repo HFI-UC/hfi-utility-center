@@ -16,7 +16,9 @@ import z from "zod";
 import type { FormSubmitEvent } from "@primevue/forms";
 import { useToast } from "primevue";
 import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const {
     data: admins,
     run: fetchAdmins,
@@ -35,16 +37,18 @@ const formatTime = (date: Date): string => {
 
 const toast = useToast();
 const loading = ref(false);
-const newAdminResolver = ref(
+const newAdminResolver = computed(() =>
     zodResolver(
         z.object({
-            name: z.string("Name is required.").min(1, "Name is required."),
+            name: z
+                .string(t("admin.admin.validation.nameRequired"))
+                .min(1, t("admin.admin.validation.nameRequired")),
             email: z
-                .email("Invalid email format.")
-                .min(1, "Email is required."),
+                .email(t("admin.admin.validation.emailInvalid"))
+                .min(1, t("admin.admin.validation.emailRequired")),
             password: z
-                .string("Name is required.")
-                .min(6, "Password must be at least 6 characters."),
+                .string(t("admin.admin.validation.passwordRequired"))
+                .min(6, t("admin.admin.validation.passwordMinLength")),
         }),
     ),
 );
@@ -54,8 +58,8 @@ const onNewAdminSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill in all required fields.",
+            summary: t("toast.error"),
+            detail: t("toast.details.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -70,8 +74,10 @@ const onNewAdminSubmit = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: "Success",
-            detail: response.message,
+            summary: t("toast.success"),
+            detail: t("admin.admin.toast.adminCreated", {
+                name: form.values.name,
+            }),
             life: 2000,
         });
         newAdminVisible.value = false;
@@ -80,20 +86,20 @@ const onNewAdminSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: response.message || "Failed to create admin.",
+            summary: t("toast.error"),
+            detail: response.message || t("admin.admin.toast.failedToCreateAdmin"),
             life: 2000,
         });
     }
 };
 
 const editAdminPasswordId = ref(-1);
-const editAdminPasswordResolver = ref(
+const editAdminPasswordResolver = computed(() =>
     zodResolver(
         z.object({
             password: z
-                .string("Password is required.")
-                .min(6, "Password must be at least 6 characters."),
+                .string(t("admin.admin.validation.passwordRequired"))
+                .min(6, t("admin.admin.validation.passwordMinLength")),
         }),
     ),
 );
@@ -103,8 +109,8 @@ const onEditAdminPasswordSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill in all required fields.",
+            summary: t("toast.error"),
+            detail: t("toast.details.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -118,8 +124,10 @@ const onEditAdminPasswordSubmit = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: "Success",
-            detail: response.message,
+            summary: t("toast.success"),
+            detail: t("admin.admin.toast.passwordEdited", {
+                id: editAdminPasswordId.value,
+            }),
             life: 2000,
         });
         editAdminPasswordVisible.value = false;
@@ -128,21 +136,25 @@ const onEditAdminPasswordSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: response.message || "Failed to edit admin password.",
+            summary: t("toast.error"),
+            detail:
+                response.message ||
+                t("admin.admin.toast.failedToEditPassword"),
             life: 2000,
         });
     }
 };
 
 const editAdminId = ref(-1);
-const editAdminResolver = ref(
+const editAdminResolver = computed(() =>
     zodResolver(
         z.object({
-            name: z.string("Name is required.").min(1, "Name is required."),
+            name: z
+                .string(t("admin.admin.validation.nameRequired"))
+                .min(1, t("admin.admin.validation.nameRequired")),
             email: z
-                .email("Invalid email format.")
-                .min(1, "Email is required."),
+                .email(t("admin.admin.validation.emailInvalid"))
+                .min(1, t("admin.admin.validation.emailRequired")),
         }),
     ),
 );
@@ -160,8 +172,8 @@ const onEditAdminSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill in all required fields.",
+            summary: t("toast.error"),
+            detail: t("toast.details.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -176,8 +188,10 @@ const onEditAdminSubmit = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: "Success",
-            detail: response.message,
+            summary: t("toast.success"),
+            detail: t("admin.admin.toast.adminEdited", {
+                id: editAdminId.value,
+            }),
             life: 2000,
         });
         editAdminVisible.value = false;
@@ -186,8 +200,8 @@ const onEditAdminSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: response.message || "Failed to edit admin password.",
+            summary: t("toast.error"),
+            detail: response.message || t("admin.admin.toast.failedToEditAdmin"),
             life: 2000,
         });
     }
@@ -200,16 +214,16 @@ const deleteAdmin = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: "Success",
-            detail: response.message,
+            summary: t("toast.success"),
+            detail: t("admin.admin.toast.adminDeleted", { id }),
             life: 2000,
         });
         fetchAdmins();
     } else {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: response.message || "Failed to delete admin.",
+            summary: t("toast.error"),
+            detail: response.message || t("admin.admin.toast.failedToDeleteAdmin"),
             life: 2000,
         });
     }
@@ -221,7 +235,7 @@ const deleteAdmin = async (id: number) => {
     <AdminLogin :requireLogin="true"></AdminLogin>
     <BlockUI :blocked="loading" fullScreen></BlockUI>
     <Dialog
-        header="New Admin"
+        :header="$t('admin.admin.dialog.newAdmin')"
         modal
         v-model:visible="newAdminVisible"
         :closable="false"
@@ -234,7 +248,11 @@ const deleteAdmin = async (id: number) => {
             @submit="onNewAdminSubmit"
         >
             <div class="flex flex-col gap-4">
-                <InputText name="name" placeholder="Name" fluid></InputText>
+                <InputText
+                    name="name"
+                    :placeholder="$t('admin.admin.form.name')"
+                    fluid
+                ></InputText>
                 <Message
                     v-if="$form.name?.invalid"
                     severity="error"
@@ -243,7 +261,7 @@ const deleteAdmin = async (id: number) => {
                 >
                 <InputText
                     name="email"
-                    placeholder="E-mail"
+                    :placeholder="$t('admin.admin.form.email')"
                     autocomplete="email"
                     fluid
                 ></InputText>
@@ -255,7 +273,7 @@ const deleteAdmin = async (id: number) => {
                 >
                 <InputText
                     name="password"
-                    placeholder="Password"
+                    :placeholder="$t('admin.admin.form.password')"
                     autocomplete="password"
                     type="password"
                     fluid
@@ -272,14 +290,16 @@ const deleteAdmin = async (id: number) => {
                     type="button"
                     severity="secondary"
                     @click="((newAdminVisible = false), $form.reset())"
-                    >Cancel</Button
+                    >{{ $t("admin.admin.buttons.cancel") }}</Button
                 >
-                <Button type="submit"><Plus></Plus>Create</Button>
+                <Button type="submit"
+                    ><Plus></Plus>{{ $t("admin.admin.buttons.create") }}</Button
+                >
             </div>
         </Form>
     </Dialog>
     <Dialog
-        header="Edit Password"
+        :header="$t('admin.admin.dialog.editPassword')"
         modal
         v-model:visible="editAdminPasswordVisible"
         :closable="false"
@@ -294,7 +314,7 @@ const deleteAdmin = async (id: number) => {
             <div class="flex flex-col gap-4">
                 <InputText
                     name="password"
-                    placeholder="Password"
+                    :placeholder="$t('admin.admin.form.password')"
                     autocomplete="password"
                     type="password"
                     fluid
@@ -310,15 +330,20 @@ const deleteAdmin = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="((editAdminPasswordVisible = false), $form.reset())"
-                    >Cancel</Button
+                    @click="
+                        ((editAdminPasswordVisible = false), $form.reset())
+                    "
+                    >{{ $t("admin.admin.buttons.cancel") }}</Button
                 >
-                <Button type="submit"><PenLine></PenLine>Edit</Button>
+                <Button type="submit"
+                    ><PenLine></PenLine
+                    >{{ $t("admin.admin.buttons.edit") }}</Button
+                >
             </div>
         </Form>
     </Dialog>
     <Dialog
-        header="Edit Admin"
+        :header="$t('admin.admin.dialog.editAdmin')"
         modal
         v-model:visible="editAdminVisible"
         :closable="false"
@@ -331,7 +356,11 @@ const deleteAdmin = async (id: number) => {
             @submit="onEditAdminSubmit"
         >
             <div class="flex flex-col gap-4">
-                <InputText name="name" placeholder="Name" fluid></InputText>
+                <InputText
+                    name="name"
+                    :placeholder="$t('admin.admin.form.name')"
+                    fluid
+                ></InputText>
                 <Message
                     v-if="$form.name?.invalid"
                     severity="error"
@@ -340,7 +369,7 @@ const deleteAdmin = async (id: number) => {
                 >
                 <InputText
                     name="email"
-                    placeholder="E-mail"
+                    :placeholder="$t('admin.admin.form.email')"
                     autocomplete="email"
                     fluid
                 ></InputText>
@@ -356,14 +385,19 @@ const deleteAdmin = async (id: number) => {
                     type="button"
                     severity="secondary"
                     @click="((editAdminVisible = false), $form.reset())"
-                    >Cancel</Button
+                    >{{ $t("admin.admin.buttons.cancel") }}</Button
                 >
-                <Button type="submit"><PenLine></PenLine>Edit</Button>
+                <Button type="submit"
+                    ><PenLine></PenLine
+                    >{{ $t("admin.admin.buttons.edit") }}</Button
+                >
             </div>
         </Form>
     </Dialog>
     <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
-        <h1 class="font-bold text-3xl my-4">Admin Management</h1>
+        <h1 class="font-bold text-3xl my-4">
+            {{ $t("admin.admin.title") }}
+        </h1>
         <Card>
             <template #content>
                 <DataTable
@@ -373,16 +407,27 @@ const deleteAdmin = async (id: number) => {
                 >
                     <template #header>
                         <div class="flex items-center justify-between">
-                            <span class="text-lg font-bold">Admins</span>
+                            <span class="text-lg font-bold">{{
+                                $t("admin.admin.admins")
+                            }}</span>
                             <Button size="small" @click="newAdminVisible = true"
                                 ><Plus></Plus
                             ></Button>
                         </div>
                     </template>
-                    <Column field="id" header="ID"></Column>
-                    <Column field="name" header="Name"></Column>
-                    <Column field="email" header="Email"></Column>
-                    <Column header="Password">
+                    <Column
+                        field="id"
+                        :header="$t('admin.admin.table.id')"
+                    ></Column>
+                    <Column
+                        field="name"
+                        :header="$t('admin.admin.table.name')"
+                    ></Column>
+                    <Column
+                        field="email"
+                        :header="$t('admin.admin.table.email')"
+                    ></Column>
+                    <Column :header="$t('admin.admin.table.password')">
                         <template #body="slotProps">
                             <Button
                                 size="small"
@@ -394,14 +439,14 @@ const deleteAdmin = async (id: number) => {
                             ></Button>
                         </template>
                     </Column>
-                    <Column header="Creation Time">
+                    <Column :header="$t('admin.admin.table.creationTime')">
                         <template #body="slotProps">
                             <span>{{
                                 formatTime(new Date(slotProps.data.createdAt))
                             }}</span>
                         </template>
                     </Column>
-                    <Column header="Actions">
+                    <Column :header="$t('admin.admin.table.actions')">
                         <template #body="slotProps">
                             <div class="flex gap-2">
                                 <Button

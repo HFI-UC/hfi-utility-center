@@ -95,7 +95,7 @@ const onLogOutEvent = async () => {
 };
 
 const reservationsMenuItems = computed(() => {
-    const items = [
+    return [
         {
             label: t("navbar.reservations.create"),
             iconComponent: Book,
@@ -112,11 +112,10 @@ const reservationsMenuItems = computed(() => {
             to: "/reservation/analytics/",
         },
     ];
-    return items;
 });
 
 const adminMenuItems = computed(() => {
-    const items = [
+    return [
         {
             label: t("navbar.admin.reservationManagement"),
             iconComponent: BookCheck,
@@ -133,11 +132,10 @@ const adminMenuItems = computed(() => {
             to: "/admin/admin/",
         },
     ];
-    return items;
 });
 
 const menuItems = computed(() => {
-    const items: any = [
+    const items: any[] = [
         { label: t("navbar.home"), iconComponent: Home, to: "/" },
         {
             label: t("navbar.reservations.reservations"),
@@ -161,21 +159,10 @@ const menuItems = computed(() => {
         items.push({
             label: t("navbar.logout"),
             iconComponent: LogOut,
-            to: "#",
+            command: onLogOutEvent,
         });
     }
     return items;
-});
-
-onMounted(() => {
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("resize", handleResize);
-    handleResize();
-});
-
-onUnmounted(() => {
-    window.removeEventListener("scroll", handleScroll);
-    window.removeEventListener("resize", handleResize);
 });
 
 const colorTheme = ref("white");
@@ -208,22 +195,26 @@ const changeLocale = (lang: string) => {
     locale.value = lang;
     primeVue.config.locale = { ...primeVueLocales[lang] };
 };
-const localeOptions = ref([
+const localeOptions = computed(() => [
     {
-        key: "简体中文",
+        key: t("navbar.locales.zhCN"),
         code: "zh-CN",
     },
     {
-        key: "English",
+        key: t("navbar.locales.enUS"),
         code: "en-US",
     },
     {
-        key: "微软中文",
+        key: t("navbar.locales.zhMS"),
         code: "zh-MS",
     },
 ]);
 
-onMounted(() => {
+onMounted(async () => {
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
     const r = new Rive({
         buffer: dataUrlToArrayBuffer(themeToggleUrl),
         // @ts-ignore
@@ -243,9 +234,7 @@ onMounted(() => {
         },
     });
     riveInstance.value = r;
-});
 
-onMounted(async () => {
     selectedLocale.value = localStorage.getItem("locale") || "en-US";
     if (!localeOptions.value.find((o: any) => o.code === selectedLocale.value)) {
         selectedLocale.value = "en-US";
@@ -263,6 +252,11 @@ onMounted(async () => {
         root.classList.toggle("p-dark");
         colorTheme.value = "dark";
     }
+});
+
+onUnmounted(() => {
+    window.removeEventListener("scroll", handleScroll);
+    window.removeEventListener("resize", handleResize);
 });
 </script>
 <template>
@@ -363,65 +357,40 @@ onMounted(async () => {
                 >
                     <template #start>
                         <div class="mx-3">
-                        <Select
-                            @change="changeLocale(selectedLocale)"
-                            :options="localeOptions"
-                            v-model="selectedLocale"
-                            optionValue="code"
-                            optionLabel="key"
-                            fluid
-                            appendTo="#navbar"
-                            overlayClass="!top-30"
-                            class="my-2"
-                        >
-                            <template #dropdownicon>
-                                <Globe></Globe>
-                            </template>
-                        </Select>
+                            <Select
+                                @change="changeLocale(selectedLocale)"
+                                :options="localeOptions"
+                                v-model="selectedLocale"
+                                optionValue="code"
+                                optionLabel="key"
+                                fluid
+                                appendTo="#navbar"
+                                overlayClass="!top-30"
+                                class="my-2"
+                            >
+                                <template #dropdownicon>
+                                    <Globe></Globe>
+                                </template>
+                            </Select>
                         </div>
                     </template>
-                    <template #item="slotProps">
+                    <template #item="{ item, props }">
                         <a
-                            v-if="
-                                !slotProps.item.separator &&
-                                !slotProps.item.items
-                            "
-                            class="flex items-center gap-2 px-3 py-2"
-                            :href="slotProps.item.to"
-                            @click="
-                                slotProps.item.label === 'Logout'
-                                    ? ($event.preventDefault(), onLogOutEvent())
-                                    : undefined
-                            "
+                            v-if="!item.separator"
+                            :href="item.to"
+                            v-bind="props.action"
+                            class="flex items-center gap-2"
                         >
                             <component
-                                :is="slotProps.item.iconComponent"
+                                :is="item.iconComponent"
                                 class="w-4 h-4"
-                                v-if="slotProps.item.iconComponent"
+                                v-if="item.iconComponent"
                             />
-                            {{ slotProps.item.label }}
+                            <span>{{ item.label }}</span>
                         </a>
-                        <Menu
-                            v-else-if="slotProps.item.items"
-                            :model="slotProps.item.items"
-                            popup
-                            appendTo="#navbar"
-                        >
-                            <template #item="subSlotProps">
-                                <a
-                                    class="flex items-center gap-2 px-3 py-2"
-                                    :href="subSlotProps.item.to"
-                                >
-                                    <component
-                                        :is="subSlotProps.item.iconComponent"
-                                        class="w-4 h-4"
-                                        v-if="subSlotProps.item.iconComponent"
-                                    />
-                                    {{ subSlotProps.item.label }}
-                                </a>
-                            </template>
-                        </Menu>
-                        <Divider v-else class="my-2"></Divider>
+                        <div v-else class="my-2">
+                            <Divider />
+                        </div>
                     </template>
                 </Menu>
             </div>

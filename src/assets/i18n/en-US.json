@@ -23,7 +23,230 @@
             "adminManagement": "Admin Management"
         },
         "login": "Login",
-        "logout": "Logout"
+        "logout": "Logout",
+        "locales": {
+            "zhCN": "Simplified Chinese",
+            "enUS": "English",
+            "zhMS": "Microsoft Chinese"
+        }
+    },
+    "admin": {
+        "login": {
+            "title": "Admin Login",
+            "form": {
+                "email": "E-mail",
+                "password": "Password",
+                "submit": "Login"
+            },
+            "humanVerification": "Let us know you're human"
+        },
+        "facility": {
+            "title": "Facility Management",
+            "rooms": "Rooms",
+            "campuses": "Campuses",
+            "classes": "Classes",
+            "noRooms": "No rooms found.",
+            "noCampuses": "No campuses found.",
+            "noClasses": "No classes found.",
+            "noPolicies": "No policies found.",
+            "noApprovers": "No approvers found.",
+            "table": {
+                "id": "ID",
+                "name": "Name",
+                "status": "Status",
+                "enabled": "Enabled",
+                "disabled": "Disabled",
+                "campus": "Campus",
+                "policy": "Policy",
+                "approver": "Approver",
+                "creationTime": "Creation Time",
+                "action": "Action",
+                "weekdays": "Weekdays",
+                "time": "Time",
+                "active": "Active",
+                "inactive": "Inactive",
+                "email": "E-mail"
+            },
+            "dialog": {
+                "newCampus": "New Campus",
+                "newRoom": "New Room",
+                "newClass": "New Class",
+                "roomPolicies": "Room Policies",
+                "newPolicy": "New Policy",
+                "editPolicy": "Edit Room Policy",
+                "roomApprovers": "Room Approvers",
+                "newApprover": "New Room Approver",
+                "editClass": "Edit Class",
+                "editRoom": "Edit Room",
+                "editCampus": "Edit Campus"
+            },
+            "form": {
+                "name": "Name",
+                "campus": "Campus",
+                "weekdays": "Weekdays",
+                "startTime": "Start Time",
+                "endTime": "End Time",
+                "admin": "Admin",
+                "enabled": "Enabled"
+            },
+            "buttons": {
+                "cancel": "Cancel",
+                "create": "Create",
+                "edit": "Edit"
+            },
+            "toast": {
+                "roomDeleted": "Room #{id} has been deleted.",
+                "campusDeleted": "Campus #{id} has been deleted.",
+                "classDeleted": "Class #{id} has been deleted.",
+                "campusCreated": "Campus \"{name}\" has been created.",
+                "roomCreated": "Room \"{name}\" has been created.",
+                "classCreated": "Class \"{name}\" has been created.",
+                "startTimeBeforeEndTime": "Start time must be before end time.",
+                "policyCreated": "Policy created successfully.",
+                "failedToCreatePolicy": "Failed to create policy.",
+                "policyEdited": "Policy edited successfully.",
+                "failedToEditPolicy": "Failed to edit policy.",
+                "policyDeleted": "Policy deleted successfully.",
+                "failedToDeletePolicy": "Failed to delete policy.",
+                "policyToggled": "Policy toggled successfully.",
+                "failedToTogglePolicy": "Failed to toggle policy.",
+                "classEdited": "Class edited successfully.",
+                "failedToEditClass": "Failed to edit class.",
+                "roomEdited": "Room edited successfully.",
+                "failedToEditRoom": "Failed to edit room.",
+                "campusEdited": "Campus edited successfully.",
+                "failedToEditCampus": "Failed to edit campus.",
+                "approverCreated": "Approver created successfully.",
+                "failedToCreateApprover": "Failed to create approver.",
+                "approverNotificationsToggled": "Approver notifications toggled successfully.",
+                "failedToToggleApproverNotifications": "Failed to toggle approver notifications.",
+                "approverDeleted": "Approver deleted successfully.",
+                "failedToDeleteApprover": "Failed to delete approver."
+            }
+        },
+        "admin": {
+            "title": "Admin Management",
+            "admins": "Admins",
+            "table": {
+                "id": "ID",
+                "name": "Name",
+                "email": "Email",
+                "password": "Password",
+                "creationTime": "Creation Time",
+                "actions": "Actions"
+            },
+            "dialog": {
+                "newAdmin": "New Admin",
+                "editPassword": "Edit Password",
+                "editAdmin": "Edit Admin"
+            },
+            "form": {
+                "name": "Name",
+                "email": "E-mail",
+                "password": "Password"
+            },
+            "buttons": {
+                "cancel": "Cancel",
+                "create": "Create",
+                "edit": "Edit"
+            },
+            "toast": {
+                "adminCreated": "Admin \"{name}\" has been created.",
+                "failedToCreateAdmin": "Failed to create admin.",
+                "passwordEdited": "Password for admin #{id} has been edited.",
+                "failedToEditPassword": "Failed to edit admin password.",
+                "adminEdited": "Admin #{id} has been edited.",
+                "failedToEditAdmin": "Failed to edit admin.",
+                "adminDeleted": "Admin #{id} has been deleted.",
+                "failedToDeleteAdmin": "Failed to delete admin."
+            },
+            "validation": {
+                "nameRequired": "Name is required.",
+                "emailInvalid": "Invalid email format.",
+                "emailRequired": "Email is required.",
+                "passwordRequired": "Password is required.",
+                "passwordMinLength": "Password must be at least 6 characters."
+            }
+        },
+        "reservation": {
+            "title": "Reservation Management",
+            "futureReservations": "Future Reservations",
+            "noFutureReservations": "No future reservations found.",
+            "allReservations": "All Reservations",
+            "noAllReservations": "No available reservations.",
+            "export": "Export (.xlsx)",
+            "dialog": {
+                "rejectReservation": "Reject Reservation",
+                "exportReservations": "Export Reservations"
+            },
+            "form": {
+                "reason": "Reason",
+                "reasonRequired": "Reason is required.",
+                "option": "Select an option",
+                "optionRequired": "Format is required.",
+                "time": "Time",
+                "mode": "Select an export mode"
+            },
+            "buttons": {
+                "cancel": "Cancel",
+                "reject": "Reject",
+                "export": "Export",
+                "approve": "Approve"
+            },
+            "studentInfo": {
+                "title": "Student Information",
+                "name": "Student Name",
+                "id": "Student ID",
+                "email": "E-mail",
+                "class": "Class",
+                "campus": "Campus"
+            },
+            "reservationDetails": {
+                "title": "Reservation Details",
+                "room": "Room",
+                "startTime": "Start Time",
+                "endTime": "End Time",
+                "status": "Status",
+                "reason": "Reason"
+            },
+            "table": {
+                "id": "ID",
+                "studentName": "Student Name",
+                "studentId": "Student ID",
+                "email": "E-mail",
+                "class": "Class",
+                "room": "Room",
+                "startTime": "Start Time",
+                "endTime": "End Time",
+                "reason": "Reason",
+                "creationTime": "Creation Time",
+                "latestExecutor": "Latest Executor",
+                "status": "Status"
+            },
+            "placeholders": {
+                "keyword": "Keyword",
+                "room": "Room",
+                "status": "Status",
+                "timeRange": "Time Range"
+            },
+            "toast": {
+                "reservationApproved": "Reservation #{id} has been approved.",
+                "reservationRejected": "Reservation #{id} has been rejected for the following reason: {reason}",
+                "noReservationsInRange": "There are no reservations in the selected time range."
+            },
+            "exportOptions": {
+                "today": "Export reservations for today",
+                "thisWeek": "Export reservations for this week",
+                "thisMonth": "Export reservations for this month",
+                "all": "Export every reservations",
+                "custom": "Custom range"
+            },
+            "modeOptions": {
+                "byRoom": "By room",
+                "singleSheet": "Single sheet"
+            },
+            "selectTwoDates": "*Select two time"
+        }
     },
     "toast": {
         "success": "Success",
@@ -143,7 +366,74 @@
             },
             "buttons": {
                 "anotherReservation": "Make another reservation"
-            }
+            },
+            "weekdays": [
+                "Mon.",
+                "Tue.",
+                "Wed.",
+                "Thu.",
+                "Fri.",
+                "Sat.",
+                "Sun."
+            ]
+        },
+        "analytics": {
+            "title": "Reservation Analytics",
+            "overview": {
+                "title": "Overview",
+                "exportPDF": "Export (.pdf)",
+                "exportPNG": "Export (.png)",
+                "reservationsToday": "Reservations (Today)",
+                "approvalsToday": "Approvals (Today)",
+                "rejectionsToday": "Rejections (Today)",
+                "creationsToday": "Reservation Creations (Today)",
+                "weekly": "Weekly (Last 7 Days)",
+                "daily": "Daily (Last 30 Days)",
+                "monthly": "Monthly (Last 1 Year)",
+                "dailyRequests": "Daily Requests (Last 30 Days)"
+            },
+            "weekly": {
+                "title": "Weekly (Last Week)",
+                "exportPDF": "Export (.pdf)",
+                "exportPNG": "Export (.png)",
+                "reservations": "Reservations",
+                "approvals": "Approvals",
+                "rejections": "Rejections",
+                "creations": "Reservation Creations",
+                "reasons": "Reasons",
+                "hourlyReservations": "Hourly Reservations",
+                "dailyReservations": "Daily Reservations",
+                "dailyCreations": "Daily Reservation Creations",
+                "topRooms": "Top 5 Room Statistics"
+            },
+            "charts": {
+                "reservations": "Reservations",
+                "creations": "Reservation Creations",
+                "approvals": "Reservation Approvals",
+                "rejections": "Reservation Rejections",
+                "requests": "Requests"
+            },
+            "dialog": {
+                "humanVerification": {
+                    "title": "Human Verification",
+                    "subtitle": "Let us know you're human",
+                    "cancel": "Cancel"
+                }
+            },
+            "months": [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec"
+            ]
         }
     }
 }

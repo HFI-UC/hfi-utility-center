@@ -34,60 +34,62 @@ import LoadingMask from "../../components/LoadingMask.vue";
 import { useI18n } from "vue-i18n";
 
 const { t, tm } = useI18n();
-const resolver = zodResolver(
-    z.object({
-        classId: z.number({
-            error: t("reservation.create.form.invalid.classId"),
-        }),
-        studentName: z
-            .string({ error: t("reservation.create.form.invalid.studentName") })
-            .min(1, {
-                message: t("reservation.create.form.invalid.studentName"),
+const resolver = computed(() =>
+    zodResolver(
+        z.object({
+            classId: z.number({
+                error: t("reservation.create.form.invalid.classId"),
             }),
-        room: z.number({ error: t("reservation.create.form.invalid.room") }),
-        studentId: z
-            .string({
-                error: t("reservation.create.form.invalid.studentId.required"),
-            })
-            .startsWith("GJ", {
-                message: t("reservation.create.form.invalid.studentId.prefix"),
-            })
-            .min(10, {
-                message: t(
-                    "reservation.create.form.invalid.studentId.minLength"
-                ),
-            })
-            .refine((val) => /^\d{8}$/.test(val.slice(-8)), {
-                message: t("reservation.create.form.invalid.studentId.digits"),
+            studentName: z
+                .string({ error: t("reservation.create.form.invalid.studentName") })
+                .min(1, {
+                    message: t("reservation.create.form.invalid.studentName"),
+                }),
+            room: z.number({ error: t("reservation.create.form.invalid.room") }),
+            studentId: z
+                .string({
+                    error: t("reservation.create.form.invalid.studentId.required"),
+                })
+                .startsWith("GJ", {
+                    message: t("reservation.create.form.invalid.studentId.prefix"),
+                })
+                .min(10, {
+                    message: t(
+                        "reservation.create.form.invalid.studentId.minLength"
+                    ),
+                })
+                .refine((val) => /^\d{8}$/.test(val.slice(-8)), {
+                    message: t("reservation.create.form.invalid.studentId.digits"),
+                }),
+            email: z
+                .email({
+                    message: t("reservation.create.form.invalid.email.format"),
+                })
+                .min(1, {
+                    message: t("reservation.create.form.invalid.email.required"),
+                }),
+            date: z.date({ error: t("reservation.create.form.invalid.date") }),
+            startTime: z
+                .string({ error: t("reservation.create.form.invalid.startTime") })
+                .min(1, {
+                    message: t("reservation.create.form.invalid.startTime"),
+                }),
+            endTime: z
+                .string({ error: t("reservation.create.form.invalid.endTime") })
+                .min(1, { message: t("reservation.create.form.invalid.endTime") }),
+            reason: z
+                .string({ error: t("reservation.create.form.invalid.reason") })
+                .min(1, { message: t("reservation.create.form.invalid.reason") }),
+            campus: z.number({
+                error: t("reservation.create.form.invalid.campus"),
             }),
-        email: z
-            .email({
-                message: t("reservation.create.form.invalid.email.format"),
-            })
-            .min(1, {
-                message: t("reservation.create.form.invalid.email.required"),
-            }),
-        date: z.date({ error: t("reservation.create.form.invalid.date") }),
-        startTime: z
-            .string({ error: t("reservation.create.form.invalid.startTime") })
-            .min(1, {
-                message: t("reservation.create.form.invalid.startTime"),
-            }),
-        endTime: z
-            .string({ error: t("reservation.create.form.invalid.endTime") })
-            .min(1, { message: t("reservation.create.form.invalid.endTime") }),
-        reason: z
-            .string({ error: t("reservation.create.form.invalid.reason") })
-            .min(1, { message: t("reservation.create.form.invalid.reason") }),
-        campus: z.number({
-            error: t("reservation.create.form.invalid.campus"),
-        }),
-        isAgreed: z
-            .boolean({ error: t("reservation.create.form.invalid.isAgreed") })
-            .refine((val) => val === true, {
-                message: t("reservation.create.form.invalid.isAgreed"),
-            }),
-    })
+            isAgreed: z
+                .boolean({ error: t("reservation.create.form.invalid.isAgreed") })
+                .refine((val) => val === true, {
+                    message: t("reservation.create.form.invalid.isAgreed"),
+                }),
+        })
+    )
 );
 
 const { data: classData } = useRequest(getClasses);
@@ -133,15 +135,7 @@ const formatTableDate = (time: string) => {
 };
 
 const formatTableWeekDay = (days: number[]) => {
-    const daysMapping = [
-        "Mon.",
-        "Tue.",
-        "Wed.",
-        "Thu.",
-        "Fri.",
-        "Sat.",
-        "Sun.",
-    ];
+    const daysMapping = tm("reservation.create.weekdays") as string[];
     return days.map((item) => daysMapping[item]).join(" ");
 };
 
@@ -430,7 +424,7 @@ const termsVisible = ref(false);
                 <Form
                     v-if="!success"
                     v-slot="$form"
-                    :resolver
+                    :resolver="resolver"
                     :initialValues
                     @submit="onSubmitEvent"
                 >
