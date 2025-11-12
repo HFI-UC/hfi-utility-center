@@ -293,6 +293,17 @@
                 "reservationRejected": "Reservation #{id} has been rejected for the following reason: {reason}",
                 "noReservationInRange": "There are no reservations in the selected time range."
             },
+            "reason": [
+                "Time Conflict - The selected time slot has been booked by another event.",
+                "Insufficient Resources - There are not enough equipment or resources to support this reservation.",
+                "Does Not Meet Reservation Criteria - The request does not meet specific conditions or rules for room usage.",
+                "Under Maintenance - The room is under maintenance or upgrades and is temporarily unavailable.",
+                "Safety Concerns - Usage is temporarily unavailable due to safety considerations.",
+                "Incomplete Information - The submitted reservation information is incomplete or inaccurate.",
+                "Policy Violation - The reserved activity violates the relevant policies of the school or institution.",
+                "Frequent Reservations - The frequency of reservations by the same organization or individual is too high.",
+                "Priority for Special Events - Resources are prioritized for special events or emergencies."
+            ],
             "exportOption": {
                 "today": "Export reservations for today",
                 "thisWeek": "Export reservations for this week",
@@ -310,9 +321,7 @@
     },
     "toast": {
         "success": "Success",
-        "error": "Error",
-        "details": {
-        }
+        "error": "Error"
     },
     "reservation": {
         "search": {

@@ -19,7 +19,7 @@ import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
+const { t, tm } = useI18n();
 const { data: futureReservations, run: fetchFutureReservations } = useRequest(
     getFutureReservations,
 );
@@ -177,17 +177,7 @@ const rejectResolver = computed(() =>
 );
 const rejectInitialValues = ref({ reason: null });
 
-const reasons = computed(() => [
-    t("admin.reservation.reason.timeConflict"),
-    t("admin.reservation.reason.insufficientResources"),
-    t("admin.reservation.reason.notMeetCriteria"),
-    t("admin.reservation.reason.underMaintenance"),
-    t("admin.reservation.reason.safetyConcerns"),
-    t("admin.reservation.reason.incompleteInfo"),
-    t("admin.reservation.reason.policyViolation"),
-    t("admin.reservation.reason.frequentReservations"),
-    t("admin.reservation.reason.priorityForSpecialEvents"),
-]);
+const reasons = computed(() => tm("admin.reservation.reason") as string[]);
 
 const exportVisible = ref(false);
 const exportResolver = computed(() =>
