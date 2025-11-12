@@ -17,7 +17,7 @@ const turnstileSiteKey = process.env.CLOUDFLARE_KEY || "";
 const resolver = (values: any) => {
     const schema = z.object({
         email: z.email({
-            error: t("admin.login.validation.emailRequired"),
+            error: t("admin.login.validation.emailInvalid"),
         }),
         password: z.string({ error: t("admin.login.validation.passwordRequired") }),
     });

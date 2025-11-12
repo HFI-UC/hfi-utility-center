@@ -424,7 +424,7 @@ const setWeeklyHourlyReservationsChartData =
             labels,
             datasets: [
                 {
-                    label: "Reservations",
+                    label: t("reservation.analytic.chart.reservation"),
                     backgroundColor: "rgba(203, 68, 68, 1)",
                     data: weeklyAnalytics.value.data.hourlyReservations,
                     borderRadius: 5,

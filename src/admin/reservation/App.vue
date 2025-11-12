@@ -128,7 +128,7 @@ const rejectReservation = async (form: FormSubmitEvent) => {
         toast.add({
             severity: "error",
             summary: t("common.error"),
-            detail: t("toast.detail.fillInAllFields"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -194,10 +194,10 @@ const exportResolver = computed(() =>
     zodResolver(
         z.object({
             option: z.number({
-                error: t("admin.reservation.form.optionRequired"),
+                error: t("admin.reservation.validation.optionRequired"),
             }),
             time: z.array(z.date().nullable()).length(2).optional(),
-            mode: z.literal(["by-room", "single-sheet"]),
+            mode: z.literal(["by-room", "single-sheet"], { error: t("admin.reservation.validation.optionRequired")}),
         }),
     ),
 );
@@ -253,7 +253,7 @@ const exportReservations = async (form: FormSubmitEvent) => {
         toast.add({
             severity: "error",
             summary: t("common.error"),
-            detail: t("toast.detail.fillInAllFields"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -398,7 +398,7 @@ const exportOptions = computed(() => [
     </Dialog>
     <Dialog
         v-model:visible="exportVisible"
-        :header="$t('admin.reservation.dialog.exportReservations')"
+        :header="$t('admin.reservation.dialog.exportReservation')"
         :blockScroll="false"
         :closable="false"
         modal
@@ -609,7 +609,7 @@ const exportOptions = computed(() => [
                                             <h3 class="font-medium text-sm">
                                                 {{
                                                     $t(
-                                                        "admin.reservation.reservationDetails.title",
+                                                        "admin.reservation.reservationDetail.title",
                                                     )
                                                 }}
                                             </h3>
@@ -623,7 +623,7 @@ const exportOptions = computed(() => [
                                                 >
                                                     {{
                                                         $t(
-                                                            "admin.reservation.reservationDetails.room",
+                                                            "admin.reservation.reservationDetail.room",
                                                         )
                                                     }}
                                                 </p>
@@ -637,7 +637,7 @@ const exportOptions = computed(() => [
                                                 >
                                                     {{
                                                         $t(
-                                                            "admin.reservation.reservationDetails.startTime",
+                                                            "admin.reservation.reservationDetail.startTime",
                                                         )
                                                     }}
                                                 </p>
@@ -657,7 +657,7 @@ const exportOptions = computed(() => [
                                                 >
                                                     {{
                                                         $t(
-                                                            "admin.reservation.reservationDetails.endTime",
+                                                            "admin.reservation.reservationDetail.endTime",
                                                         )
                                                     }}
                                                 </p>
@@ -677,7 +677,7 @@ const exportOptions = computed(() => [
                                                 >
                                                     {{
                                                         $t(
-                                                            "admin.reservation.reservationDetails.status",
+                                                            "admin.reservation.reservationDetail.status",
                                                         )
                                                     }}
                                                 </p>
@@ -700,7 +700,7 @@ const exportOptions = computed(() => [
                                                 >
                                                     {{
                                                         $t(
-                                                            "admin.reservation.reservationDetails.reason",
+                                                            "admin.reservation.reservationDetail.reason",
                                                         )
                                                     }}
                                                 </p>

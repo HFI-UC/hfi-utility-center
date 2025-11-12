@@ -144,8 +144,8 @@ const newCampusResolver = computed(() =>
     zodResolver(
         z.object({
             name: z
-                .string({ error: t("admin.facility.form.name") })
-                .min(1, { error: t("admin.facility.form.name") }),
+                .string({ error: t("admin.facility.validation.nameRequired") })
+                .min(1, { error: t("admin.facility.validation.nameRequired") }),
         })
     )
 );
@@ -189,9 +189,9 @@ const newRoomResolver = computed(() =>
     zodResolver(
         z.object({
             name: z
-                .string({ error: t("admin.facility.form.name") })
-                .min(1, { error: t("admin.facility.form.name") }),
-            campus: z.number({ error: t("admin.facility.form.campus") }),
+                .string({ error: t("admin.facility.validation.nameRequired") })
+                .min(1, { error: t("admin.facility.validation.nameRequired") }),
+            campus: z.number({ error: t("admin.facility.validation.campusRequired") }),
         })
     )
 );
@@ -644,7 +644,7 @@ const newApproverResolver = computed(() =>
                     email: z.string(),
                     name: z.string(),
                 },
-                { error: t("admin.facility.form.admin") }
+                { error: t("admin.facility.validation.adminRequired") }
             ),
         })
     )

@@ -421,12 +421,12 @@ const setWeeklyDailyReservationCreationsChartOptions =
     <div class="mx-[3rem] my-[2rem]">
         <h1 class="font-bold text-xl text-sky-500">HFI Utility Center</h1>
         <h1 class="font-bold text-3xl my-4">
-            Reservation Analytics - Weekly (Last Week)
+            {{ $t("reservation.analytic.weekly.title") }}
         </h1>
         <div class="grid grid-cols-4 gap-4">
             <Card class="col-span-2">
                 <template #content>
-                    <h3 class="font-bold text-lg mb-4">Reservations</h3>
+                    <h3 class="font-bold text-lg mb-4">{{ $t("reservation.analytic.weekly.reservation") }}</h3>
                     <p class="text-2xl font-bold">
                         {{ weeklyAnalytics?.data.totalReservations || "-" }}
                     </p>
@@ -434,7 +434,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
             </Card>
             <Card class="col-span-2">
                 <template #content>
-                    <h3 class="font-bold text-lg mb-4">Approvals</h3>
+                    <h3 class="font-bold text-lg mb-4">{{ $t("reservation.analytic.weekly.approval") }}</h3>
                     <p class="text-2xl font-bold">
                         {{ weeklyAnalytics?.data.totalApprovals || "-" }}
                     </p>
@@ -442,7 +442,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
             </Card>
             <Card class="col-span-2">
                 <template #content>
-                    <h3 class="font-bold text-lg mb-4">Rejections</h3>
+                    <h3 class="font-bold text-lg mb-4">{{ $t("reservation.analytic.weekly.rejection") }}</h3>
                     <p class="text-2xl font-bold">
                         {{ weeklyAnalytics?.data.totalRejections || "-" }}
                     </p>
@@ -451,7 +451,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
             <Card class="col-span-2">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        Reservation Creations
+                        {{ $t("reservation.analytic.weekly.creation") }}
                     </h3>
                     <p class="text-2xl font-bold">
                         {{
@@ -463,7 +463,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
             </Card>
             <Card class="col-span-4">
                 <template #content>
-                    <h3 class="font-bold text-lg mb-4">Reasons</h3>
+                    <h3 class="font-bold text-lg mb-4">{{ $t("reservation.analytic.weekly.reason") }}</h3>
                     <Chart
                         type="wordCloud"
                         :data="weeklyReasonChartData"
@@ -474,7 +474,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
             </Card>
             <Card class="col-span-4">
                 <template #content>
-                    <h3 class="font-bold text-lg mb-4">Hourly Reservations</h3>
+                    <h3 class="font-bold text-lg mb-4">{{ $t("reservation.analytic.weekly.hourlyReservation") }}</h3>
                     <Chart
                         type="bar"
                         :data="weeklyHourlyReservationsChartData"
@@ -485,7 +485,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
             </Card>
             <Card class="col-span-4">
                 <template #content>
-                    <h3 class="font-bold text-lg mb-4">Daily Reservations</h3>
+                    <h3 class="font-bold text-lg mb-4">{{ $t("reservation.analytic.weekly.dailyReservation") }}</h3>
                     <Chart
                         type="line"
                         :data="weeklyDailyReservationsChartData"
@@ -497,7 +497,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
             <Card class="col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        Daily Reservation Creations
+                        {{ $t("reservation.analytic.weekly.dailyCreation") }}
                     </h3>
                     <Chart
                         type="line"
@@ -510,7 +510,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
             <Card class="col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        Top 5 Room Statistics
+                        {{ $t("reservation.analytic.weekly.topRoom") }}
                     </h3>
                     <div
                         :style="{

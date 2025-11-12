@@ -14,7 +14,7 @@ onMounted(async () => {
             toast.add({
                 severity: "error",
                 summary: t("common.error"),
-                detail: t("adminLogin.toast.alreadyLoggedIn"),
+                detail: t("adminLogin.toast.notLoggedIn"),
                 life: 2000,
             });
             setTimeout(
@@ -29,7 +29,7 @@ onMounted(async () => {
             toast.add({
                 severity: "error",
                 summary: t("common.error"),
-                detail: t("adminLogin.toast.notLoggedIn"),
+                detail: t("adminLogin.toast.alreadyLoggedIn"),
                 life: 2000,
             });
             setTimeout(

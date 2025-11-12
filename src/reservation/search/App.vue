@@ -145,9 +145,9 @@ const statusOptions = computed(() => [
                                     dateFormat="yy/mm/dd"
                                 >
                                     <template #footer>
-                                        <span
+                                         <span
                                             class="text-sm flex justify-center mt-4"
-                                            >{{ $t('reservation.search.selectTwoDates') }}</span
+                                            >{{ $t('reservation.search.selectTwoDate') }}</span
                                         >
                                     </template>
                                 </DatePicker>

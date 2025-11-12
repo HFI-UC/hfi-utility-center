@@ -377,7 +377,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
         toast.add({
             severity: "success",
             summary: t("common.success"),
-            detail: t("reservation.toast.reservationCreated"),
+            detail: t("reservation.create.toast.reservationCreated"),
             life: 3000,
         });
         successMessage.value = response.message as string;
