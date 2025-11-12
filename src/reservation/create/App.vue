@@ -34,64 +34,66 @@ import LoadingMask from "../../components/LoadingMask.vue";
 import { useI18n } from "vue-i18n";
 
 const { t, tm } = useI18n();
-const resolver = zodResolver(
-    z.object({
-        classId: z.number({
-            error: t("reservation.create.form.invalid.classId"),
-        }),
-        studentName: z
-            .string({ error: t("reservation.create.form.invalid.studentName") })
-            .min(1, {
-                message: t("reservation.create.form.invalid.studentName"),
+const resolver = computed(() =>
+    zodResolver(
+        z.object({
+            classId: z.number({
+                error: t("reservation.create.validation.classRequired"),
             }),
-        room: z.number({ error: t("reservation.create.form.invalid.room") }),
-        studentId: z
-            .string({
-                error: t("reservation.create.form.invalid.studentId.required"),
-            })
-            .startsWith("GJ", {
-                message: t("reservation.create.form.invalid.studentId.prefix"),
-            })
-            .min(10, {
-                message: t(
-                    "reservation.create.form.invalid.studentId.minLength"
-                ),
-            })
-            .refine((val) => /^\d{8}$/.test(val.slice(-8)), {
-                message: t("reservation.create.form.invalid.studentId.digits"),
+            studentName: z
+                .string({ error: t("reservation.create.validation.studentNameRequired") })
+                .min(1, {
+                    message: t("reservation.create.validation.studentNameRequired"),
+                }),
+            room: z.number({ error: t("reservation.create.validation.roomRequired") }),
+            studentId: z
+                .string({
+                    error: t("reservation.create.validation.studentId.required"),
+                })
+                .startsWith("GJ", {
+                    message: t("reservation.create.validation.studentId.prefix"),
+                })
+                .min(10, {
+                    message: t(
+                        "reservation.create.validation.studentId.minLength"
+                    ),
+                })
+                .refine((val) => /^\d{8}$/.test(val.slice(-8)), {
+                    message: t("reservation.create.validation.studentId.digits"),
+                }),
+            email: z
+                .email({
+                    message: t("reservation.create.validation.email.format"),
+                })
+                .min(1, {
+                    message: t("reservation.create.validation.email.required"),
+                }),
+            date: z.date({ error: t("reservation.create.validation.dateRequired") }),
+            startTime: z
+                .string({ error: t("reservation.create.validation.startTimeRequired") })
+                .min(1, {
+                    message: t("reservation.create.validation.startTimeRequired"),
+                }),
+            endTime: z
+                .string({ error: t("reservation.create.validation.endTimeRequired") })
+                .min(1, { message: t("reservation.create.validation.endTimeRequired") }),
+            reason: z
+                .string({ error: t("reservation.create.validation.reasonRequired") })
+                .min(1, { message: t("reservation.create.validation.reasonRequired") }),
+            campus: z.number({
+                error: t("reservation.create.validation.campusRequired"),
             }),
-        email: z
-            .email({
-                message: t("reservation.create.form.invalid.email.format"),
-            })
-            .min(1, {
-                message: t("reservation.create.form.invalid.email.required"),
-            }),
-        date: z.date({ error: t("reservation.create.form.invalid.date") }),
-        startTime: z
-            .string({ error: t("reservation.create.form.invalid.startTime") })
-            .min(1, {
-                message: t("reservation.create.form.invalid.startTime"),
-            }),
-        endTime: z
-            .string({ error: t("reservation.create.form.invalid.endTime") })
-            .min(1, { message: t("reservation.create.form.invalid.endTime") }),
-        reason: z
-            .string({ error: t("reservation.create.form.invalid.reason") })
-            .min(1, { message: t("reservation.create.form.invalid.reason") }),
-        campus: z.number({
-            error: t("reservation.create.form.invalid.campus"),
-        }),
-        isAgreed: z
-            .boolean({ error: t("reservation.create.form.invalid.isAgreed") })
-            .refine((val) => val === true, {
-                message: t("reservation.create.form.invalid.isAgreed"),
-            }),
-    })
+            isAgreed: z
+                .boolean({ error: t("reservation.create.validation.isAgreed") })
+                .refine((val) => val === true, {
+                    message: t("reservation.create.validation.isAgreed"),
+                }),
+        })
+    )
 );
 
 const { data: classData } = useRequest(getClasses);
-const { data: campus } = useRequest(getCampuses);
+const { data: campusData } = useRequest(getCampuses);
 const { data: roomData } = useRequest(getRooms);
 const room = computed(
     () => roomData.value?.data.filter((room) => room.enabled) || []
@@ -100,7 +102,7 @@ const classes = computed(() => {
     const _data = classData.value?.data;
     if (!_data) return [];
     const res: { campus: string; classes: any[] }[] = [];
-    campus.value?.data.some((c: Campus) => {
+    campusData.value?.data.some((c: Campus) => {
         const campusClasses = _data.filter(
             (item: Class) => item.campus === c.id
         );
@@ -133,15 +135,7 @@ const formatTableDate = (time: string) => {
 };
 
 const formatTableWeekDay = (days: number[]) => {
-    const daysMapping = [
-        "Mon.",
-        "Tue.",
-        "Wed.",
-        "Thu.",
-        "Fri.",
-        "Sat.",
-        "Sun.",
-    ];
+    const daysMapping = tm("common.weekday.short") as string[];
     return days.map((item) => daysMapping[item]).join(" ");
 };
 
@@ -177,7 +171,7 @@ const generateTimeOptions = (
     const _class = classData.value?.data.find(
         (item: Class) => item.id === selectedClass
     );
-    const _campus: Campus = campus.value?.data.find(
+    const _campus: Campus = campusData.value?.data.find(
         (item: Campus) => item.id === _class?.campus
     );
     const res = options.filter((item) => {
@@ -310,7 +304,7 @@ const getEndTimeOptions = ({
     const _class = classData.value?.data.find(
         (item: Class) => item.id === selectedClass.value
     );
-    const _campus: Campus | undefined = campus.value?.data.find(
+    const _campus: Campus | undefined = campusData.value?.data.find(
         (item: Campus) => item.id === _class?.campus
     );
 
@@ -368,8 +362,8 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -382,8 +376,8 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
-            detail: t("toast.details.reservationCreated"),
+            summary: t("common.success"),
+            detail: t("reservation.create.toast.reservationCreated"),
             life: 3000,
         });
         successMessage.value = response.message as string;
@@ -392,14 +386,14 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message,
             life: 3000,
         });
     }
 };
 const terms = computed(
-    () => tm("reservation.create.terms.content") as string[]
+    () => tm("reservation.create.term.content") as string[]
 );
 const onMoreConfetti = () => {
     confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
@@ -412,7 +406,7 @@ const termsVisible = ref(false);
     <Navbar></Navbar>
     <LoadingMask></LoadingMask>
     <Dialog
-        :header="$t('reservation.create.terms.title')"
+        :header="$t('reservation.create.term.title')"
         v-model:visible="termsVisible"
         modal
         class="sm:w-[25rem] w-[23rem]"
@@ -430,11 +424,11 @@ const termsVisible = ref(false);
                 <Form
                     v-if="!success"
                     v-slot="$form"
-                    :resolver
+                    :resolver="resolver"
                     :initialValues
                     @submit="onSubmitEvent"
                 >
-                    <Fieldset :legend="$t('reservation.create.subtitles.personalInfo')">
+                    <Fieldset :legend="$t('reservation.create.subtitle.personalInfo')">
                         <div class="flex flex-col gap-4">
                             <IftaLabel>
                                 <InputText
@@ -495,8 +489,8 @@ const termsVisible = ref(false);
                                 v-if="$form.studentId?.invalid"
                                 severity="error"
                                 size="small"
-                                >{{ $form.studentId.error?.message }}
-                            </Message>
+                                >{{ $form.studentId.error?.message }}</Message
+                            >
                             <IftaLabel>
                                 <InputText
                                     type="text"
@@ -511,11 +505,11 @@ const termsVisible = ref(false);
                                 v-if="$form.email?.invalid"
                                 severity="error"
                                 size="small"
-                                >{{ $form.email.error?.message }}
-                            </Message>
+                                >{{ $form.email.error?.message }}</Message
+                            >
                         </div>
                     </Fieldset>
-                    <Fieldset v-if="$form.studentName?.value && $form.classId?.value && $form.studentId?.value && $form.email?.value" :legend="$t('reservation.create.subtitles.reservationInfo')">
+                    <Fieldset v-if="$form.studentName?.value && $form.classId?.value && $form.studentId?.value && $form.email?.value" :legend="$t('reservation.create.subtitle.reservationInfo')">
                         <div class="flex flex-col gap-4">
                             <IftaLabel>
                                 <Select
@@ -525,7 +519,7 @@ const termsVisible = ref(false);
                                             : undefined
                                     "
                                     :options="
-                                        campus?.data.filter(
+                                        campusData?.data.filter(
                                             (campus: Campus) =>
                                                 !campus.isPrivileged,
                                         )
@@ -579,18 +573,18 @@ const termsVisible = ref(false);
                             >
                                 <template #header>
                                     <span class="font-bold"
-                                        >{{ $t("reservation.create.tables.reservations.header") }}</span
+                                        >{{ $t("reservation.create.table.reservation.header") }}</span
                                     >
                                 </template>
                                 <template #empty>
-                                    <p>{{ $t("reservation.create.tables.reservations.empty") }}</p>
+                                    <p>{{ $t("reservation.create.table.reservation.empty") }}</p>
                                 </template>
-                                <Column :header="$t('reservation.create.tables.reservations.name')">
+                                <Column :header="$t('reservation.create.table.reservation.name')">
                                     <template #body="slotProps">
                                         {{ slotProps.data.studentName }}
                                     </template>
                                 </Column>
-                                <Column :header="$t('reservation.create.tables.reservations.time')">
+                                <Column :header="$t('reservation.create.table.reservation.time')">
                                     <template #body="slotProps">
                                         {{
                                             `${formatTableDate(
@@ -614,13 +608,13 @@ const termsVisible = ref(false);
                             >
                                 <template #header>
                                     <span class="font-bold"
-                                        >{{ $t("reservation.create.tables.policy.header") }}</span
+                                        >{{ $t("reservation.create.table.policy.header") }}</span
                                     >
                                 </template>
                                 <template #empty>
-                                    <p>{{ $t("reservation.create.tables.policy.empty") }}</p>
+                                    <p>{{ $t("reservation.create.table.policy.empty") }}</p>
                                 </template>
-                                <Column :header="$t('reservation.create.tables.policy.weekdays')">
+                                <Column :header="$t('reservation.create.table.policy.weekday')">
                                     <template #body="slotProps">
                                         {{
                                             formatTableWeekDay(
@@ -629,7 +623,7 @@ const termsVisible = ref(false);
                                         }}
                                     </template>
                                 </Column>
-                                <Column :header="$t('reservation.create.tables.policy.time')">
+                                <Column :header="$t('reservation.create.table.policy.time')">
                                     <template #body="slotProps">
                                         {{
                                             `${String(
@@ -738,11 +732,11 @@ const termsVisible = ref(false);
                     </Fieldset>
                     <div class="flex items-center justify-center mt-3">
                         <Checkbox name="isAgreed" :binary="true" />
-                        <i18n-t keypath="reservation.create.form.termsAgreement" tag="label" class="ml-2 text-sm">
+                        <i18n-t keypath="reservation.create.form.termAgreement" tag="label" scope="global" class="ml-2 text-sm">
                             <a
                                 @click="termsVisible = true"
                                 class="text-sky-500 cursor-pointer"
-                                >{{ $t('reservation.create.form.termsAndConditions') }}</a
+                                >{{ $t('reservation.create.form.termAndCondition') }}</a
                             >.
                         </i18n-t>
                     </div>
@@ -783,7 +777,7 @@ const termsVisible = ref(false);
                             size="small"
                             as="a"
                             href="/reservation/create/"
-                            ><RotateCcw></RotateCcw> {{ $t("reservation.create.buttons.anotherReservation") }}</Button
+                            ><RotateCcw></RotateCcw> {{ $t("reservation.create.button.anotherReservation") }}</Button
                         >
                     </div>
                 </div>

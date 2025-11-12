@@ -3,7 +3,16 @@ import axios from "axios";
 axios.defaults.baseURL = process.env.BACKEND_URL;
 axios.defaults.withCredentials = true;
 axios.defaults.validateStatus = () => true;
+axios.defaults.xsrfCookieName = "_csrf";
+axios.defaults.xsrfHeaderName = "x-csrf-token";
+axios.defaults.withXSRFToken = true;
 
+axios.interceptors.request.use(async (config) => {
+    if (["PUT", "POST", "DELETE", "PATCH"].includes(config.method?.toUpperCase() ?? "")) {
+        await axios.get("/_csrf");
+    }
+    return config;
+});
 export interface ReservationRequestInfo {
     classId: number;
     studentName: string;

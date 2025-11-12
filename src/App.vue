@@ -22,14 +22,14 @@ import Navbar from "./components/Navbar.vue";
         <h2 class="font-bold">{{ $t("home.subtitle") }}</h2>
         <div class="mt-8 flex gap-2 flex-wrap items-center justify-center">
             <Button as="a" href="/reservation/create/" size="small"
-                ><PenSquare></PenSquare>{{ $t("home.buttons.bookRoom") }}</Button
+                ><PenSquare></PenSquare>{{ $t("home.button.bookRoom") }}</Button
             >
             <Button
                 as="a"
                 href="/reservation/search/"
                 size="small"
                 severity="secondary"
-                ><Search></Search>{{ $t("home.buttons.viewReservations") }}</Button
+                ><Search></Search>{{ $t("home.button.viewReservation") }}</Button
             >
         </div>
     </div>

@@ -17,7 +17,9 @@ import { zodResolver } from "@primevue/forms/resolvers/zod";
 import z from "zod";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const { data: futureReservations, run: fetchFutureReservations } = useRequest(
     getFutureReservations,
 );
@@ -28,11 +30,23 @@ const searchStatus = ref<{ id: string; name: string; severity: string } | null>(
     null,
 );
 const searchRoom = ref<number | null>(null);
-const statusOptions = [
-    { id: "pending", name: "Pending", severity: "info" },
-    { id: "approved", name: "Approved", severity: "success" },
-    { id: "rejected", name: "Rejected", severity: "danger" },
-];
+const statusOptions = computed(() => [
+    {
+        id: "pending",
+        name: t("reservation.search.status.pending"),
+        severity: "info",
+    },
+    {
+        id: "approved",
+        name: t("reservation.search.status.approved"),
+        severity: "success",
+    },
+    {
+        id: "rejected",
+        name: t("reservation.search.status.rejected",),
+        severity: "danger",
+    },
+]);
 const pageOffset = ref(0);
 const page = computed(() => Math.floor(pageOffset.value / 20));
 
@@ -73,11 +87,11 @@ const formatTime = (date: Date): string => {
     )}:${String(date.getMinutes()).padStart(2, "0")}`;
 };
 
-const statusMapping: Record<string, string> = {
-    pending: "Pending",
-    approved: "Approved",
-    rejected: "Rejected",
-};
+const statusMapping = computed<Record<string, string>>(() => ({
+    pending: t("reservation.search.status.pending"),
+    approved: t("reservation.search.status.approved"),
+    rejected: t("reservation.search.status.rejected"),
+}));
 const severityMapping: Record<string, string> = {
     pending: "info",
     approved: "success",
@@ -93,8 +107,8 @@ const approveReservation = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: "Reservation Approved",
-            detail: `Reservation #${id} has been approved.`,
+            summary: t("common.success"),
+            detail: t("admin.reservation.toast.reservationApproved", { id }),
             life: 3000,
         });
         fetchFutureReservations();
@@ -113,8 +127,8 @@ const rejectReservation = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill in all required fields.",
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -129,8 +143,11 @@ const rejectReservation = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: "Reservation Rejected",
-            detail: `Reservation #${rejectId.value} has been rejected for the following reason: ${form.values.reason}`,
+            summary: t("common.success"),
+            detail: t("admin.reservation.toast.reservationRejected", {
+                id: rejectId.value,
+                reason: form.values.reason,
+            }),
             life: 3000,
         });
         form.reset();
@@ -149,44 +166,52 @@ const rejectReservation = async (form: FormSubmitEvent) => {
 const rejectVisible = ref(false);
 const loading = ref(false);
 const rejectId = ref(-1);
-const rejectResolver = ref(
+const rejectResolver = computed(() =>
     zodResolver(
         z.object({
             reason: z
-                .string({ error: "Reason is required." })
-                .min(1, { error: "Reason is required." }),
+                .string({ error: t("admin.reservation.form.reasonRequired") })
+                .min(1, { error: t("admin.reservation.form.reasonRequired") }),
         }),
     ),
 );
 const rejectInitialValues = ref({ reason: null });
 
-const reasons = ref([
-    "Time Conflict - The selected time slot has been booked by another event.",
-    "Insufficient Resources - There are not enough equipment or resources to support this reservation.",
-    "Does Not Meet Reservation Criteria - The request does not meet specific conditions or rules for room usage.",
-    "Under Maintenance - The room is under maintenance or upgrades and is temporarily unavailable.",
-    "Safety Concerns - Usage is temporarily unavailable due to safety considerations.",
-    "Incomplete Information - The submitted reservation information is incomplete or inaccurate.",
-    "Policy Violation - The reserved activity violates the relevant policies of the school or institution.",
-    "Frequent Reservations - The frequency of reservations by the same organization or individual is too high.",
-    "Priority for Special Events - Resources are prioritized for special events or emergencies.",
+const reasons = computed(() => [
+    t("admin.reservation.reason.timeConflict"),
+    t("admin.reservation.reason.insufficientResources"),
+    t("admin.reservation.reason.notMeetCriteria"),
+    t("admin.reservation.reason.underMaintenance"),
+    t("admin.reservation.reason.safetyConcerns"),
+    t("admin.reservation.reason.incompleteInfo"),
+    t("admin.reservation.reason.policyViolation"),
+    t("admin.reservation.reason.frequentReservations"),
+    t("admin.reservation.reason.priorityForSpecialEvents"),
 ]);
 
 const exportVisible = ref(false);
-const exportResolver = ref(
+const exportResolver = computed(() =>
     zodResolver(
         z.object({
-            option: z.number({ error: "Format is required." }),
+            option: z.number({
+                error: t("admin.reservation.validation.optionRequired"),
+            }),
             time: z.array(z.date().nullable()).length(2).optional(),
-            mode: z.literal(["by-room", "single-sheet"]),
+            mode: z.literal(["by-room", "single-sheet"], { error: t("admin.reservation.validation.modeRequired")}),
         }),
     ),
 );
 
-const modeOptions = [
-    { label: "By room", code: "by-room" },
-    { label: "Single sheet", code: "single-sheet" },
-];
+const modeOptions = computed(() => [
+    {
+        label: t("admin.reservation.modeOption.byRoom"),
+        code: "by-room",
+    },
+    {
+        label: t("admin.reservation.modeOption.singleSheet"),
+        code: "single-sheet",
+    },
+]);
 const exportInitialValues = ref({
     option: null,
     time: [null, null],
@@ -227,8 +252,8 @@ const exportReservations = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: "Error",
-            detail: "Please fill in all required fields.",
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -278,8 +303,8 @@ const exportReservations = async (form: FormSubmitEvent) => {
             loading.value = false;
             toast.add({
                 severity: "error",
-                summary: "No Reservations",
-                detail: "There are no reservations in the selected time range.",
+                summary: t("common.error"),
+                detail: t("admin.reservation.toast.noReservationInRange"),
                 life: 3000,
             });
             loading.value = false;
@@ -301,13 +326,28 @@ const exportReservations = async (form: FormSubmitEvent) => {
     form.reset();
 };
 
-const exportOptions = [
-    { label: "Export reservations for today", code: 0 },
-    { label: "Export reservations for this week", code: 1 },
-    { label: "Export reservations for this month", code: 2 },
-    { label: "Export every reservations", code: 3 },
-    { label: "Custom range", code: 4 },
-];
+const exportOptions = computed(() => [
+    {
+        label: t("admin.reservation.exportOption.today"),
+        code: 0,
+    },
+    {
+        label: t("admin.reservation.exportOption.thisWeek"),
+        code: 1,
+    },
+    {
+        label: t("admin.reservation.exportOption.thisMonth"),
+        code: 2,
+    },
+    {
+        label: t("admin.reservation.exportOption.all"),
+        code: 3,
+    },
+    {
+        label: t("admin.reservation.exportOption.custom"),
+        code: 4,
+    },
+]);
 </script>
 <template>
     <AdminLogin :requireLogin="true" v-if="adminVerify"></AdminLogin>
@@ -317,7 +357,7 @@ const exportOptions = [
     <Toast></Toast>
     <Dialog
         v-model:visible="rejectVisible"
-        header="Reject Reservation"
+        :header="$t('admin.reservation.dialog.rejectReservation')"
         :blockScroll="false"
         :closable="false"
         modal
@@ -333,7 +373,7 @@ const exportOptions = [
                 <Select
                     name="reason"
                     fluid
-                    placeholder="Reason"
+                    :placeholder="$t('admin.reservation.form.reason')"
                     :options="reasons"
                 ></Select>
                 <Message
@@ -348,15 +388,17 @@ const exportOptions = [
                     type="button"
                     severity="secondary"
                     @click="((rejectVisible = false), $form.reset())"
-                    >Cancel</Button
+                    >{{ $t("admin.reservation.button.cancel") }}</Button
                 >
-                <Button type="submit" severity="danger"><X></X>Reject</Button>
+                <Button type="submit" severity="danger"
+                    ><X></X>{{ $t("admin.reservation.button.reject") }}</Button
+                >
             </div>
         </Form>
     </Dialog>
     <Dialog
         v-model:visible="exportVisible"
-        header="Export Reservations"
+        :header="$t('admin.reservation.dialog.exportReservation')"
         :blockScroll="false"
         :closable="false"
         modal
@@ -372,7 +414,7 @@ const exportOptions = [
                 <Select
                     name="option"
                     fluid
-                    placeholder="Select an option"
+                    :placeholder="$t('admin.reservation.form.option')"
                     optionLabel="label"
                     optionValue="code"
                     :options="exportOptions"
@@ -386,7 +428,7 @@ const exportOptions = [
                 <DatePicker
                     v-if="$form.option?.value === 4"
                     name="time"
-                    placeholder="Time"
+                    :placeholder="$t('admin.reservation.form.time')"
                     selectionMode="range"
                     updateModelType="date"
                     dateFormat="yy/mm/dd"
@@ -403,7 +445,7 @@ const exportOptions = [
                     fluid
                     optionLabel="label"
                     optionValue="code"
-                    placeholder="Select an export mode"
+                    :placeholder="$t('admin.reservation.form.mode')"
                     :options="modeOptions"
                 ></Select>
                 <Message
@@ -418,17 +460,18 @@ const exportOptions = [
                     type="button"
                     severity="secondary"
                     @click="((exportVisible = false), $form.reset())"
-                    >Cancel</Button
+                    >{{ $t("admin.reservation.button.cancel") }}</Button
                 >
                 <Button type="submit" severity="primary"
-                    ><Download></Download>Export</Button
+                    ><Download></Download
+                    >{{ $t("admin.reservation.button.export") }}</Button
                 >
             </div>
         </Form>
     </Dialog>
     <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
         <h1 class="font-bold md:text-3xl text-2xl my-4">
-            Reservation Management
+            {{ $t("admin.reservation.title") }}
         </h1>
         <Card class="w-full">
             <template #content>
@@ -443,12 +486,14 @@ const exportOptions = [
                     :rows="6"
                 >
                     <template #header>
-                        <span class="font-bold text-lg"
-                            >Future Reservations</span
-                        >
+                        <span class="font-bold text-lg">{{
+                            $t("admin.reservation.futureReservation")
+                        }}</span>
                     </template>
                     <template #empty>
-                        <p class="m-4">No future reservations found.</p>
+                        <p class="m-4">
+                            {{ $t("admin.reservation.noFutureReservation") }}
+                        </p>
                     </template>
                     <template #grid="slotProps">
                         <div class="grid grid-cols-12 gap-4 my-4">
@@ -461,12 +506,21 @@ const exportOptions = [
                                     class="rounded-lg border-surface-200 dark:border-surface-700 border-1 p-4 flex flex-col w-full"
                                 >
                                     <h2 class="font-bold text-xl mb-2">
-                                        Reservation #{{ item.id }}
+                                        {{
+                                            $t(
+                                                "admin.reservation.table.id",
+                                            )
+                                        }}
+                                        #{{ item.id }}
                                     </h2>
                                     <Fieldset>
                                         <template #legend>
                                             <h3 class="font-medium text-sm">
-                                                Student Information
+                                                {{
+                                                    $t(
+                                                        "admin.reservation.studentInfo.title",
+                                                    )
+                                                }}
                                             </h3>
                                         </template>
                                         <div
@@ -476,7 +530,11 @@ const exportOptions = [
                                                 <p
                                                     class="text-sm text-surface-500"
                                                 >
-                                                    Student Name
+                                                    {{
+                                                        $t(
+                                                            "admin.reservation.studentInfo.name",
+                                                        )
+                                                    }}
                                                 </p>
                                                 <p class="sm:text-lg text-md">
                                                     {{ item.studentName }}
@@ -486,7 +544,11 @@ const exportOptions = [
                                                 <p
                                                     class="text-sm text-surface-500"
                                                 >
-                                                    Student ID
+                                                    {{
+                                                        $t(
+                                                            "admin.reservation.studentInfo.id",
+                                                        )
+                                                    }}
                                                 </p>
                                                 <p class="sm:text-lg text-md">
                                                     {{ item.studentId }}
@@ -496,7 +558,11 @@ const exportOptions = [
                                                 <p
                                                     class="text-sm text-surface-500"
                                                 >
-                                                    E-mail
+                                                    {{
+                                                        $t(
+                                                            "admin.reservation.studentInfo.email",
+                                                        )
+                                                    }}
                                                 </p>
                                                 <a
                                                     class="sm:text-lg text-md transition-colors duration-300 hover:text-sky-500 text-wrap"
@@ -512,7 +578,11 @@ const exportOptions = [
                                                 <p
                                                     class="text-sm text-surface-500"
                                                 >
-                                                    Class
+                                                    {{
+                                                        $t(
+                                                            "admin.reservation.studentInfo.class",
+                                                        )
+                                                    }}
                                                 </p>
                                                 <p class="sm:text-lg text-md">
                                                     {{ item.className }}
@@ -522,7 +592,11 @@ const exportOptions = [
                                                 <p
                                                     class="text-sm text-surface-500"
                                                 >
-                                                    Campus
+                                                    {{
+                                                        $t(
+                                                            "admin.reservation.studentInfo.campus",
+                                                        )
+                                                    }}
                                                 </p>
                                                 <p class="sm:text-lg text-md">
                                                     {{ item.campusName }}
@@ -533,7 +607,11 @@ const exportOptions = [
                                     <Fieldset>
                                         <template #legend>
                                             <h3 class="font-medium text-sm">
-                                                Reservation Details
+                                                {{
+                                                    $t(
+                                                        "admin.reservation.reservationDetail.title",
+                                                    )
+                                                }}
                                             </h3>
                                         </template>
                                         <div
@@ -543,7 +621,11 @@ const exportOptions = [
                                                 <p
                                                     class="text-sm text-surface-500"
                                                 >
-                                                    Room
+                                                    {{
+                                                        $t(
+                                                            "admin.reservation.reservationDetail.room",
+                                                        )
+                                                    }}
                                                 </p>
                                                 <p class="sm:text-lg text-md">
                                                     {{ item.roomName }}
@@ -553,7 +635,11 @@ const exportOptions = [
                                                 <p
                                                     class="text-sm text-surface-500"
                                                 >
-                                                    Start Time
+                                                    {{
+                                                        $t(
+                                                            "admin.reservation.reservationDetail.startTime",
+                                                        )
+                                                    }}
                                                 </p>
                                                 <p class="sm:text-lg text-md">
                                                     {{
@@ -569,7 +655,11 @@ const exportOptions = [
                                                 <p
                                                     class="text-sm text-surface-500"
                                                 >
-                                                    End Time
+                                                    {{
+                                                        $t(
+                                                            "admin.reservation.reservationDetail.endTime",
+                                                        )
+                                                    }}
                                                 </p>
                                                 <p class="sm:text-lg text-md">
                                                     {{
@@ -585,12 +675,16 @@ const exportOptions = [
                                                 <p
                                                     class="text-sm text-surface-500"
                                                 >
-                                                    Status
+                                                    {{
+                                                        $t(
+                                                            "admin.reservation.reservationDetail.status",
+                                                        )
+                                                    }}
                                                 </p>
                                                 <Tag
                                                     :value="
                                                         statusMapping[
-                                                            item.status
+                                                            item.status as keyof typeof statusMapping
                                                         ]
                                                     "
                                                     :severity="
@@ -604,7 +698,11 @@ const exportOptions = [
                                                 <p
                                                     class="text-sm text-surface-500"
                                                 >
-                                                    Reason
+                                                    {{
+                                                        $t(
+                                                            "admin.reservation.reservationDetail.reason",
+                                                        )
+                                                    }}
                                                 </p>
                                                 <p class="sm:text-lg text-md">
                                                     {{ item.reason }}
@@ -621,7 +719,12 @@ const exportOptions = [
                                             @click="approveReservation(item.id)"
                                             size="small"
                                             severity="success"
-                                            ><Check></Check>Approve</Button
+                                            ><Check></Check
+                                            >{{
+                                                $t(
+                                                    "admin.reservation.button.approve",
+                                                )
+                                            }}</Button
                                         >
                                         <Button
                                             v-if="item.status != 'rejected'"
@@ -632,7 +735,12 @@ const exportOptions = [
                                             "
                                             size="small"
                                             severity="danger"
-                                            ><X></X>Reject</Button
+                                            ><X></X
+                                            >{{
+                                                $t(
+                                                    "admin.reservation.button.reject",
+                                                )
+                                            }}</Button
                                         >
                                     </div>
                                 </div>
@@ -656,13 +764,17 @@ const exportOptions = [
                 >
                     <template #header>
                         <div class="flex flex-col gap-4">
-                            <span class="font-bold text-lg"
-                                >All Reservations</span
-                            >
+                            <span class="font-bold text-lg">{{
+                                $t("admin.reservation.allReservation")
+                            }}</span>
                             <div class="grid grid-cols-9 gap-2">
                                 <InputText
                                     v-model="searchKeyword"
-                                    placeholder="Keyword"
+                                    :placeholder="
+                                        $t(
+                                            'admin.reservation.placeholder.keyword',
+                                        )
+                                    "
                                     size="small"
                                     class="sm:col-span-3 md:col-span-2 col-span-9"
                                     fluid
@@ -670,7 +782,11 @@ const exportOptions = [
                                 <Select
                                     showClear
                                     v-model="searchRoom"
-                                    placeholder="Room"
+                                    :placeholder="
+                                        $t(
+                                            'admin.reservation.placeholder.room',
+                                        )
+                                    "
                                     optionLabel="name"
                                     optionValue="id"
                                     :options="rooms?.data"
@@ -682,7 +798,11 @@ const exportOptions = [
                                 <Select
                                     showClear
                                     v-model="searchStatus"
-                                    placeholder="Status"
+                                    :placeholder="
+                                        $t(
+                                            'admin.reservation.placeholder.status',
+                                        )
+                                    "
                                     :options="statusOptions"
                                     size="small"
                                     class="sm:col-span-3 md:col-span-2 col-span-9"
@@ -715,7 +835,11 @@ const exportOptions = [
                                     showClear
                                     v-model="searchTime"
                                     selectionMode="range"
-                                    placeholder="Time Range"
+                                    :placeholder="
+                                        $t(
+                                            'admin.reservation.placeholder.timeRange',
+                                        )
+                                    "
                                     size="small"
                                     class="md:col-span-3 col-span-9"
                                     updateModelType="date"
@@ -725,7 +849,11 @@ const exportOptions = [
                                     <template #footer>
                                         <span
                                             class="text-sm flex justify-center mt-4"
-                                            >*Select two time</span
+                                            >{{
+                                                $t(
+                                                    "admin.reservation.selectTwoDate",
+                                                )
+                                            }}</span
                                         >
                                     </template>
                                 </DatePicker>
@@ -738,18 +866,35 @@ const exportOptions = [
                                     "
                                     class="md:col-span-3 lg:col-span-2 xl:col-span-1 col-span-9"
                                     fluid
-                                    ><Download></Download>Export (.xlsx)</Button
+                                    ><Download></Download
+                                    >{{
+                                        $t("admin.reservation.export")
+                                    }}</Button
                                 >
                             </div>
                         </div>
                     </template>
                     <template #empty>
-                        <p class="py-1">No available reservations.</p>
+                        <p class="py-1">
+                            {{ $t("admin.reservation.noAllReservation") }}
+                        </p>
                     </template>
-                    <Column field="id" header="ID"></Column>
-                    <Column field="studentName" header="Student Name"></Column>
-                    <Column field="studentId" header="Student ID"></Column>
-                    <Column field="email" header="E-mail">
+                    <Column
+                        field="id"
+                        :header="$t('admin.reservation.table.id')"
+                    ></Column>
+                    <Column
+                        field="studentName"
+                        :header="$t('admin.reservation.table.studentName')"
+                    ></Column>
+                    <Column
+                        field="studentId"
+                        :header="$t('admin.reservation.table.studentId')"
+                    ></Column>
+                    <Column
+                        field="email"
+                        :header="$t('admin.reservation.table.email')"
+                    >
                         <template #body="slotProps">
                             <a
                                 :href="`mailto:${slotProps.data.email}`"
@@ -761,31 +906,52 @@ const exportOptions = [
                             ></a>
                         </template>
                     </Column>
-                    <Column field="className" header="Class"></Column>
-                    <Column field="roomName" header="Room"></Column>
-                    <Column field="startTime" header="Start Time">
+                    <Column
+                        field="className"
+                        :header="$t('admin.reservation.table.class')"
+                    ></Column>
+                    <Column
+                        field="roomName"
+                        :header="$t('admin.reservation.table.room')"
+                    ></Column>
+                    <Column
+                        field="startTime"
+                        :header="$t('admin.reservation.table.startTime')"
+                    >
                         <template #body="slotProps">
                             {{ formatTime(new Date(slotProps.data.startTime)) }}
                         </template>
                     </Column>
-                    <Column field="endTime" header="End Time">
+                    <Column
+                        field="endTime"
+                        :header="$t('admin.reservation.table.endTime')"
+                    >
                         <template #body="slotProps">
                             {{ formatTime(new Date(slotProps.data.endTime)) }}
                         </template>
                     </Column>
-                    <Column field="reason" header="Reason">
+                    <Column
+                        field="reason"
+                        :header="$t('admin.reservation.table.reason')"
+                    >
                         <template #body="slotProps">
                             <div class="whitespace-normal w-[30rem]">
                                 {{ slotProps.data.reason }}
                             </div>
                         </template>
                     </Column>
-                    <Column field="createdAt" header="Creation Time">
+                    <Column
+                        field="createdAt"
+                        :header="$t('admin.reservation.table.creationTime')"
+                    >
                         <template #body="slotProps">
                             {{ formatTime(new Date(slotProps.data.createdAt)) }}
                         </template>
                     </Column>
-                    <Column field="latestExecutor" header="Latest Executor">
+                    <Column
+                        field="latestExecutor"
+                        :header="$t('admin.reservation.table.latestExecutor')"
+                    >
                         <template #body="slotProps">
                             <a
                                 v-if="slotProps.data.latestExecutor"
@@ -799,10 +965,13 @@ const exportOptions = [
                             <span v-else> - </span>
                         </template>
                     </Column>
-                    <Column field="status" header="Status">
+                    <Column
+                        field="status"
+                        :header="$t('admin.reservation.table.status')"
+                    >
                         <template #body="slotProps">
                             <Tag
-                                :value="statusMapping[slotProps.data.status]"
+                                :value="statusMapping[slotProps.data.status as keyof typeof statusMapping]"
                                 :severity="
                                     severityMapping[slotProps.data.status]
                                 "
