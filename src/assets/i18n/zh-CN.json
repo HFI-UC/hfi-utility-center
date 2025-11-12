@@ -312,7 +312,8 @@
                 "byRoom": "按房间",
                 "singleSheet": "单张表"
             },
-            "selectTwoDate": "选择两个日期"
+            "selectTwoDate": "选择两个日期",
+            "reservation": "Reservation"
         }
     },
     "toast": {
