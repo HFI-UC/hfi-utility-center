@@ -3,57 +3,57 @@
         "title": "HFI Utility Center",
         "subtitle": "由 MAKERs' 制作",
         "button": {
-            "bookRoom": "Book a room",
-            "viewReservation": "View reservations"
+            "bookRoom": "预约教室",
+            "viewReservation": "查找你的预约"
         }
     },
     "common": {
         "month": [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec"
+            "1 月",
+            "2 月",
+            "3 月",
+            "4 月",
+            "5 月",
+            "6 月",
+            "7 月",
+            "8 月",
+            "9 月",
+            "10 月",
+            "11 月",
+            "12 月"
         ],
         "weekday": {
             "short": [
-                "Mon.",
-                "Tue.",
-                "Wed.",
-                "Thu.",
-                "Fri.",
-                "Sat.",
-                "Sun."
+                "一",
+                "二",
+                "三",
+                "四",
+                "五",
+                "六",
+                "日"
             ],
             "long": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
+                "星期一",
+                "星期二",
+                "星期三",
+                "星期四",
+                "星期五",
+                "星期六",
+                "星期日"
             ]
         },
-        "success": "Success",
-        "error": "Error",
-        "fillInAllFields": "Please fill in all required fields."
+        "success": "成功",
+        "error": "错误",
+        "fillInAllFields": "请填写所有必填的字段。"
     },
     "navbar": {
         "title": "HFI Utility Center",
         "home": "主页",
         "reservation": {
-            "reservation": "Reservations",
-            "create": "New Reservation",
-            "search": "Search Reservation",
-            "analytic": "Reservation Analytics"
+            "reservation": "预约",
+            "create": "创建一个预约",
+            "search": "查找预约",
+            "analytic": "预约统计数据"
         },
         "admin": {
             "admin": "管理员功能",
@@ -64,255 +64,255 @@
         "login": "登录",
         "logout": "登出",
         "locale": {
-            "zhCN": "Simplified Chinese",
-            "enUS": "English",
-            "zhMS": "Microsoft Chinese"
+            "zhCN": "简体中文",
+            "enUS": "英语",
+            "zhMS": "微软中文"
         },
         "toast": {
-            "logoutSuccessful": "Logout successful."
+            "logoutSuccessful": "登出成功。"
         }
     },
     "adminLogin": {
         "toast": {
-            "alreadyLoggedIn": "You are already logged in.",
-            "notLoggedIn": "You are not logged in."
+            "alreadyLoggedIn": "你已登录。",
+            "notLoggedIn": "你还没有登录。"
         }
     },
     "admin": {
         "login": {
-            "title": "Admin Login",
+            "title": "管理员登录",
             "form": {
-                "email": "E-mail",
-                "password": "Password",
-                "submit": "Login"
+                "email": "邮箱",
+                "password": "密码",
+                "submit": "登录"
             },
             "validation": {
-                "emailRequired": "E-mail is required.",
-                "passwordRequired": "Password is required."
+                "emailRequired": "请输入邮箱。",
+                "passwordRequired": "请输入密码。"
             },
-            "humanVerification": "Let us know you're human",
+            "humanVerification": "告诉我们你是人类",
             "toast": {
-                "loginSuccessful": "Login successful."
+                "loginSuccessful": "登录成功。"
             }
         },
         "facility": {
-            "title": "Facility Management",
-            "room": "Rooms",
-            "campus": "Campuses",
-            "class": "Classes",
-            "noRoom": "No rooms found.",
-            "noCampus": "No campuses found.",
-            "noClass": "No classes found.",
-            "noPolicy": "No policies found.",
-            "noApprover": "No approvers found.",
+            "title": "设施管理",
+            "room": "教室",
+            "campus": "校区",
+            "class": "班级",
+            "noRoom": "没有可用的教室。",
+            "noCampus": "没有可用的校区。",
+            "noClass": "没有可用的班级。",
+            "noPolicy": "没有可用的政策。",
+            "noApprover": "没有可用的审批者。",
             "table": {
                 "id": "ID",
-                "name": "Name",
-                "status": "Status",
-                "enabled": "Enabled",
-                "disabled": "Disabled",
-                "campus": "Campus",
-                "policy": "Policy",
-                "approver": "Approver",
-                "creationTime": "Creation Time",
-                "action": "Action",
-                "weekday": "Weekdays",
-                "time": "Time",
-                "active": "Active",
-                "inactive": "Inactive",
-                "email": "E-mail"
+                "name": "名称",
+                "status": "状态",
+                "enabled": "已启用",
+                "disabled": "已禁用",
+                "campus": "校区",
+                "policy": "政策",
+                "approver": "审批者",
+                "creationTime": "创建时间",
+                "action": "操作",
+                "weekday": "工作日",
+                "time": "时间",
+                "active": "启用",
+                "inactive": "禁用",
+                "email": "邮箱"
             },
             "dialog": {
-                "newCampus": "New Campus",
-                "newRoom": "New Room",
-                "newClass": "New Class",
-                "roomPolicy": "Room Policies",
-                "newPolicy": "New Policy",
-                "editPolicy": "Edit Room Policy",
-                "roomApprover": "Room Approvers",
-                "newApprover": "New Room Approver",
-                "editClass": "Edit Class",
-                "editRoom": "Edit Room",
-                "editCampus": "Edit Campus"
+                "newCampus": "新建校区",
+                "newRoom": "新建教室",
+                "newClass": "新建班级",
+                "roomPolicy": "教室政策",
+                "newPolicy": "新建政策",
+                "editPolicy": "编辑教室政策",
+                "roomApprover": "教室审批者",
+                "newApprover": "新建教室审批者",
+                "editClass": "编辑班级",
+                "editRoom": "编辑教室",
+                "editCampus": "编辑校区"
             },
             "form": {
-                "name": "Name",
-                "campus": "Campus",
-                "weekday": "Weekdays",
-                "startTime": "Start Time",
-                "endTime": "End Time",
-                "admin": "Admin",
-                "enabled": "Enabled"
+                "name": "名称",
+                "campus": "校区",
+                "weekday": "工作日",
+                "startTime": "开始时间",
+                "endTime": "结束时间",
+                "admin": "管理员",
+                "enabled": "启用"
             },
             "button": {
-                "cancel": "Cancel",
-                "create": "Create",
-                "edit": "Edit"
+                "cancel": "取消",
+                "create": "创建",
+                "edit": "编辑"
             },
             "toast": {
-                "roomDeleted": "Room #{id} has been deleted.",
-                "campusDeleted": "Campus #{id} has been deleted.",
-                "classDeleted": "Class #{id} has been deleted.",
-                "campusCreated": "Campus \"{name}\" has been created.",
-                "roomCreated": "Room \"{name}\" has been created.",
-                "classCreated": "Class \"{name}\" has been created.",
-                "startTimeBeforeEndTime": "Start time must be before end time.",
-                "policyCreated": "Policy created successfully.",
-                "failedToCreatePolicy": "Failed to create policy.",
-                "policyEdited": "Policy edited successfully.",
-                "failedToEditPolicy": "Failed to edit policy.",
-                "policyDeleted": "Policy deleted successfully.",
-                "failedToDeletePolicy": "Failed to delete policy.",
-                "policyToggled": "Policy toggled successfully.",
-                "failedToTogglePolicy": "Failed to toggle policy.",
-                "classEdited": "Class edited successfully.",
-                "failedToEditClass": "Failed to edit class.",
-                "roomEdited": "Room edited successfully.",
-                "failedToEditRoom": "Failed to edit room.",
-                "campusEdited": "Campus edited successfully.",
-                "failedToEditCampus": "Failed to edit campus.",
-                "approverCreated": "Approver created successfully.",
-                "failedToCreateApprover": "Failed to create approver.",
-                "approverNotificationsToggled": "Approver notifications toggled successfully.",
-                "failedToToggleApproverNotifications": "Failed to toggle approver notifications.",
-                "approverDeleted": "Approver deleted successfully.",
-                "failedToDeleteApprover": "Failed to delete approver."
+                "roomDeleted": "已成功删除教室 #{id}。",
+                "campusDeleted": "已成功删除校区 #{id}。",
+                "classDeleted": "已成功删除班级 #{id}。",
+                "campusCreated": "已成功创建校区”{name}“。",
+                "roomCreated": "已成功创建教室”{name}“。",
+                "classCreated": "已成功创建班级”{name}“。",
+                "startTimeBeforeEndTime": "开始时间必须早于结束时间。",
+                "policyCreated": "政策创建成功。",
+                "failedToCreatePolicy": "无法创建政策。",
+                "policyEdited": "政策编辑成功。",
+                "failedToEditPolicy": "无法编辑政策。",
+                "policyDeleted": "政策删除成功。",
+                "failedToDeletePolicy": "无法删除政策。",
+                "policyToggled": "政策状态切换成功。",
+                "failedToTogglePolicy": "无法切换政策状态。",
+                "classEdited": "教室编辑成功。",
+                "failedToEditClass": "无法编辑教室。",
+                "roomEdited": "教室编辑成功。",
+                "failedToEditRoom": "无法编辑房间。",
+                "campusEdited": "校区编辑成功。",
+                "failedToEditCampus": "无法编辑校区。",
+                "approverCreated": "审批者创建成功。",
+                "failedToCreateApprover": "无法创建审批者。",
+                "approverNotificationsToggled": "审批者通知切换成功。",
+                "failedToToggleApproverNotifications": "无法切换审批者通知。",
+                "approverDeleted": "审批者删除成功。",
+                "failedToDeleteApprover": "无法删除审批者。"
             },
             "validation": {
-                "nameRequired": "Name is required.",
-                "campusRequired": "Campus is required.",
-                "weekdayRequired": "At least one weekday must be selected.",
-                "startTimeRequired": "Start time is required.",
-                "endTimeRequired": "End time is required.",
-                "adminRequired": "Admin is required.",
-                "enabledRequired": "Enabled status is required."
+                "nameRequired": "请输入姓名。",
+                "campusRequired": "请选择校区。",
+                "weekdayRequired": "请至少选择一个工作日。",
+                "startTimeRequired": "请填写开始时间。",
+                "endTimeRequired": "请填写结束时间。",
+                "adminRequired": "请选择一个管理员。",
+                "enabledRequired": "请选择启用状态。"
             }
         },
         "admin": {
-            "title": "Admin Management",
-            "admin": "Admins",
+            "title": "管理员管理",
+            "admin": "管理员",
             "table": {
                 "id": "ID",
-                "name": "Name",
-                "email": "E-mail",
-                "password": "Password",
-                "creationTime": "Creation Time",
-                "action": "Actions"
+                "name": "姓名",
+                "email": "邮箱",
+                "password": "密码",
+                "creationTime": "创建时间",
+                "action": "操作"
             },
             "dialog": {
-                "newAdmin": "New Admin",
-                "editPassword": "Edit Password",
-                "editAdmin": "Edit Admin"
+                "newAdmin": "新增管理员",
+                "editPassword": "修改密码",
+                "editAdmin": "编辑管理员"
             },
             "form": {
-                "name": "Name",
-                "email": "E-mail",
-                "password": "Password"
+                "name": "姓名",
+                "email": "邮箱",
+                "password": "密码"
             },
             "button": {
-                "cancel": "Cancel",
-                "create": "Create",
-                "edit": "Edit"
+                "cancel": "取消",
+                "create": "创建",
+                "edit": "编辑"
             },
             "toast": {
-                "adminCreated": "Admin \"{name}\" has been created.",
-                "failedToCreateAdmin": "Failed to create admin.",
-                "passwordEdited": "Password for admin #{id} has been edited.",
-                "failedToEditPassword": "Failed to edit admin password.",
-                "adminEdited": "Admin #{id} has been edited.",
-                "failedToEditAdmin": "Failed to edit admin.",
-                "adminDeleted": "Admin #{id} has been deleted.",
-                "failedToDeleteAdmin": "Failed to delete admin."
+                "adminCreated": "管理员 \"{name}\" 创建成功。",
+                "failedToCreateAdmin": "无法创建管理员。",
+                "passwordEdited": "已成功修改管理员 #{id} 的密码。",
+                "failedToEditPassword": "无法修改管理员密码。",
+                "adminEdited": "已成功编辑管理员 #{id}。",
+                "failedToEditAdmin": "无法编辑管理员。",
+                "adminDeleted": "已成功删除管理员 #{id}。",
+                "failedToDeleteAdmin": "无法删除管理员。"
             },
             "validation": {
-                "nameRequired": "Name is required.",
-                "emailInvalid": "Invalid E-mail format.",
-                "emailRequired": "Email is required.",
-                "passwordRequired": "Password is required.",
-                "passwordMinLength": "Password must be at least 6 characters."
+                "nameRequired": "请输入姓名。",
+                "emailInvalid": "无效的邮箱格式。",
+                "emailRequired": "请输入邮箱。",
+                "passwordRequired": "请输入密码。",
+                "passwordMinLength": "密码必须至少 6 个字符。"
             }
         },
         "reservation": {
-            "title": "Reservation Management",
-            "futureReservation": "Future Reservations",
-            "noFutureReservation": "No future reservations found.",
-            "allReservation": "All Reservations",
-            "noAllReservation": "No available reservations.",
-            "export": "Export (.xlsx)",
+            "title": "预约管理",
+            "futureReservation": "未来的预约",
+            "noFutureReservation": "无可用未来的预约。",
+            "allReservation": "所有预约",
+            "noAllReservation": "没有可用的预约。",
+            "export": "导出（.xlsx）",
             "dialog": {
-                "rejectReservation": "Reject Reservation",
-                "exportReservation": "Export Reservations"
+                "rejectReservation": "打回预约",
+                "exportReservation": "导出预约"
             },
             "validation": {
-                "reasonRequired": "Reason is required.",
-                "optionRequired": "Format is required.",
-                "modeRequired": "Mode is required."
+                "reasonRequired": "请选择原因。",
+                "optionRequired": "请选择格式。",
+                "modeRequired": "请选择模式。"
             },
             "form": {
-                "reason": "Reason",
-                "option": "Select an option",
-                "time": "Time",
-                "mode": "Select an export mode"
+                "reason": "原因",
+                "option": "选择一个选项",
+                "time": "时间",
+                "mode": "选择一个导出模式"
             },
             "button": {
-                "cancel": "Cancel",
-                "reject": "Reject",
-                "export": "Export",
-                "approve": "Approve"
+                "cancel": "取消",
+                "reject": "打回",
+                "export": "导出",
+                "approve": "通过"
             },
             "studentInfo": {
-                "title": "Student Information",
-                "name": "Student Name",
-                "id": "Student ID",
-                "email": "E-mail",
-                "class": "Class",
-                "campus": "Campus"
+                "title": "学生信息",
+                "name": "学生姓名",
+                "id": "学号",
+                "email": "邮箱",
+                "class": "班级",
+                "campus": "校区"
             },
             "reservationDetail": {
-                "title": "Reservation Details",
-                "room": "Room",
-                "startTime": "Start Time",
-                "endTime": "End Time",
-                "status": "Status",
-                "reason": "Reason"
+                "title": "预约详情",
+                "room": "教室",
+                "startTime": "开始时间",
+                "endTime": "结束时间",
+                "status": "状态",
+                "reason": "原因"
             },
             "table": {
                 "id": "ID",
-                "studentName": "Student Name",
-                "studentId": "Student ID",
-                "email": "E-mail",
-                "class": "Class",
-                "room": "Room",
-                "startTime": "Start Time",
-                "endTime": "End Time",
-                "reason": "Reason",
-                "creationTime": "Creation Time",
-                "latestExecutor": "Latest Executor",
-                "status": "Status"
+                "studentName": "学生姓名",
+                "studentId": "学号",
+                "email": "邮箱",
+                "class": "班级",
+                "room": "教室",
+                "startTime": "开始时间",
+                "endTime": "结束时间",
+                "reason": "原因",
+                "creationTime": "创建时间",
+                "latestExecutor": "最近操作者",
+                "status": "状态"
             },
             "placeholder": {
-                "keyword": "Keyword",
-                "room": "Room",
-                "status": "Status",
-                "timeRange": "Time Range"
+                "keyword": "关键词",
+                "room": "教室",
+                "status": "状态",
+                "timeRange": "时间范围"
             },
             "toast": {
-                "reservationApproved": "Reservation #{id} has been approved.",
-                "reservationRejected": "Reservation #{id} has been rejected for the following reason: {reason}",
-                "noReservationInRange": "There are no reservations in the selected time range."
+                "reservationApproved": "预约 #{id} 已成功通过。",
+                "reservationRejected": "预约 #{id} 已成功打回，打回原因：{reason}",
+                "noReservationInRange": "在选定的时间范围内没有可用预约。"
             },
             "exportOption": {
-                "today": "Export reservations for today",
-                "thisWeek": "Export reservations for this week",
-                "thisMonth": "Export reservations for this month",
-                "all": "Export every reservations",
-                "custom": "Custom range"
+                "today": "导出今天的预约",
+                "thisWeek": "导出这周的预约",
+                "thisMonth": "导出这个月的预约",
+                "all": "导出所有预约",
+                "custom": "自定义范围"
             },
             "modeOption": {
-                "byRoom": "By room",
-                "singleSheet": "Single sheet"
+                "byRoom": "按房间",
+                "singleSheet": "单张表"
             },
-            "selectTwoDate": "Select two dates"
+            "selectTwoDate": "选择两个日期"
         }
     },
     "toast": {
@@ -329,14 +329,14 @@
                 "rejected": "已打回"
             },
             "placeholder": {
-                "keyword": "Keyword",
-                "room": "Room",
-                "status": "Status",
-                "time": "Time Range"
+                "keyword": "关键词",
+                "room": "教室",
+                "status": "状态",
+                "time": "时间范围"
             },
-            "reservation": "Reservations",
-            "selectTwoDate": "Please select two dates",
-            "noReservation": "No reservations found.",
+            "reservation": "预约列表",
+            "selectTwoDate": "请选择两个日期",
+            "noReservation": "无可用预约。",
             "table": {
                 "id": "ID",
                 "studentName": "学生姓名",
@@ -352,8 +352,8 @@
         "create": {
             "title": "新预约",
             "subtitle": {
-                "personalInfo": "Personal Information",
-                "reservationInfo": "Reservation Information"
+                "personalInfo": "个人信息",
+                "reservationInfo": "预约信息"
             },
             "form": {
                 "class": "班级",
@@ -367,109 +367,109 @@
                 "date": "日期",
                 "campus": "校区",
                 "submit": "提交",
-                "termAgreement": "I agree to the {0}.",
-                "termAndCondition": "Terms and Conditions"
+                "termAgreement": "我同意{0}。",
+                "termAndCondition": "条款和条件"
             },
             "validation": {
-                "classRequired": "Class is required.",
-                "studentNameRequired": "Name is required.",
-                "roomRequired": "Room is required.",
+                "classRequired": "请选择班级。",
+                "studentNameRequired": "请输入姓名。",
+                "roomRequired": "请选择教室。",
                 "studentId": {
-                    "required": "Student ID is required.",
-                    "prefix": "Student ID must start with 'GJ'.",
-                    "minLength": "Student ID must be at least 10 characters long (e.g. GJ12345678).",
-                    "digits": "The last 8 characters of Student ID must be numbers."
+                    "required": "请输入学号。",
+                    "prefix": "学号必须以“GJ”开始。",
+                    "minLength": "学号必须至少为 10 个字符（例如，GJ12345678）。",
+                    "digits": "学号的最后 8 个字符必须是数字。"
                 },
                 "email": {
-                    "required": "E-mail is required.",
-                    "format": "Wrong E-mail format."
+                    "required": "请输入邮箱。",
+                    "format": "错误的邮箱格式。"
                 },
-                "dateRequired": "Date is required.",
-                "startTimeRequired": "Start time is required.",
-                "endTimeRequired": "End time is required.",
-                "reasonRequired": "Please provide a reason for the reservation.",
-                "campusRequired": "Campus is required.",
-                "isAgreed": "You must agree to the terms and conditions."
+                "dateRequired": "请选择日期。",
+                "startTimeRequired": "请选择开始时间。",
+                "endTimeRequired": "请选择结束时间。",
+                "reasonRequired": "请说明预约的理由。",
+                "campusRequired": "请选择校区。",
+                "isAgreed": "您必须同意条款和条件。"
             },
             "table": {
                 "policy": {
-                    "header": "Disabled Periods",
-                    "empty": "No available disabled periods.",
-                    "weekday": "Weekdays",
-                    "time": "Time"
+                    "header": "停用时间",
+                    "empty": "没有可用的停用时间。",
+                    "weekday": "工作日",
+                    "time": "时间"
                 },
                 "reservation": {
-                    "header": "Reservations Info",
-                    "empty": "No reservations available.",
-                    "name": "Name",
-                    "time": "Date / Time"
+                    "header": "预约信息",
+                    "empty": "没有可用的预约。",
+                    "name": "姓名",
+                    "time": "日期 / 时间"
                 }
             },
             "term": {
-                "title": "Terms and Conditions",
+                "title": "条款和条件",
                 "content": [
-                    "Do not bring food and drinks into the study area. Students are responsible for keeping the study room clean and tidy.",
-                    "Students should take good care of their personal belongings (such as wallets, phones, and computers). Valuable items should be carried or locked in a secure place. When leaving the classroom, students should take their valuable items with them, as the school does not assume any responsibility for their safekeeping.",
-                    "After leaving public areas, students should take their personal belongings with them. The administrative office will periodically clean the area, and the school will not be responsible for any lost items.",
-                    "Students should consciously maintain the cleanliness of the classroom and public order.",
-                    "Please take care of and use the teaching equipment responsibly. If any problems or losses are discovered, contact the administrative office as soon as possible. If a student causes equipment loss or maliciously damages the equipment, the student will be responsible for compensation.",
-                    "When students leave the classroom, they should ensure that all electrical equipment (such as air conditioners, fans, and lights) is turned off, and the remote control is returned to the designated location.",
-                    "Students are not allowed to move teaching equipment without permission.",
-                    "Do not reserve seats in any way. If students need to leave their seats, they should take their personal belongings with them, or place their books in their bags and put them under the desk without affecting other students' use of the seat. The duty teacher will periodically inspect the area, and any reserved items found will be removed to make the seat available for others.",
-                    "Be mindful of public decency and personal image, and do not lie down on benches or sofas.",
-                    "Do not speak loudly in public places, and set your phone to silent mode. Please go outside to make phone calls.",
-                    "It is forbidden to pull power sources privately or use high-powered electrical appliances. Do not move fire safety equipment without permission.",
-                    "The study area must not be used for non-study-related activities (including but not limited to video games on phones or computers, board games, watching variety shows or movies, etc.). Violations will be handled according to the Student Violation Management Regulations based on the actual situation."
+                    "请勿携带食品和饮料进入自习区域饮食，学生有责任保持自习室干净整洁。",
+                    "学生应保管好个人物品（如钱包、手机、电脑），请将贵重物品随身携带或锁在安全的地方。离开课室时，请带走贵重物品，学校不承担保管义务。",
+                    "离开公共区域后，学生应将个人物品随身带走，行政办会定期清理场地卫生，如有遗失，学校不承担任何责任。",
+                    "学生需自觉维护好课室保洁、公共秩序。",
+                    "请爱护并合理使用教学设备，如果发现有问题或遗失，请尽快联系行政办；如果因学生原因造成设备遗失或学生恶意、损坏教学设备，学生应负责赔偿。",
+                    "学生离开课室时，应确保所有电器设备（如空调、风扇、灯）被关闭，并且遥控板被归还到指定位置。",
+                    "未经允许，学生不可以移动教学设备。",
+                    "请勿以任何方式占座，学生若需离开座位，请自觉将个人物品带离；或将桌面的书本收到书包里，放置在桌椅下方的侧边，不影响其它同学使用座位；值班老师将定期巡查，一旦发现有占座现象，占座物品将被移开或收走，以腾出座位给其他同学。",
+                    "注意公德和个人形象，勿在长椅或沙发上躺卧。",
+                    "公共场合不得大声喧哗，同时请将手机调为静音状态，自觉到室外接打电话。",
+                    "禁止私拉电源和使用高功率电器，未经批准请勿挪动消防设施。",
+                    "任何时段，自习区域不得进行与学习无关的事项（包括但不限于手机/电脑等电子游戏（APP）、棋牌、观看综艺/影视等）违反以上要求及规定，将结合实际情况，按照《学生违规管理条例》执行。"
                 ]
             },
             "button": {
-                "anotherReservation": "Make another reservation"
+                "anotherReservation": "创建另一个预约"
             },
             "toast": {
-                "reservationCreated": "Your reservation has been created successfully."
+                "reservationCreated": "你的预约已成功创建。"
             }
         },
         "analytic": {
-            "title": "Reservation Analytics",
+            "title": "预约统计数据",
             "overview": {
-                "title": "Overview",
-                "exportPDF": "Export (.pdf)",
-                "exportPNG": "Export (.png)",
-                "reservationToday": "Reservations (Today)",
-                "approvalToday": "Approvals (Today)",
-                "rejectionToday": "Rejections (Today)",
-                "creationToday": "Reservation Creations (Today)",
-                "weekly": "Weekly (Last 7 Days)",
-                "daily": "Daily (Last 30 Days)",
-                "monthly": "Monthly (Last 1 Year)",
-                "dailyRequest": "Daily Requests (Last 30 Days)"
+                "title": "总览",
+                "exportPDF": "导出（.pdf）",
+                "exportPNG": "导出（.png）",
+                "reservationToday": "预约（今天）",
+                "approvalToday": "通过（今天）",
+                "rejectionToday": "打回（今天）",
+                "creationToday": "创建（今天）",
+                "weekly": "每周（过去 7 天）",
+                "daily": "每日（过去 30 天）",
+                "monthly": "每月（过去 1 年）",
+                "dailyRequest": "每日请求（过去 30 天）"
             },
             "weekly": {
-                "title": "Weekly (Last Week)",
-                "exportPDF": "Export (.pdf)",
-                "exportPNG": "Export (.png)",
-                "reservation": "Reservations",
-                "approval": "Approvals",
-                "rejection": "Rejections",
-                "creation": "Reservation Creations",
-                "reason": "Reasons",
-                "hourlyReservation": "Hourly Reservations",
-                "dailyReservation": "Daily Reservations",
-                "dailyCreation": "Daily Reservation Creations",
-                "topRoom": "Top 5 Room Statistics"
+                "title": "每周（上周）",
+                "exportPDF": "导出（.pdf）",
+                "exportPNG": "导出（.png）",
+                "reservation": "预约",
+                "approval": "通过",
+                "rejection": "打回",
+                "creation": "创建",
+                "reason": "预约原因",
+                "hourlyReservation": "每小时预约",
+                "dailyReservation": "每日预约",
+                "dailyCreation": "每日预约创建数",
+                "topRoom": "前 5 个预约最多的教室"
             },
             "chart": {
-                "reservation": "Reservations",
-                "creation": "Reservation Creations",
-                "approval": "Reservation Approvals",
-                "rejection": "Reservation Rejections",
-                "request": "Requests"
+                "reservation": "预约",
+                "creation": "创建",
+                "approval": "通过",
+                "rejection": "打回",
+                "request": "请求数"
             },
             "dialog": {
                 "humanVerification": {
-                    "title": "Human Verification",
-                    "subtitle": "Let us know you're human",
-                    "cancel": "Cancel"
+                    "title": "人机验证",
+                    "subtitle": "告诉我们你是人类",
+                    "cancel": "取消"
                 }
             }
         }
