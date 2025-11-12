@@ -2,19 +2,58 @@
     "home": {
         "title": "HFI Utility Center",
         "subtitle": "由 MAKERs' 制作",
-        "buttons": {
-            "bookRoom": "预约一个教室",
-            "viewReservations": "查看预约"
+        "button": {
+            "bookRoom": "预约教室",
+            "viewReservation": "查找你的预约"
         }
+    },
+    "common": {
+        "month": [
+            "1 月",
+            "2 月",
+            "3 月",
+            "4 月",
+            "5 月",
+            "6 月",
+            "7 月",
+            "8 月",
+            "9 月",
+            "10 月",
+            "11 月",
+            "12 月"
+        ],
+        "weekday": {
+            "short": [
+                "一",
+                "二",
+                "三",
+                "四",
+                "五",
+                "六",
+                "日"
+            ],
+            "long": [
+                "星期一",
+                "星期二",
+                "星期三",
+                "星期四",
+                "星期五",
+                "星期六",
+                "星期日"
+            ]
+        },
+        "success": "成功",
+        "error": "错误",
+        "fillInAllFields": "请填写所有必填的字段。"
     },
     "navbar": {
         "title": "HFI Utility Center",
         "home": "主页",
-        "reservations": {
-            "reservations": "预约",
-            "create": "新预约",
-            "search": "搜索预约",
-            "analytics": "预约分析"
+        "reservation": {
+            "reservation": "预约",
+            "create": "创建一个预约",
+            "search": "查找预约",
+            "analytic": "预约统计数据"
         },
         "admin": {
             "admin": "管理员功能",
@@ -23,20 +62,263 @@
             "adminManagement": "管理员管理"
         },
         "login": "登录",
-        "logout": "登出"
+        "logout": "登出",
+        "locale": {
+            "zhCN": "简体中文",
+            "enUS": "英语",
+            "zhMS": "微软中文"
+        },
+        "toast": {
+            "logoutSuccessful": "登出成功。"
+        }
+    },
+    "adminLogin": {
+        "toast": {
+            "alreadyLoggedIn": "你已登录。",
+            "notLoggedIn": "你还没有登录。"
+        }
+    },
+    "admin": {
+        "login": {
+            "title": "管理员登录",
+            "form": {
+                "email": "邮箱",
+                "password": "密码",
+                "submit": "登录"
+            },
+            "validation": {
+                "emailRequired": "请输入邮箱。",
+                "passwordRequired": "请输入密码。"
+            },
+            "humanVerification": "告诉我们你是人类",
+            "toast": {
+                "loginSuccessful": "登录成功。"
+            }
+        },
+        "facility": {
+            "title": "设施管理",
+            "room": "教室",
+            "campus": "校区",
+            "class": "班级",
+            "noRoom": "没有可用的教室。",
+            "noCampus": "没有可用的校区。",
+            "noClass": "没有可用的班级。",
+            "noPolicy": "没有可用的政策。",
+            "noApprover": "没有可用的审批者。",
+            "table": {
+                "id": "ID",
+                "name": "名称",
+                "status": "状态",
+                "enabled": "已启用",
+                "disabled": "已禁用",
+                "campus": "校区",
+                "policy": "政策",
+                "approver": "审批者",
+                "creationTime": "创建时间",
+                "action": "操作",
+                "weekday": "工作日",
+                "time": "时间",
+                "active": "启用",
+                "inactive": "禁用",
+                "email": "邮箱"
+            },
+            "dialog": {
+                "newCampus": "新建校区",
+                "newRoom": "新建教室",
+                "newClass": "新建班级",
+                "roomPolicy": "教室政策",
+                "newPolicy": "新建政策",
+                "editPolicy": "编辑教室政策",
+                "roomApprover": "教室审批者",
+                "newApprover": "新建教室审批者",
+                "editClass": "编辑班级",
+                "editRoom": "编辑教室",
+                "editCampus": "编辑校区"
+            },
+            "form": {
+                "name": "名称",
+                "campus": "校区",
+                "weekday": "工作日",
+                "startTime": "开始时间",
+                "endTime": "结束时间",
+                "admin": "管理员",
+                "enabled": "启用"
+            },
+            "button": {
+                "cancel": "取消",
+                "create": "创建",
+                "edit": "编辑"
+            },
+            "toast": {
+                "roomDeleted": "已成功删除教室 #{id}。",
+                "campusDeleted": "已成功删除校区 #{id}。",
+                "classDeleted": "已成功删除班级 #{id}。",
+                "campusCreated": "已成功创建校区”{name}“。",
+                "roomCreated": "已成功创建教室”{name}“。",
+                "classCreated": "已成功创建班级”{name}“。",
+                "startTimeBeforeEndTime": "开始时间必须早于结束时间。",
+                "policyCreated": "政策创建成功。",
+                "failedToCreatePolicy": "无法创建政策。",
+                "policyEdited": "政策编辑成功。",
+                "failedToEditPolicy": "无法编辑政策。",
+                "policyDeleted": "政策删除成功。",
+                "failedToDeletePolicy": "无法删除政策。",
+                "policyToggled": "政策状态切换成功。",
+                "failedToTogglePolicy": "无法切换政策状态。",
+                "classEdited": "教室编辑成功。",
+                "failedToEditClass": "无法编辑教室。",
+                "roomEdited": "教室编辑成功。",
+                "failedToEditRoom": "无法编辑房间。",
+                "campusEdited": "校区编辑成功。",
+                "failedToEditCampus": "无法编辑校区。",
+                "approverCreated": "审批者创建成功。",
+                "failedToCreateApprover": "无法创建审批者。",
+                "approverNotificationsToggled": "审批者通知切换成功。",
+                "failedToToggleApproverNotifications": "无法切换审批者通知。",
+                "approverDeleted": "审批者删除成功。",
+                "failedToDeleteApprover": "无法删除审批者。"
+            },
+            "validation": {
+                "nameRequired": "请输入姓名。",
+                "campusRequired": "请选择校区。",
+                "weekdayRequired": "请至少选择一个工作日。",
+                "startTimeRequired": "请填写开始时间。",
+                "endTimeRequired": "请填写结束时间。",
+                "adminRequired": "请选择一个管理员。",
+                "enabledRequired": "请选择启用状态。"
+            }
+        },
+        "admin": {
+            "title": "管理员管理",
+            "admin": "管理员",
+            "table": {
+                "id": "ID",
+                "name": "姓名",
+                "email": "邮箱",
+                "password": "密码",
+                "creationTime": "创建时间",
+                "action": "操作"
+            },
+            "dialog": {
+                "newAdmin": "新增管理员",
+                "editPassword": "修改密码",
+                "editAdmin": "编辑管理员"
+            },
+            "form": {
+                "name": "姓名",
+                "email": "邮箱",
+                "password": "密码"
+            },
+            "button": {
+                "cancel": "取消",
+                "create": "创建",
+                "edit": "编辑"
+            },
+            "toast": {
+                "adminCreated": "管理员 \"{name}\" 创建成功。",
+                "failedToCreateAdmin": "无法创建管理员。",
+                "passwordEdited": "已成功修改管理员 #{id} 的密码。",
+                "failedToEditPassword": "无法修改管理员密码。",
+                "adminEdited": "已成功编辑管理员 #{id}。",
+                "failedToEditAdmin": "无法编辑管理员。",
+                "adminDeleted": "已成功删除管理员 #{id}。",
+                "failedToDeleteAdmin": "无法删除管理员。"
+            },
+            "validation": {
+                "nameRequired": "请输入姓名。",
+                "emailInvalid": "无效的邮箱格式。",
+                "emailRequired": "请输入邮箱。",
+                "passwordRequired": "请输入密码。",
+                "passwordMinLength": "密码必须至少 6 个字符。"
+            }
+        },
+        "reservation": {
+            "title": "预约管理",
+            "futureReservation": "未来的预约",
+            "noFutureReservation": "无可用未来的预约。",
+            "allReservation": "所有预约",
+            "noAllReservation": "没有可用的预约。",
+            "export": "导出（.xlsx）",
+            "dialog": {
+                "rejectReservation": "打回预约",
+                "exportReservation": "导出预约"
+            },
+            "validation": {
+                "reasonRequired": "请选择原因。",
+                "optionRequired": "请选择格式。",
+                "modeRequired": "请选择模式。"
+            },
+            "form": {
+                "reason": "原因",
+                "option": "选择一个选项",
+                "time": "时间",
+                "mode": "选择一个导出模式"
+            },
+            "button": {
+                "cancel": "取消",
+                "reject": "打回",
+                "export": "导出",
+                "approve": "通过"
+            },
+            "studentInfo": {
+                "title": "学生信息",
+                "name": "学生姓名",
+                "id": "学号",
+                "email": "邮箱",
+                "class": "班级",
+                "campus": "校区"
+            },
+            "reservationDetail": {
+                "title": "预约详情",
+                "room": "教室",
+                "startTime": "开始时间",
+                "endTime": "结束时间",
+                "status": "状态",
+                "reason": "原因"
+            },
+            "table": {
+                "id": "ID",
+                "studentName": "学生姓名",
+                "studentId": "学号",
+                "email": "邮箱",
+                "class": "班级",
+                "room": "教室",
+                "startTime": "开始时间",
+                "endTime": "结束时间",
+                "reason": "原因",
+                "creationTime": "创建时间",
+                "latestExecutor": "最近操作者",
+                "status": "状态"
+            },
+            "placeholder": {
+                "keyword": "关键词",
+                "room": "教室",
+                "status": "状态",
+                "timeRange": "时间范围"
+            },
+            "toast": {
+                "reservationApproved": "预约 #{id} 已成功通过。",
+                "reservationRejected": "预约 #{id} 已成功打回，打回原因：{reason}",
+                "noReservationInRange": "在选定的时间范围内没有可用预约。"
+            },
+            "exportOption": {
+                "today": "导出今天的预约",
+                "thisWeek": "导出这周的预约",
+                "thisMonth": "导出这个月的预约",
+                "all": "导出所有预约",
+                "custom": "自定义范围"
+            },
+            "modeOption": {
+                "byRoom": "按房间",
+                "singleSheet": "单张表"
+            },
+            "selectTwoDate": "选择两个日期"
+        }
     },
     "toast": {
         "success": "成功",
         "error": "错误",
-        "info": "信息",
-        "details": {
-            "loginSuccessful": "登录成功。",
-            "logoutSuccessful": "登出成功。",
-            "fillInAllFields": "请填写所有必填的字段。",
-            "reservationCreated": "你的预订已成功创建。",
-            "alreadyLoggedIn": "你已登录。",
-            "notLoggedIn": "你还没有登录。"
-        }
+        "details": {}
     },
     "reservation": {
         "search": {
@@ -46,15 +328,15 @@
                 "approved": "已通过",
                 "rejected": "已打回"
             },
-            "placeholders": {
+            "placeholder": {
                 "keyword": "关键词",
                 "room": "教室",
                 "status": "状态",
                 "time": "时间范围"
             },
-            "reservations": "预约",
-            "selectTwoDates": "请选择两个日期",
-            "noReservations": "无可用预约。",
+            "reservation": "预约列表",
+            "selectTwoDate": "请选择两个日期",
+            "noReservation": "无可用预约。",
             "table": {
                 "id": "ID",
                 "studentName": "学生姓名",
@@ -69,7 +351,7 @@
         },
         "create": {
             "title": "新预约",
-            "subtitles": {
+            "subtitle": {
                 "personalInfo": "个人信息",
                 "reservationInfo": "预约信息"
             },
@@ -85,46 +367,45 @@
                 "date": "日期",
                 "campus": "校区",
                 "submit": "提交",
-                "termsAgreement": "我同意 {0}。",
-                "termsAndConditions": "条款和条件",
-                "invalid": {
-                    "class": "请选择一个班级。",
-                    "classId": "请选择一个班级。",
-                    "studentName": "请输入姓名。",
-                    "room": "请选择一个教室。",
-                    "studentId": {
-                        "required": "请输入学号。",
-                        "prefix": "学号必须以“GJ”开始。",
-                        "minLength": "学号必须至少为 10 个字符（例如，GJ12345678）。",
-                        "digits": "学号的最后 8 个字符必须是数字。"
-                    },
-                    "email": {
-                        "required": "请输入邮箱。",
-                        "format": "错误的邮箱格式。"
-                    },
-                    "date": "请选择一个日期。",
-                    "startTime": "请选择开始时间。",
-                    "endTime": "请选择结束时间。",
-                    "reason": "请说明预约的理由。",
-                    "campus": "请选择一个校区。",
-                    "isAgreed": "您必须同意条款和条件。"
-                }
+                "termAgreement": "我同意{0}。",
+                "termAndCondition": "条款和条件"
             },
-            "tables": {
+            "validation": {
+                "classRequired": "请选择班级。",
+                "studentNameRequired": "请输入姓名。",
+                "roomRequired": "请选择教室。",
+                "studentId": {
+                    "required": "请输入学号。",
+                    "prefix": "学号必须以“GJ”开始。",
+                    "minLength": "学号必须至少为 10 个字符（例如，GJ12345678）。",
+                    "digits": "学号的最后 8 个字符必须是数字。"
+                },
+                "email": {
+                    "required": "请输入邮箱。",
+                    "format": "错误的邮箱格式。"
+                },
+                "dateRequired": "请选择日期。",
+                "startTimeRequired": "请选择开始时间。",
+                "endTimeRequired": "请选择结束时间。",
+                "reasonRequired": "请说明预约的理由。",
+                "campusRequired": "请选择校区。",
+                "isAgreed": "您必须同意条款和条件。"
+            },
+            "table": {
                 "policy": {
                     "header": "停用时间",
                     "empty": "没有可用的停用时间。",
-                    "weekdays": "工作日",
+                    "weekday": "工作日",
                     "time": "时间"
                 },
-                "reservations": {
+                "reservation": {
                     "header": "预约信息",
                     "empty": "没有可用的预约。",
                     "name": "姓名",
                     "time": "日期 / 时间"
                 }
             },
-            "terms": {
+            "term": {
                 "title": "条款和条件",
                 "content": [
                     "请勿携带食品和饮料进入自习区域饮食，学生有责任保持自习室干净整洁。",
@@ -141,8 +422,55 @@
                     "任何时段，自习区域不得进行与学习无关的事项（包括但不限于手机/电脑等电子游戏（APP）、棋牌、观看综艺/影视等）违反以上要求及规定，将结合实际情况，按照《学生违规管理条例》执行。"
                 ]
             },
-            "buttons": {
+            "button": {
                 "anotherReservation": "创建另一个预约"
+            },
+            "toast": {
+                "reservationCreated": "你的预约已成功创建。"
+            }
+        },
+        "analytic": {
+            "title": "预约统计数据",
+            "overview": {
+                "title": "总览",
+                "exportPDF": "导出（.pdf）",
+                "exportPNG": "导出（.png）",
+                "reservationToday": "预约（今天）",
+                "approvalToday": "通过（今天）",
+                "rejectionToday": "打回（今天）",
+                "creationToday": "创建（今天）",
+                "weekly": "每周（过去 7 天）",
+                "daily": "每日（过去 30 天）",
+                "monthly": "每月（过去 1 年）",
+                "dailyRequest": "每日请求（过去 30 天）"
+            },
+            "weekly": {
+                "title": "每周（上周）",
+                "exportPDF": "导出（.pdf）",
+                "exportPNG": "导出（.png）",
+                "reservation": "预约",
+                "approval": "通过",
+                "rejection": "打回",
+                "creation": "创建",
+                "reason": "预约原因",
+                "hourlyReservation": "每小时预约",
+                "dailyReservation": "每日预约",
+                "dailyCreation": "每日预约创建数",
+                "topRoom": "前 5 个预约最多的教室"
+            },
+            "chart": {
+                "reservation": "预约",
+                "creation": "创建",
+                "approval": "通过",
+                "rejection": "打回",
+                "request": "请求数"
+            },
+            "dialog": {
+                "humanVerification": {
+                    "title": "人机验证",
+                    "subtitle": "告诉我们你是人类",
+                    "cancel": "取消"
+                }
             }
         }
     }
