@@ -508,7 +508,7 @@ const exportOptions = computed(() => [
                                     <h2 class="font-bold text-xl mb-2">
                                         {{
                                             $t(
-                                                "admin.reservation.table.id",
+                                                "admin.reservation.reservation",
                                             )
                                         }}
                                         #{{ item.id }}

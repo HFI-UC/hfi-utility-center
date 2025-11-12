@@ -304,7 +304,8 @@
                 "byRoom": "By room",
                 "singleSheet": "Single sheet"
             },
-            "selectTwoDate": "Select two dates"
+            "selectTwoDate": "Select two dates",
+            "reservation": "Reservation"
         }
     },
     "toast": {
