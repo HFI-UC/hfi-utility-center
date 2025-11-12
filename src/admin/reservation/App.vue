@@ -43,7 +43,7 @@ const statusOptions = computed(() => [
     },
     {
         id: "rejected",
-        name: t("reservation.search.status.rejected"),
+        name: t("reservation.search.status.rejected",),
         severity: "danger",
     },
 ]);
@@ -107,7 +107,7 @@ const approveReservation = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.reservation.toast.reservationApproved", { id }),
             life: 3000,
         });
@@ -127,8 +127,8 @@ const rejectReservation = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("toast.detail.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -143,7 +143,7 @@ const rejectReservation = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.reservation.toast.reservationRejected", {
                 id: rejectId.value,
                 reason: form.values.reason,
@@ -178,15 +178,15 @@ const rejectResolver = computed(() =>
 const rejectInitialValues = ref({ reason: null });
 
 const reasons = computed(() => [
-    t("admin.reservation.reasons.timeConflict"),
-    t("admin.reservation.reasons.insufficientResources"),
-    t("admin.reservation.reasons.notMeetCriteria"),
-    t("admin.reservation.reasons.underMaintenance"),
-    t("admin.reservation.reasons.safetyConcerns"),
-    t("admin.reservation.reasons.incompleteInfo"),
-    t("admin.reservation.reasons.policyViolation"),
-    t("admin.reservation.reasons.frequentReservations"),
-    t("admin.reservation.reasons.priorityForSpecialEvents"),
+    t("admin.reservation.reason.timeConflict"),
+    t("admin.reservation.reason.insufficientResources"),
+    t("admin.reservation.reason.notMeetCriteria"),
+    t("admin.reservation.reason.underMaintenance"),
+    t("admin.reservation.reason.safetyConcerns"),
+    t("admin.reservation.reason.incompleteInfo"),
+    t("admin.reservation.reason.policyViolation"),
+    t("admin.reservation.reason.frequentReservations"),
+    t("admin.reservation.reason.priorityForSpecialEvents"),
 ]);
 
 const exportVisible = ref(false);
@@ -204,11 +204,11 @@ const exportResolver = computed(() =>
 
 const modeOptions = computed(() => [
     {
-        label: t("admin.reservation.modeOptions.byRoom"),
+        label: t("admin.reservation.modeOption.byRoom"),
         code: "by-room",
     },
     {
-        label: t("admin.reservation.modeOptions.singleSheet"),
+        label: t("admin.reservation.modeOption.singleSheet"),
         code: "single-sheet",
     },
 ]);
@@ -252,8 +252,8 @@ const exportReservations = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("toast.detail.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -303,8 +303,8 @@ const exportReservations = async (form: FormSubmitEvent) => {
             loading.value = false;
             toast.add({
                 severity: "error",
-                summary: t("toast.error"),
-                detail: t("admin.reservation.toast.noReservationsInRange"),
+                summary: t("common.error"),
+                detail: t("admin.reservation.toast.noReservationInRange"),
                 life: 3000,
             });
             loading.value = false;
@@ -328,23 +328,23 @@ const exportReservations = async (form: FormSubmitEvent) => {
 
 const exportOptions = computed(() => [
     {
-        label: t("admin.reservation.exportOptions.today"),
+        label: t("admin.reservation.exportOption.today"),
         code: 0,
     },
     {
-        label: t("admin.reservation.exportOptions.thisWeek"),
+        label: t("admin.reservation.exportOption.thisWeek"),
         code: 1,
     },
     {
-        label: t("admin.reservation.exportOptions.thisMonth"),
+        label: t("admin.reservation.exportOption.thisMonth"),
         code: 2,
     },
     {
-        label: t("admin.reservation.exportOptions.all"),
+        label: t("admin.reservation.exportOption.all"),
         code: 3,
     },
     {
-        label: t("admin.reservation.exportOptions.custom"),
+        label: t("admin.reservation.exportOption.custom"),
         code: 4,
     },
 ]);
@@ -388,10 +388,10 @@ const exportOptions = computed(() => [
                     type="button"
                     severity="secondary"
                     @click="((rejectVisible = false), $form.reset())"
-                    >{{ $t("admin.reservation.buttons.cancel") }}</Button
+                    >{{ $t("admin.reservation.button.cancel") }}</Button
                 >
                 <Button type="submit" severity="danger"
-                    ><X></X>{{ $t("admin.reservation.buttons.reject") }}</Button
+                    ><X></X>{{ $t("admin.reservation.button.reject") }}</Button
                 >
             </div>
         </Form>
@@ -460,11 +460,11 @@ const exportOptions = computed(() => [
                     type="button"
                     severity="secondary"
                     @click="((exportVisible = false), $form.reset())"
-                    >{{ $t("admin.reservation.buttons.cancel") }}</Button
+                    >{{ $t("admin.reservation.button.cancel") }}</Button
                 >
                 <Button type="submit" severity="primary"
                     ><Download></Download
-                    >{{ $t("admin.reservation.buttons.export") }}</Button
+                    >{{ $t("admin.reservation.button.export") }}</Button
                 >
             </div>
         </Form>
@@ -487,12 +487,12 @@ const exportOptions = computed(() => [
                 >
                     <template #header>
                         <span class="font-bold text-lg">{{
-                            $t("admin.reservation.futureReservations")
+                            $t("admin.reservation.futureReservation")
                         }}</span>
                     </template>
                     <template #empty>
                         <p class="m-4">
-                            {{ $t("admin.reservation.noFutureReservations") }}
+                            {{ $t("admin.reservation.noFutureReservation") }}
                         </p>
                     </template>
                     <template #grid="slotProps">
@@ -722,7 +722,7 @@ const exportOptions = computed(() => [
                                             ><Check></Check
                                             >{{
                                                 $t(
-                                                    "admin.reservation.buttons.approve",
+                                                    "admin.reservation.button.approve",
                                                 )
                                             }}</Button
                                         >
@@ -738,7 +738,7 @@ const exportOptions = computed(() => [
                                             ><X></X
                                             >{{
                                                 $t(
-                                                    "admin.reservation.buttons.reject",
+                                                    "admin.reservation.button.reject",
                                                 )
                                             }}</Button
                                         >
@@ -765,14 +765,14 @@ const exportOptions = computed(() => [
                     <template #header>
                         <div class="flex flex-col gap-4">
                             <span class="font-bold text-lg">{{
-                                $t("admin.reservation.allReservations")
+                                $t("admin.reservation.allReservation")
                             }}</span>
                             <div class="grid grid-cols-9 gap-2">
                                 <InputText
                                     v-model="searchKeyword"
                                     :placeholder="
                                         $t(
-                                            'admin.reservation.placeholders.keyword',
+                                            'admin.reservation.placeholder.keyword',
                                         )
                                     "
                                     size="small"
@@ -784,7 +784,7 @@ const exportOptions = computed(() => [
                                     v-model="searchRoom"
                                     :placeholder="
                                         $t(
-                                            'admin.reservation.placeholders.room',
+                                            'admin.reservation.placeholder.room',
                                         )
                                     "
                                     optionLabel="name"
@@ -800,7 +800,7 @@ const exportOptions = computed(() => [
                                     v-model="searchStatus"
                                     :placeholder="
                                         $t(
-                                            'admin.reservation.placeholders.status',
+                                            'admin.reservation.placeholder.status',
                                         )
                                     "
                                     :options="statusOptions"
@@ -837,7 +837,7 @@ const exportOptions = computed(() => [
                                     selectionMode="range"
                                     :placeholder="
                                         $t(
-                                            'admin.reservation.placeholders.timeRange',
+                                            'admin.reservation.placeholder.timeRange',
                                         )
                                     "
                                     size="small"
@@ -851,7 +851,7 @@ const exportOptions = computed(() => [
                                             class="text-sm flex justify-center mt-4"
                                             >{{
                                                 $t(
-                                                    "admin.reservation.selectTwoDates",
+                                                    "admin.reservation.selectTwoDate",
                                                 )
                                             }}</span
                                         >
@@ -876,7 +876,7 @@ const exportOptions = computed(() => [
                     </template>
                     <template #empty>
                         <p class="py-1">
-                            {{ $t("admin.reservation.noAllReservations") }}
+                            {{ $t("admin.reservation.noAllReservation") }}
                         </p>
                     </template>
                     <Column

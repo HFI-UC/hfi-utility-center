@@ -31,7 +31,7 @@ const { data: reservations, loading: reservationsLoading } = useRequest(
     },
 );
 
-const { data: rooms } = useRequest(() => getRooms());
+const { data: roomData } = useRequest(() => getRooms());
 
 const formatTime = (date: Date): string => {
     const year = date.getFullYear();
@@ -80,11 +80,11 @@ const statusOptions = computed(() => [
                 >
                     <template #header>
                         <div class="flex justify-between flex-col gap-4">
-                            <span class="font-bold text-lg">{{ $t("reservation.search.reservations") }}</span>
+                            <span class="font-bold text-lg">{{ $t("reservation.search.reservation") }}</span>
                             <div class="grid grid-cols-9 gap-2">
                                 <InputText
                                     v-model="keyword"
-                                    :placeholder="$t('reservation.search.placeholders.keyword')"
+                                    :placeholder="$t('reservation.search.placeholder.keyword')"
                                     size="small"
                                     class="sm:col-span-3 md:col-span-2 col-span-9"
                                     fluid
@@ -92,10 +92,10 @@ const statusOptions = computed(() => [
                                 <Select
                                     showClear
                                     v-model="room"
-                                    :placeholder="$t('reservation.search.placeholders.room')"
+                                    :placeholder="$t('reservation.search.placeholder.room')"
                                     optionLabel="name"
                                     optionValue="id"
-                                    :options="rooms?.data"
+                                    :options="roomData?.data"
                                     size="small"
                                     class="sm:col-span-3 md:col-span-2 col-span-9"
                                     fluid
@@ -104,7 +104,7 @@ const statusOptions = computed(() => [
                                 <Select
                                     showClear
                                     v-model="status"
-                                    :placeholder="$t('reservation.search.placeholders.status')"
+                                    :placeholder="$t('reservation.search.placeholder.status')"
                                     :options="statusOptions"
                                     size="small"
                                     class="sm:col-span-3 md:col-span-2 col-span-9"
@@ -137,7 +137,7 @@ const statusOptions = computed(() => [
                                     showClear
                                     v-model="time"
                                     selectionMode="range"
-                                    :placeholder="$t('reservation.search.placeholders.time')"
+                                    :placeholder="$t('reservation.search.placeholder.time')"
                                     size="small"
                                     class="md:col-span-3 col-span-9"
                                     :manualInput="false"
@@ -155,7 +155,7 @@ const statusOptions = computed(() => [
                         </div>
                     </template>
                     <template #empty>
-                        <p class="py-1">{{ $t('reservation.search.noReservations') }}</p>
+                        <p class="py-1">{{ $t('reservation.search.noReservation') }}</p>
                     </template>
                     <Column field="id" :header="$t('reservation.search.table.id')"></Column>
                     <Column field="studentName" :header="$t('reservation.search.table.studentName')"></Column>

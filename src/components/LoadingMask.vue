@@ -34,13 +34,10 @@ onMounted(() => {
         onLoad: () => {
             r.resizeDrawingSurfaceToCanvas();
             setTimeout(() => {
-                // 背景开始缩放
                 isExiting.value = true;
                 setTimeout(() => {
-                    // 背景开始淡出
                     isFading.value = true;
                     setTimeout(() => {
-                        // logo层开始退出
                         logoExiting.value = true;
                         setTimeout(() => {
                             isLoading.value = false;

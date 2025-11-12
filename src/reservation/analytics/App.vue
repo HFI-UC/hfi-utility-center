@@ -42,7 +42,7 @@ const setOverviewDailyChartData = (): ChartConfiguration<"line">["data"] => {
         return { labels: [], datasets: [] };
     }
     const getDate = (daysAgo: number): string => {
-        const monthNameMapping = tm("reservation.analytics.months") as string[];
+        const monthNameMapping = tm("common.month") as string[];
         const date = new Date();
         date.setDate(date.getDate() - daysAgo);
         return `${monthNameMapping[date.getMonth()]} ${date.getDate()}`;
@@ -52,28 +52,28 @@ const setOverviewDailyChartData = (): ChartConfiguration<"line">["data"] => {
         labels,
         datasets: [
             {
-                label: t("reservation.analytics.charts.reservations"),
+                label: t("reservation.analytic.chart.reservation"),
                 backgroundColor: "rgba(59, 130, 246, 0.5)",
                 borderColor: "rgba(59, 130, 246, 1)",
                 data: overviewAnalytics.value.daily.reservations,
                 tension: 0.4,
             },
             {
-                label: t("reservation.analytics.charts.creations"),
+                label: t("reservation.analytic.chart.creation"),
                 backgroundColor: "rgba(16, 185, 129, 0.5)",
                 borderColor: "rgba(16, 185, 129, 1)",
                 data: overviewAnalytics.value.daily.reservationCreations,
                 tension: 0.4,
             },
             {
-                label: t("reservation.analytics.charts.approvals"),
+                label: t("reservation.analytic.chart.approval"),
                 backgroundColor: "rgba(234, 179, 8, 0.5)",
                 borderColor: "rgba(234, 179, 8, 1)",
                 data: overviewAnalytics.value.daily.approvals,
                 tension: 0.4,
             },
             {
-                label: t("reservation.analytics.charts.rejections"),
+                label: t("reservation.analytic.chart.rejection"),
                 backgroundColor: "rgba(239, 68, 68, 0.5)",
                 borderColor: "rgba(239, 68, 68, 1)",
                 data: overviewAnalytics.value.daily.rejections,
@@ -88,7 +88,7 @@ const setOverviewWeeklyChartData = (): ChartConfiguration<"line">["data"] => {
         return { labels: [], datasets: [] };
     }
     const getDate = (daysAgo: number): string => {
-        const monthNameMapping = tm("reservation.analytics.months") as string[];
+        const monthNameMapping = tm("common.month") as string[];
         const date = new Date();
         date.setDate(date.getDate() - daysAgo);
         return `${monthNameMapping[date.getMonth()]} ${date.getDate()}`;
@@ -98,28 +98,28 @@ const setOverviewWeeklyChartData = (): ChartConfiguration<"line">["data"] => {
         labels,
         datasets: [
             {
-                label: t("reservation.analytics.charts.reservations"),
+                label: t("reservation.analytic.chart.reservation"),
                 backgroundColor: "rgba(59, 130, 246, 0.5)",
                 borderColor: "rgba(59, 130, 246, 1)",
                 data: overviewAnalytics.value.weekly.reservations,
                 tension: 0.4,
             },
             {
-                label: t("reservation.analytics.charts.creations"),
+                label: t("reservation.analytic.chart.creation"),
                 backgroundColor: "rgba(16, 185, 129, 0.5)",
                 borderColor: "rgba(16, 185, 129, 1)",
                 data: overviewAnalytics.value.weekly.reservationCreations,
                 tension: 0.4,
             },
             {
-                label: t("reservation.analytics.charts.approvals"),
+                label: t("reservation.analytic.chart.approval"),
                 backgroundColor: "rgba(234, 179, 8, 0.5)",
                 borderColor: "rgba(234, 179, 8, 1)",
                 data: overviewAnalytics.value.weekly.approvals,
                 tension: 0.4,
             },
             {
-                label: t("reservation.analytics.charts.rejections"),
+                label: t("reservation.analytic.chart.rejection"),
                 backgroundColor: "rgba(239, 68, 68, 0.5)",
                 borderColor: "rgba(239, 68, 68, 1)",
                 data: overviewAnalytics.value.weekly.rejections,
@@ -134,7 +134,7 @@ const setOverviewMonthlyChartData = (): ChartConfiguration<"line">["data"] => {
         return { labels: [], datasets: [] };
     }
     const getMonth = (monthsAgo: number): string => {
-        const monthNameMapping = tm("reservation.analytics.months") as string[];
+        const monthNameMapping = tm("common.month") as string[];
         const date = new Date();
         date.setMonth(date.getMonth() - monthsAgo);
         return `${monthNameMapping[date.getMonth()]} ${date.getFullYear()}`;
@@ -144,28 +144,28 @@ const setOverviewMonthlyChartData = (): ChartConfiguration<"line">["data"] => {
         labels,
         datasets: [
             {
-                label: t("reservation.analytics.charts.reservations"),
+                label: t("reservation.analytic.chart.reservation"),
                 backgroundColor: "rgba(59, 130, 246, 0.5)",
                 borderColor: "rgba(59, 130, 246, 1)",
                 data: overviewAnalytics.value.monthly.reservations,
                 tension: 0.4,
             },
             {
-                label: t("reservation.analytics.charts.creations"),
+                label: t("reservation.analytic.chart.creation"),
                 backgroundColor: "rgba(16, 185, 129, 0.5)",
                 borderColor: "rgba(16, 185, 129, 1)",
                 data: overviewAnalytics.value.monthly.reservationCreations,
                 tension: 0.4,
             },
             {
-                label: t("reservation.analytics.charts.approvals"),
+                label: t("reservation.analytic.chart.approval"),
                 backgroundColor: "rgba(234, 179, 8, 0.5)",
                 borderColor: "rgba(234, 179, 8, 1)",
                 data: overviewAnalytics.value.monthly.approvals,
                 tension: 0.4,
             },
             {
-                label: t("reservation.analytics.charts.rejections"),
+                label: t("reservation.analytic.chart.rejection"),
                 backgroundColor: "rgba(239, 68, 68, 0.5)",
                 borderColor: "rgba(239, 68, 68, 1)",
                 data: overviewAnalytics.value.monthly.rejections,
@@ -181,9 +181,7 @@ const setOverviewDailyRequestChartData =
             return { labels: [], datasets: [] };
         }
         const getDate = (daysAgo: number): string => {
-            const monthNameMapping = tm(
-                "reservation.analytics.months"
-            ) as string[];
+            const monthNameMapping = tm("common.month") as string[];
             const date = new Date();
             date.setDate(date.getDate() - daysAgo);
             return `${monthNameMapping[date.getMonth()]} ${date.getDate()}`;
@@ -193,7 +191,7 @@ const setOverviewDailyRequestChartData =
             labels,
             datasets: [
                 {
-                    label: t("reservation.analytics.charts.requests"),
+                    label: t("reservation.analytic.chart.request"),
                     backgroundColor: "rgba(239, 200, 68, 1)",
                     data: overviewAnalytics.value.daily.requests,
                     borderRadius: 5,
@@ -295,7 +293,7 @@ const setWeeklyRoomChartData = (): ChartConfiguration<"bar">["data"] => {
         labels,
         datasets: [
             {
-                label: t("reservation.analytics.charts.reservations"),
+                label: t("reservation.analytic.chart.reservation"),
                 backgroundColor: "rgba(59, 130, 246, 1)",
                 data: weeklyAnalytics.value.data.rooms.map(
                     (room) => room.reservations
@@ -303,7 +301,7 @@ const setWeeklyRoomChartData = (): ChartConfiguration<"bar">["data"] => {
                 borderRadius: 5,
             },
             {
-                label: t("reservation.analytics.charts.creations"),
+                label: t("reservation.analytic.chart.creation"),
                 backgroundColor: "rgba(16, 185, 129, 1)",
                 data: weeklyAnalytics.value.data.rooms.map(
                     (room) => room.reservationCreations
@@ -509,16 +507,14 @@ const setWeeklyDailyReservationsChartData =
             const dayOfWeek = date.getDay();
             const daysToLastMonday = dayOfWeek === 0 ? 13 : dayOfWeek + 6;
             date.setDate(date.getDate() - daysToLastMonday + i);
-            const monthNameMapping = tm(
-                "reservation.analytics.months"
-            ) as string[];
+            const monthNameMapping = tm("common.month") as string[];
             return `${monthNameMapping[date.getMonth()]} ${date.getDate()}`;
         });
         return {
             labels,
             datasets: [
                 {
-                    label: t("reservation.analytics.charts.reservations"),
+                    label: t("reservation.analytic.chart.reservation"),
                     backgroundColor: "rgba(59, 130, 246, 0.5)",
                     borderColor: "rgba(59, 130, 246, 1)",
                     data: weeklyAnalytics.value.data.dailyReservations,
@@ -589,16 +585,14 @@ const setWeeklyDailyReservationCreationsChartData =
             const dayOfWeek = date.getDay();
             const daysToLastMonday = dayOfWeek === 0 ? 13 : dayOfWeek + 6;
             date.setDate(date.getDate() - daysToLastMonday + i);
-            const monthNameMapping = tm(
-                "reservation.analytics.months"
-            ) as string[];
+            const monthNameMapping = tm("common.month") as string[];
             return `${monthNameMapping[date.getMonth()]} ${date.getDate()}`;
         });
         return {
             labels,
             datasets: [
                 {
-                    label: t("reservation.analytics.charts.creations"),
+                    label: t("reservation.analytic.chart.creation"),
                     backgroundColor: "rgba(16, 185, 129, 0.5)",
                     borderColor: "rgba(16, 185, 129, 1)",
                     data: weeklyAnalytics.value.data.dailyReservationCreations,
@@ -701,14 +695,14 @@ const onExportWeekly = async (type: string) => {
     <Navbar v-model:isDark="isDark"></Navbar>
     <LoadingMask></LoadingMask>
     <Dialog
-        :header="$t('reservation.analytics.dialog.humanVerification.title')"
+        :header="$t('reservation.analytic.dialog.humanVerification.title')"
         :closable="false"
         v-model:visible="turnstileVisible"
         class="w-[23rem]"
         modal
     >
         <p class="text-center text-sm mt-3">
-            {{ $t("reservation.analytics.dialog.humanVerification.subtitle") }}
+            {{ $t("reservation.analytic.dialog.humanVerification.subtitle") }}
         </p>
         <VueTurnstile
             v-model="turnstileToken"
@@ -722,19 +716,19 @@ const onExportWeekly = async (type: string) => {
             @click="((exportLoading = false), (turnstileVisible = false))"
             ><X></X
             >{{
-                $t("reservation.analytics.dialog.humanVerification.cancel")
+                $t("reservation.analytic.dialog.humanVerification.cancel")
             }}</Button
         >
     </Dialog>
     <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
         <h1 class="font-bold md:text-3xl text-2xl my-4">
-            {{ $t("reservation.analytics.title") }}
+            {{ $t("reservation.analytic.title") }}
         </h1>
         <div
             class="flex items-center justify-between mt-8 mb-3 flex-wrap gap-4"
         >
             <h2 class="text-xl font-bold">
-                {{ $t("reservation.analytics.overview.title") }}
+                {{ $t("reservation.analytic.overview.title") }}
             </h2>
             <div class="flex gap-2 items-center">
                 <Button
@@ -742,14 +736,14 @@ const onExportWeekly = async (type: string) => {
                     @click="onExportOverview('pdf')"
                     :disabled="exportLoading"
                     ><Download></Download
-                    >{{ $t("reservation.analytics.overview.exportPDF") }}</Button
+                    >{{ $t("reservation.analytic.overview.exportPDF") }}</Button
                 >
                 <Button
                     size="small"
                     @click="onExportOverview('png')"
                     :disabled="exportLoading"
                     ><Download></Download
-                    >{{ $t("reservation.analytics.overview.exportPNG") }}</Button
+                    >{{ $t("reservation.analytic.overview.exportPNG") }}</Button
                 >
             </div>
         </div>
@@ -757,7 +751,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.overview.reservationsToday") }}
+                        {{ $t("reservation.analytic.overview.reservationToday") }}
                     </h3>
                     <p class="text-2xl font-bold">
                         {{ overviewAnalytics?.today.reservations || "-" }}
@@ -767,7 +761,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.overview.approvalsToday") }}
+                        {{ $t("reservation.analytic.overview.approvalToday") }}
                     </h3>
                     <p class="text-2xl font-bold">
                         {{ overviewAnalytics?.today.approvals || "-" }}
@@ -777,7 +771,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.overview.rejectionsToday") }}
+                        {{ $t("reservation.analytic.overview.rejectionToday") }}
                     </h3>
                     <p class="text-2xl font-bold">
                         {{ overviewAnalytics?.today.rejections || "-" }}
@@ -787,7 +781,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.overview.creationsToday") }}
+                        {{ $t("reservation.analytic.overview.creationToday") }}
                     </h3>
                     <p class="text-2xl font-bold">
                         {{
@@ -799,7 +793,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.overview.weekly") }}
+                        {{ $t("reservation.analytic.overview.weekly") }}
                     </h3>
                     <Chart
                         type="line"
@@ -812,7 +806,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.overview.daily") }}
+                        {{ $t("reservation.analytic.overview.daily") }}
                     </h3>
                     <Chart
                         type="line"
@@ -825,7 +819,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.overview.monthly") }}
+                        {{ $t("reservation.analytic.overview.monthly") }}
                     </h3>
                     <Chart
                         type="line"
@@ -838,7 +832,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.overview.dailyRequests") }}
+                        {{ $t("reservation.analytic.overview.dailyRequest") }}
                     </h3>
                     <Chart
                         type="bar"
@@ -853,7 +847,7 @@ const onExportWeekly = async (type: string) => {
             class="flex items-center justify-between mt-8 mb-3 flex-wrap gap-4"
         >
             <h2 class="text-xl font-bold">
-                {{ $t("reservation.analytics.weekly.title") }}
+                {{ $t("reservation.analytic.weekly.title") }}
             </h2>
             <div class="flex gap-2 items-center">
                 <Button
@@ -861,14 +855,14 @@ const onExportWeekly = async (type: string) => {
                     @click="onExportWeekly('pdf')"
                     :disabled="exportLoading"
                     ><Download></Download
-                    >{{ $t("reservation.analytics.weekly.exportPDF") }}</Button
+                    >{{ $t("reservation.analytic.weekly.exportPDF") }}</Button
                 >
                 <Button
                     size="small"
                     @click="onExportWeekly('png')"
                     :disabled="exportLoading"
                     ><Download></Download
-                    >{{ $t("reservation.analytics.weekly.exportPNG") }}</Button
+                    >{{ $t("reservation.analytic.weekly.exportPNG") }}</Button
                 >
             </div>
         </div>
@@ -876,7 +870,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.weekly.reservations") }}
+                        {{ $t("reservation.analytic.weekly.reservation") }}
                     </h3>
                     <p class="text-2xl font-bold">
                         {{ weeklyAnalytics?.data.totalReservations || "-" }}
@@ -886,7 +880,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.weekly.approvals") }}
+                        {{ $t("reservation.analytic.weekly.approval") }}
                     </h3>
                     <p class="text-2xl font-bold">
                         {{ weeklyAnalytics?.data.totalApprovals || "-" }}
@@ -896,7 +890,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.weekly.rejections") }}
+                        {{ $t("reservation.analytic.weekly.rejection") }}
                     </h3>
                     <p class="text-2xl font-bold">
                         {{ weeklyAnalytics?.data.totalRejections || "-" }}
@@ -906,7 +900,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-1 sm:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.weekly.creations") }}
+                        {{ $t("reservation.analytic.weekly.creation") }}
                     </h3>
                     <p class="text-2xl font-bold">
                         {{
@@ -919,7 +913,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="lg:col-span-2 col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.weekly.reasons") }}
+                        {{ $t("reservation.analytic.weekly.reason") }}
                     </h3>
                     <Chart
                         type="wordCloud"
@@ -934,7 +928,7 @@ const onExportWeekly = async (type: string) => {
                     <h3 class="font-bold text-lg mb-4">
                         {{
                             $t(
-                                "reservation.analytics.weekly.hourlyReservations"
+                                "reservation.analytic.weekly.hourlyReservation"
                             )
                         }}
                     </h3>
@@ -950,7 +944,7 @@ const onExportWeekly = async (type: string) => {
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
                         {{
-                            $t("reservation.analytics.weekly.dailyReservations")
+                            $t("reservation.analytic.weekly.dailyReservation")
                         }}
                     </h3>
                     <Chart
@@ -965,7 +959,7 @@ const onExportWeekly = async (type: string) => {
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
                         {{
-                            $t("reservation.analytics.weekly.dailyCreations")
+                            $t("reservation.analytic.weekly.dailyCreation")
                         }}
                     </h3>
                     <Chart
@@ -979,7 +973,7 @@ const onExportWeekly = async (type: string) => {
             <Card class="col-span-4">
                 <template #content>
                     <h3 class="font-bold text-lg mb-4">
-                        {{ $t("reservation.analytics.weekly.topRooms") }}
+                        {{ $t("reservation.analytic.weekly.topRoom") }}
                     </h3>
                     <div
                         :style="{

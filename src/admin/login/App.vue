@@ -17,9 +17,9 @@ const turnstileSiteKey = process.env.CLOUDFLARE_KEY || "";
 const resolver = (values: any) => {
     const schema = z.object({
         email: z.email({
-            error: t("reservation.create.form.invalid.email.format"),
+            error: t("admin.login.validation.emailRequired"),
         }),
-        password: z.string({ error: t("admin.login.form.password") }),
+        password: z.string({ error: t("admin.login.validation.passwordRequired") }),
     });
     return zodResolver(schema)(values);
 };
@@ -33,8 +33,8 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -50,8 +50,8 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
-            detail: t("toast.details.loginSuccessful"),
+            summary: t("common.success"),
+            detail: t("admin.login.toast.loginSuccessful"),
             life: 2000,
         });
         setTimeout(
@@ -63,7 +63,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message,
             life: 2000,
         });

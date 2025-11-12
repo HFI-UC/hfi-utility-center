@@ -58,8 +58,8 @@ const onNewAdminSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -74,7 +74,7 @@ const onNewAdminSubmit = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.admin.toast.adminCreated", {
                 name: form.values.name,
             }),
@@ -86,7 +86,7 @@ const onNewAdminSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message || t("admin.admin.toast.failedToCreateAdmin"),
             life: 2000,
         });
@@ -109,8 +109,8 @@ const onEditAdminPasswordSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -124,7 +124,7 @@ const onEditAdminPasswordSubmit = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.admin.toast.passwordEdited", {
                 id: editAdminPasswordId.value,
             }),
@@ -136,7 +136,7 @@ const onEditAdminPasswordSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message ||
                 t("admin.admin.toast.failedToEditPassword"),
@@ -172,8 +172,8 @@ const onEditAdminSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -188,7 +188,7 @@ const onEditAdminSubmit = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.admin.toast.adminEdited", {
                 id: editAdminId.value,
             }),
@@ -200,7 +200,7 @@ const onEditAdminSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message || t("admin.admin.toast.failedToEditAdmin"),
             life: 2000,
         });
@@ -214,7 +214,7 @@ const deleteAdmin = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.admin.toast.adminDeleted", { id }),
             life: 2000,
         });
@@ -222,7 +222,7 @@ const deleteAdmin = async (id: number) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message || t("admin.admin.toast.failedToDeleteAdmin"),
             life: 2000,
         });
@@ -290,10 +290,10 @@ const deleteAdmin = async (id: number) => {
                     type="button"
                     severity="secondary"
                     @click="((newAdminVisible = false), $form.reset())"
-                    >{{ $t("admin.admin.buttons.cancel") }}</Button
+                    >{{ $t("admin.admin.button.cancel") }}</Button
                 >
                 <Button type="submit"
-                    ><Plus></Plus>{{ $t("admin.admin.buttons.create") }}</Button
+                    ><Plus></Plus>{{ $t("admin.admin.button.create") }}</Button
                 >
             </div>
         </Form>
@@ -333,11 +333,11 @@ const deleteAdmin = async (id: number) => {
                     @click="
                         ((editAdminPasswordVisible = false), $form.reset())
                     "
-                    >{{ $t("admin.admin.buttons.cancel") }}</Button
+                    >{{ $t("admin.admin.button.cancel") }}</Button
                 >
                 <Button type="submit"
                     ><PenLine></PenLine
-                    >{{ $t("admin.admin.buttons.edit") }}</Button
+                    >{{ $t("admin.admin.button.edit") }}</Button
                 >
             </div>
         </Form>
@@ -385,11 +385,11 @@ const deleteAdmin = async (id: number) => {
                     type="button"
                     severity="secondary"
                     @click="((editAdminVisible = false), $form.reset())"
-                    >{{ $t("admin.admin.buttons.cancel") }}</Button
+                    >{{ $t("admin.admin.button.cancel") }}</Button
                 >
                 <Button type="submit"
                     ><PenLine></PenLine
-                    >{{ $t("admin.admin.buttons.edit") }}</Button
+                    >{{ $t("admin.admin.button.edit") }}</Button
                 >
             </div>
         </Form>
@@ -408,7 +408,7 @@ const deleteAdmin = async (id: number) => {
                     <template #header>
                         <div class="flex items-center justify-between">
                             <span class="text-lg font-bold">{{
-                                $t("admin.admin.admins")
+                                $t("admin.admin.admin")
                             }}</span>
                             <Button size="small" @click="newAdminVisible = true"
                                 ><Plus></Plus
@@ -446,7 +446,7 @@ const deleteAdmin = async (id: number) => {
                             }}</span>
                         </template>
                     </Column>
-                    <Column :header="$t('admin.admin.table.actions')">
+                    <Column :header="$t('admin.admin.table.action')">
                         <template #body="slotProps">
                             <div class="flex gap-2">
                                 <Button

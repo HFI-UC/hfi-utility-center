@@ -2,19 +2,50 @@
     "home": {
         "title": "HFI Utility Center",
         "subtitle": "by MAKERs'",
-        "buttons": {
+        "button": {
             "bookRoom": "Book a room",
-            "viewReservations": "View reservations"
+            "viewReservation": "View reservations"
         }
     },
+    "common": {
+        "month": [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec"
+        ],
+        "weekday": {
+            "short": ["Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat.", "Sun."],
+            "long": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+            ]
+        },
+        "success": "Success",
+        "error": "Error",
+        "fillInAllFields": "Please fill in all required fields."
+    },
     "navbar": {
-        "title":"HFI Utility Center",
+        "title": "HFI Utility Center",
         "home": "Home",
-        "reservations": {
-            "reservations": "Reservations",
+        "reservation": {
+            "reservation": "Reservations",
             "create": "New Reservation",
             "search": "Search Reservation",
-            "analytics": "Reservation Analytics"
+            "analytic": "Reservation Analytics"
         },
         "admin": {
             "admin": "Admin",
@@ -24,10 +55,19 @@
         },
         "login": "Login",
         "logout": "Logout",
-        "locales": {
+        "locale": {
             "zhCN": "Simplified Chinese",
             "enUS": "English",
             "zhMS": "Microsoft Chinese"
+        },
+        "toast": {
+            "logoutSuccessful": "Logout successful."
+        }
+    },
+    "adminLogin": {
+        "toast": {
+            "alreadyLoggedIn": "You are already logged in.",
+            "notLoggedIn": "You are not logged in."
         }
     },
     "admin": {
@@ -38,18 +78,25 @@
                 "password": "Password",
                 "submit": "Login"
             },
-            "humanVerification": "Let us know you're human"
+            "validation": {
+                "emailRequired": "E-mail is required.",
+                "passwordRequired": "Password is required."
+            },
+            "humanVerification": "Let us know you're human",
+            "toast": {
+                "loginSuccessful": "Login successful."
+            }
         },
         "facility": {
             "title": "Facility Management",
-            "rooms": "Rooms",
-            "campuses": "Campuses",
-            "classes": "Classes",
-            "noRooms": "No rooms found.",
-            "noCampuses": "No campuses found.",
-            "noClasses": "No classes found.",
-            "noPolicies": "No policies found.",
-            "noApprovers": "No approvers found.",
+            "room": "Rooms",
+            "campus": "Campuses",
+            "class": "Classes",
+            "noRoom": "No rooms found.",
+            "noCampus": "No campuses found.",
+            "noClass": "No classes found.",
+            "noPolicy": "No policies found.",
+            "noApprover": "No approvers found.",
             "table": {
                 "id": "ID",
                 "name": "Name",
@@ -61,7 +108,7 @@
                 "approver": "Approver",
                 "creationTime": "Creation Time",
                 "action": "Action",
-                "weekdays": "Weekdays",
+                "weekday": "Weekdays",
                 "time": "Time",
                 "active": "Active",
                 "inactive": "Inactive",
@@ -71,10 +118,10 @@
                 "newCampus": "New Campus",
                 "newRoom": "New Room",
                 "newClass": "New Class",
-                "roomPolicies": "Room Policies",
+                "roomPolicy": "Room Policies",
                 "newPolicy": "New Policy",
                 "editPolicy": "Edit Room Policy",
-                "roomApprovers": "Room Approvers",
+                "roomApprover": "Room Approvers",
                 "newApprover": "New Room Approver",
                 "editClass": "Edit Class",
                 "editRoom": "Edit Room",
@@ -83,13 +130,13 @@
             "form": {
                 "name": "Name",
                 "campus": "Campus",
-                "weekdays": "Weekdays",
+                "weekday": "Weekdays",
                 "startTime": "Start Time",
                 "endTime": "End Time",
                 "admin": "Admin",
                 "enabled": "Enabled"
             },
-            "buttons": {
+            "button": {
                 "cancel": "Cancel",
                 "create": "Create",
                 "edit": "Edit"
@@ -122,18 +169,27 @@
                 "failedToToggleApproverNotifications": "Failed to toggle approver notifications.",
                 "approverDeleted": "Approver deleted successfully.",
                 "failedToDeleteApprover": "Failed to delete approver."
+            },
+            "validation": {
+                "nameRequired": "Name is required.",
+                "campusRequired": "Campus is required.",
+                "weekdayRequired": "At least one weekday must be selected.",
+                "startTimeRequired": "Start time is required.",
+                "endTimeRequired": "End time is required.",
+                "adminRequired": "Admin is required.",
+                "enabledRequired": "Enabled status is required."
             }
         },
         "admin": {
             "title": "Admin Management",
-            "admins": "Admins",
+            "admin": "Admins",
             "table": {
                 "id": "ID",
                 "name": "Name",
                 "email": "Email",
                 "password": "Password",
                 "creationTime": "Creation Time",
-                "actions": "Actions"
+                "action": "Actions"
             },
             "dialog": {
                 "newAdmin": "New Admin",
@@ -145,7 +201,7 @@
                 "email": "E-mail",
                 "password": "Password"
             },
-            "buttons": {
+            "button": {
                 "cancel": "Cancel",
                 "create": "Create",
                 "edit": "Edit"
@@ -170,14 +226,14 @@
         },
         "reservation": {
             "title": "Reservation Management",
-            "futureReservations": "Future Reservations",
-            "noFutureReservations": "No future reservations found.",
-            "allReservations": "All Reservations",
-            "noAllReservations": "No available reservations.",
+            "futureReservation": "Future Reservations",
+            "noFutureReservation": "No future reservations found.",
+            "allReservation": "All Reservations",
+            "noAllReservation": "No available reservations.",
             "export": "Export (.xlsx)",
             "dialog": {
                 "rejectReservation": "Reject Reservation",
-                "exportReservations": "Export Reservations"
+                "exportReservation": "Export Reservations"
             },
             "form": {
                 "reason": "Reason",
@@ -187,7 +243,7 @@
                 "time": "Time",
                 "mode": "Select an export mode"
             },
-            "buttons": {
+            "button": {
                 "cancel": "Cancel",
                 "reject": "Reject",
                 "export": "Export",
@@ -201,7 +257,7 @@
                 "class": "Class",
                 "campus": "Campus"
             },
-            "reservationDetails": {
+            "reservationDetail": {
                 "title": "Reservation Details",
                 "room": "Room",
                 "startTime": "Start Time",
@@ -223,7 +279,7 @@
                 "latestExecutor": "Latest Executor",
                 "status": "Status"
             },
-            "placeholders": {
+            "placeholder": {
                 "keyword": "Keyword",
                 "room": "Room",
                 "status": "Status",
@@ -232,33 +288,26 @@
             "toast": {
                 "reservationApproved": "Reservation #{id} has been approved.",
                 "reservationRejected": "Reservation #{id} has been rejected for the following reason: {reason}",
-                "noReservationsInRange": "There are no reservations in the selected time range."
+                "noReservationInRange": "There are no reservations in the selected time range."
             },
-            "exportOptions": {
+            "exportOption": {
                 "today": "Export reservations for today",
                 "thisWeek": "Export reservations for this week",
                 "thisMonth": "Export reservations for this month",
                 "all": "Export every reservations",
                 "custom": "Custom range"
             },
-            "modeOptions": {
+            "modeOption": {
                 "byRoom": "By room",
                 "singleSheet": "Single sheet"
             },
-            "selectTwoDates": "*Select two time"
+            "selectTwoDate": "Select two dates"
         }
     },
     "toast": {
         "success": "Success",
         "error": "Error",
-        "info": "Info",
         "details": {
-            "loginSuccessful": "Login successful.",
-            "logoutSuccessful": "Logout successful.",
-            "fillInAllFields": "Please fill in all required fields.",
-            "reservationCreated": "Your reservation has been created successfully.",
-            "alreadyLoggedIn": "You are already logged in.",
-            "notLoggedIn": "You are not logged in."
         }
     },
     "reservation": {
@@ -269,15 +318,15 @@
                 "approved": "Approved",
                 "rejected": "Rejected"
             },
-            "placeholders": {
+            "placeholder": {
                 "keyword": "Keyword",
                 "room": "Room",
                 "status": "Status",
                 "time": "Time Range"
             },
-            "reservations": "Reservations",
-            "selectTwoDates": "Please select two dates",
-            "noReservations": "No reservations found.",
+            "reservation": "Reservations",
+            "selectTwoDate": "Please select two dates",
+            "noReservation": "No reservations found.",
             "table": {
                 "id": "ID",
                 "studentName": "Student Name",
@@ -292,7 +341,7 @@
         },
         "create": {
             "title": "New Reservation",
-            "subtitles": {
+            "subtitle": {
                 "personalInfo": "Personal Information",
                 "reservationInfo": "Reservation Information"
             },
@@ -308,46 +357,45 @@
                 "date": "Date",
                 "campus": "Campus",
                 "submit": "Submit",
-                "termsAgreement": "I agree to the {0}.",
-                "termsAndConditions": "Terms and Conditions",
-                "invalid": {
-                    "class": "Please select a class.",
-                    "classId": "Please select a class.",
-                    "studentName": "Student name is required.",
-                    "room": "Please select a room.",
-                    "studentId": {
-                        "required": "Student ID is required.",
-                        "prefix": "Student ID must start with 'GJ'.",
-                        "minLength": "Student ID must be at least 10 characters long (e.g. GJ12345678).",
-                        "digits": "The last 8 characters of Student ID must be numbers."
-                    },
-                    "email": {
-                        "required": "E-mail is required.",
-                        "format": "Wrong E-mail format."
-                    },
-                    "date": "Please select a date.",
-                    "startTime": "Please select a start time.",
-                    "endTime": "Please select an end time.",
-                    "reason": "Please provide a reason for the reservation.",
-                    "campus": "Please select a campus.",
-                    "isAgreed": "You must agree to the terms and conditions."
-                }
+                "termAgreement": "I agree to the {0}.",
+                "termAndCondition": "Terms and Conditions"
             },
-            "tables": {
+            "validation": {
+                "classRequired": "Class is required.",
+                "studentNameRequired": "Student name is required.",
+                "roomRequired": "Room is required.",
+                "studentId": {
+                    "required": "Student ID is required.",
+                    "prefix": "Student ID must start with 'GJ'.",
+                    "minLength": "Student ID must be at least 10 characters long (e.g. GJ12345678).",
+                    "digits": "The last 8 characters of Student ID must be numbers."
+                },
+                "email": {
+                    "required": "E-mail is required.",
+                    "format": "Wrong E-mail format."
+                },
+                "dateRequired": "Date is required.",
+                "startTimeRequired": "Start time is required.",
+                "endTimeRequired": "End time is required.",
+                "reasonRequired": "Please provide a reason for the reservation.",
+                "campusRequired": "Campus is required.",
+                "isAgreed": "You must agree to the terms and conditions."
+            },
+            "table": {
                 "policy": {
                     "header": "Disabled Periods",
                     "empty": "No available disabled periods.",
-                    "weekdays": "Weekdays",
+                    "weekday": "Weekdays",
                     "time": "Time"
                 },
-                "reservations": {
+                "reservation": {
                     "header": "Reservations Info",
                     "empty": "No reservations available.",
                     "name": "Name",
                     "time": "Date / Time"
                 }
             },
-            "terms": {
+            "term": {
                 "title": "Terms and Conditions",
                 "content": [
                     "Do not bring food and drinks into the study area. Students are responsible for keeping the study room clean and tidy.",
@@ -364,54 +412,49 @@
                     "The study area must not be used for non-study-related activities (including but not limited to video games on phones or computers, board games, watching variety shows or movies, etc.). Violations will be handled according to the Student Violation Management Regulations based on the actual situation."
                 ]
             },
-            "buttons": {
+            "button": {
                 "anotherReservation": "Make another reservation"
             },
-            "weekdays": [
-                "Mon.",
-                "Tue.",
-                "Wed.",
-                "Thu.",
-                "Fri.",
-                "Sat.",
-                "Sun."
-            ]
+            "weekday": ["Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat.", "Sun."],
+            "toast": {
+                "reservationCreated": "Your reservation has been created successfully."
+            }
         },
-        "analytics": {
+        "analytic": {
             "title": "Reservation Analytics",
             "overview": {
                 "title": "Overview",
                 "exportPDF": "Export (.pdf)",
                 "exportPNG": "Export (.png)",
-                "reservationsToday": "Reservations (Today)",
-                "approvalsToday": "Approvals (Today)",
-                "rejectionsToday": "Rejections (Today)",
-                "creationsToday": "Reservation Creations (Today)",
+                "reservationToday": "Reservations (Today)",
+                "approvalToday": "Approvals (Today)",
+                "rejectionToday": "Rejections (Today)",
+                "creationToday": "Reservation Creations (Today)",
                 "weekly": "Weekly (Last 7 Days)",
                 "daily": "Daily (Last 30 Days)",
                 "monthly": "Monthly (Last 1 Year)",
-                "dailyRequests": "Daily Requests (Last 30 Days)"
+                "dailyRequest": "Daily Requests (Last 30 Days)"
             },
             "weekly": {
                 "title": "Weekly (Last Week)",
                 "exportPDF": "Export (.pdf)",
                 "exportPNG": "Export (.png)",
-                "reservations": "Reservations",
-                "approvals": "Approvals",
-                "rejections": "Rejections",
-                "creations": "Reservation Creations",
-                "reasons": "Reasons",
-                "hourlyReservations": "Hourly Reservations",
-                "dailyReservations": "Daily Reservations",
-                "dailyCreations": "Daily Reservation Creations",
-                "topRooms": "Top 5 Room Statistics"
+                "reservation": "Reservations",
+                "approval": "Approvals",
+                "rejection": "Rejections",
+                "creation": "Reservation Creations",
+                "reason": "Reasons",
+                "hourlyReservation": "Hourly Reservations",
+                "dailyReservation": "Daily Reservations",
+                "dailyCreation": "Daily Reservation Creations",
+                "topRoom": "Top 5 Room Statistics"
             },
-            "charts": {
-                "reservations": "Reservations",
-                "creations": "Reservation Creations",
-                "approvals": "Reservation Approvals",
-                "rejections": "Reservation Rejections",
-                "requests": "Requests"
+            "chart": {
+                "reservation": "Reservations",
+                "creation": "Reservation Creations",
+                "approval": "Reservation Approvals",
+                "rejection": "Reservation Rejections",
+                "request": "Requests"
             },
             "dialog": {
                 "humanVerification": {
@@ -419,21 +462,7 @@
                     "subtitle": "Let us know you're human",
                     "cancel": "Cancel"
                 }
-            },
-            "months": [
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec"
-            ]
+            }
         }
     }
 }

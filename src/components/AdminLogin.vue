@@ -13,8 +13,8 @@ onMounted(async () => {
         if (!response.success) {
             toast.add({
                 severity: "error",
-                summary: t("toast.error"),
-                detail: t("toast.details.alreadyLoggedIn"),
+                summary: t("common.error"),
+                detail: t("adminLogin.toast.alreadyLoggedIn"),
                 life: 2000,
             });
             setTimeout(
@@ -28,8 +28,8 @@ onMounted(async () => {
         if (response.success) {
             toast.add({
                 severity: "error",
-                summary: t("toast.error"),
-                detail: t("toast.details.notLoggedIn"),
+                summary: t("common.error"),
+                detail: t("adminLogin.toast.notLoggedIn"),
                 life: 2000,
             });
             setTimeout(

@@ -77,14 +77,14 @@ const onLogOutEvent = async () => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
-            detail: t("toast.details.logoutSuccessful"),
+            summary: t("common.success"),
+            detail: t("navbar.toast.logoutSuccessful"),
             life: 3000,
         });
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message,
             life: 3000,
         });
@@ -97,17 +97,17 @@ const onLogOutEvent = async () => {
 const reservationsMenuItems = computed(() => {
     return [
         {
-            label: t("navbar.reservations.create"),
+            label: t("navbar.reservation.create"),
             iconComponent: Book,
             to: "/reservation/create/",
         },
         {
-            label: t("navbar.reservations.search"),
+            label: t("navbar.reservation.search"),
             iconComponent: Search,
             to: "/reservation/search/",
         },
         {
-            label: t("navbar.reservations.analytics"),
+            label: t("navbar.reservation.analytic"),
             iconComponent: ChartNoAxesCombined,
             to: "/reservation/analytics/",
         },
@@ -138,7 +138,7 @@ const menuItems = computed(() => {
     const items: any[] = [
         { label: t("navbar.home"), iconComponent: Home, to: "/" },
         {
-            label: t("navbar.reservations.reservations"),
+            label: t("navbar.reservation.reservation"),
             iconComponent: Book,
             items: reservationsMenuItems.value,
         },
@@ -197,15 +197,15 @@ const changeLocale = (lang: string) => {
 };
 const localeOptions = computed(() => [
     {
-        key: t("navbar.locales.zhCN"),
+        key: t("navbar.locale.zhCN"),
         code: "zh-CN",
     },
     {
-        key: t("navbar.locales.enUS"),
+        key: t("navbar.locale.enUS"),
         code: "en-US",
     },
     {
-        key: t("navbar.locales.zhMS"),
+        key: t("navbar.locale.zhMS"),
         code: "zh-MS",
     },
 ]);
@@ -291,7 +291,7 @@ onUnmounted(() => {
                         aria-controls="reservationsMenu"
                     >
                         <Book></Book
-                        >{{ $t("navbar.reservations.reservations") }}
+                        >{{ $t("navbar.reservation.reservation") }}
                     </Button>
                     <Button
                         v-if="loginData?.success"

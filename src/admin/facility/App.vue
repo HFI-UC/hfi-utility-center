@@ -47,7 +47,7 @@ import AdminLogin from "../../components/AdminLogin.vue";
 import Navbar from "../../components/Navbar.vue";
 import LoadingMask from "../../components/LoadingMask.vue";
 
-const { t } = useI18n();
+const { t, tm } = useI18n();
 const {
     data: rooms,
     run: fetchRooms,
@@ -70,7 +70,7 @@ const formatTime = (date: Date): string => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day} ${String(date.getHours()).padStart(
         2,
-        "0",
+        "0"
     )}:${String(date.getMinutes()).padStart(2, "0")}`;
 };
 const loading = ref(false);
@@ -82,7 +82,7 @@ const deleteRoom = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.roomDeleted", { id }),
             life: 3000,
         });
@@ -90,7 +90,7 @@ const deleteRoom = async (id: number) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message,
             life: 3000,
         });
@@ -103,7 +103,7 @@ const deleteCampus = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.campusDeleted", { id }),
             life: 3000,
         });
@@ -111,7 +111,7 @@ const deleteCampus = async (id: number) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message,
             life: 3000,
         });
@@ -125,7 +125,7 @@ const deleteClass = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.classDeleted", { id }),
             life: 3000,
         });
@@ -133,7 +133,7 @@ const deleteClass = async (id: number) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message,
             life: 3000,
         });
@@ -146,8 +146,8 @@ const newCampusResolver = computed(() =>
             name: z
                 .string({ error: t("admin.facility.form.name") })
                 .min(1, { error: t("admin.facility.form.name") }),
-        }),
-    ),
+        })
+    )
 );
 const newCampusVisible = ref(false);
 const newCampusInitialValues = ref({});
@@ -155,8 +155,8 @@ const onNewCampusSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -167,7 +167,7 @@ const onNewCampusSubmit = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.campusCreated", {
                 name: form.values.name,
             }),
@@ -179,7 +179,7 @@ const onNewCampusSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message,
             life: 3000,
         });
@@ -192,8 +192,8 @@ const newRoomResolver = computed(() =>
                 .string({ error: t("admin.facility.form.name") })
                 .min(1, { error: t("admin.facility.form.name") }),
             campus: z.number({ error: t("admin.facility.form.campus") }),
-        }),
-    ),
+        })
+    )
 );
 const newRoomVisible = ref(false);
 const newRoomInitialValues = ref({});
@@ -201,8 +201,8 @@ const onNewRoomSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -213,7 +213,7 @@ const onNewRoomSubmit = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.roomCreated", {
                 name: form.values.name,
             }),
@@ -225,7 +225,7 @@ const onNewRoomSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message,
             life: 3000,
         });
@@ -237,11 +237,11 @@ const newClassResolver = computed(() =>
     zodResolver(
         z.object({
             name: z
-                .string({ error: t("admin.facility.form.name") })
-                .min(1, { error: t("admin.facility.form.name") }),
-            campus: z.number({ error: t("admin.facility.form.campus") }),
-        }),
-    ),
+                .string({ error: t("admin.facility.validation.nameRequired") })
+                .min(1, { error: t("admin.facility.validation.nameRequired") }),
+            campus: z.number({ error: t("admin.facility.validation.campusRequired") }),
+        })
+    )
 );
 const newClassVisible = ref(false);
 const newClassInitialValues = ref({});
@@ -250,8 +250,8 @@ const onNewClassSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -259,13 +259,13 @@ const onNewClassSubmit = async (form: FormSubmitEvent) => {
     loading.value = true;
     const response = await postCreateClass(
         form.values.name,
-        form.values.campus,
+        form.values.campus
     );
     loading.value = false;
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.classCreated", {
                 name: form.values.name,
             }),
@@ -277,7 +277,7 @@ const onNewClassSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: response.message,
             life: 3000,
         });
@@ -286,25 +286,14 @@ const onNewClassSubmit = async (form: FormSubmitEvent) => {
 
 const policyViewVisible = ref(false);
 
-const dayOptions = computed(() => [
-    { label: t("time.weekdays.monday"), value: 0 },
-    { label: t("time.weekdays.tuesday"), value: 1 },
-    { label: t("time.weekdays.wednesday"), value: 2 },
-    { label: t("time.weekdays.thursday"), value: 3 },
-    { label: t("time.weekdays.friday"), value: 4 },
-    { label: t("time.weekdays.saturday"), value: 5 },
-    { label: t("time.weekdays.sunday"), value: 6 },
-]);
+const dayOptions = computed(() =>
+    (tm("common.weekday.long") as string[]).map((label, index) => ({
+        label,
+        value: index,
+    }))
+);
 const formatWeekDay = (days: number[]) => {
-    const daysMapping = [
-        t("time.weekdays.mon"),
-        t("time.weekdays.tue"),
-        t("time.weekdays.wed"),
-        t("time.weekdays.thu"),
-        t("time.weekdays.fri"),
-        t("time.weekdays.sat"),
-        t("time.weekdays.sun"),
-    ];
+    const daysMapping = tm("common.weekday") as string[];
     return days.map((item) => daysMapping[item]).join(" ");
 };
 
@@ -313,13 +302,13 @@ const newPolicyResolver = computed(() =>
         z.object({
             days: z
                 .array(z.number().min(0).max(6), {
-                    error: t("admin.facility.form.weekdays"),
+                    error: t("admin.facility.validation.weekdayRequired"),
                 })
-                .min(1, { error: t("admin.facility.form.weekdays") }),
-            startTime: z.date({ error: t("admin.facility.form.startTime") }),
-            endTime: z.date({ error: t("admin.facility.form.endTime") }),
-        }),
-    ),
+                .min(1, { error: t("admin.facility.validation.weekdayRequired") }),
+            startTime: z.date({ error: t("admin.facility.validation.startTimeRequired") }),
+            endTime: z.date({ error: t("admin.facility.validation.endTimeRequired") }),
+        })
+    )
 );
 
 const newPolicyInitialValues = ref({});
@@ -328,8 +317,8 @@ const onNewPolicySubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -337,7 +326,7 @@ const onNewPolicySubmit = async (form: FormSubmitEvent) => {
     if (form.values.startTime >= form.values.endTime) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: t("admin.facility.toast.startTimeBeforeEndTime"),
             life: 2000,
         });
@@ -348,13 +337,13 @@ const onNewPolicySubmit = async (form: FormSubmitEvent) => {
         room.value,
         [form.values.startTime.getHours(), form.values.startTime.getMinutes()],
         [form.values.endTime.getHours(), form.values.endTime.getMinutes()],
-        form.values.days.sort(),
+        form.values.days.sort()
     );
     loading.value = false;
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.policyCreated"),
             life: 2000,
         });
@@ -364,7 +353,7 @@ const onNewPolicySubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message ||
                 t("admin.facility.toast.failedToCreatePolicy"),
@@ -378,13 +367,13 @@ const editPolicyResolver = computed(() =>
         z.object({
             days: z
                 .array(z.number().min(0).max(6), {
-                    error: t("admin.facility.form.weekdays"),
+                    error: t("admin.facility.validation.weekdayRequired"),
                 })
-                .min(1, { error: t("admin.facility.form.weekdays") }),
-            startTime: z.date({ error: t("admin.facility.form.startTime") }),
-            endTime: z.date({ error: t("admin.facility.form.endTime") }),
-        }),
-    ),
+                .min(1, { error: t("admin.facility.validation.weekdayRequired") }),
+            startTime: z.date({ error: t("admin.facility.validation.startTimeRequired") }),
+            endTime: z.date({ error: t("admin.facility.validation.endTimeRequired") }),
+        })
+    )
 );
 
 const editPolicy = ref({} as RoomPolicy);
@@ -399,8 +388,8 @@ const onEditPolicySubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -408,7 +397,7 @@ const onEditPolicySubmit = async (form: FormSubmitEvent) => {
     if (form.values.startTime >= form.values.endTime) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail: t("admin.facility.toast.startTimeBeforeEndTime"),
             life: 2000,
         });
@@ -419,13 +408,13 @@ const onEditPolicySubmit = async (form: FormSubmitEvent) => {
         editPolicy.value.id,
         [form.values.startTime.getHours(), form.values.startTime.getMinutes()],
         [form.values.endTime.getHours(), form.values.endTime.getMinutes()],
-        form.values.days.sort(),
+        form.values.days.sort()
     );
     loading.value = false;
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.policyEdited"),
             life: 2000,
         });
@@ -435,7 +424,7 @@ const onEditPolicySubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message ||
                 t("admin.facility.toast.failedToEditPolicy"),
@@ -451,7 +440,7 @@ const deletePolicy = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.policyDeleted"),
             life: 2000,
         });
@@ -459,7 +448,7 @@ const deletePolicy = async (id: number) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message ||
                 t("admin.facility.toast.failedToDeletePolicy"),
@@ -475,7 +464,7 @@ const togglePolicy = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.policyToggled"),
             life: 2000,
         });
@@ -483,7 +472,7 @@ const togglePolicy = async (id: number) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message ||
                 t("admin.facility.toast.failedToTogglePolicy"),
@@ -495,12 +484,12 @@ const togglePolicy = async (id: number) => {
 const editClassResolver = computed(() =>
     zodResolver(
         z.object({
-            campus: z.number({ error: t("admin.facility.form.campus") }),
+            campus: z.number({ error: t("admin.facility.validation.campusRequired") }),
             name: z
-                .string({ error: t("admin.facility.form.name") })
-                .min(1, { error: t("admin.facility.form.name") }),
-        }),
-    ),
+                .string({ error: t("admin.facility.validation.nameRequired") })
+                .min(1, { error: t("admin.facility.validation.nameRequired") }),
+        })
+    )
 );
 
 const editClassInitialValues = ref({} as Class);
@@ -509,8 +498,8 @@ const onEditClassSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -519,13 +508,13 @@ const onEditClassSubmit = async (form: FormSubmitEvent) => {
     const response = await postEditClass(
         editClassInitialValues.value.id,
         form.values.name,
-        form.values.campus,
+        form.values.campus
     );
     loading.value = false;
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.classEdited"),
             life: 2000,
         });
@@ -535,7 +524,7 @@ const onEditClassSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message || t("admin.facility.toast.failedToEditClass"),
             life: 2000,
@@ -546,13 +535,13 @@ const onEditClassSubmit = async (form: FormSubmitEvent) => {
 const editRoomResolver = computed(() =>
     zodResolver(
         z.object({
-            campus: z.number({ error: t("admin.facility.form.campus") }),
+            campus: z.number({ error: t("admin.facility.validation.campusRequired") }),
             name: z
-                .string({ error: t("admin.facility.form.name") })
-                .min(1, { error: t("admin.facility.form.name") }),
-            enabled: z.boolean({ error: t("admin.facility.form.enabled") }),
-        }),
-    ),
+                .string({ error: t("admin.facility.validation.nameRequired") })
+                .min(1, { error: t("admin.facility.validation.nameRequired") }),
+            enabled: z.boolean({ error: t("admin.facility.validation.enabledRequired") }),
+        })
+    )
 );
 
 const editRoomInitialValues = ref({} as Room);
@@ -561,8 +550,8 @@ const onEditRoomSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -572,13 +561,13 @@ const onEditRoomSubmit = async (form: FormSubmitEvent) => {
         editRoomInitialValues.value.id,
         form.values.name,
         form.values.campus,
-        form.values.enabled,
+        form.values.enabled
     );
     loading.value = false;
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.roomEdited"),
             life: 2000,
         });
@@ -588,7 +577,7 @@ const onEditRoomSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message || t("admin.facility.toast.failedToEditRoom"),
             life: 2000,
@@ -600,10 +589,10 @@ const editCampusResolver = computed(() =>
     zodResolver(
         z.object({
             name: z
-                .string({ error: t("admin.facility.form.name") })
-                .min(1, { error: t("admin.facility.form.name") }),
-        }),
-    ),
+                .string({ error: t("admin.facility.validation.nameRequired") })
+                .min(1, { error: t("admin.facility.validation.nameRequired") }),
+        })
+    )
 );
 
 const editCampusInitialValues = ref({} as Campus);
@@ -612,8 +601,8 @@ const onEditCampusSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -621,13 +610,13 @@ const onEditCampusSubmit = async (form: FormSubmitEvent) => {
     loading.value = true;
     const response = await postEditCampus(
         editCampusInitialValues.value.id,
-        form.values.name,
+        form.values.name
     );
     loading.value = false;
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.campusEdited"),
             life: 2000,
         });
@@ -637,7 +626,7 @@ const onEditCampusSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message ||
                 t("admin.facility.toast.failedToEditCampus"),
@@ -655,10 +644,10 @@ const newApproverResolver = computed(() =>
                     email: z.string(),
                     name: z.string(),
                 },
-                { error: t("admin.facility.form.admin") },
+                { error: t("admin.facility.form.admin") }
             ),
-        }),
-    ),
+        })
+    )
 );
 
 const newApproverInitialValues = ref({});
@@ -667,8 +656,8 @@ const onNewApproverSubmit = async (form: FormSubmitEvent) => {
     if (!form.valid) {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
-            detail: t("toast.details.fillInAllFields"),
+            summary: t("common.error"),
+            detail: t("common.fillInAllFields"),
             life: 2000,
         });
         return;
@@ -679,7 +668,7 @@ const onNewApproverSubmit = async (form: FormSubmitEvent) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.approverCreated"),
             life: 2000,
         });
@@ -689,7 +678,7 @@ const onNewApproverSubmit = async (form: FormSubmitEvent) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message ||
                 t("admin.facility.toast.failedToCreateApprover"),
@@ -705,7 +694,7 @@ const toggleApproverNotificationsEnabled = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.approverNotificationsToggled"),
             life: 2000,
         });
@@ -713,7 +702,7 @@ const toggleApproverNotificationsEnabled = async (id: number) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message ||
                 t("admin.facility.toast.failedToToggleApproverNotifications"),
@@ -729,7 +718,7 @@ const deleteApprover = async (id: number) => {
     if (response.success) {
         toast.add({
             severity: "success",
-            summary: t("toast.success"),
+            summary: t("common.success"),
             detail: t("admin.facility.toast.approverDeleted"),
             life: 2000,
         });
@@ -737,7 +726,7 @@ const deleteApprover = async (id: number) => {
     } else {
         toast.add({
             severity: "error",
-            summary: t("toast.error"),
+            summary: t("common.error"),
             detail:
                 response.message ||
                 t("admin.facility.toast.failedToDeleteApprover"),
@@ -783,11 +772,12 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="((newCampusVisible = false), $form.reset())"
-                    >{{ $t("admin.facility.buttons.cancel") }}</Button
+                    @click="(newCampusVisible = false), $form.reset()"
+                    >{{ $t("admin.facility.button.cancel") }}</Button
                 >
                 <Button type="submit"
-                    ><Plus></Plus>{{ $t("admin.facility.buttons.create") }}</Button
+                    ><Plus></Plus
+                    >{{ $t("admin.facility.button.create") }}</Button
                 >
             </div>
         </Form>
@@ -836,11 +826,12 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="((newRoomVisible = false), $form.reset())"
-                    >{{ $t("admin.facility.buttons.cancel") }}</Button
+                    @click="(newRoomVisible = false), $form.reset()"
+                    >{{ $t("admin.facility.button.cancel") }}</Button
                 >
                 <Button type="submit"
-                    ><Plus></Plus>{{ $t("admin.facility.buttons.create") }}</Button
+                    ><Plus></Plus
+                    >{{ $t("admin.facility.button.create") }}</Button
                 >
             </div>
         </Form>
@@ -889,17 +880,18 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="((newClassVisible = false), $form.reset())"
-                    >{{ $t("admin.facility.buttons.cancel") }}</Button
+                    @click="(newClassVisible = false), $form.reset()"
+                    >{{ $t("admin.facility.button.cancel") }}</Button
                 >
                 <Button type="submit"
-                    ><Plus></Plus>{{ $t("admin.facility.buttons.create") }}</Button
+                    ><Plus></Plus
+                    >{{ $t("admin.facility.button.create") }}</Button
                 >
             </div>
         </Form>
     </Dialog>
     <Dialog
-        :header="$t('admin.facility.dialog.roomPolicies')"
+        :header="$t('admin.facility.dialog.roomPolicy')"
         v-model:visible="policyViewVisible"
         modal
         maximizable
@@ -913,7 +905,7 @@ const deleteApprover = async (id: number) => {
             <template #header>
                 <div class="flex gap-2 justify-between">
                     <span class="text-lg font-bold">{{
-                        $t("admin.facility.dialog.roomPolicies")
+                        $t("admin.facility.dialog.roomPolicy")
                     }}</span>
                     <Button size="small" @click="newPolicyVisible = true"
                         ><Plus></Plus
@@ -921,14 +913,11 @@ const deleteApprover = async (id: number) => {
                 </div>
             </template>
             <template #empty>
-                <span>{{ $t("admin.facility.noPolicies") }}</span>
+                <span>{{ $t("admin.facility.noPolicy") }}</span>
             </template>
-            <Column
-                field="id"
-                :header="$t('admin.facility.table.id')"
-            >
+            <Column field="id" :header="$t('admin.facility.table.id')">
             </Column>
-            <Column :header="$t('admin.facility.table.weekdays')">
+            <Column :header="$t('admin.facility.table.weekday')">
                 <template #body="slotProps">
                     {{ formatWeekDay(slotProps.data.days) }}
                 </template>
@@ -938,16 +927,16 @@ const deleteApprover = async (id: number) => {
                     {{
                         `${String(slotProps.data.startTime[0]).padStart(
                             2,
-                            "0",
+                            "0"
                         )}:${String(slotProps.data.startTime[1]).padStart(
                             2,
-                            "0",
+                            "0"
                         )} - ${String(slotProps.data.endTime[0]).padStart(
                             2,
-                            "0",
+                            "0"
                         )}:${String(slotProps.data.endTime[1]).padStart(
                             2,
-                            "0",
+                            "0"
                         )}`
                     }}
                 </template>
@@ -981,8 +970,8 @@ const deleteApprover = async (id: number) => {
                         </Button>
                         <Button
                             @click="
-                                ((editPolicyVisible = true),
-                                (editPolicy = slotProps.data))
+                                (editPolicyVisible = true),
+                                    (editPolicy = slotProps.data)
                             "
                             size="small"
                             ><PenLine></PenLine
@@ -1063,17 +1052,18 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="((newApproverVisible = false), $form.reset())"
-                    >{{ $t("admin.facility.buttons.cancel") }}</Button
+                    @click="(newApproverVisible = false), $form.reset()"
+                    >{{ $t("admin.facility.button.cancel") }}</Button
                 >
                 <Button type="submit"
-                    ><Plus></Plus>{{ $t("admin.facility.buttons.create") }}</Button
+                    ><Plus></Plus
+                    >{{ $t("admin.facility.button.create") }}</Button
                 >
             </div>
         </Form>
     </Dialog>
     <Dialog
-        :header="$t('admin.facility.dialog.roomApprovers')"
+        :header="$t('admin.facility.dialog.roomApprover')"
         v-model:visible="approverViewVisible"
         modal
         maximizable
@@ -1087,7 +1077,7 @@ const deleteApprover = async (id: number) => {
             <template #header>
                 <div class="flex gap-2 justify-between">
                     <span class="text-lg font-bold">{{
-                        $t("admin.facility.dialog.roomApprovers")
+                        $t("admin.facility.dialog.roomApprover")
                     }}</span>
                     <Button size="small" @click="newApproverVisible = true"
                         ><Plus></Plus
@@ -1095,22 +1085,16 @@ const deleteApprover = async (id: number) => {
                 </div>
             </template>
             <template #empty>
-                <span>{{ $t("admin.facility.noApprovers") }}</span>
+                <span>{{ $t("admin.facility.noApprover") }}</span>
             </template>
-            <Column
-                field="id"
-                :header="$t('admin.facility.table.id')"
-            >
+            <Column field="id" :header="$t('admin.facility.table.id')">
             </Column>
-            <Column
-                field="name"
-                :header="$t('admin.facility.table.name')"
-            >
+            <Column field="name" :header="$t('admin.facility.table.name')">
                 <template #body="slotProps">
                     {{
                         admins?.data.find(
                             (admin: Admin) =>
-                                admin.id === slotProps.data.adminId,
+                                admin.id === slotProps.data.adminId
                         )?.name
                     }}
                 </template>
@@ -1120,7 +1104,7 @@ const deleteApprover = async (id: number) => {
                     {{
                         admins?.data.find(
                             (admin: Admin) =>
-                                admin.id === slotProps.data.adminId,
+                                admin.id === slotProps.data.adminId
                         )?.email
                     }}
                 </template>
@@ -1131,7 +1115,7 @@ const deleteApprover = async (id: number) => {
                         <Button
                             @click="
                                 toggleApproverNotificationsEnabled(
-                                    slotProps.data.id,
+                                    slotProps.data.id
                                 )
                             "
                             size="small"
@@ -1177,7 +1161,7 @@ const deleteApprover = async (id: number) => {
                     optionLabel="label"
                     optionValue="value"
                     fluid
-                    :placeholder="$t('admin.facility.form.weekdays')"
+                    :placeholder="$t('admin.facility.form.weekday')"
                 ></MultiSelect>
                 <Message
                     v-if="$form.days?.invalid"
@@ -1216,11 +1200,12 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="((newPolicyVisible = false), $form.reset())"
-                    >{{ $t("admin.facility.buttons.cancel") }}</Button
+                    @click="(newPolicyVisible = false), $form.reset()"
+                    >{{ $t("admin.facility.button.cancel") }}</Button
                 >
                 <Button type="submit"
-                    ><Plus></Plus>{{ $t("admin.facility.buttons.create") }}</Button
+                    ><Plus></Plus
+                    >{{ $t("admin.facility.button.create") }}</Button
                 >
             </div>
         </Form>
@@ -1245,7 +1230,7 @@ const deleteApprover = async (id: number) => {
                     optionLabel="label"
                     optionValue="value"
                     fluid
-                    :placeholder="$t('admin.facility.form.weekdays')"
+                    :placeholder="$t('admin.facility.form.weekday')"
                 ></MultiSelect>
                 <Message
                     v-if="$form.days?.invalid"
@@ -1284,11 +1269,12 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="((editPolicyVisible = false), $form.reset())"
-                    >{{ $t("admin.facility.buttons.cancel") }}</Button
+                    @click="(editPolicyVisible = false), $form.reset()"
+                    >{{ $t("admin.facility.button.cancel") }}</Button
                 >
                 <Button type="submit"
-                    ><PenLine></PenLine>{{ $t("admin.facility.buttons.edit") }}</Button
+                    ><PenLine></PenLine
+                    >{{ $t("admin.facility.button.edit") }}</Button
                 >
             </div>
         </Form>
@@ -1337,11 +1323,12 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="((editClassVisible = false), $form.reset())"
-                    >{{ $t("admin.facility.buttons.cancel") }}</Button
+                    @click="(editClassVisible = false), $form.reset()"
+                    >{{ $t("admin.facility.button.cancel") }}</Button
                 >
                 <Button type="submit"
-                    ><PenLine></PenLine>{{ $t("admin.facility.buttons.edit") }}</Button
+                    ><PenLine></PenLine
+                    >{{ $t("admin.facility.button.edit") }}</Button
                 >
             </div>
         </Form>
@@ -1400,11 +1387,12 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="((editRoomVisible = false), $form.reset())"
-                    >{{ $t("admin.facility.buttons.cancel") }}</Button
+                    @click="(editRoomVisible = false), $form.reset()"
+                    >{{ $t("admin.facility.button.cancel") }}</Button
                 >
                 <Button type="submit"
-                    ><PenLine></PenLine>{{ $t("admin.facility.buttons.edit") }}</Button
+                    ><PenLine></PenLine
+                    >{{ $t("admin.facility.button.edit") }}</Button
                 >
             </div>
         </Form>
@@ -1439,11 +1427,12 @@ const deleteApprover = async (id: number) => {
                 <Button
                     type="button"
                     severity="secondary"
-                    @click="((editCampusVisible = false), $form.reset())"
-                    >{{ $t("admin.facility.buttons.cancel") }}</Button
+                    @click="(editCampusVisible = false), $form.reset()"
+                    >{{ $t("admin.facility.button.cancel") }}</Button
                 >
                 <Button type="submit"
-                    ><PenLine></PenLine>{{ $t("admin.facility.buttons.edit") }}</Button
+                    ><PenLine></PenLine
+                    >{{ $t("admin.facility.button.edit") }}</Button
                 >
             </div>
         </Form>
@@ -1463,7 +1452,7 @@ const deleteApprover = async (id: number) => {
                         <template #header>
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-lg">{{
-                                    $t("admin.facility.rooms")
+                                    $t("admin.facility.room")
                                 }}</span>
                                 <Button
                                     size="small"
@@ -1473,7 +1462,7 @@ const deleteApprover = async (id: number) => {
                             </div>
                         </template>
                         <template #empty>
-                            <span>{{ $t("admin.facility.noRooms") }}</span>
+                            <span>{{ $t("admin.facility.noRoom") }}</span>
                         </template>
                         <Column
                             field="id"
@@ -1490,7 +1479,7 @@ const deleteApprover = async (id: number) => {
                                         slotProps.data.enabled
                                             ? $t('admin.facility.table.enabled')
                                             : $t(
-                                                  'admin.facility.table.disabled',
+                                                  'admin.facility.table.disabled'
                                               )
                                     "
                                     :severity="
@@ -1506,7 +1495,7 @@ const deleteApprover = async (id: number) => {
                                 {{
                                     campuses?.data.find(
                                         (c: Campus) =>
-                                            c.id === slotProps.data.campus,
+                                            c.id === slotProps.data.campus
                                     )?.name
                                 }}
                             </template>
@@ -1516,8 +1505,8 @@ const deleteApprover = async (id: number) => {
                                 <Button
                                     size="small"
                                     @click="
-                                        ((policyViewVisible = true),
-                                        (room = slotProps.data.id))
+                                        (policyViewVisible = true),
+                                            (room = slotProps.data.id)
                                     "
                                 >
                                     <PenLine></PenLine>
@@ -1529,8 +1518,8 @@ const deleteApprover = async (id: number) => {
                                 <Button
                                     size="small"
                                     @click="
-                                        ((approverViewVisible = true),
-                                        (room = slotProps.data.id))
+                                        (approverViewVisible = true),
+                                            (room = slotProps.data.id)
                                     "
                                 >
                                     <PenLine></PenLine>
@@ -1543,7 +1532,7 @@ const deleteApprover = async (id: number) => {
                             <template #body="slotProps">
                                 {{
                                     formatTime(
-                                        new Date(slotProps.data.createdAt),
+                                        new Date(slotProps.data.createdAt)
                                     )
                                 }}
                             </template>
@@ -1554,10 +1543,10 @@ const deleteApprover = async (id: number) => {
                                     <Button
                                         size="small"
                                         @click="
-                                            ((editRoomVisible = true),
-                                            (editRoomInitialValues = {
-                                                ...slotProps.data,
-                                            }))
+                                            (editRoomVisible = true),
+                                                (editRoomInitialValues = {
+                                                    ...slotProps.data,
+                                                })
                                         "
                                     >
                                         <PenLine></PenLine
@@ -1584,7 +1573,7 @@ const deleteApprover = async (id: number) => {
                         <template #header>
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-lg">{{
-                                    $t("admin.facility.campuses")
+                                    $t("admin.facility.campus")
                                 }}</span>
                                 <Button
                                     size="small"
@@ -1595,7 +1584,7 @@ const deleteApprover = async (id: number) => {
                             </div>
                         </template>
                         <template #empty>
-                            <span>{{ $t("admin.facility.noCampuses") }}</span>
+                            <span>{{ $t("admin.facility.noCampus") }}</span>
                         </template>
                         <Column
                             field="id"
@@ -1611,7 +1600,7 @@ const deleteApprover = async (id: number) => {
                             <template #body="slotProps">
                                 {{
                                     formatTime(
-                                        new Date(slotProps.data.createdAt),
+                                        new Date(slotProps.data.createdAt)
                                     )
                                 }}
                             </template>
@@ -1622,19 +1611,17 @@ const deleteApprover = async (id: number) => {
                                     <Button
                                         size="small"
                                         @click="
-                                            ((editCampusVisible = true),
-                                            (editCampusInitialValues = {
-                                                ...slotProps.data,
-                                            }))
+                                            (editCampusVisible = true),
+                                                (editCampusInitialValues = {
+                                                    ...slotProps.data,
+                                                })
                                         "
                                         ><PenLine></PenLine
                                     ></Button>
                                     <Button
                                         size="small"
                                         severity="danger"
-                                        @click="
-                                            deleteCampus(slotProps.data.id)
-                                        "
+                                        @click="deleteCampus(slotProps.data.id)"
                                         ><Trash2></Trash2
                                     ></Button>
                                 </div>
@@ -1653,7 +1640,7 @@ const deleteApprover = async (id: number) => {
                         <template #header>
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-lg">{{
-                                    $t("admin.facility.classes")
+                                    $t("admin.facility.class")
                                 }}</span>
                                 <Button
                                     size="small"
@@ -1663,7 +1650,7 @@ const deleteApprover = async (id: number) => {
                             </div>
                         </template>
                         <template #empty>
-                            <span>{{ $t("admin.facility.noClasses") }}</span>
+                            <span>{{ $t("admin.facility.noClass") }}</span>
                         </template>
                         <Column
                             field="id"
@@ -1678,7 +1665,7 @@ const deleteApprover = async (id: number) => {
                                 {{
                                     campuses?.data.find(
                                         (c: Campus) =>
-                                            c.id === slotProps.data.campus,
+                                            c.id === slotProps.data.campus
                                     )?.name
                                 }}
                             </template>
@@ -1689,7 +1676,7 @@ const deleteApprover = async (id: number) => {
                             <template #body="slotProps">
                                 {{
                                     formatTime(
-                                        new Date(slotProps.data.createdAt),
+                                        new Date(slotProps.data.createdAt)
                                     )
                                 }}
                             </template>
@@ -1700,10 +1687,10 @@ const deleteApprover = async (id: number) => {
                                     <Button
                                         size="small"
                                         @click="
-                                            ((editClassVisible = true),
-                                            (editClassInitialValues = {
-                                                ...slotProps.data,
-                                            }))
+                                            (editClassVisible = true),
+                                                (editClassInitialValues = {
+                                                    ...slotProps.data,
+                                                })
                                         "
                                         ><PenLine></PenLine
                                     ></Button>
