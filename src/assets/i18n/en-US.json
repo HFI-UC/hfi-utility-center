@@ -237,7 +237,8 @@
             },
             "validation": {
                 "reasonRequired": "Reason is required.",
-                "optionRequired": "Format is required."
+                "optionRequired": "Format is required.",
+                "modeRequired": "Mode is required."
             },
             "form": {
                 "reason": "Reason",

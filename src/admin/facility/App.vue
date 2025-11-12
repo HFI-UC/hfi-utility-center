@@ -293,7 +293,7 @@ const dayOptions = computed(() =>
     }))
 );
 const formatWeekDay = (days: number[]) => {
-    const daysMapping = tm("common.weekday") as string[];
+    const daysMapping = tm("common.weekday.short") as string[];
     return days.map((item) => daysMapping[item]).join(" ");
 };
 

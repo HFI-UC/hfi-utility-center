@@ -197,7 +197,7 @@ const exportResolver = computed(() =>
                 error: t("admin.reservation.validation.optionRequired"),
             }),
             time: z.array(z.date().nullable()).length(2).optional(),
-            mode: z.literal(["by-room", "single-sheet"], { error: t("admin.reservation.validation.optionRequired")}),
+            mode: z.literal(["by-room", "single-sheet"], { error: t("admin.reservation.validation.modeRequired")}),
         }),
     ),
 );
