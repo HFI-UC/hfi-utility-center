@@ -135,7 +135,7 @@ const formatTableDate = (time: string) => {
 };
 
 const formatTableWeekDay = (days: number[]) => {
-    const daysMapping = tm("reservation.create.weekday") as string[];
+    const daysMapping = tm("common.weekday.short") as string[];
     return days.map((item) => daysMapping[item]).join(" ");
 };
 
