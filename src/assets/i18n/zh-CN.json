@@ -194,7 +194,7 @@
             "table": {
                 "id": "ID",
                 "name": "Name",
-                "email": "Email",
+                "email": "E-mail",
                 "password": "Password",
                 "creationTime": "Creation Time",
                 "action": "Actions"
@@ -226,7 +226,7 @@
             },
             "validation": {
                 "nameRequired": "Name is required.",
-                "emailInvalid": "Invalid email format.",
+                "emailInvalid": "Invalid E-mail format.",
                 "emailRequired": "Email is required.",
                 "passwordRequired": "Password is required.",
                 "passwordMinLength": "Password must be at least 6 characters."
@@ -372,7 +372,7 @@
             },
             "validation": {
                 "classRequired": "Class is required.",
-                "studentNameRequired": "Student name is required.",
+                "studentNameRequired": "Name is required.",
                 "roomRequired": "Room is required.",
                 "studentId": {
                     "required": "Student ID is required.",
@@ -425,15 +425,6 @@
             "button": {
                 "anotherReservation": "Make another reservation"
             },
-            "weekday": [
-                "Mon.",
-                "Tue.",
-                "Wed.",
-                "Thu.",
-                "Fri.",
-                "Sat.",
-                "Sun."
-            ],
             "toast": {
                 "reservationCreated": "Your reservation has been created successfully."
             }
