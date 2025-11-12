@@ -243,11 +243,13 @@
                 "rejectReservation": "Reject Reservation",
                 "exportReservation": "Export Reservations"
             },
+            "validation": {
+                "reasonRequired": "Reason is required.",
+                "optionRequired": "Format is required."
+            },
             "form": {
                 "reason": "Reason",
-                "reasonRequired": "Reason is required.",
                 "option": "Select an option",
-                "optionRequired": "Format is required.",
                 "time": "Time",
                 "mode": "Select an export mode"
             },
