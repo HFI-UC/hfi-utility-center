@@ -301,6 +301,17 @@
                 "reservationRejected": "预约 #{id} 已成功打回，打回原因：{reason}",
                 "noReservationInRange": "在选定的时间范围内没有可用预约。"
             },
+            "reason": [
+                "Time Conflict - The selected time slot has been booked by another event.",
+                "Insufficient Resources - There are not enough equipment or resources to support this reservation.",
+                "Does Not Meet Reservation Criteria - The request does not meet specific conditions or rules for room usage.",
+                "Under Maintenance - The room is under maintenance or upgrades and is temporarily unavailable.",
+                "Safety Concerns - Usage is temporarily unavailable due to safety considerations.",
+                "Incomplete Information - The submitted reservation information is incomplete or inaccurate.",
+                "Policy Violation - The reserved activity violates the relevant policies of the school or institution.",
+                "Frequent Reservations - The frequency of reservations by the same organization or individual is too high.",
+                "Priority for Special Events - Resources are prioritized for special events or emergencies."
+            ],
             "exportOption": {
                 "today": "导出今天的预约",
                 "thisWeek": "导出这周的预约",
@@ -318,8 +329,7 @@
     },
     "toast": {
         "success": "成功",
-        "error": "错误",
-        "details": {}
+        "error": "错误"
     },
     "reservation": {
         "search": {
