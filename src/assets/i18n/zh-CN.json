@@ -361,7 +361,7 @@
             }
         },
         "create": {
-            "title": "新预约",
+            "title": "创建一个预约",
             "subtitle": {
                 "personalInfo": "个人信息",
                 "reservationInfo": "预约信息"
