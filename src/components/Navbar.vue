@@ -12,6 +12,7 @@ import {
     BookCheck,
     DoorClosed,
     Globe,
+    Sparkles,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
 import { SpeedInsights } from "@vercel/speed-insights/vue";
@@ -137,11 +138,18 @@ const adminMenuItems = computed(() => {
 const menuItems = computed(() => {
     const items: any[] = [
         { label: t("navbar.home"), iconComponent: Home, to: "/" },
+        { separator: true },
         {
             label: t("navbar.reservation.reservation"),
             iconComponent: Book,
             items: reservationsMenuItems.value,
         },
+        { separator: true },
+        {
+            label: t("navbar.utiverse"),
+            iconComponent: Sparkles,
+            to: "/utiverse"
+        }
     ];
     items.push({ separator: true });
     if (!loginData.value?.success) {
@@ -292,6 +300,15 @@ onUnmounted(() => {
                     >
                         <Book></Book
                         >{{ $t("navbar.reservation.reservation") }}
+                    </Button>
+                    <Button
+                        text
+                        severity="contrast"
+                        as="a"
+                        href="/utiverse/"
+                    >
+                        <Sparkles></Sparkles
+                        >{{ $t("navbar.utiverse") }}
                     </Button>
                     <Button
                         v-if="loginData?.success"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PenSquare, Search } from "lucide-vue-next";
+import { PenSquare, Search, Sparkles } from "lucide-vue-next";
 import LoadingMask from "./components/LoadingMask.vue";
 import Navbar from "./components/Navbar.vue";
 </script>
@@ -24,6 +24,15 @@ import Navbar from "./components/Navbar.vue";
             <Button as="a" href="/reservation/create/" size="small"
                 ><PenSquare></PenSquare>{{ $t("home.button.bookRoom") }}</Button
             >
+            <div class="rounded-md p-[1px] bg-gradient-to-r from-blue-500 to-sky-500 inline-block">
+                <Button
+                    class="!bg-transparent !border-none"
+                    as="a"
+                    href="/utiverse/"
+                    size="small"
+                    ><Sparkles></Sparkles>UtiVerse</Button
+                >
+            </div>
             <Button
                 as="a"
                 href="/reservation/search/"
