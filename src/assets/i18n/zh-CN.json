@@ -334,7 +334,7 @@
     },
     "reservation": {
         "search": {
-            "title": "搜索预约",
+            "title": "查找预约",
             "status": {
                 "pending": "审核中",
                 "approved": "已通过",
