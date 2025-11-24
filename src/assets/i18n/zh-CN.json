@@ -52,7 +52,7 @@
         "reservation": {
             "reservation": "预约",
             "create": "创建一个预约",
-            "search": "Search Reservations",
+            "search": "查找预约",
             "analytic": "预约统计数据"
         },
         "admin": {
@@ -380,7 +380,7 @@
                 "campus": "校区",
                 "submit": "提交",
                 "termAgreement": "我同意{0}。",
-                "poweredBy": "Powered by {0}",
+                "poweredBy": "由 {0} 驱动",
                 "termAndCondition": "条款和条件"
             },
             "validation": {
@@ -489,7 +489,7 @@
     },
     "utiverse": {
         "title": "UtiVerse",
-        "subtitle": "All you need in HFI.",
+        "subtitle": "你在 HFI 中所需的一切。",
         "bazaar": {
             "title": "UtiBazaar",
             "description": "UtiBazaar is a community-driven second-hand marketplace for HFI - buy, sell, or swap items easily. List items in seconds with photos and descriptions, browse curated categories, and search for great deals nearby.",
@@ -505,6 +505,6 @@
             "description": "UtiCloud offers secure, campus-integrated cloud storage and collaboration for HFI students and staff. Store and sync lecture notes, assignments, project files, and media with automatic backups, version history, and selective device sync.",
             "subDescription": "Built on campus authentication, UtiCloud includes guided sharing controls, expiring links, group folders for classes or teams, and encryption for sensitive data. Accessible via web and mobile to keep coursework and collaboration in one reliable place."
         },
-        "go": "Go"
+        "go": "前往"
     }
 }
