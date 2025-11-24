@@ -220,7 +220,7 @@ const validateTimeConflict = (
         if (endTime) {
             return existingEnd > startTime && existingStart < endTime;
         }
-        return existingEnd > startTime && existingStart < startTime;
+        return existingEnd > startTime && existingStart <= startTime;
     });
 };
 
