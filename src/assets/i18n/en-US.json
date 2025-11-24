@@ -44,7 +44,7 @@
         "reservation": {
             "reservation": "Reservations",
             "create": "New Reservation",
-            "search": "Search Reservation",
+            "search": "Search Reservations",
             "analytic": "Reservation Analytics"
         },
         "admin": {
@@ -62,7 +62,8 @@
         },
         "toast": {
             "logoutSuccessful": "Logout successful."
-        }
+        },
+        "utiverse": "UtiVerse"
     },
     "adminLogin": {
         "toast": {
@@ -371,6 +372,7 @@
                 "campus": "Campus",
                 "submit": "Submit",
                 "termAgreement": "I agree to the {0}.",
+                "poweredBy": "Powered by {0}",
                 "termAndCondition": "Terms and Conditions"
             },
             "validation": {
@@ -476,5 +478,25 @@
                 }
             }
         }
+    },
+    "utiverse": {
+        "title": "UtiVerse",
+        "subtitle": "All you need in HFI.",
+        "bazaar": {
+            "title": "UtiBazaar",
+            "description": "UtiBazaar is a community-driven second-hand marketplace for HFI - buy, sell, or swap items easily. List items in seconds with photos and descriptions, browse curated categories, and search for great deals nearby.",
+            "subDescription": "Secure messaging, user ratings, and simple pickup or delivery options make transactions safe and convenient. Save money, reduce waste, and connect with the campus community."
+        },
+        "opia": {
+            "title": "UtiOpia",
+            "description": "UtiOpia is a community bulletin and exchange platform for students and staff: post lost & found, classifieds, events, carpools, study groups, and more to be seen by nearby classmates.",
+            "subDescription": "Registration is limited to campus accounts and includes real-name / student-ID verification, reporting and moderation tools, private messaging, and location tagging to ensure safe, reliable interactions. Simple and easy to use - connect with people and resources around you."
+        },
+        "cloud": {
+            "title": "UtiCloud",
+            "description": "UtiCloud offers secure, campus-integrated cloud storage and collaboration for HFI students and staff. Store and sync lecture notes, assignments, project files, and media with automatic backups, version history, and selective device sync.",
+            "subDescription": "Built on campus authentication, UtiCloud includes guided sharing controls, expiring links, group folders for classes or teams, and encryption for sensitive data. Accessible via web and mobile to keep coursework and collaboration in one reliable place."
+        },
+        "go": "Go"
     }
 }

@@ -64,6 +64,7 @@ export default defineConfig({
                     __dirname,
                     "admin/facility/index.html"
                 ),
+                "utiverse": resolve(__dirname, "utiverse/index.html")
             },
             output: {
                 manualChunks: (id) => {
