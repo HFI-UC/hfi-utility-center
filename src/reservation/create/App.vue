@@ -383,7 +383,7 @@ const fetchReservations = async (selectedRoom: FormFieldState) => {
     reservationsFetchLoading.value = false;
 };
 
-const success = ref(true);
+const success = ref(false);
 const successMessage = ref("");
 const submitLoading = ref(false);
 const onSubmitEvent = async (form: FormSubmitEvent) => {
