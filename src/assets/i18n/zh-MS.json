@@ -88,6 +88,7 @@
                 "submit": "登录"
             },
             "validation": {
+                "emailInvalid": "Invalid E-mail format.",
                 "emailRequired": "请输入邮箱。",
                 "passwordRequired": "请输入密码。"
             },
@@ -334,7 +335,7 @@
     },
     "reservation": {
         "search": {
-            "title": "搜索预约",
+            "title": "查找预约",
             "status": {
                 "pending": "审核中",
                 "approved": "已通过",
@@ -402,7 +403,8 @@
                 "endTimeRequired": "请选择结束时间。",
                 "reasonRequired": "请说明预约的理由。",
                 "campusRequired": "请选择校区。",
-                "isAgreed": "您必须同意条款和条件。"
+                "isAgreed": "您必须同意条款和条件。",
+                "detailedReason": "Be specific with your reason. A detailed explanation helps the AI approve your request faster. Vague reasons may require manual review."
             },
             "table": {
                 "policy": {
