@@ -88,6 +88,7 @@
                 "submit": "登录"
             },
             "validation": {
+                "emailInvalid": "Invalid E-mail format.",
                 "emailRequired": "请输入邮箱。",
                 "passwordRequired": "请输入密码。"
             },
@@ -402,7 +403,8 @@
                 "endTimeRequired": "请选择结束时间。",
                 "reasonRequired": "请说明预约的理由。",
                 "campusRequired": "请选择校区。",
-                "isAgreed": "您必须同意条款和条件。"
+                "isAgreed": "您必须同意条款和条件。",
+                "detailedReason": "详细阐述你的原因。详细的解释有助于 AI 更快地批准你的请求。如果你的原因不够详细，我们需要人工审核，这将耗费更多时间。"
             },
             "table": {
                 "policy": {
