@@ -80,6 +80,7 @@
                 "submit": "Login"
             },
             "validation": {
+                "emailInvalid": "Invalid E-mail format.",
                 "emailRequired": "E-mail is required.",
                 "passwordRequired": "Password is required."
             },
@@ -374,6 +375,7 @@
                 "termAgreement": "I agree to the {0}.",
                 "poweredBy": "Powered by {0}",
                 "termAndCondition": "Terms and Conditions"
+                
             },
             "validation": {
                 "classRequired": "Class is required.",
@@ -394,7 +396,8 @@
                 "endTimeRequired": "End time is required.",
                 "reasonRequired": "Please provide a reason for the reservation.",
                 "campusRequired": "Campus is required.",
-                "isAgreed": "You must agree to the terms and conditions."
+                "isAgreed": "You must agree to the terms and conditions.",
+                "detailedReason": "Be specific with your reason. A detailed explanation helps the AI approve your request faster. Vague reasons may require manual review."
             },
             "table": {
                 "policy": {

@@ -794,6 +794,9 @@ const termsVisible = ref(false);
                                 <label>{{
                                     $t("reservation.create.form.reason")
                                 }}</label>
+                                <p class="text-xs dark:text-surface-300 text-surface-500 mt-2">
+                                    {{ $t("reservation.create.validation.detailedReason") }}
+                                </p>
                             </IftaLabel>
                             <Message
                                 v-if="$form.reason?.invalid"
