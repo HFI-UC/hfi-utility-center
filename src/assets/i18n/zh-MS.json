@@ -404,7 +404,7 @@
                 "reasonRequired": "请说明预约的理由。",
                 "campusRequired": "请选择校区。",
                 "isAgreed": "您必须同意条款和条件。",
-                "detailedReason": "Be specific with your reason. A detailed explanation helps the AI approve your request faster. Vague reasons may require manual review."
+                "detailedReason": "详细阐述你的原因。详细的解释有助于 AI 更快地批准你的请求。如果你的原因不够详细，我们需要人工审核，这将耗费更多时间。"
             },
             "table": {
                 "policy": {
