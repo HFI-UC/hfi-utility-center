@@ -36,7 +36,7 @@ const isMobile = ref(false);
 const menu = ref();
 const riveInstance = ref<any>(null);
 const resizeTimeout = ref<number | null>(null);
-const { data: loginData } = useRequest(getCheckLogin);
+const { data: loginData } = useRequest(getCheckLogin, { pollingInterval: 1000 });
 
 const handleScroll = () => {
     isScrolled.value = window.scrollY > 10;
