@@ -24,6 +24,10 @@
     animation: gradient-shift 15s ease infinite;
 }
 
+.p-overlay-mask {
+    border-radius: 0.5rem;
+}
+
 :root {
     font-family: "Inter", "Noto Sans SC", sans-serif;
 }

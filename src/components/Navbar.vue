@@ -15,8 +15,7 @@ import {
     Sparkles,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
-import { SpeedInsights } from "@vercel/speed-insights/vue";
-import { Analytics } from "@vercel/analytics/vue";
+
 import { getCheckLogin, getLogOut } from "../api";
 import { usePrimeVue, useToast } from "primevue";
 import en from "primelocale/en.json";
@@ -43,7 +42,7 @@ const handleScroll = () => {
     isScrolled.value = window.scrollY > 10;
 };
 const handleResize = () => {
-    isMobile.value = window.innerWidth < 900;
+    isMobile.value = window.innerWidth < 1000;
     if (resizeTimeout.value) {
         clearTimeout(resizeTimeout.value);
     }
@@ -100,17 +99,17 @@ const reservationsMenuItems = computed(() => {
         {
             label: t("navbar.reservation.create"),
             iconComponent: Book,
-            to: "/reservation/create/",
+            to: "/reservation/create",
         },
         {
             label: t("navbar.reservation.search"),
             iconComponent: Search,
-            to: "/reservation/search/",
+            to: "/reservation/search",
         },
         {
             label: t("navbar.reservation.analytic"),
             iconComponent: ChartNoAxesCombined,
-            to: "/reservation/analytics/",
+            to: "/reservation/analytics",
         },
     ];
 });
@@ -120,17 +119,17 @@ const adminMenuItems = computed(() => {
         {
             label: t("navbar.admin.reservationManagement"),
             iconComponent: BookCheck,
-            to: "/admin/reservation/",
+            to: "/admin/reservation",
         },
         {
             label: t("navbar.admin.facilityManagement"),
             iconComponent: DoorClosed,
-            to: "/admin/facility/",
+            to: "/admin/facility",
         },
         {
             label: t("navbar.admin.adminManagement"),
             iconComponent: UserRound,
-            to: "/admin/admin/",
+            to: "/admin/admin",
         },
     ];
 });
@@ -156,7 +155,7 @@ const menuItems = computed(() => {
         items.push({
             label: t("navbar.login"),
             iconComponent: LogIn,
-            to: "/admin/login/",
+            to: "/admin/login",
         });
     } else {
         items.push({
@@ -268,8 +267,6 @@ onUnmounted(() => {
 });
 </script>
 <template>
-    <SpeedInsights></SpeedInsights>
-    <Analytics></Analytics>
     <div
         :class="[
             'fixed inset-x-0 top-0 z-10 flex items-center h-[4rem] transition-all duration-300',
@@ -278,17 +275,17 @@ onUnmounted(() => {
     >
         <div class="mx-[2rem] flex justify-between w-full" id="navbar">
             <div class="flex gap-4 items-center">
-                <a
+                <router-link
                     class="font-bold md:text-lg text-md from-cyan-500 to-sky-500 bg-linear-to-r bg-clip-text text-transparent"
-                    href="/"
-                    >{{ $t("navbar.title") }}</a
+                    to="/"
+                    >{{ $t("navbar.title") }}</router-link
                 >
                 <canvas
                     id="theme-canvas"
                     class="md:h-[45px] h-[35px] md:mx-4 mx-2 cursor-pointer"
                 ></canvas>
                 <template v-if="!isMobile">
-                    <Button text severity="contrast" as="a" href="/">
+                    <Button text severity="contrast" as="router-link" to="/">
                         <Home></Home>{{ $t("navbar.home") }}
                     </Button>
                     <Button
@@ -304,8 +301,8 @@ onUnmounted(() => {
                     <Button
                         text
                         severity="contrast"
-                        as="a"
-                        href="/utiverse/"
+                        as="router-link"
+                        to="/utiverse"
                     >
                         <Sparkles></Sparkles
                         >{{ $t("navbar.utiverse") }}
@@ -340,8 +337,8 @@ onUnmounted(() => {
                     v-if="!loginData?.success"
                     text
                     severity="contrast"
-                    as="a"
-                    href="/admin/login/"
+                    as="router-link"
+                    to="/admin/login"
                 >
                     <LogIn></LogIn>{{ $t("navbar.login") }}
                 </Button>
@@ -392,9 +389,22 @@ onUnmounted(() => {
                         </div>
                     </template>
                     <template #item="{ item, props }">
+                        <RouterLink
+                            v-if="!item.separator && item.to"
+                            :to="item.to"
+                            v-bind="props.action"
+                            class="flex items-center gap-2"
+                        >
+                            <component
+                                :is="item.iconComponent"
+                                class="w-4 h-4"
+                                v-if="item.iconComponent"
+                            />
+                            <span>{{ item.label }}</span>
+                        </RouterLink>
                         <a
-                            v-if="!item.separator"
-                            :href="item.to"
+                            v-else-if="!item.separator"
+                            :href="item.url"
                             v-bind="props.action"
                             class="flex items-center gap-2"
                         >
@@ -420,9 +430,9 @@ onUnmounted(() => {
                 appendTo="#navbar"
             >
                 <template #item="slotProps">
-                    <a
+                    <RouterLink
                         class="flex items-center gap-2 px-3 py-2"
-                        :href="slotProps.item.to"
+                        :to="slotProps.item.to"
                     >
                         <component
                             :is="slotProps.item.iconComponent"
@@ -430,7 +440,7 @@ onUnmounted(() => {
                             v-if="slotProps.item.iconComponent"
                         />
                         {{ slotProps.item.label }}
-                    </a>
+                    </RouterLink>
                 </template>
             </Menu>
             <Menu
@@ -442,9 +452,9 @@ onUnmounted(() => {
                 appendTo="#navbar"
             >
                 <template #item="slotProps">
-                    <a
+                    <RouterLink
                         class="flex items-center gap-2 px-3 py-2"
-                        :href="slotProps.item.to"
+                        :to="slotProps.item.to"
                     >
                         <component
                             :is="slotProps.item.iconComponent"
@@ -452,7 +462,7 @@ onUnmounted(() => {
                             v-if="slotProps.item.iconComponent"
                         />
                         {{ slotProps.item.label }}
-                    </a>
+                    </RouterLink>
                 </template>
             </Menu>
         </div>

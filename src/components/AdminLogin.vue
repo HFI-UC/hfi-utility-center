@@ -3,10 +3,14 @@ import { onMounted } from "vue";
 import { getCheckLogin } from "../api";
 import { useToast } from "primevue";
 import { useI18n } from "vue-i18n";
+import { useRouter, useRoute } from "vue-router";
 
 const { t } = useI18n()
 const props = defineProps<{ requireLogin: boolean; redirect?: string }>();
 const toast = useToast();
+const router = useRouter();
+const route = useRoute();
+
 onMounted(async () => {
     if (props.requireLogin) {
         const response = await getCheckLogin();
@@ -19,7 +23,7 @@ onMounted(async () => {
             });
             setTimeout(
                 () =>
-                    (window.location.href = `/admin/login/?redirect=${encodeURIComponent(window.location.href)}`),
+                    router.push(`/admin/login?redirect=${encodeURIComponent(route.fullPath)}`),
                 2500,
             );
         }
@@ -34,8 +38,7 @@ onMounted(async () => {
             });
             setTimeout(
                 () =>
-                    (window.location.href =
-                        props.redirect || "/admin/dashboard/"),
+                    router.push(props.redirect || "/admin/dashboard"),
                 2500,
             );
         }

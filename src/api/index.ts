@@ -441,14 +441,14 @@ export async function postDeleteAdmin(id: number) {
 
 export async function getOverviewAnalytics() {
     const response = await axios.get<ApiResponse<OverviewAnalytics>>(
-        "/analytics/overview",
+        "/reservations/analytics/overview",
     );
     return response.data;
 }
 
 export async function getWeeklyAnalytics() {
     const response =
-        await axios.get<ApiResponse<WeeklyAnalytics>>("/analytics/weekly");
+        await axios.get<ApiResponse<WeeklyAnalytics>>("/reservations/analytics/weekly");
     return response.data;
 }
 
@@ -466,7 +466,7 @@ export async function getExportOverviewReservationsAnalytics(
     turnstileToken: string,
 ) {
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
-    window.location.href = `${base}/analytics/overview/export?type=${type}&turnstileToken=${turnstileToken}`;
+    window.location.href = `${base}/reservations/analytics/overview/export?type=${type}&turnstileToken=${turnstileToken}`;
 }
 
 export async function getExportWeeklyReservationsAnalytics(
@@ -474,7 +474,7 @@ export async function getExportWeeklyReservationsAnalytics(
     turnstileToken: string,
 ) {
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
-    window.location.href = `${base}/analytics/weekly/export?type=${type}&turnstileToken=${turnstileToken}`;
+    window.location.href = `${base}/reservations/analytics/weekly/export?type=${type}&turnstileToken=${turnstileToken}`;
 }
 
 export async function postToggleApproverNotificationsEnabled(id: number) {
