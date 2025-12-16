@@ -21,11 +21,7 @@ onMounted(async () => {
                 detail: t("adminLogin.toast.notLoggedIn"),
                 life: 2000,
             });
-            setTimeout(
-                () =>
-                    router.push(`/admin/login?redirect=${encodeURIComponent(route.fullPath)}`),
-                2500,
-            );
+            router.push(`/admin/login?redirect=${encodeURIComponent(route.fullPath)}`)
         }
     } else {
         const response = await getCheckLogin();
@@ -36,11 +32,7 @@ onMounted(async () => {
                 detail: t("adminLogin.toast.alreadyLoggedIn"),
                 life: 2000,
             });
-            setTimeout(
-                () =>
-                    router.push(props.redirect || "/admin/dashboard"),
-                2500,
-            );
+            router.push(props.redirect || "/")
         }
     }
 });

@@ -73,11 +73,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
             detail: t("admin.login.toast.loginSuccessful"),
             life: 2000,
         });
-        setTimeout(
-            () =>
-                router.push(getRedirect() != "" ? getRedirect() : "/"),
-            2500,
-        );
+        router.push(getRedirect() != "" ? getRedirect() : "/")
     } else {
         toast.add({
             severity: "error",
