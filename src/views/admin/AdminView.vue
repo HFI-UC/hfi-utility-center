@@ -7,20 +7,16 @@ import {
     postEditAdmin,
     postEditAdminPassword,
     type Admin,
-    getCheckLogin,
 } from "@/api";
 import { PenLine, Plus, Trash2 } from "lucide-vue-next";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import z from "zod";
 import type { FormSubmitEvent } from "@primevue/forms";
 import { useToast } from "primevue";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRouter, useRoute } from "vue-router";
 
 const { t } = useI18n();
-const router = useRouter();
-const route = useRoute();
 const {
     data: admins,
     run: fetchAdmins,
@@ -39,23 +35,6 @@ const formatTime = (date: Date): string => {
 
 const toast = useToast();
 const loading = ref(false);
-
-onMounted(async () => {
-    const response = await getCheckLogin();
-    if (!response.success) {
-        toast.add({
-            severity: "error",
-            summary: t("common.error"),
-            detail: t("adminLogin.toast.notLoggedIn"),
-            life: 2000,
-        });
-        setTimeout(
-            () =>
-                router.push(`/admin/login?redirect=${encodeURIComponent(route.fullPath)}`),
-            2500,
-        );
-    }
-});
 
 const newAdminResolver = computed(() =>
     zodResolver(
