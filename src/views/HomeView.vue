@@ -15,25 +15,28 @@ import { PenSquare, Search, Sparkles } from "lucide-vue-next";
             >{{ $t("home.title") }}</span
         >
         <h2 class="font-bold">{{ $t("home.subtitle") }}</h2>
-        <div class="mt-8 flex gap-2 flex-wrap items-center justify-center">
-            <Button as="router-link" to="/reservation/create" size="small"
+        <div class="mt-8 flex gap-2 flex-wrap items-center justify-center mx-8">
+            <Button as="RouterLink" to="/reservation/create" size="small"
                 ><PenSquare></PenSquare>{{ $t("home.button.bookRoom") }}</Button
             >
-            <div class="rounded-md p-[1px] bg-gradient-to-r from-blue-500 to-sky-500 inline-block">
+            <div
+                class="rounded-md p-[1px] bg-gradient-to-r from-blue-500 to-sky-500 inline-block"
+            >
                 <Button
                     class="!bg-transparent !border-none"
-                    as="router-link"
+                    as="RouterLink"
                     to="/utiverse"
                     size="small"
                     ><Sparkles></Sparkles>UtiVerse</Button
                 >
             </div>
             <Button
-                as="router-link"
+                as="RouterLink"
                 to="/reservation/search"
                 size="small"
                 severity="secondary"
-                ><Search></Search>{{ $t("home.button.viewReservation") }}</Button
+                ><Search></Search
+                >{{ $t("home.button.viewReservation") }}</Button
             >
         </div>
     </div>

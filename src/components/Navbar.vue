@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import {
     Home,
     LogIn,
@@ -13,6 +13,7 @@ import {
     DoorClosed,
     Globe,
     Sparkles,
+    Ellipsis,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
 
@@ -26,6 +27,7 @@ import riveWASMResource from "@rive-app/canvas/rive.wasm";
 // @ts-ignore
 import themeToggleUrl from "@/assets/theme-toggle.riv?inline";
 import { useI18n } from "vue-i18n";
+import { useLoginEvent, useIsLoading } from "@/eventBus";
 
 RuntimeLoader.setWasmUrl(riveWASMResource);
 
@@ -36,13 +38,20 @@ const isMobile = ref(false);
 const menu = ref();
 const riveInstance = ref<any>(null);
 const resizeTimeout = ref<number | null>(null);
-const { data: loginData } = useRequest(getCheckLogin, { pollingInterval: 1000 });
+const { data: loginData, refresh: refreshLoginData, loading: isLoginLoading } =
+    useRequest(getCheckLogin);
+const loginEvent = useLoginEvent();
+const isPageLoading = useIsLoading();
+
+watch(loginEvent, () => {
+    refreshLoginData();
+});
 
 const handleScroll = () => {
     isScrolled.value = window.scrollY > 10;
 };
 const handleResize = () => {
-    isMobile.value = window.innerWidth < 1000;
+    isMobile.value = window.innerWidth < 1200;
     if (resizeTimeout.value) {
         clearTimeout(resizeTimeout.value);
     }
@@ -61,13 +70,18 @@ const toggleMenu = (event: Event) => {
 };
 
 const reservationsMenu = ref();
-const adminMenu = ref();
+const otherMenu = ref();
+const userMenu = ref();
 const toggleReservationsMenu = (event: Event) => {
     reservationsMenu.value.toggle(event);
 };
 
-const toggleAdminMenu = (event: Event) => {
-    adminMenu.value.toggle(event);
+const toggleOtherMenu = (event: Event) => {
+    otherMenu.value.toggle(event);
+};
+
+const toggleUserMenu = (event: Event) => {
+    userMenu.value.toggle(event);
 };
 
 const toast = useToast();
@@ -89,9 +103,7 @@ const onLogOutEvent = async () => {
             life: 3000,
         });
     }
-    setTimeout(() => {
-        window.location.reload();
-    }, 3500);
+    refreshLoginData();
 };
 
 const reservationsMenuItems = computed(() => {
@@ -114,24 +126,27 @@ const reservationsMenuItems = computed(() => {
     ];
 });
 
-const adminMenuItems = computed(() => {
-    return [
+const otherMenuItems = computed(() => {
+    const items: any[] = [
         {
-            label: t("navbar.admin.reservationManagement"),
+            label: t("navbar.other.reservationManagement"),
             iconComponent: BookCheck,
             to: "/admin/reservation",
         },
-        {
-            label: t("navbar.admin.facilityManagement"),
+    ];
+    if (loginData.value?.data?.role == "admin") {
+        items.push({
+            label: t("navbar.other.userManagement"),
+            iconComponent: UserRound,
+            to: "/admin/user",
+        });
+        items.push({
+            label: t("navbar.other.facilityManagement"),
             iconComponent: DoorClosed,
             to: "/admin/facility",
-        },
-        {
-            label: t("navbar.admin.adminManagement"),
-            iconComponent: UserRound,
-            to: "/admin/admin",
-        },
-    ];
+        });
+    }
+    return items
 });
 
 const menuItems = computed(() => {
@@ -140,35 +155,46 @@ const menuItems = computed(() => {
         { separator: true },
         {
             label: t("navbar.reservation.reservation"),
-            iconComponent: Book,
             items: reservationsMenuItems.value,
         },
         { separator: true },
         {
             label: t("navbar.utiverse"),
             iconComponent: Sparkles,
-            to: "/utiverse"
-        }
+            to: "/utiverse",
+        },
     ];
     items.push({ separator: true });
+    if (loginData.value?.data?.role == "admin" || loginData.value?.data?.role == "approver") {
+        items.push({
+            label: t("navbar.other.other"),
+            items: otherMenuItems.value,
+        });
+        items.push({ separator: true });
+    }
     if (!loginData.value?.success) {
         items.push({
             label: t("navbar.login"),
             iconComponent: LogIn,
-            to: "/admin/login",
+            to: "/user/login",
         });
     } else {
         items.push({
-            label: t("navbar.admin.admin"),
-            iconComponent: UserRound,
-            items: adminMenuItems.value,
-        });
-        items.push({
-            label: t("navbar.logout"),
-            iconComponent: LogOut,
-            command: onLogOutEvent,
+            label: loginData.value.data.name,
+            items: userMenuItems.value,
         });
     }
+
+    return items;
+});
+
+const userMenuItems = computed(() => {
+    const items: any[] = [];
+    items.push({
+        label: t("navbar.logout"),
+        iconComponent: LogOut,
+        command: onLogOutEvent,
+    });
     return items;
 });
 
@@ -243,7 +269,9 @@ onMounted(async () => {
     riveInstance.value = r;
 
     selectedLocale.value = localStorage.getItem("locale") || "en-US";
-    if (!localeOptions.value.find((o: any) => o.code === selectedLocale.value)) {
+    if (
+        !localeOptions.value.find((o: any) => o.code === selectedLocale.value)
+    ) {
         selectedLocale.value = "en-US";
     }
     changeLocale(selectedLocale.value);
@@ -269,23 +297,31 @@ onUnmounted(() => {
 <template>
     <div
         :class="[
-            'fixed inset-x-0 top-0 z-10 flex items-center h-[4rem] transition-all duration-300',
+            'fixed inset-x-0 top-0 z-10 h-[4rem] transition-all duration-300',
             isScrolled ? 'backdrop-blur-lg shadow' : 'bg-transparent',
         ]"
     >
-        <div class="mx-[2rem] flex justify-between w-full" id="navbar">
+        <ProgressBar
+            mode="indeterminate"
+            class="absolute top-0 left-0 w-full !h-1 z-80"
+            v-if="isLoginLoading || isPageLoading"
+        />
+        <div
+            class="mx-[2rem] flex justify-between items-center h-full"
+            id="navbar"
+        >
             <div class="flex gap-4 items-center">
-                <router-link
+                <RouterLink
                     class="font-bold md:text-lg text-md from-cyan-500 to-sky-500 bg-linear-to-r bg-clip-text text-transparent"
                     to="/"
-                    >{{ $t("navbar.title") }}</router-link
+                    >{{ $t("navbar.title") }}</RouterLink
                 >
                 <canvas
                     id="theme-canvas"
                     class="md:h-[45px] h-[35px] md:mx-4 mx-2 cursor-pointer"
                 ></canvas>
                 <template v-if="!isMobile">
-                    <Button text severity="contrast" as="router-link" to="/">
+                    <Button text severity="contrast" as="RouterLink" to="/">
                         <Home></Home>{{ $t("navbar.home") }}
                     </Button>
                     <Button
@@ -295,27 +331,25 @@ onUnmounted(() => {
                         aria-haspopup="true"
                         aria-controls="reservationsMenu"
                     >
-                        <Book></Book
-                        >{{ $t("navbar.reservation.reservation") }}
+                        <Book></Book>{{ $t("navbar.reservation.reservation") }}
                     </Button>
                     <Button
                         text
                         severity="contrast"
-                        as="router-link"
+                        as="RouterLink"
                         to="/utiverse"
                     >
-                        <Sparkles></Sparkles
-                        >{{ $t("navbar.utiverse") }}
+                        <Sparkles></Sparkles>{{ $t("navbar.utiverse") }}
                     </Button>
                     <Button
-                        v-if="loginData?.success"
+                        v-if="loginData?.data?.role == 'admin'"
                         text
                         severity="contrast"
-                        @click="toggleAdminMenu"
+                        @click="toggleOtherMenu"
                         aria-haspopup="true"
-                        aria-controls="adminMenu"
+                        aria-controls="otherMenu"
                     >
-                        <UserRound></UserRound>{{ $t("navbar.admin.admin") }}
+                        <Ellipsis></Ellipsis>{{ $t("navbar.other.other") }}
                     </Button>
                 </template>
             </div>
@@ -337,8 +371,8 @@ onUnmounted(() => {
                     v-if="!loginData?.success"
                     text
                     severity="contrast"
-                    as="router-link"
-                    to="/admin/login"
+                    as="RouterLink"
+                    to="/user/login"
                 >
                     <LogIn></LogIn>{{ $t("navbar.login") }}
                 </Button>
@@ -346,9 +380,11 @@ onUnmounted(() => {
                     v-if="loginData?.success"
                     text
                     severity="contrast"
-                    @click="onLogOutEvent"
-                >
-                    <LogOut></LogOut>{{ $t("navbar.logout") }}
+                    @click="toggleUserMenu"
+                    aria-haspopup="true"
+                    aria-controls="userMenu"
+                    ><Avatar shape="circle"><UserRound></UserRound></Avatar
+                    >{{ loginData.data.name }}
                 </Button>
             </div>
             <div v-else class="flex items-center gap-2">
@@ -444,9 +480,9 @@ onUnmounted(() => {
                 </template>
             </Menu>
             <Menu
-                ref="adminMenu"
-                id="adminMenu"
-                :model="adminMenuItems"
+                ref="otherMenu"
+                id="otherMenu"
+                :model="otherMenuItems"
                 popup
                 class="!top-15"
                 appendTo="#navbar"
@@ -463,6 +499,46 @@ onUnmounted(() => {
                         />
                         {{ slotProps.item.label }}
                     </RouterLink>
+                </template>
+            </Menu>
+            <Menu
+                ref="userMenu"
+                id="userMenu"
+                :model="userMenuItems"
+                popup
+                class="!top-15"
+                appendTo="#navbar"
+            >
+                <template #item="{ item, props }">
+                    <RouterLink
+                        v-if="!item.separator && item.to"
+                        :to="item.to"
+                        v-bind="props.action"
+                        class="flex items-center gap-2"
+                    >
+                        <component
+                            :is="item.iconComponent"
+                            class="w-4 h-4"
+                            v-if="item.iconComponent"
+                        />
+                        <span>{{ item.label }}</span>
+                    </RouterLink>
+                    <a
+                        v-else-if="!item.separator"
+                        :href="item.url"
+                        v-bind="props.action"
+                        class="flex items-center gap-2"
+                    >
+                        <component
+                            :is="item.iconComponent"
+                            class="w-4 h-4"
+                            v-if="item.iconComponent"
+                        />
+                        <span>{{ item.label }}</span>
+                    </a>
+                    <div v-else class="my-2">
+                        <Divider />
+                    </div>
                 </template>
             </Menu>
         </div>

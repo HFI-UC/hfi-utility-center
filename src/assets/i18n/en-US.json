@@ -23,7 +23,15 @@
             "Dec"
         ],
         "weekday": {
-            "short": ["Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat.", "Sun."],
+            "short": [
+                "Mon.",
+                "Tue.",
+                "Wed.",
+                "Thu.",
+                "Fri.",
+                "Sat.",
+                "Sun."
+            ],
             "long": [
                 "Monday",
                 "Tuesday",
@@ -47,11 +55,11 @@
             "search": "Search Reservations",
             "analytic": "Reservation Analytics"
         },
-        "admin": {
-            "admin": "Admin",
+        "other": {
+            "other": "Other",
             "reservationManagement": "Reservation Management",
             "facilityManagement": "Facility Management",
-            "adminManagement": "Admin Management"
+            "userManagement": "User Management"
         },
         "login": "Login",
         "logout": "Logout",
@@ -65,15 +73,16 @@
         },
         "utiverse": "UtiVerse"
     },
-    "adminLogin": {
+    "userLogin": {
         "toast": {
+            "notLoggedIn": "You are not logged in.",
             "alreadyLoggedIn": "You are already logged in.",
-            "notLoggedIn": "You are not logged in."
+            "noPermission": "You don't have enough permission to access this page!"
         }
     },
-    "admin": {
+    "user": {
         "login": {
-            "title": "Admin Login",
+            "title": "Login",
             "form": {
                 "email": "E-mail",
                 "password": "Password",
@@ -87,8 +96,36 @@
             "humanVerification": "Let us know you're human",
             "toast": {
                 "loginSuccessful": "Login successful."
-            }
+            },
+            "register": "Register",
+            "noAccount": "Don't have an account?"
         },
+        "register": {
+            "validation": {
+                "emailInvalid": "Invalid E-mail format.",
+                "nameRequired": "Name is required.",
+                "passwordTooShort": "Password must be at least 6 characters.",
+                "passwordsDoNotMatch": "Passwords do not match."
+            },
+            "toast": {
+                "checkEmail": "An E-mail has been sent to your mailbox. Please check your inbox or spam folder.",
+                "registrationSuccessful": "Registration successful."
+            },
+            "title": "Register",
+            "humanVerification": "Let us know you're human",
+            "form": {
+                "email": "E-mail",
+                "submit": "Register",
+                "name": "Name",
+                "password": "Password",
+                "retypePassword": "Retype Password",
+                "studentId": "Student ID (Optional)"
+            },
+            "alreadyHaveAccount": "Already have an account?",
+            "login": "Login"
+        }
+    },
+    "admin": {
         "facility": {
             "title": "Facility Management",
             "room": "Rooms",
@@ -135,7 +172,7 @@
                 "weekday": "Weekdays",
                 "startTime": "Start Time",
                 "endTime": "End Time",
-                "admin": "Admin",
+                "user": "User",
                 "enabled": "Enabled"
             },
             "button": {
@@ -178,30 +215,32 @@
                 "weekdayRequired": "At least one weekday must be selected.",
                 "startTimeRequired": "Start time is required.",
                 "endTimeRequired": "End time is required.",
-                "adminRequired": "Admin is required.",
+                "userRequired": "User is required.",
                 "enabledRequired": "Enabled status is required."
             }
         },
-        "admin": {
-            "title": "Admin Management",
-            "admin": "Admins",
+        "user": {
+            "title": "User Management",
+            "user": "Users",
             "table": {
                 "id": "ID",
                 "name": "Name",
                 "email": "E-mail",
                 "password": "Password",
                 "creationTime": "Creation Time",
-                "action": "Actions"
+                "action": "Actions",
+                "role": "Role"
             },
             "dialog": {
-                "newAdmin": "New Admin",
+                "newUser": "New User",
                 "editPassword": "Edit Password",
-                "editAdmin": "Edit Admin"
+                "editUser": "Edit User"
             },
             "form": {
                 "name": "Name",
                 "email": "E-mail",
-                "password": "Password"
+                "password": "Password",
+                "role": "Role"
             },
             "button": {
                 "cancel": "Cancel",
@@ -209,21 +248,28 @@
                 "edit": "Edit"
             },
             "toast": {
-                "adminCreated": "Admin \"{name}\" has been created.",
-                "failedToCreateAdmin": "Failed to create admin.",
-                "passwordEdited": "Password for admin #{id} has been edited.",
-                "failedToEditPassword": "Failed to edit admin password.",
-                "adminEdited": "Admin #{id} has been edited.",
-                "failedToEditAdmin": "Failed to edit admin.",
-                "adminDeleted": "Admin #{id} has been deleted.",
-                "failedToDeleteAdmin": "Failed to delete admin."
+                "userCreated": "User \"{name}\" has been created.",
+                "failedToCreateUser": "Failed to create user.",
+                "passwordEdited": "Password for user #{id} has been edited.",
+                "failedToEditPassword": "Failed to edit user password.",
+                "userEdited": "User #{id} has been edited.",
+                "failedToEditUser": "Failed to edit user.",
+                "userDeleted": "User #{id} has been deleted.",
+                "failedToDeleteUser": "Failed to delete user."
             },
             "validation": {
                 "nameRequired": "Name is required.",
                 "emailInvalid": "Invalid E-mail format.",
                 "emailRequired": "Email is required.",
                 "passwordRequired": "Password is required.",
-                "passwordMinLength": "Password must be at least 6 characters."
+                "passwordMinLength": "Password must be at least 6 characters.",
+                "roleRequired": "Role is required."
+            },
+            "role": {
+                "admin": "Admin",
+                "approver": "Approver",
+                "student": "Student",
+                "teacher": "Teacher"
             }
         },
         "reservation": {
@@ -375,7 +421,6 @@
                 "termAgreement": "I agree to the {0}.",
                 "poweredBy": "Powered by {0}",
                 "termAndCondition": "Terms and Conditions"
-                
             },
             "validation": {
                 "classRequired": "Class is required.",

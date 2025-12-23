@@ -10,6 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AdminLogin: typeof import('./src/components/AdminLogin.vue')['default']
     Advertisement: typeof import('./src/components/ads/Advertisement.vue')['default']
+    Avatar: typeof import('primevue/avatar')['default']
     BlockUI: typeof import('primevue/blockui')['default']
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
@@ -22,6 +23,8 @@ declare module 'vue' {
     Dialog: typeof import('primevue/dialog')['default']
     Divider: typeof import('primevue/divider')['default']
     Fieldset: typeof import('primevue/fieldset')['default']
+    FileUpload: typeof import('primevue/fileupload')['default']
+    FileUploader: typeof import('./src/components/FileUploader.vue')['default']
     Form: typeof import('@primevue/forms/form')['default']
     IftaLabel: typeof import('primevue/iftalabel')['default']
     InputText: typeof import('primevue/inputtext')['default']
@@ -30,11 +33,13 @@ declare module 'vue' {
     Message: typeof import('primevue/message')['default']
     MultiSelect: typeof import('primevue/multiselect')['default']
     Navbar: typeof import('./src/components/Navbar.vue')['default']
+    ProgressBar: typeof import('primevue/progressbar')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Select: typeof import('primevue/select')['default']
     Tag: typeof import('primevue/tag')['default']
     Toast: typeof import('primevue/toast')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
+    UserLogin: typeof import('./src/components/UserLogin.vue')['default']
   }
 }

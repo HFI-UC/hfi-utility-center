@@ -1,3 +1,4 @@
+import COS, { type Credentials } from "cos-js-sdk-v5";
 import axios from "axios";
 
 axios.defaults.baseURL = process.env.BACKEND_URL;
@@ -8,7 +9,11 @@ axios.defaults.xsrfHeaderName = "x-csrf-token";
 axios.defaults.withXSRFToken = true;
 
 axios.interceptors.request.use(async (config) => {
-    if (["PUT", "POST", "DELETE", "PATCH"].includes(config.method?.toUpperCase() ?? "")) {
+    if (
+        ["PUT", "POST", "DELETE", "PATCH"].includes(
+            config.method?.toUpperCase() ?? ""
+        )
+    ) {
         await axios.get("/_csrf");
     }
     return config;
@@ -83,14 +88,16 @@ export interface ApiResponse<T = any> {
 export interface RoomApprover {
     id: number;
     roomId: number;
-    adminId: number;
+    userId: number;
     notificationsEnabled: boolean;
 }
 
-export interface Admin {
+export interface User {
     id: number;
     email: string;
     name: string;
+    role: string;
+    createdAt: string;
 }
 
 export interface OverviewAnalytics {
@@ -165,7 +172,7 @@ export async function getReservations(
     status: string | null = null,
     page: number = 0,
     startTime: Date | null = null,
-    endTime: Date | null = null,
+    endTime: Date | null = null
 ) {
     const response = await axios.get<
         ApiResponse<{ reservations: Reservation[]; total: number }>
@@ -192,7 +199,7 @@ function formatDate(date: Date): string {
 }
 
 export async function postCreateReservation(
-    reservation: ReservationRequestInfo,
+    reservation: ReservationRequestInfo
 ) {
     const data = {
         classId: reservation.classId,
@@ -202,11 +209,11 @@ export async function postCreateReservation(
         email: reservation.email,
         startTime:
             new Date(
-                `${formatDate(reservation.date)}T${reservation.startTime}`,
+                `${formatDate(reservation.date)}T${reservation.startTime}`
             ).getTime() / 1000,
         endTime:
             new Date(
-                `${formatDate(reservation.date)}T${reservation.endTime}`,
+                `${formatDate(reservation.date)}T${reservation.endTime}`
             ).getTime() / 1000,
         reason: reservation.reason,
     };
@@ -218,9 +225,9 @@ export async function postLogin(
     email: string | null,
     password: string | null,
     token: string | null,
-    turnstileToken: string | null,
+    turnstileToken: string | null
 ) {
-    const response = await axios.post<ApiResponse>("/admin/login", {
+    const response = await axios.post<ApiResponse>("/user/login", {
         email,
         password,
         token,
@@ -230,13 +237,13 @@ export async function postLogin(
 }
 
 export async function getCheckLogin() {
-    const response = await axios.get<ApiResponse>("/admin/check-login");
+    const response = await axios.get<ApiResponse>("/user/check-login");
     return response.data;
 }
 
 export async function getFutureReservations() {
     const response = await axios.get<ApiResponse<Reservation[]>>(
-        "/reservation/future",
+        "/reservation/future"
     );
     return response.data;
 }
@@ -244,7 +251,7 @@ export async function getFutureReservations() {
 export async function postApproveReservation(
     id: number,
     approved: boolean,
-    reason: string | null = null,
+    reason: string | null = null
 ) {
     const response = await axios.post<ApiResponse>(`/reservation/approval`, {
         id,
@@ -257,7 +264,7 @@ export async function postApproveReservation(
 export function getExportReservations(
     startTime: number | null,
     endTime: number | null,
-    mode: string = "by-room",
+    mode: string = "by-room"
 ) {
     const params: Record<string, any> = {};
     if (startTime) params.startTime = startTime;
@@ -265,7 +272,7 @@ export function getExportReservations(
     params.mode = mode;
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
     const stringParams: Record<string, string> = Object.fromEntries(
-        Object.entries(params).map(([k, v]) => [k, String(v)]),
+        Object.entries(params).map(([k, v]) => [k, String(v)])
     );
     const qs = new URLSearchParams(stringParams).toString();
     const downloadUrl = `${base}/reservation/export${qs ? `?${qs}` : ""}`;
@@ -315,7 +322,7 @@ export async function postCreatePolicy(
     room: number,
     startTime: number[],
     endTime: number[],
-    days: number[],
+    days: number[]
 ) {
     const response = await axios.post<ApiResponse>("/policy/create", {
         room,
@@ -330,7 +337,7 @@ export async function postEditPolicy(
     id: number,
     startTime: number[],
     endTime: number[],
-    days: number[],
+    days: number[]
 ) {
     const response = await axios.post<ApiResponse>("/policy/edit", {
         id,
@@ -364,7 +371,7 @@ export async function postEditRoom(
     id: number,
     name: string,
     campus: number,
-    enabled: boolean,
+    enabled: boolean
 ) {
     const response = await axios.post<ApiResponse>("/room/edit", {
         id,
@@ -384,21 +391,21 @@ export async function postEditCampus(id: number, name: string) {
 }
 
 export async function getLogOut() {
-    const response = await axios.get<ApiResponse>("/admin/logout");
+    const response = await axios.get<ApiResponse>("/user/logout");
     return response.data;
 }
 
-export async function getAdmins() {
-    const response = await axios.get<ApiResponse & { data: Admin[] }>(
-        "/admin/list",
+export async function getUsers() {
+    const response = await axios.get<ApiResponse & { data: User[] }>(
+        "/user/list"
     );
     return response.data;
 }
 
-export async function postCreateApprover(room: number, admin: number) {
+export async function postCreateApprover(room: number, userId: number) {
     const response = await axios.post<ApiResponse>("/approver/create", {
         room,
-        admin,
+        userId,
     });
     return response.data;
 }
@@ -410,77 +417,143 @@ export async function postDeleteApprover(id: number) {
     return response.data;
 }
 
-export async function postCreateAdmin(
+export async function postCreateUser(
     name: string,
     email: string,
     password: string,
+    role: string | null = null
 ) {
-    const response = await axios.post<ApiResponse>("/admin/create", {
+    const response = await axios.post<ApiResponse>("/user/create", {
         name,
         email,
         password,
+        role
     });
     return response.data;
 }
 
-export async function postEditAdminPassword(
-    admin: number,
-    newPassword: string,
-) {
+export async function postAdminEditUserPassword(user: number, newPassword: string) {
     const response = await axios.post<ApiResponse>("/admin/edit-password", {
-        admin,
+        user,
         newPassword,
     });
     return response.data;
 }
 
-export async function postDeleteAdmin(id: number) {
-    const response = await axios.post<ApiResponse>("/admin/delete", { id });
+export async function postDeleteUser(id: number) {
+    const response = await axios.post<ApiResponse>("/user/delete", { id });
     return response.data;
 }
 
 export async function getOverviewAnalytics() {
     const response = await axios.get<ApiResponse<OverviewAnalytics>>(
-        "/reservations/analytics/overview",
+        "/reservation/analytics/overview"
     );
     return response.data;
 }
 
 export async function getWeeklyAnalytics() {
-    const response =
-        await axios.get<ApiResponse<WeeklyAnalytics>>("/reservations/analytics/weekly");
+    const response = await axios.get<ApiResponse<WeeklyAnalytics>>(
+        "/reservation/analytics/weekly"
+    );
     return response.data;
 }
 
-export async function postEditAdmin(id: number, name: string, email: string) {
-    const response = await axios.post<ApiResponse>("/admin/edit", {
+export async function postEditUser(id: number, name: string, email: string, role: string) {
+    const response = await axios.post<ApiResponse>("/user/edit", {
         id,
         name,
         email,
+        role
     });
     return response.data;
 }
 
 export async function getExportOverviewReservationsAnalytics(
     type: string,
-    turnstileToken: string,
+    turnstileToken: string
 ) {
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
-    window.location.href = `${base}/reservations/analytics/overview/export?type=${type}&turnstileToken=${turnstileToken}`;
+    window.location.href = `${base}/reservation/analytics/overview/export?type=${type}&turnstileToken=${turnstileToken}`;
 }
 
 export async function getExportWeeklyReservationsAnalytics(
     type: string,
-    turnstileToken: string,
+    turnstileToken: string
 ) {
     const base = (axios.defaults.baseURL || "").replace(/\/$/, "");
-    window.location.href = `${base}/reservations/analytics/weekly/export?type=${type}&turnstileToken=${turnstileToken}`;
+    window.location.href = `${base}/reservation/analytics/weekly/export?type=${type}&turnstileToken=${turnstileToken}`;
 }
 
 export async function postToggleApproverNotificationsEnabled(id: number) {
     const response = await axios.post<ApiResponse>(
         "/approver/toggle-notification",
-        { id },
+        { id }
     );
     return response.data;
+}
+
+export async function postPreRegister(data: {
+    email: string;
+    turnstileToken: string | null;
+}) {
+    const response = await axios.post<ApiResponse>("/user/pre-register", data);
+    return response.data;
+}
+
+export async function postRegister(name: string, password: string, studentId: string | null, token: string) {
+    const response = await axios.post<ApiResponse>("/user/register", { name, password, studentId, token });
+    return response.data;
+}
+
+export async function uploadCOS(
+    file: File
+): Promise<{ success: boolean; data: any }> {
+    const credential = (
+        await axios.get<
+            ApiResponse<
+                Credentials & {
+                    Token: string;
+                    Key: string;
+                    Bucket: string;
+                    Region: string;
+                }
+            >
+        >("/cos/credentials", {
+            params: { ext: `.${file.name.split(".").pop()}` },
+        })
+    ).data.data;
+    const cos = new COS({
+        getAuthorization: async (_, callback) => {
+            callback({
+                ...credential,
+                SecurityToken: credential.Token,
+            });
+        },
+    });
+    return new Promise(async (resolve) => {
+        cos.uploadFile(
+            {
+                Bucket: credential.Bucket,
+                Region: credential.Region,
+                Key: credential.Key,
+                Body: await file.arrayBuffer(),
+                ContentType: file.type,
+            },
+            (err) => {
+                if (err) {
+                    resolve({
+                        success: false,
+                        data: null,
+                    });
+                    console.log(err);
+                } else {
+                    resolve({
+                        success: true,
+                        data: credential.Key,
+                    });
+                }
+            }
+        );
+    });
 }
