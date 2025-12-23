@@ -23,7 +23,15 @@
             "12 月"
         ],
         "weekday": {
-            "short": ["一", "二", "三", "四", "五", "六", "日"],
+            "short": [
+                "一",
+                "二",
+                "三",
+                "四",
+                "五",
+                "六",
+                "日"
+            ],
             "long": [
                 "星期一",
                 "星期二",
@@ -47,11 +55,11 @@
             "search": "查找预约",
             "analytic": "预约统计数据"
         },
-        "admin": {
-            "admin": "管理员功能",
-            "reservationManagement": "预约管理",
-            "facilityManagement": "设施管理",
-            "adminManagement": "管理员管理"
+        "other": {
+            "other": "Other",
+            "reservationManagement": "Reservation Management",
+            "facilityManagement": "Facility Management",
+            "userManagement": "User Management"
         },
         "login": "登录",
         "logout": "登出",
@@ -65,30 +73,59 @@
         },
         "utiverse": "UtiVerse"
     },
-    "adminLogin": {
+    "userLogin": {
         "toast": {
-            "alreadyLoggedIn": "你已登录。",
-            "notLoggedIn": "你还没有登录。"
+            "notLoggedIn": "You are not logged in.",
+            "alreadyLoggedIn": "You are already logged in.",
+            "noPermission": "You don't have enough permission to access this page!"
         }
     },
-    "admin": {
+    "user": {
         "login": {
-            "title": "管理员登录",
+            "title": "Login",
             "form": {
-                "email": "邮箱",
-                "password": "密码",
-                "submit": "登录"
+                "email": "E-mail",
+                "password": "Password",
+                "submit": "Login"
             },
             "validation": {
                 "emailInvalid": "Invalid E-mail format.",
-                "emailRequired": "请输入邮箱。",
-                "passwordRequired": "请输入密码。"
+                "emailRequired": "E-mail is required.",
+                "passwordRequired": "Password is required."
             },
-            "humanVerification": "告诉我们你是人类",
+            "humanVerification": "Let us know you're human",
             "toast": {
-                "loginSuccessful": "登录成功。"
-            }
+                "loginSuccessful": "Login successful."
+            },
+            "register": "Register",
+            "noAccount": "Don't have an account?"
         },
+        "register": {
+            "validation": {
+                "emailInvalid": "Invalid E-mail format.",
+                "nameRequired": "Name is required.",
+                "passwordTooShort": "Password must be at least 6 characters.",
+                "passwordsDoNotMatch": "Passwords do not match."
+            },
+            "toast": {
+                "checkEmail": "An E-mail has been sent to your mailbox. Please check your inbox or spam folder.",
+                "registrationSuccessful": "Registration successful."
+            },
+            "title": "Register",
+            "humanVerification": "Let us know you're human",
+            "form": {
+                "email": "E-mail",
+                "submit": "Register",
+                "name": "Name",
+                "password": "Password",
+                "retypePassword": "Retype Password",
+                "studentId": "Student ID (Optional)"
+            },
+            "alreadyHaveAccount": "Already have an account?",
+            "login": "Login"
+        }
+    },
+    "admin": {
         "facility": {
             "title": "设施管理",
             "room": "教室",
@@ -135,7 +172,7 @@
                 "weekday": "工作日",
                 "startTime": "开始时间",
                 "endTime": "结束时间",
-                "admin": "管理员",
+                "user": "User",
                 "enabled": "启用"
             },
             "button": {
@@ -178,52 +215,61 @@
                 "weekdayRequired": "请至少选择一个工作日。",
                 "startTimeRequired": "请填写开始时间。",
                 "endTimeRequired": "请填写结束时间。",
-                "adminRequired": "请选择一个管理员。",
+                "userRequired": "User is required.",
                 "enabledRequired": "请选择启用状态。"
             }
         },
-        "admin": {
-            "title": "管理员管理",
-            "admin": "管理员",
+        "user": {
+            "title": "User Management",
+            "user": "Users",
             "table": {
                 "id": "ID",
-                "name": "姓名",
-                "email": "邮箱",
-                "password": "密码",
-                "creationTime": "创建时间",
-                "action": "操作"
+                "name": "Name",
+                "email": "E-mail",
+                "password": "Password",
+                "creationTime": "Creation Time",
+                "action": "Actions",
+                "role": "Role"
             },
             "dialog": {
-                "newAdmin": "新增管理员",
-                "editPassword": "修改密码",
-                "editAdmin": "编辑管理员"
+                "newUser": "New User",
+                "editPassword": "Edit Password",
+                "editUser": "Edit User"
             },
             "form": {
-                "name": "姓名",
-                "email": "邮箱",
-                "password": "密码"
+                "name": "Name",
+                "email": "E-mail",
+                "password": "Password",
+                "role": "Role"
             },
             "button": {
-                "cancel": "取消",
-                "create": "创建",
-                "edit": "编辑"
+                "cancel": "Cancel",
+                "create": "Create",
+                "edit": "Edit"
             },
             "toast": {
-                "adminCreated": "管理员 \"{name}\" 创建成功。",
-                "failedToCreateAdmin": "无法创建管理员。",
-                "passwordEdited": "已成功修改管理员 #{id} 的密码。",
-                "failedToEditPassword": "无法修改管理员密码。",
-                "adminEdited": "已成功编辑管理员 #{id}。",
-                "failedToEditAdmin": "无法编辑管理员。",
-                "adminDeleted": "已成功删除管理员 #{id}。",
-                "failedToDeleteAdmin": "无法删除管理员。"
+                "userCreated": "User \"{name}\" has been created.",
+                "failedToCreateUser": "Failed to create user.",
+                "passwordEdited": "Password for user #{id} has been edited.",
+                "failedToEditPassword": "Failed to edit user password.",
+                "userEdited": "User #{id} has been edited.",
+                "failedToEditUser": "Failed to edit user.",
+                "userDeleted": "User #{id} has been deleted.",
+                "failedToDeleteUser": "Failed to delete user."
             },
             "validation": {
-                "nameRequired": "请输入姓名。",
-                "emailInvalid": "无效的邮箱格式。",
-                "emailRequired": "请输入邮箱。",
-                "passwordRequired": "请输入密码。",
-                "passwordMinLength": "密码必须至少 6 个字符。"
+                "nameRequired": "Name is required.",
+                "emailInvalid": "Invalid E-mail format.",
+                "emailRequired": "Email is required.",
+                "passwordRequired": "Password is required.",
+                "passwordMinLength": "Password must be at least 6 characters.",
+                "roleRequired": "Role is required."
+            },
+            "role": {
+                "admin": "Admin",
+                "approver": "Approver",
+                "student": "Student",
+                "teacher": "Teacher"
             }
         },
         "reservation": {
