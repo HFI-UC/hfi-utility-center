@@ -23,15 +23,15 @@
             "Dec"
         ],
         "weekday": {
-            "short": ["Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat.", "Sun."],
+            "short": ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."],
             "long": [
+                "Sunday",
                 "Monday",
                 "Tuesday",
                 "Wednesday",
                 "Thursday",
                 "Friday",
-                "Saturday",
-                "Sunday"
+                "Saturday"
             ]
         },
         "success": "Success",
