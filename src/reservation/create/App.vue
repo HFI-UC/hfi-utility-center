@@ -368,12 +368,11 @@ const reservationsFetchLoading = ref(false);
 const fetchReservations = async (selectedRoom: FormFieldState) => {
     reservationsFetchLoading.value = true;
     reservations.value = (
-        await getReservations(null, selectedRoom.value)
+        await getReservations(null, selectedRoom.value, null, 0, new Date())
     ).data.reservations
         .filter(
             (reservation: Reservation) =>
-                reservation.status != "rejected" &&
-                new Date(reservation.startTime) >= new Date()
+                reservation.status != "rejected"
         )
         .sort(
             (a: Reservation, b: Reservation) =>
