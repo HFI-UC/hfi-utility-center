@@ -24,7 +24,6 @@ const { data: overviewAnalyticsData } = useRequest(getOverviewAnalytics, {
 });
 const turnstileSiteKey = process.env.CLOUDFLARE_KEY || "";
 const turnstileToken = ref("");
-const turnstileRef = ref();
 const overviewAnalytics = computed<OverviewAnalytics | null>(
     () => overviewAnalyticsData.value?.data || null,
 );
@@ -707,7 +706,6 @@ const onExportWeekly = async (type: string) => {
         <VueTurnstile
             v-model="turnstileToken"
             :siteKey="turnstileSiteKey"
-            ref="turnstileRef"
             class="flex justify-center my-4"
         ></VueTurnstile>
         <Button
