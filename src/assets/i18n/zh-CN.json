@@ -44,7 +44,8 @@
         },
         "success": "成功",
         "error": "错误",
-        "fillInAllFields": "请填写所有必填的字段。"
+        "fillInAllFields": "请填写所有必填的字段。",
+        "confirm": "Confirm"
     },
     "navbar": {
         "title": "HFI Utility Center",
@@ -59,7 +60,9 @@
             "other": "Other",
             "reservationManagement": "Reservation Management",
             "facilityManagement": "Facility Management",
-            "userManagement": "User Management"
+            "userManagement": "User Management",
+            "advertisement": "UtiBoost",
+            "adsManagement": "Ads Management"
         },
         "login": "登录",
         "logout": "登出",
@@ -274,8 +277,8 @@
         },
         "reservation": {
             "title": "预约管理",
-            "futureReservation": "未来的预约",
-            "noFutureReservation": "无可用未来的预约。",
+            "upcomingReservation": "Upcoming Reservations",
+            "noUpcomingReservation": "No upcoming reservations found.",
             "allReservation": "所有预约",
             "noAllReservation": "没有可用的预约。",
             "export": "导出（.xlsx）",
@@ -546,5 +549,10 @@
             "subDescription": "Built on campus authentication, UtiCloud includes guided sharing controls, expiring links, group folders for classes or teams, and encryption for sensitive data. Accessible via web and mobile to keep coursework and collaboration in one reliable place."
         },
         "go": "前往"
+    },
+    "ads": {
+        "create": {
+            "title": "New Advertisement"
+        }
     }
 }
