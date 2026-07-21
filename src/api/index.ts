@@ -1,5 +1,6 @@
 import COS, { type Credentials } from "cos-js-sdk-v5";
 import axios from "axios";
+import type { Delta } from "quill";
 
 axios.defaults.baseURL = process.env.BACKEND_URL;
 axios.defaults.withCredentials = true;
@@ -18,6 +19,9 @@ axios.interceptors.request.use(async (config) => {
     }
     return config;
 });
+
+export type ReservationStatus = "pending" | "approved" | "rejected";
+
 export interface ReservationRequestInfo {
     classId: number;
     studentName: string;
@@ -29,7 +33,6 @@ export interface ReservationRequestInfo {
     endTime: string;
     reason: string;
     campus: string;
-    isAgreed: boolean;
 }
 
 export interface Reservation {
@@ -44,7 +47,7 @@ export interface Reservation {
     createdAt?: string;
     campusName?: string;
     latestExecutor?: string;
-    status?: "pending" | "approved" | "rejected";
+    status?: ReservationStatus;
 }
 
 export interface RoomPolicy {
@@ -79,7 +82,7 @@ export interface Campus {
     isPrivileged: boolean;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
     data: T;
     message: string | null;
     success: boolean;
@@ -98,6 +101,41 @@ export interface User {
     name: string;
     role: string;
     createdAt: string;
+    balance?: number;
+}
+
+
+export interface Advertisement {
+    id: number;
+    title: string;
+    content: Delta;
+    images: string[];
+    link: string | null;
+    durationDays: number;
+    createdAt: string;
+    expiresAt: string;
+    rejectionReason: string | null;
+    status: "active" | "expired" | "pending" | "rejected" | "payment-pending";
+}
+
+export interface AdsPricingConfig {
+    id: number;
+    pricePerDay: number;
+    minDuration: number;
+    maxDuration: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface AdsPricingDiscount {
+    id: number;
+    discountPercentage: number;
+    startDate: string;
+    endDate: string;
+    description: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface OverviewAnalytics {
@@ -149,15 +187,12 @@ export interface WeeklyAnalytics {
 }
 
 export async function getCampuses() {
-    const response = await axios.get<ApiResponse>("/campus/list");
+    const response = await axios.get<ApiResponse<Campus[]>>("/campus/list");
     return response.data;
 }
 
 export async function getRooms() {
-    const response = await axios.get<{
-        success: boolean;
-        data: Room[];
-    }>("/room/list");
+    const response = await axios.get<ApiResponse<Room[]>>("/room/list");
     return response.data;
 }
 
@@ -169,7 +204,7 @@ export async function getClasses() {
 export async function getReservations(
     keyword: string | null = null,
     roomId: number | null = null,
-    status: string | null = null,
+    status: ReservationStatus | null = null,
     page: number = 0,
     startTime: Date | null = null,
     endTime: Date | null = null
@@ -227,7 +262,9 @@ export async function postLogin(
     token: string | null,
     turnstileToken: string | null
 ) {
-    const response = await axios.post<ApiResponse>("/user/login", {
+    const response = await axios.post<
+        ApiResponse<{ token: string; user: User } | null>
+    >("/user/login", {
         email,
         password,
         token,
@@ -237,13 +274,13 @@ export async function postLogin(
 }
 
 export async function getCheckLogin() {
-    const response = await axios.get<ApiResponse>("/user/check-login");
+    const response = await axios.get<ApiResponse<User>>("/user/check-login");
     return response.data;
 }
 
-export async function getFutureReservations() {
+export async function getUpcomingReservations() {
     const response = await axios.get<ApiResponse<Reservation[]>>(
-        "/reservation/future"
+        "/reservation/upcoming"
     );
     return response.data;
 }
@@ -396,9 +433,7 @@ export async function getLogOut() {
 }
 
 export async function getUsers() {
-    const response = await axios.get<ApiResponse & { data: User[] }>(
-        "/user/list"
-    );
+    const response = await axios.get<ApiResponse<User[]>>("/user/list");
     return response.data;
 }
 
@@ -427,13 +462,16 @@ export async function postCreateUser(
         name,
         email,
         password,
-        role
+        role,
     });
     return response.data;
 }
 
-export async function postAdminEditUserPassword(user: number, newPassword: string) {
-    const response = await axios.post<ApiResponse>("/admin/edit-password", {
+export async function postAdminEditUserPassword(
+    user: number,
+    newPassword: string
+) {
+    const response = await axios.post<ApiResponse>("/user/edit-password", {
         user,
         newPassword,
     });
@@ -459,12 +497,17 @@ export async function getWeeklyAnalytics() {
     return response.data;
 }
 
-export async function postEditUser(id: number, name: string, email: string, role: string) {
+export async function postEditUser(
+    id: number,
+    name: string,
+    email: string,
+    role: string
+) {
     const response = await axios.post<ApiResponse>("/user/edit", {
         id,
         name,
         email,
-        role
+        role,
     });
     return response.data;
 }
@@ -501,28 +544,73 @@ export async function postPreRegister(data: {
     return response.data;
 }
 
-export async function postRegister(name: string, password: string, studentId: string | null, token: string) {
-    const response = await axios.post<ApiResponse>("/user/register", { name, password, studentId, token });
+export async function postRegister(
+    name: string,
+    password: string,
+    studentId: string | null,
+    token: string
+) {
+    const response = await axios.post<ApiResponse>("/user/register", {
+        name,
+        password,
+        studentId,
+        token,
+    });
     return response.data;
 }
 
-export async function uploadCOS(
-    file: File
-): Promise<{ success: boolean; data: any }> {
-    const credential = (
-        await axios.get<
-            ApiResponse<
-                Credentials & {
-                    Token: string;
-                    Key: string;
-                    Bucket: string;
-                    Region: string;
-                }
-            >
-        >("/cos/credentials", {
-            params: { ext: `.${file.name.split(".").pop()}` },
-        })
-    ).data.data;
+export async function getAdvertisementPrice(durationDays: number) {
+    const response = await axios.get<
+        ApiResponse<{ originalPrice: number; finalPrice: number }>
+    >("/ads/price", { params: { durationDays } });
+    return response.data;
+}
+
+export async function postCreateAdvertisement(
+    title: string,
+    images: string[],
+    content: Delta,
+    link: string | null,
+    durationDays: number
+) {
+    const response = await axios.post<ApiResponse>("/ads/create", {
+        title,
+        images,
+        content: content,
+        link,
+        durationDays,
+    });
+    return response.data;
+}
+
+export async function getUserAdvertisements() {
+    const response = await axios.get<ApiResponse<Advertisement[]>>(
+        "/ads/me"
+    );
+    return response.data;
+}
+
+export async function getAllAdvertisements() {
+    const response = await axios.get<ApiResponse<Advertisement[]>>(
+        "/ads/all"
+    );
+    return response.data;
+}
+
+export async function uploadCOS(file: File) {
+    const credential_res = await axios.get<
+        ApiResponse<
+            Credentials & {
+                Token: string;
+                Key: string;
+                Bucket: string;
+                Region: string;
+            }
+        >
+    >("/cos/credentials", {
+        params: { ext: `.${file.name.split(".").pop()}` },
+    });
+    const credential = credential_res.data.data;
     const cos = new COS({
         getAuthorization: async (_, callback) => {
             callback({
@@ -531,29 +619,142 @@ export async function uploadCOS(
             });
         },
     });
-    return new Promise(async (resolve) => {
-        cos.uploadFile(
-            {
-                Bucket: credential.Bucket,
-                Region: credential.Region,
-                Key: credential.Key,
-                Body: await file.arrayBuffer(),
-                ContentType: file.type,
-            },
-            (err) => {
-                if (err) {
-                    resolve({
-                        success: false,
-                        data: null,
-                    });
-                    console.log(err);
-                } else {
-                    resolve({
-                        success: true,
-                        data: credential.Key,
-                    });
+    return new Promise<{ success: boolean; data: string | null }>(
+        async (resolve) => {
+            cos.uploadFile(
+                {
+                    Bucket: credential.Bucket,
+                    Region: credential.Region,
+                    Key: credential.Key,
+                    Body: await file.arrayBuffer(),
+                    ContentType: file.type,
+                },
+                (err) => {
+                    if (err) {
+                        resolve({
+                            success: false,
+                            data: null,
+                        });
+                        console.log(err);
+                    } else {
+                        resolve({
+                            success: true,
+                            data: credential.Key,
+                        });
+                    }
                 }
-            }
-        );
+            );
+        }
+    );
+}
+
+export async function postAdsApprovalUpdate(
+    id: number,
+    approved: boolean,
+    rejectionReason: string | null = null
+) {
+    const response = await axios.post<ApiResponse>("/ads/approval", {
+        id,
+        approved,
+        rejectionReason,
     });
+    return response.data;
+}
+
+export async function getRandomAdvertisements(count: number = 1) {
+    const response = await axios.get<ApiResponse<Advertisement[]>>(
+        "/ads/random",
+        { params: { count } }
+    );
+    return response.data;
+}
+
+export async function getAdvertisement(id: number) {
+    const response = await axios.get<ApiResponse<Advertisement>>(
+        `/ads/${id}`
+    );
+    return response.data;
+}
+
+export async function postEditAdvertisement(
+    id: number,
+    title: string,
+    images: string[],
+    content: Delta,
+    link: string | null,
+    durationDays: number
+) {
+    const response = await axios.post<ApiResponse>(`/ads/${id}/edit`, {
+        title,
+        images,
+        content,
+        link,
+        durationDays,
+    });
+    return response.data;
+}
+
+export async function getAdsPricingConfig() {
+    const response = await axios.get<ApiResponse<AdsPricingConfig>>(
+        "/ads/pricing/config"
+    );
+    return response.data;
+}
+
+export async function postUpdateAdsPricingConfig(
+    pricePerDay: number,
+    minDuration: number,
+    maxDuration: number
+) {
+    const response = await axios.post<ApiResponse>("/ads/pricing/config", {
+        pricePerDay,
+        minDuration,
+        maxDuration,
+    });
+    return response.data;
+}
+
+export async function getAdsPricingDiscounts() {
+    const response = await axios.get<ApiResponse<AdsPricingDiscount[]>>(
+        "/ads/pricing/discounts"
+    );
+    return response.data;
+}
+
+export async function postCreateAdsPricingDiscount(
+    discountPercentage: number,
+    startDate: Date,
+    endDate: Date,
+    description: string
+) {
+    const response = await axios.post<ApiResponse>("/ads/pricing/discounts/create", {
+        discountPercentage,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        description,
+    });
+    return response.data;
+}
+
+export async function postUpdateAdsPricingDiscount(
+    id: number,
+    discountPercentage: number,
+    startDate: Date,
+    endDate: Date,
+    description: string,
+    isActive: boolean
+) {
+    const response = await axios.post<ApiResponse>(`/ads/pricing/discounts/${id}/update`, {
+        discountPercentage,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        description,
+        isActive,
+    });
+    return response.data;
+}
+
+export async function postDeleteAdsPricingDiscount(id: number) {
+    const response = await axios.post<ApiResponse>(`/ads/pricing/discounts/${id}/delete`);
+    return response.data;
 }

@@ -724,7 +724,7 @@ const onExportWeekly = async (type: string) => {
         :header="$t('reservation.analytic.dialog.humanVerification.title')"
         :closable="false"
         v-model:visible="turnstileVisible"
-        class="w-[23rem]"
+        class="w-92"
         modal
     >
         <p class="text-center text-sm mt-3">
@@ -745,7 +745,7 @@ const onExportWeekly = async (type: string) => {
             }}</Button
         >
     </Dialog>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
+    <div class="mt-24 mb-4 md:mx-12 2xl:mx-32 mx-4">
         <h1 class="font-bold md:text-3xl text-2xl my-4">
             {{ $t("reservation.analytic.title") }}
         </h1>

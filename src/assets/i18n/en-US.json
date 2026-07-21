@@ -44,7 +44,8 @@
         },
         "success": "Success",
         "error": "Error",
-        "fillInAllFields": "Please fill in all required fields."
+        "fillInAllFields": "Please fill in all required fields.",
+        "confirm": "Confirm"
     },
     "navbar": {
         "title": "HFI Utility Center",
@@ -59,7 +60,9 @@
             "other": "Other",
             "reservationManagement": "Reservation Management",
             "facilityManagement": "Facility Management",
-            "userManagement": "User Management"
+            "userManagement": "User Management",
+            "advertisement": "UtiBoost",
+            "adsManagement": "Ads Management"
         },
         "login": "Login",
         "logout": "Logout",
@@ -274,8 +277,8 @@
         },
         "reservation": {
             "title": "Reservation Management",
-            "futureReservation": "Future Reservations",
-            "noFutureReservation": "No future reservations found.",
+            "upcomingReservation": "Upcoming Reservations",
+            "noUpcomingReservation": "No upcoming reservations found.",
             "allReservation": "All Reservations",
             "noAllReservation": "No available reservations.",
             "export": "Export (.xlsx)",
@@ -546,5 +549,10 @@
             "subDescription": "Built on campus authentication, UtiCloud includes guided sharing controls, expiring links, group folders for classes or teams, and encryption for sensitive data. Accessible via web and mobile to keep coursework and collaboration in one reliable place."
         },
         "go": "Go"
+    },
+    "ads": {
+        "create": {
+            "title": "New Advertisement"
+        }
     }
 }

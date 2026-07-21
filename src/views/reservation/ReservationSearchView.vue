@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useRequest } from "vue-request";
-import { getRooms, getReservations } from "@/api";
+import { getRooms, getReservations, type ReservationStatus } from "@/api";
 import { computed } from "vue";
 import { SquareArrowOutUpRight } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
+import AdCarousel from "@/components/AdCarousel.vue";
 
 const route = useRoute();
 const { t } = useI18n();
@@ -107,7 +108,7 @@ const { data: reservations, loading: reservationsLoading } = useRequest(
         getReservations(
             requestParams.value.keyword,
             requestParams.value.room,
-            requestParams.value.status,
+            requestParams.value.status as ReservationStatus | null,
             requestParams.value.page,
             requestParams.value.startTime,
             requestParams.value.endTime,
@@ -143,7 +144,7 @@ const severityMapping: Record<string, string> = {
 };
 </script>
 <template>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
+    <div class="mt-24 mb-4 md:mx-12 2xl:mx-32 mx-4">
         <h1 class="font-bold md:text-3xl text-2xl my-4">
             {{ $t("reservation.search.title") }}
         </h1>
@@ -220,7 +221,7 @@ const severityMapping: Record<string, string> = {
                                                         slotProps.value,
                                                     )?.severity
                                                 "
-                                                class="h-5 !text-xs"
+                                                class="h-5 text-xs!"
                                             ></Tag>
                                         </div>
                                     </template>
@@ -231,7 +232,7 @@ const severityMapping: Record<string, string> = {
                                                 :severity="
                                                     slotProps.option.severity
                                                 "
-                                                class="h-5 !text-xs"
+                                                class="h-5 text-xs!"
                                             ></Tag>
                                         </div>
                                     </template>
@@ -337,5 +338,9 @@ const severityMapping: Record<string, string> = {
                 </DataTable>
             </template>
         </Card>
+        <div class="w-full mt-8">
+            <h3 class="font-bold text-lg mb-4">Featured Advertisements</h3>
+            <AdCarousel :count="2" />
+        </div>
     </div>
 </template>

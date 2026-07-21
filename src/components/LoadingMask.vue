@@ -54,7 +54,7 @@ onMounted(() => {
 <template>
     <div
         v-if="isLoading"
-        class="fixed inset-0 z-[9999] flex items-center justify-center pointer-events-auto"
+        class="fixed inset-0 z-9999 flex items-center justify-center pointer-events-auto"
     >
         <div
             :class="{
@@ -63,14 +63,14 @@ onMounted(() => {
                 'opacity-0': isFading,
                 'opacity-100': !isFading,
             }"
-            class="z-[9998] absolute inset-0 bg-gradient-to-br from-red-800 from-10% via-indigo-500 via-50% to-violet-400 to-70% animate-gradient bg-[length:400%_400%] transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] rounded-[50%] aspect-square left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2"
+            class="z-9998 absolute inset-0 bg-linear-to-br from-red-800 from-10% via-indigo-500 via-50% to-violet-400 to-70% animate-gradient bg-size-[400%_400%] transition-all duration-500 ease-in-out rounded-[50%] aspect-square left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2"
         ></div>
         <div
             :class="{
                 'scale-0 -translate-y-full opacity-0': logoExiting,
                 'scale-100 translate-y-0 opacity-100': !logoExiting,
             }"
-            class="absolute z-[9999] w-40 h-40 border-zinc-200 bg-white border-1 shadow-lg rounded-[35px] pointer-events-none transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex items-center justify-center"
+            class="absolute z-9999 w-40 h-40 border-zinc-200 bg-white border shadow-lg rounded-[35px] pointer-events-none transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex items-center justify-center"
         >
             <canvas
                 id="logo-canvas"

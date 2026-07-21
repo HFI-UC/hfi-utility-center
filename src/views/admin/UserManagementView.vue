@@ -15,7 +15,7 @@ import type { FormSubmitEvent } from "@primevue/forms";
 import { useToast } from "primevue";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import UserLogin from "@/components/UserLogin.vue";
+import { useAuthGuard } from "@/utils/authGuard";
 import Tag from "primevue/tag";
 
 const { t } = useI18n();
@@ -24,6 +24,8 @@ const {
     run: fetchUsers,
     loading: usersLoading,
 } = useRequest(getUsers);
+
+useAuthGuard({ requireLogin: true, requiredRole: ["admin", "system"] });
 
 const formatTime = (date: Date): string => {
     const year = date.getFullYear();
@@ -247,14 +249,13 @@ const deleteUser = async (id: number) => {
 };
 </script>
 <template>
-    <UserLogin requireLogin requiredRole="admin"></UserLogin>
     <BlockUI :blocked="loading" fullScreen></BlockUI>
     <Dialog
         :header="$t('admin.user.dialog.newUser')"
         modal
         v-model:visible="newUserVisible"
         :closable="false"
-        class="w-[23rem] mx-2"
+        class="w-92 mx-2"
     >
         <Form
             :initialValues="newUserInitialValues"
@@ -333,7 +334,7 @@ const deleteUser = async (id: number) => {
         modal
         v-model:visible="editUserPasswordVisible"
         :closable="false"
-        class="w-[23rem] mx-2"
+        class="w-92 mx-2"
     >
         <Form
             :initialValues="editUserPasswordInitialValues"
@@ -375,7 +376,7 @@ const deleteUser = async (id: number) => {
         modal
         v-model:visible="editUserVisible"
         :closable="false"
-        class="w-[23rem] mx-2"
+        class="w-92 mx-2"
     >
         <Form
             :initialValues="editUserInitialValues"
@@ -437,7 +438,7 @@ const deleteUser = async (id: number) => {
             </div>
         </Form>
     </Dialog>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
+    <div class="mt-24 mb-4 md:mx-12 2xl:mx-32 mx-4">
         <h1 class="font-bold text-3xl my-4">
             {{ $t("admin.user.title") }}
         </h1>

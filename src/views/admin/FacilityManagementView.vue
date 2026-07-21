@@ -45,7 +45,7 @@ import {
     BellOff,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
-import AdminLogin from "@/components/UserLogin.vue";
+import { useAuthGuard } from "@/utils/authGuard";
 
 const formatTime = (date: Date): string => {
     const year = date.getFullYear();
@@ -58,6 +58,8 @@ const formatTime = (date: Date): string => {
 };
 
 const { t, tm } = useI18n();
+
+useAuthGuard({ requireLogin: true, requiredRole: ["admin", "system"] });
 const toast = useToast();
 const {
     data: rooms,
@@ -762,14 +764,14 @@ const deleteApprover = async (id: number) => {
 </script>
 
 <template>
-    <AdminLogin requireLogin requiredRole="admin"></AdminLogin>
+    <AdminLogin requireLogin :requiredRole="['admin', 'system']"></AdminLogin>
     <BlockUI :blocked="loading" fullScreen></BlockUI>
     <Dialog
         :header="$t('admin.facility.dialog.newCampus')"
         modal
         v-model:visible="newCampusVisible"
         :closable="false"
-        class="w-[23rem] mx-2"
+        class="w-92 mx-2"
     >
         <Form
             :initialValues="newCampusInitialValues"
@@ -809,7 +811,7 @@ const deleteApprover = async (id: number) => {
         modal
         v-model:visible="newRoomVisible"
         :closable="false"
-        class="w-[23rem] mx-2"
+        class="w-92 mx-2"
     >
         <Form
             :initialValues="newRoomInitialValues"
@@ -863,7 +865,7 @@ const deleteApprover = async (id: number) => {
         modal
         v-model:visible="newClassVisible"
         :closable="false"
-        class="w-[23rem] mx-2"
+        class="w-92 mx-2"
     >
         <Form
             :initialValues="newClassInitialValues"
@@ -917,7 +919,7 @@ const deleteApprover = async (id: number) => {
         v-model:visible="policyViewVisible"
         modal
         maximizable
-        class="xl:w-[50rem] w-[calc(100%-2rem)]"
+        class="xl:w-200 w-[calc(100%-2rem)]"
     >
         <DataTable
             :loading="roomsLoading"
@@ -1016,7 +1018,7 @@ const deleteApprover = async (id: number) => {
         modal
         v-model:visible="newApproverVisible"
         :closable="false"
-        class="w-[23rem] mx-2"
+        class="w-92 mx-2"
     >
         <Form
             :initialValues="newApproverInitialValues"
@@ -1091,7 +1093,7 @@ const deleteApprover = async (id: number) => {
         v-model:visible="approverViewVisible"
         modal
         maximizable
-        class="md:w-[35rem] w-[calc(100%-2rem)]"
+        class="md:w-140 w-[calc(100%-2rem)]"
     >
         <DataTable
             :loading="roomsLoading"
@@ -1167,7 +1169,7 @@ const deleteApprover = async (id: number) => {
     </Dialog>
     <Dialog
         :header="$t('admin.facility.dialog.newPolicy')"
-        class="w-[23rem]"
+        class="w-92"
         v-model:visible="newPolicyVisible"
         modal
         :closable="false"
@@ -1236,7 +1238,7 @@ const deleteApprover = async (id: number) => {
     </Dialog>
     <Dialog
         :header="$t('admin.facility.dialog.editPolicy')"
-        class="w-[23rem]"
+        class="w-92"
         v-model:visible="editPolicyVisible"
         modal
         :closable="false"
@@ -1308,7 +1310,7 @@ const deleteApprover = async (id: number) => {
         modal
         v-model:visible="editClassVisible"
         :closable="false"
-        class="w-[23rem] mx-2"
+        class="w-92 mx-2"
     >
         <Form
             :initialValues="editClassInitialValues"
@@ -1362,7 +1364,7 @@ const deleteApprover = async (id: number) => {
         modal
         v-model:visible="editRoomVisible"
         :closable="false"
-        class="w-[23rem] mx-2"
+        class="w-92 mx-2"
     >
         <Form
             :initialValues="editRoomInitialValues"
@@ -1426,7 +1428,7 @@ const deleteApprover = async (id: number) => {
         modal
         v-model:visible="editCampusVisible"
         :closable="false"
-        class="w-[23rem] mx-2"
+        class="w-92 mx-2"
     >
         <Form
             :initialValues="editCampusInitialValues"
@@ -1461,7 +1463,7 @@ const deleteApprover = async (id: number) => {
             </div>
         </Form>
     </Dialog>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
+    <div class="mt-24 mb-4 md:mx-12 2xl:mx-32 mx-4">
         <h1 class="text-3xl font-bold my-4">
             {{ $t("admin.facility.title") }}
         </h1>

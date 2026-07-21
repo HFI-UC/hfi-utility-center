@@ -16,7 +16,7 @@ import {
             class="absolute right-16 top-0 h-80 w-80 rounded-full bg-cyan-400/30 blur-[160px]"
         ></div>
     </div>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
+    <div class="mt-24 mb-4 md:mx-12 2xl:mx-32 mx-4">
         <h1
             class="font-extrabold text-xl text-center my-4 items-center flex justify-center gap-2"
         >
@@ -36,7 +36,7 @@ import {
                         <h2
                             class="font-extrabold text-3xl sm:text-4xl lg:text-5xl 2xl:text-6xl text-center my-4 items-center flex justify-center gap-3"
                         >
-                            <Store class="inline !h-13 !w-13"></Store
+                            <Store class="inline h-13! w-13!"></Store
                             >{{ $t("utiverse.bazaar.title") }}
                         </h2>
                     </div>
@@ -69,7 +69,7 @@ import {
                         <h2
                             class="font-extrabold text-3xl sm:text-4xl lg:text-5xl 2xl:text-6xl text-center my-4 items-center flex justify-center gap-3"
                         >
-                            <Scroll class="inline !h-13 !w-13"></Scroll
+                            <Scroll class="inline h-13! w-13!"></Scroll
                             >{{ $t("utiverse.opia.title") }}
                         </h2>
                     </div>
@@ -102,7 +102,7 @@ import {
                         <h2
                             class="font-extrabold text-3xl sm:text-4xl lg:text-5xl 2xl:text-6xl text-center my-4 items-center flex justify-center gap-3"
                         >
-                            <Cloud class="inline !h-13 !w-13"></Cloud
+                            <Cloud class="inline h-13! w-13!"></Cloud
                             >{{ $t("utiverse.cloud.title") }}
                         </h2>
                     </div>
@@ -127,6 +127,10 @@ import {
                     >
                 </template>
             </Card>
+        </div>
+        <div class="mt-8">
+            <h3 class="font-bold text-lg mb-4">Featured Advertisements</h3>
+            <AdCarousel :count="2" />
         </div>
     </div>
 </template>

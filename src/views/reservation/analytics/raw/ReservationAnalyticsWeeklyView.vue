@@ -424,7 +424,7 @@ const setWeeklyDailyReservationCreationsChartOptions =
 </script>
 
 <template>
-    <div class="mx-[3rem] my-[2rem]">
+    <div class="mx-12 my-8">
         <h1 class="font-bold text-xl text-sky-500">HFI Utility Center</h1>
         <h1 class="font-bold text-3xl my-4">
             Reservation Analytics - Weekly (Last Week)

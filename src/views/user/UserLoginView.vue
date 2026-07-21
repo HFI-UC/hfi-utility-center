@@ -10,9 +10,12 @@ import VueTurnstile from "vue-turnstile";
 import { useI18n } from "vue-i18n";
 import { useRouter, useRoute } from "vue-router";
 import { triggerLoginUpdate } from "@/eventBus";
-import UserLogin from "@/components/UserLogin.vue";
+import { useAuthGuard } from "@/utils/authGuard";
 
 const { t } = useI18n();
+
+useAuthGuard({ requireLogin: false, watchLoginEvent: false });
+
 const router = useRouter();
 const route = useRoute();
 const turnstileSiteKey = process.env.CLOUDFLARE_KEY || "";
@@ -56,14 +59,14 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     );
     submitLoading.value = false;
     if (response.success) {
-        triggerLoginUpdate();
         toast.add({
             severity: "success",
             summary: t("common.success"),
             detail: t("user.login.toast.loginSuccessful"),
             life: 2000,
         });
-        router.push(getRedirect() != "" ? getRedirect() : "/");
+        triggerLoginUpdate();
+        await router.push(getRedirect() != "" ? getRedirect() : "/");
     } else {
         toast.add({
             severity: "error",
@@ -82,10 +85,9 @@ const initialValues = ref({
 });
 </script>
 <template>
-    <UserLogin :requireLogin="false"></UserLogin>
-    <div class="flex items-center justify-center flex-col mt-[6rem] mb-4">
+    <div class="flex items-center justify-center flex-col mt-24 mb-4">
         <h1 class="font-bold text-3xl my-4">{{ $t("user.login.title") }}</h1>
-        <Card class="sm:w-[25rem] w-[23rem]">
+        <Card class="sm:w-100 w-92">
             <template #content>
                 <Form
                     v-slot="$form"

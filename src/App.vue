@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/vue";
 const route = useRoute();
 </script>
 <template>
+    <ConfirmPopup></ConfirmPopup>
     <Toast></Toast>
     <LoadingMask />
     <SpeedInsights></SpeedInsights>

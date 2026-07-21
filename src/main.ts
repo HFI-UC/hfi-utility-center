@@ -4,6 +4,7 @@ import App from "./App.vue";
 import router from "./router";
 import PrimeVue from "primevue/config";
 import ToastService from "primevue/toastservice";
+import ConfirmationService from 'primevue/confirmationservice';
 // @ts-ignore
 import { Sky } from "@/theme";
 // @ts-ignore
@@ -33,6 +34,7 @@ app.use(PrimeVue, {
         },
     },
 });
+app.use(ConfirmationService);
 app.use(ToastService);
 app.use(router);
 app.mount("#app");

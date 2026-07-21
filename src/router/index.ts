@@ -60,9 +60,30 @@ const router = createRouter({
             component: () => import("@/views/admin/ReservationManagementView.vue"),
         },
         {
+            path: "/admin/ads",
+            name: "admin-ads",
+            component: () => import("@/views/admin/AdsManagementView.vue"),
+        },
+        {
+            path: "/admin/ads-pricing",
+            name: "admin-ads-pricing",
+            component: () => import("@/views/admin/AdsPricingView.vue"),
+        },
+        {
             path: "/utiverse",
             name: "utiverse",
             component: () => import("@/views/UtiverseView.vue"),
+        },
+
+        {
+            path: "/user/register",
+            name: "user-register",
+            component: () => import("@/views/user/UserRegisterView.vue"),
+        },
+        {
+            path: "/user/ads",
+            name: "user-ads",
+            component: () => import("@/views/user/AdsManagementView.vue"),
         },
         {
             path: "/ads",
@@ -70,9 +91,14 @@ const router = createRouter({
             component: () => import("@/views/ads/HomeView.vue"),
         },
         {
-            path: "/user/register",
-            name: "user-register",
-            component: () => import("@/views/user/UserRegisterView.vue"),
+            path: "/ads/create",
+            name: "ads-create",
+            component: () => import("@/views/ads/AdsCreateView.vue"),
+        },
+        {
+            path: "/ads/edit/:id",
+            name: "ads-edit",
+            component: () => import("@/views/ads/AdsEditView.vue"),
         }
     ],
 });

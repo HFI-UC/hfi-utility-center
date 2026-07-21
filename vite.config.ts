@@ -41,7 +41,6 @@ export default defineConfig({
                     if (id.includes("WeeklyView.vue")) return "reservation-analytics-raw-weekly-view";
                     if (id.includes("UtiverseView.vue")) return "utiverse-view";
                     if (id.includes("LoadingMask.vue")) return "loading-mask";
-                    if (id.includes("AdminLogin.vue")) return "admin-login";
                     if (id.includes("Navbar.vue")) return "navbar";
                     if (id.includes("lucide")) return "lucide";
                     if (id.includes("primevue")) return "primevue";

@@ -10,7 +10,6 @@ import {
     getCampuses,
     getClasses,
     getRooms,
-    type ReservationRequestInfo,
     getReservations,
     type Reservation,
     postCreateReservation,
@@ -30,6 +29,7 @@ import {
 import confetti from "canvas-confetti";
 import { useToast } from "primevue";
 import { useI18n } from "vue-i18n";
+import AdCarousel from "@/components/AdCarousel.vue";
 
 const { t, tm } = useI18n();
 const resolver = computed(() =>
@@ -197,11 +197,11 @@ const generateTimeOptions = (
     const _class = classData.value?.data.find(
         (item: Class) => item.id === selectedClass
     );
-    const _campus: Campus = campusData.value?.data.find(
+    const _campus: Campus | undefined = campusData.value?.data.find(
         (item: Campus) => item.id === _class?.campus
     );
     const res = options.filter((item) => {
-        if (!date || !room || _campus.isPrivileged) return true;
+        if (!date || !room || !_campus || _campus.isPrivileged) return true;
         const time = new Date(`${formatDate(date)}T${item}`);
         return validatePolicy(time, room) && validateTimeConflict(time);
     });
@@ -396,7 +396,7 @@ const onSubmitEvent = async (form: FormSubmitEvent) => {
     }
     submitLoading.value = true;
     const response = await postCreateReservation(
-        form.values as ReservationRequestInfo
+        form.values as any
     );
     submitLoading.value = false;
     if (response.success) {
@@ -422,7 +422,7 @@ const terms = computed(() => tm("reservation.create.term.content") as string[]);
 const onMoreConfetti = () => {
     confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
 };
-const initialValues = ref<ReservationRequestInfo>({} as ReservationRequestInfo);
+const initialValues = ref({});
 const termsVisible = ref(false);
 </script>
 <template>
@@ -430,17 +430,17 @@ const termsVisible = ref(false);
         :header="$t('reservation.create.term.title')"
         v-model:visible="termsVisible"
         modal
-        class="sm:w-[25rem] w-[23rem]"
+        class="sm:w-100 w-92"
     >
         <ul class="list-disc pl-5">
             <li v-for="item in terms">{{ item }}</li>
         </ul>
     </Dialog>
-    <div class="flex items-center justify-center flex-col mt-[6rem] mb-4">
+    <div class="flex items-center justify-center flex-col mt-24 mb-4">
         <h1 class="font-bold text-3xl my-4">
             {{ $t("reservation.create.title") }}
         </h1>
-        <Card class="sm:w-[25rem] w-[23rem]">
+        <Card class="sm:w-100 w-92">
             <template #content>
                 <Form
                     v-if="!success"
@@ -455,11 +455,12 @@ const termsVisible = ref(false);
                         <div class="flex flex-col gap-4">
                             <IftaLabel>
                                 <InputText
+                                    id="studentName"
                                     type="text"
                                     name="studentName"
                                     fluid
                                 ></InputText
-                                ><label>{{
+                                ><label for="studentName">{{
                                     $t("reservation.create.form.studentName")
                                 }}</label></IftaLabel
                             >
@@ -471,6 +472,7 @@ const termsVisible = ref(false);
                             >
                             <IftaLabel>
                                 <Select
+                                    id="classId"
                                     optionGroupLabel="campus"
                                     optionGroupChildren="classes"
                                     optionLabel="name"
@@ -488,7 +490,7 @@ const termsVisible = ref(false);
                                         </div>
                                     </template>
                                 </Select>
-                                <label>{{
+                                <label for="classId">{{
                                     $t("reservation.create.form.class")
                                 }}</label>
                             </IftaLabel>
@@ -500,11 +502,12 @@ const termsVisible = ref(false);
                             </Message>
                             <IftaLabel>
                                 <InputText
+                                    id="studentId"
                                     type="text"
                                     name="studentId"
                                     fluid
                                 ></InputText>
-                                <label>{{
+                                <label for="studentId">{{
                                     $t("reservation.create.form.studentId")
                                 }}</label>
                             </IftaLabel>
@@ -516,11 +519,12 @@ const termsVisible = ref(false);
                             >
                             <IftaLabel>
                                 <InputText
-                                    type="text"
+                                    id="email"
+                                    type="email"
                                     name="email"
                                     fluid
                                 ></InputText>
-                                <label>{{
+                                <label for="email">{{
                                     $t("reservation.create.form.email")
                                 }}</label>
                             </IftaLabel>
@@ -541,6 +545,7 @@ const termsVisible = ref(false);
                         <div class="flex flex-col gap-4">
                             <IftaLabel>
                                 <Select
+                                    id="campus"
                                     @change="
                                         $form.room.value
                                             ? ($form.room.value = null)
@@ -558,7 +563,7 @@ const termsVisible = ref(false);
                                     fluid
                                 >
                                 </Select>
-                                <label>{{
+                                <label for="campus">{{
                                     $t("reservation.create.form.campus")
                                 }}</label>
                             </IftaLabel>
@@ -570,6 +575,7 @@ const termsVisible = ref(false);
                             >
                             <IftaLabel>
                                 <Select
+                                    id="room"
                                     @change="fetchReservations($form.room)"
                                     :options="
                                         room.filter(
@@ -584,7 +590,7 @@ const termsVisible = ref(false);
                                     optionValue="id"
                                 >
                                 </Select>
-                                <label>{{
+                                <label for="room">{{
                                     $t("reservation.create.form.room")
                                 }}</label>
                             </IftaLabel>
@@ -709,6 +715,7 @@ const termsVisible = ref(false);
                             </DataTable>
                             <IftaLabel>
                                 <DatePicker
+                                    inputId="date"
                                     name="date"
                                     updateModelType="date"
                                     :manualInput="false"
@@ -717,7 +724,7 @@ const termsVisible = ref(false);
                                     fluid
                                 >
                                 </DatePicker>
-                                <label>{{
+                                <label for="date">{{
                                     $t("reservation.create.form.date")
                                 }}</label>
                             </IftaLabel>
@@ -730,6 +737,7 @@ const termsVisible = ref(false);
                             >
                             <IftaLabel v-if="$form.date?.value">
                                 <Select
+                                    id="startTime"
                                     @change="
                                         $form.endTime?.value
                                             ? ($form.endTime.value = null)
@@ -746,7 +754,7 @@ const termsVisible = ref(false);
                                     fluid
                                 >
                                 </Select>
-                                <label>{{
+                                <label for="startTime">{{
                                     $t("reservation.create.form.startTime")
                                 }}</label>
                             </IftaLabel>
@@ -758,6 +766,7 @@ const termsVisible = ref(false);
                             >
                             <IftaLabel v-if="$form.startTime?.value">
                                 <Select
+                                    id="endTime"
                                     :options="
                                         getEndTimeOptions({
                                             startTime: $form.startTime,
@@ -770,7 +779,7 @@ const termsVisible = ref(false);
                                     fluid
                                 >
                                 </Select>
-                                <label>{{
+                                <label for="endTime">{{
                                     $t("reservation.create.form.endTime")
                                 }}</label>
                             </IftaLabel>
@@ -782,11 +791,12 @@ const termsVisible = ref(false);
                             >
                             <IftaLabel>
                                 <InputText
+                                    id="reason"
                                     type="text"
                                     name="reason"
                                     fluid
                                 ></InputText>
-                                <label>{{
+                                <label for="reason">{{
                                     $t("reservation.create.form.reason")
                                 }}</label>
                                 <p
@@ -808,10 +818,11 @@ const termsVisible = ref(false);
                         </div>
                     </Fieldset>
                     <div class="flex items-center justify-center mt-3">
-                        <Checkbox name="isAgreed" :binary="true" />
+                        <Checkbox name="isAgreed" id="isAgreed" :binary="true" />
                         <i18n-t
                             keypath="reservation.create.form.termAgreement"
                             tag="label"
+                            for="isAgreed"
                             scope="global"
                             class="ml-2 text-sm"
                         >
@@ -846,7 +857,7 @@ const termsVisible = ref(false);
                     v-else
                     class="flex justify-center flex-col gap-4 items-center"
                 >
-                    <Check class="text-green-500 !h-80 !w-25"></Check>
+                    <Check class="text-green-500 h-80! w-25!"></Check>
                     <p class="text-center">{{ successMessage }}</p>
                     <div class="flex flex-wrap gap-2">
                         <Button
@@ -865,8 +876,7 @@ const termsVisible = ref(false);
                         <Button
                             severity="warn"
                             size="small"
-                            as="RouterLink"
-                            to="/reservation/create"
+                            @click="success = false"
                             ><RotateCcw></RotateCcw>
                             {{
                                 $t(
@@ -1333,5 +1343,9 @@ const termsVisible = ref(false);
                 </div>
             </template>
         </Card>
+        <div class="w-full md:w-140 mt-8 mb-4">
+            <h3 class="font-bold text-lg mb-4">Featured Advertisements</h3>
+            <AdCarousel :count="2" />
+        </div>
     </div>
 </template>

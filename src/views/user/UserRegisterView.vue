@@ -159,9 +159,9 @@ const onMoreConfetti = () => {
 };
 </script>
 <template>
-    <div class="flex items-center justify-center flex-col mt-[6rem] mb-4">
+    <div class="flex items-center justify-center flex-col mt-24 mb-4">
         <h1 class="font-bold text-3xl my-4">{{ $t("user.register.title") }}</h1>
-        <Card class="sm:w-[25rem] w-[23rem]">
+        <Card class="sm:w-100 w-92">
             <template #content>
                 <Form
                     v-if="token == '' && !preRegisterSuccess"
@@ -210,7 +210,7 @@ const onMoreConfetti = () => {
                     v-if="preRegisterSuccess"
                     class="flex justify-center flex-col gap-4 items-center"
                 >
-                    <Mail class="text-green-500 !h-80 !w-25"></Mail>
+                    <Mail class="text-green-500 h-80! w-25!"></Mail>
                     <p class="text-center">{{ preRegisterSuccessMessage }}</p>
                     <div class="flex flex-wrap gap-2">
                         <Button

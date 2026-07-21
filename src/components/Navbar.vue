@@ -14,6 +14,8 @@ import {
     Globe,
     Sparkles,
     Ellipsis,
+    Megaphone,
+    DollarSign,
 } from "lucide-vue-next";
 import { useRequest } from "vue-request";
 
@@ -24,10 +26,9 @@ import zh_cn from "primelocale/zh-CN.json";
 import { Rive, RuntimeLoader } from "@rive-app/canvas";
 // @ts-ignore
 import riveWASMResource from "@rive-app/canvas/rive.wasm";
-// @ts-ignore
 import themeToggleUrl from "@/assets/theme-toggle.riv?inline";
 import { useI18n } from "vue-i18n";
-import { useLoginEvent, useIsLoading } from "@/eventBus";
+import { useLoginEvent, useIsLoading, triggerLoginUpdate } from "@/eventBus";
 
 RuntimeLoader.setWasmUrl(riveWASMResource);
 
@@ -36,10 +37,13 @@ const isDark = defineModel<boolean>("isDark");
 const isScrolled = ref(false);
 const isMobile = ref(false);
 const menu = ref();
-const riveInstance = ref<any>(null);
+const riveInstance = ref<Rive | null>(null);
 const resizeTimeout = ref<number | null>(null);
-const { data: loginData, refresh: refreshLoginData, loading: isLoginLoading } =
-    useRequest(getCheckLogin);
+const {
+    data: loginData,
+    refresh: refreshLoginData,
+    loading: isLoginLoading,
+} = useRequest(getCheckLogin);
 const loginEvent = useLoginEvent();
 const isPageLoading = useIsLoading();
 
@@ -104,6 +108,7 @@ const onLogOutEvent = async () => {
         });
     }
     refreshLoginData();
+    triggerLoginUpdate();
 };
 
 const reservationsMenuItems = computed(() => {
@@ -125,16 +130,43 @@ const reservationsMenuItems = computed(() => {
         },
     ];
 });
+const userRoleLevelMapping: Record<string, number> = {
+    system: 4,
+    admin: 3,
+    approver: 2,
+    student: 1,
+};
+const userRoleLevel = computed(
+    () => userRoleLevelMapping[loginData.value?.data?.role as string] || 0,
+);
 
 const otherMenuItems = computed(() => {
-    const items: any[] = [
-        {
+    const items: any[] = [];
+    if (userRoleLevel.value >= 1) {
+        items.push({
+            label: t("navbar.other.advertisement"),
+            iconComponent: Megaphone,
+            to: "/ads",
+        });
+    }
+    if (userRoleLevel.value >= 2) {
+        items.push({
             label: t("navbar.other.reservationManagement"),
             iconComponent: BookCheck,
             to: "/admin/reservation",
-        },
-    ];
-    if (loginData.value?.data?.role == "admin") {
+        });
+    }
+    if (userRoleLevel.value >= 3) {
+        items.push({
+            label: t("navbar.other.adsManagement"),
+            iconComponent: Megaphone,
+            to: "/admin/ads",
+        });
+        items.push({
+            label: "Ad Pricing",
+            iconComponent: DollarSign,
+            to: "/admin/ads-pricing",
+        });
         items.push({
             label: t("navbar.other.userManagement"),
             iconComponent: UserRound,
@@ -146,7 +178,7 @@ const otherMenuItems = computed(() => {
             to: "/admin/facility",
         });
     }
-    return items
+    return items;
 });
 
 const menuItems = computed(() => {
@@ -165,7 +197,7 @@ const menuItems = computed(() => {
         },
     ];
     items.push({ separator: true });
-    if (loginData.value?.data?.role == "admin" || loginData.value?.data?.role == "approver") {
+    if (userRoleLevel.value >= 1) {
         items.push({
             label: t("navbar.other.other"),
             items: otherMenuItems.value,
@@ -295,19 +327,19 @@ onUnmounted(() => {
 });
 </script>
 <template>
+    <ProgressBar
+        mode="indeterminate"
+        class="fixed inset-x-0 top-0 left-0 w-full h-1! z-50"
+        v-if="isLoginLoading || isPageLoading"
+    />
     <div
         :class="[
-            'fixed inset-x-0 top-0 z-10 h-[4rem] transition-all duration-300',
+            'fixed inset-x-0 top-0 z-10 h-16 transition-all duration-300',
             isScrolled ? 'backdrop-blur-lg shadow' : 'bg-transparent',
         ]"
     >
-        <ProgressBar
-            mode="indeterminate"
-            class="absolute top-0 left-0 w-full !h-1 z-80"
-            v-if="isLoginLoading || isPageLoading"
-        />
         <div
-            class="mx-[2rem] flex justify-between items-center h-full"
+            class="mx-8 flex justify-between items-center h-full"
             id="navbar"
         >
             <div class="flex gap-4 items-center">
@@ -318,7 +350,7 @@ onUnmounted(() => {
                 >
                 <canvas
                     id="theme-canvas"
-                    class="md:h-[45px] h-[35px] md:mx-4 mx-2 cursor-pointer"
+                    class="md:h-11.25 h-8.75 md:mx-4 mx-2 cursor-pointer"
                 ></canvas>
                 <template v-if="!isMobile">
                     <Button text severity="contrast" as="RouterLink" to="/">
@@ -342,7 +374,7 @@ onUnmounted(() => {
                         <Sparkles></Sparkles>{{ $t("navbar.utiverse") }}
                     </Button>
                     <Button
-                        v-if="loginData?.data?.role == 'admin'"
+                        v-if="otherMenuItems.length > 0"
                         text
                         severity="contrast"
                         @click="toggleOtherMenu"
@@ -383,8 +415,9 @@ onUnmounted(() => {
                     @click="toggleUserMenu"
                     aria-haspopup="true"
                     aria-controls="userMenu"
-                    ><Avatar shape="circle"><UserRound></UserRound></Avatar
-                    >{{ loginData.data.name }}
+                >
+                    <Avatar shape="circle"><UserRound></UserRound></Avatar>
+                    {{ loginData.data.name }}
                 </Button>
             </div>
             <div v-else class="flex items-center gap-2">
@@ -401,7 +434,7 @@ onUnmounted(() => {
                     ref="menu"
                     id="menu"
                     :model="menuItems"
-                    class="!top-15"
+                    class="top-15! max-h-[90dvh] overflow-y-auto"
                     popup
                     appendTo="#navbar"
                 >
@@ -422,6 +455,23 @@ onUnmounted(() => {
                                     <Globe></Globe>
                                 </template>
                             </Select>
+                        </div>
+                        <div
+                            v-if="loginData?.success"
+                            class="mx-4 my-3 flex flex-col items-center gap-2"
+                        >
+                            <Avatar shape="circle" size="large"
+                                ><UserRound class="w-6! h-6!"></UserRound
+                            ></Avatar>
+                            <p class="text-lg font-semibold">
+                                {{ loginData.data.name }}
+                            </p>
+                            <p class="text-sm">
+                                RMB
+                                {{
+                                    loginData.data.balance?.toFixed(2) ?? "0.00"
+                                }}
+                            </p>
                         </div>
                     </template>
                     <template #item="{ item, props }">
@@ -462,7 +512,7 @@ onUnmounted(() => {
                 id="reservationsMenu"
                 :model="reservationsMenuItems"
                 popup
-                class="!top-15"
+                class="top-15!"
                 appendTo="#navbar"
             >
                 <template #item="slotProps">
@@ -484,7 +534,7 @@ onUnmounted(() => {
                 id="otherMenu"
                 :model="otherMenuItems"
                 popup
-                class="!top-15"
+                class="top-15!"
                 appendTo="#navbar"
             >
                 <template #item="slotProps">
@@ -506,9 +556,26 @@ onUnmounted(() => {
                 id="userMenu"
                 :model="userMenuItems"
                 popup
-                class="!top-15"
+                class="top-15!"
                 appendTo="#navbar"
             >
+                <template #start>
+                    <div
+                        v-if="loginData?.success"
+                        class="mx-4 my-3 flex flex-col items-center gap-2"
+                    >
+                        <Avatar shape="circle" size="large"
+                            ><UserRound class="w-6! h-6!"></UserRound
+                        ></Avatar>
+                        <p class="text-lg font-semibold">
+                            {{ loginData.data.name }}
+                        </p>
+                        <p class="text-sm">
+                            RMB
+                            {{ loginData.data.balance?.toFixed(2) ?? "0.00" }}
+                        </p>
+                    </div>
+                </template>
                 <template #item="{ item, props }">
                     <RouterLink
                         v-if="!item.separator && item.to"

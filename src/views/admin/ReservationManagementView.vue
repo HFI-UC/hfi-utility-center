@@ -3,10 +3,11 @@ import { useRequest } from "vue-request";
 import {
     getReservations,
     getExportReservations,
-    getFutureReservations,
+    getUpcomingReservations,
     getRooms,
     postApproveReservation,
     postLogin,
+    type ReservationStatus,
 } from "@/api";
 import { computed, onMounted, ref } from "vue";
 import { Check, Download, SquareArrowOutUpRight, X } from "lucide-vue-next";
@@ -17,15 +18,17 @@ import z from "zod";
 import { useI18n } from "vue-i18n";
 import { useRouter, useRoute } from "vue-router";
 import { triggerLoginUpdate } from "@/eventBus";
-import AdminLogin from "@/components/UserLogin.vue";
+import { useAuthGuard } from "@/utils/authGuard";
 
 const { t, tm } = useI18n();
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
 
-const { data: futureReservations, run: fetchFutureReservations } = useRequest(
-    getFutureReservations
+useAuthGuard({ requireLogin: true, requiredRole: ["admin", "system", "approver", "teacher"] });
+
+const { data: upcomingReservations, run: fetchUpcomingReservations } = useRequest(
+    getUpcomingReservations
 );
 
 const searchKeyword = ref<string | null>(
@@ -39,13 +42,13 @@ const searchTime = ref<Date[] | null>(
           ]
         : null
 );
-const searchStatus = ref<{ id: string; name: string; severity: string } | null>(
+const searchStatus = ref<{ id: ReservationStatus; name: string; severity: string } | null>(
     null
 );
 const searchRoom = ref<number | null>(
     route.query.roomId ? Number(route.query.roomId) : null
 );
-const statusOptions = computed(() => [
+const statusOptions = computed<{ id: ReservationStatus; name: string; severity: string }[]>(() => [
     {
         id: "pending",
         name: t("reservation.search.status.pending"),
@@ -135,7 +138,7 @@ const approveReservation = async (id: number) => {
             detail: t("admin.reservation.toast.reservationApproved", { id }),
             life: 3000,
         });
-        fetchFutureReservations();
+        fetchUpcomingReservations();
         fetchAllReservations();
     } else {
         toast.add({
@@ -176,7 +179,7 @@ const rejectReservation = async (form: FormSubmitEvent) => {
         });
         form.reset();
         rejectVisible.value = false;
-        fetchFutureReservations();
+        fetchUpcomingReservations();
         fetchAllReservations();
     } else {
         toast.add({
@@ -356,7 +359,6 @@ const exportOptions = computed(() => [
 ]);
 </script>
 <template>
-    <AdminLogin requireLogin requiredRole="admin"></AdminLogin>
     <BlockUI :blocked="loading" fullScreen></BlockUI>
     <Dialog
         v-model:visible="rejectVisible"
@@ -364,7 +366,7 @@ const exportOptions = computed(() => [
         :blockScroll="false"
         :closable="false"
         modal
-        class="w-[23rem]"
+        class="w-92"
     >
         <Form
             v-slot="$form"
@@ -405,7 +407,7 @@ const exportOptions = computed(() => [
         :blockScroll="false"
         :closable="false"
         modal
-        class="w-[23rem]"
+        class="w-92"
     >
         <Form
             v-slot="$form"
@@ -472,7 +474,7 @@ const exportOptions = computed(() => [
             </div>
         </Form>
     </Dialog>
-    <div class="mt-[6rem] mb-4 md:mx-[3rem] 2xl:mx-[8rem] mx-4">
+    <div class="mt-24 mb-4 md:mx-12 2xl:mx-32 mx-4">
         <h1 class="font-bold md:text-3xl text-2xl my-4">
             {{ $t("admin.reservation.title") }}
         </h1>
@@ -481,7 +483,7 @@ const exportOptions = computed(() => [
                 <DataView
                     layout="grid"
                     :value="
-                        futureReservations?.data.sort((a: any) =>
+                        upcomingReservations?.data.sort((a: any) =>
                             a.status === 'pending' ? -1 : 1,
                         )
                     "
@@ -489,13 +491,11 @@ const exportOptions = computed(() => [
                     :rows="6"
                 >
                     <template #header>
-                        <span class="font-bold text-lg">{{
-                            $t("admin.reservation.futureReservation")
-                        }}</span>
+                        <span class="font-bold text-lg">{{ $t("admin.reservation.upcomingReservation") }}</span>
                     </template>
                     <template #empty>
                         <p class="m-4">
-                            {{ $t("admin.reservation.noFutureReservation") }}
+                            {{ $t("admin.reservation.noUpcomingReservation") }}
                         </p>
                     </template>
                     <template #grid="slotProps">
@@ -506,7 +506,7 @@ const exportOptions = computed(() => [
                                 class="col-span-12 lg:col-span-4 md:col-span-6"
                             >
                                 <div
-                                    class="rounded-lg border-surface-200 dark:border-surface-700 border-1 p-4 flex flex-col w-full"
+                                    class="rounded-lg border-surface-200 dark:border-surface-700 border p-4 flex flex-col w-full"
                                 >
                                     <h2 class="font-bold text-xl mb-2">
                                         {{
@@ -828,7 +828,7 @@ const exportOptions = computed(() => [
                                                 :severity="
                                                     slotProps.value.severity
                                                 "
-                                                class="h-5 !text-xs"
+                                                class="h-5 text-xs!"
                                             ></Tag>
                                         </div>
                                     </template>
@@ -839,7 +839,7 @@ const exportOptions = computed(() => [
                                                 :severity="
                                                     slotProps.option.severity
                                                 "
-                                                class="h-5 !text-xs"
+                                                class="h-5 text-xs!"
                                             ></Tag>
                                         </div>
                                     </template>
@@ -934,7 +934,7 @@ const exportOptions = computed(() => [
                         :header="$t('admin.reservation.table.reason')"
                     >
                         <template #body="slotProps">
-                            <div class="whitespace-normal w-[30rem]">
+                            <div class="whitespace-normal w-120">
                                 {{ slotProps.data.reason }}
                             </div>
                         </template>
