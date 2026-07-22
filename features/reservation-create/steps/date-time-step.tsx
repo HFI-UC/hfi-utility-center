@@ -11,32 +11,21 @@ import { availableDurations } from "@/features/reservation-create/time-options"
 import type { ReservationFormValues } from "@/features/reservation-create/schema"
 import { ApiError } from "@/lib/api/client"
 import { getAvailability } from "@/lib/api/reservations"
-import type { AvailabilityData, AvailabilitySlot, Room } from "@/lib/api/types"
+import type { AvailabilityData, Room } from "@/lib/api/types"
 import { cn } from "@/lib/utils"
-
-function auditoriumAvailability(date: string): AvailabilityData {
-  const slots: AvailabilitySlot[] = []
-  const start = new Date(`${date}T08:00:00`)
-  for (let index = 0; index < 54; index += 1) {
-    const from = new Date(start.getTime() + index * 15 * 60 * 1000)
-    const to = new Date(from.getTime() + 15 * 60 * 1000)
-    slots.push({ startTime: Math.floor(from.getTime() / 1000), endTime: Math.floor(to.getTime() / 1000), status: to <= new Date() ? "past" : "available" })
-  }
-  return { roomId: 0, date, slotMinutes: 15, maxDurationMinutes: 120, slots }
-}
 
 export function DateTimeStep({ rooms }: { rooms: Room[] }) {
   const t = useTranslations("booking")
   const locale = useLocale()
   const { setValue, watch, formState } = useFormContext<ReservationFormValues>()
-  const room = watch("room"), date = watch("date"), special = watch("specialFacility"), startTime = watch("startTime"), endTime = watch("endTime")
+  const room = watch("room"), date = watch("date"), startTime = watch("startTime"), endTime = watch("endTime")
   const roomData = rooms.find((item) => item.id === room)
   const [availability, setAvailability] = useState<AvailabilityData>(), [error, setError] = useState<string>(), [loading, setLoading] = useState(false)
   const today = new Date(), maximum = new Date(); maximum.setDate(maximum.getDate() + 30)
   async function load() {
     if (!date) return
     setLoading(true); setError(undefined)
-    try { setAvailability(special === "auditorium" ? auditoriumAvailability(date) : await getAvailability(room, date, roomData)) }
+    try { setAvailability(await getAvailability(room, date, roomData)) }
     catch (loadError) { setError(loadError instanceof ApiError ? loadError.message : t("availabilityError")) }
     finally { setLoading(false) }
   }
@@ -45,15 +34,15 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
     let active = true
     Promise.resolve().then(() => {
       if (active) setLoading(true)
-      return special === "auditorium" ? auditoriumAvailability(date) : getAvailability(room, date, roomData)
+      return getAvailability(room, date, roomData)
     }).then((data) => { if (active) { setAvailability(data); setError(undefined) } })
       .catch((loadError) => { if (active) setError(loadError instanceof ApiError ? loadError.message : t("availabilityError")) })
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
-  }, [date, room, roomData, special, t])
+  }, [date, room, roomData, t])
   const durations = useMemo(() => availability && startTime ? availableDurations(availability.slots, startTime, 120, 15) : [], [availability, startTime])
   const timeLabel = (value: number) => new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(value * 1000))
-  return <StepLayout eyebrow="03 / 05" title={`${t("dateTitle")} · ${t("timeTitle")}`} description={t("timeDescription")} error={error ?? formState.errors.date?.message ?? formState.errors.startTime?.message ?? formState.errors.endTime?.message}>
+  return <StepLayout eyebrow="03 / 05" title={`${t("dateTitle")} · ${t("timeTitle")}`} error={error ?? formState.errors.date?.message ?? formState.errors.startTime?.message ?? formState.errors.endTime?.message}>
     <div className="w-fit border-y py-5">
       <Calendar
         mode="single"

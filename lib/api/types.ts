@@ -59,14 +59,6 @@ export interface BootstrapData {
   campuses: Campus[]
   classes: SchoolClass[]
   rooms: Room[]
-  specialFacilities: SpecialFacility[]
-}
-
-export interface SpecialFacility {
-  key: "auditorium"
-  name: string
-  bookingMode: "email-template"
-  templates: Record<"zh-CN" | "en-US", { subject: string; body: string }>
 }
 
 export type ReservationStatus = "pending" | "approved" | "rejected"
@@ -85,10 +77,6 @@ export interface Reservation {
   createdAt?: string
   campusName?: string
   latestExecutor?: string
-  purposeType: "personal" | "class" | "club"
-  multimediaRequired: boolean
-  multimediaDetails?: string
-  locale: "zh-CN" | "en-US"
 }
 
 export interface ReservationPage {

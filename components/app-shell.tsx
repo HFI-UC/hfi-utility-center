@@ -19,7 +19,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { href: "/reservation/create", label: t("book") },
     { href: "/reservation/search", label: t("reservations") },
     { href: "/admin/login", label: t("admin"), className: "hidden md:block" },
-    { href: "/about", label: t("about"), className: "hidden xl:block" },
   ]
   return (
     <div className="min-h-screen">

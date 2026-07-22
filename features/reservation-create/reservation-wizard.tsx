@@ -3,11 +3,10 @@
 import { useEffect, useMemo, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
-import { FormProvider, useForm, useWatch } from "react-hook-form"
+import { FormProvider, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { ClassStep } from "@/features/reservation-create/steps/class-step"
-import { AuditoriumTemplateStep } from "@/features/reservation-create/steps/auditorium-template-step"
 import { DateTimeStep } from "@/features/reservation-create/steps/date-time-step"
 import { LocationStep } from "@/features/reservation-create/steps/location-step"
 import { ProfileStep } from "@/features/reservation-create/steps/profile-step"
@@ -23,11 +22,9 @@ import type { BootstrapData } from "@/lib/api/types"
 export function ReservationWizard() {
   const t = useTranslations("booking")
   const common = useTranslations("common")
-  const locale = useLocale() as "zh-CN" | "en-US"
   const schema = useMemo(() => createReservationSchema((key) => t(key)), [t])
   const methods = useForm<ReservationFormValues>({ resolver: zodResolver(schema), defaultValues: reservationDefaults, mode: "onTouched" })
   const resetForm = methods.reset
-  const specialFacility = useWatch({ control: methods.control, name: "specialFacility" })
   const [step, setStep] = useState(0)
   const [catalog, setCatalog] = useState<BootstrapData>()
   const [loadingError, setLoadingError] = useState<string>()
@@ -57,7 +54,7 @@ export function ReservationWizard() {
 
   async function next() {
     const valid = await methods.trigger(stepFields[step], { shouldFocus: true })
-    if (valid) { setSubmitError(undefined); setStep((current) => Math.min(current + 1, specialFacility === "auditorium" ? 2 : 4)) }
+    if (valid) { setSubmitError(undefined); setStep((current) => Math.min(current + 1, 4)) }
   }
 
   async function submit(values: ReservationFormValues) {
@@ -73,10 +70,6 @@ export function ReservationWizard() {
         reason: values.reason.trim(),
         startTime: values.startTime,
         endTime: values.endTime,
-        purposeType: values.purposeType,
-        multimediaRequired: values.multimediaRequired,
-        multimediaDetails: values.multimediaDetails || undefined,
-        locale,
       })
       if (values.rememberProfile) {
         window.localStorage.setItem(profileStorageKey, JSON.stringify(storedProfile(values)))
@@ -93,10 +86,7 @@ export function ReservationWizard() {
 
   if (!catalog) return <main className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-3xl flex-col justify-center px-4 sm:px-6"><Loader2 className="mb-4 size-6 animate-spin" /><h1 className="text-2xl font-semibold">{t("loadingTitle")}</h1><p className="mt-3 text-sm text-muted-foreground">{t("loadingDescription")}</p>{loadingError ? <><p className="mt-5 text-sm text-destructive">{loadingError}</p><Button className="mt-4 w-fit" variant="outline" onClick={() => void loadCatalog()}>{common("retry")}</Button></> : null}</main>
 
-  const isAuditorium = specialFacility === "auditorium"
-  const steps = isAuditorium
-    ? [<ClassStep key="class" catalog={catalog} />, <LocationStep key="location" catalog={catalog} onSelectAuditorium={() => setStep(2)} />, <AuditoriumTemplateStep key="auditorium" catalog={catalog} />]
-    : [<ClassStep key="class" catalog={catalog} />, <LocationStep key="location" catalog={catalog} onSelectAuditorium={() => setStep(2)} />, <DateTimeStep key="datetime" rooms={catalog.rooms} />, <ProfileStep key="profile" />, <ReviewStep key="review" catalog={catalog} />]
+  const steps = [<ClassStep key="class" catalog={catalog} />, <LocationStep key="location" catalog={catalog} />, <DateTimeStep key="datetime" rooms={catalog.rooms} />, <ProfileStep key="profile" />, <ReviewStep key="review" catalog={catalog} />]
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(submit)} className="min-h-[calc(100svh-4rem)]">
@@ -109,7 +99,7 @@ export function ReservationWizard() {
             <Button type="button" variant="ghost" disabled={step === 0 || submitting} onClick={() => setStep((current) => Math.max(0, current - 1))}><ArrowLeft />{common("back")}</Button>
             <div className="flex items-center gap-3">
               {submitError ? <p className="hidden max-w-md text-right text-xs text-destructive sm:block">{submitError}</p> : null}
-              {!isAuditorium && step < 4 ? <Button type="button" onClick={() => void next()}>{common("next")}<ArrowRight /></Button> : !isAuditorium && step === 4 ? <Button type="submit" disabled={submitting}>{submitting ? <Loader2 className="animate-spin" /> : null}{common("submit")}</Button> : isAuditorium && step < 2 ? <Button type="button" onClick={() => void next()}>{common("next")}<ArrowRight /></Button> : null}
+              {step < 4 ? <Button type="button" onClick={() => void next()}>{common("next")}<ArrowRight /></Button> : <Button type="submit" disabled={submitting}>{submitting ? <Loader2 className="animate-spin" /> : null}{common("submit")}</Button>}
             </div>
           </div>
           {submitError ? <p className="px-4 pb-3 text-xs text-destructive sm:hidden">{submitError}</p> : null}

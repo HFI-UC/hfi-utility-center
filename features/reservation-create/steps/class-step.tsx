@@ -16,7 +16,7 @@ export function ClassStep({ catalog }: { catalog: BootstrapData }) {
   const [campusId, setCampusId] = useState(selectedClass?.campus ?? catalog.campuses[0]?.id ?? 0)
   const campus = catalog.campuses.find((item) => item.id === campusId)
   const classes = useMemo(() => catalog.classes.filter((item) => item.campus === campusId && item.name.toLowerCase().includes(query.toLowerCase())), [catalog, campusId, query])
-  return <StepLayout eyebrow="01 / 05" title={t("classTitle")} description={t("classDescription")} error={formState.errors.classId?.message}>
+  return <StepLayout eyebrow="01 / 05" title={t("classTitle")} error={formState.errors.classId?.message}>
     <Input className="mb-7 max-w-md border-x-0 border-t-0 px-0 text-base" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("classSearch")} aria-label={t("classSearch")} />
     <div className="grid gap-7 xl:grid-cols-[13rem_1fr]">
       <section>

@@ -11,35 +11,6 @@ export interface CreateReservationInput {
   reason: string
   startTime: number
   endTime: number
-  purposeType: "personal" | "class" | "club"
-  multimediaRequired: boolean
-  multimediaDetails?: string
-  locale: "zh-CN" | "en-US"
-}
-
-const purposeLine = /^\[Purpose: (personal|class|club)]$/
-const multimediaLine = /^\[Multimedia: (none|required)(?:: (.*))?]$/
-
-export function buildLegacyReason(input: Pick<CreateReservationInput, "reason" | "purposeType" | "multimediaRequired" | "multimediaDetails">) {
-  const multimedia = input.multimediaRequired
-    ? `[Multimedia: required: ${input.multimediaDetails?.trim() || "unspecified"}]`
-    : "[Multimedia: none]"
-  return `[Purpose: ${input.purposeType}]\n${multimedia}\n\n${input.reason.trim()}`
-}
-
-export function normalizeLegacyReservation(item: Reservation): Reservation {
-  const lines = item.reason.split("\n")
-  const purpose = purposeLine.exec(lines[0] ?? "")?.[1] as Reservation["purposeType"] | undefined
-  const multimedia = multimediaLine.exec(lines[1] ?? "")
-  const hasMetadata = Boolean(purpose && multimedia)
-  return {
-    ...item,
-    purposeType: purpose ?? item.purposeType ?? "personal",
-    multimediaRequired: multimedia ? multimedia[1] === "required" : (item.multimediaRequired ?? false),
-    multimediaDetails: multimedia?.[2] ?? item.multimediaDetails,
-    locale: item.locale ?? "zh-CN",
-    reason: hasMetadata ? lines.slice(3).join("\n").trim() : item.reason,
-  }
 }
 
 function overlapsPolicy(room: Room, slotStart: Date, slotEnd: Date) {
@@ -99,7 +70,7 @@ export const createReservation = (input: CreateReservationInput) =>
       studentName: input.studentName,
       studentId: input.studentId,
       email: input.email,
-      reason: buildLegacyReason(input),
+      reason: input.reason,
       startTime: input.startTime,
       endTime: input.endTime,
     }),
@@ -122,15 +93,12 @@ export async function getReservations(params: {
   if (params.endTime) query.set("endTime", String(params.endTime))
   const response = await apiRequest<ReservationPage>(`/reservation/get?${query}`)
   if (!response.data) throw new Error("Reservation data is missing")
-  return {
-    ...response.data,
-    reservations: response.data.reservations.map(normalizeLegacyReservation),
-  }
+  return response.data
 }
 
 export const getFutureReservations = async () => {
   const response = await apiRequest<Reservation[]>("/reservation/future")
-  return (response.data ?? []).map(normalizeLegacyReservation)
+  return response.data ?? []
 }
 
 export const updateReservationApproval = (id: number, approved: boolean, reason?: string) =>

@@ -9,7 +9,7 @@ export function StepLayout({
 }: {
   eyebrow: string
   title: string
-  description: string
+  description?: string
   error?: string
   children: React.ReactNode
 }) {
@@ -19,7 +19,7 @@ export function StepLayout({
         <p className="font-mono text-[0.6875rem] font-medium text-muted-foreground">STEP {eyebrow}</p>
         <p className="mt-4 text-5xl font-semibold leading-none sm:text-6xl" aria-hidden="true">{eyebrow.slice(0, 2)}</p>
         <h1 id="step-title" className="mt-5 text-3xl font-semibold leading-tight sm:text-4xl">{title}</h1>
-        <p className="mt-6 max-w-md text-sm leading-6 text-muted-foreground">{description}</p>
+        {description ? <p className="mt-6 max-w-md text-sm leading-6 text-muted-foreground">{description}</p> : null}
       {error ? (
         <div className="mt-6 flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           <AlertCircle className="mt-0.5 size-4 shrink-0" />{error}
