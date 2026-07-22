@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { bootstrapData } from "@/lib/api/catalog"
+import { getBootstrap } from "@/lib/api/catalog"
 import { getReservations } from "@/lib/api/reservations"
 import type { BootstrapData, ReservationPage, ReservationStatus } from "@/lib/api/types"
 import { messages } from "@/lib/messages"
@@ -30,7 +30,7 @@ export function ReservationSearch() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const catalog: BootstrapData = bootstrapData
+  const [catalog, setCatalog] = useState<BootstrapData>()
   const [result, setResult] = useState<ReservationPage>({ reservations: [], total: 0 })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>()
@@ -48,6 +48,12 @@ export function ReservationSearch() {
     if (!("page" in updates)) next.delete("page")
     router.replace(`${pathname}?${next.toString()}`)
   }, [pathname, router, searchParams])
+
+  useEffect(() => {
+    let active = true
+    getBootstrap().then((data) => { if (active) setCatalog(data) }).catch(() => undefined)
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     let active = true

@@ -1,5 +1,4 @@
 import { apiRequest, jsonBody } from "@/lib/api/client"
-import { catalogSnapshot } from "@/lib/api/catalog-snapshot"
 import type { BootstrapData, Campus, Room, SchoolClass } from "@/lib/api/types"
 
 const auditorium = {
@@ -18,13 +17,21 @@ const auditorium = {
   },
 }
 
-export const bootstrapData = {
-  ...catalogSnapshot,
-  specialFacilities: [auditorium],
-} satisfies BootstrapData
-
 export async function getBootstrap() {
-  return bootstrapData
+  const [campuses, classes, rooms] = await Promise.all([
+    getCampuses(),
+    getClasses(),
+    getRooms(),
+  ])
+  return {
+    schemaVersion: 1,
+    dataVersion: new Date().toISOString(),
+    generatedAt: new Date().toISOString(),
+    campuses,
+    classes,
+    rooms,
+    specialFacilities: [auditorium],
+  } satisfies BootstrapData
 }
 
 export async function getCampuses() {

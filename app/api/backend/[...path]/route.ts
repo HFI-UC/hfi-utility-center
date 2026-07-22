@@ -5,6 +5,24 @@ const backendUrl = process.env.VERCEL
   : (process.env.BACKEND_URL ?? "https://api.hfiuc.org")
 const mutationMethods = new Set(["POST", "PUT", "PATCH", "DELETE"])
 
+async function fetchBackend(target: URL, init: RequestInit) {
+  const attempts = init.method === "GET" ? 2 : 1
+  let lastError: unknown
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      return await fetch(target, {
+        ...init,
+        signal: AbortSignal.timeout(12_000),
+      })
+    } catch (error) {
+      lastError = error
+    }
+  }
+
+  throw lastError
+}
+
 function isLocalRequest(request: NextRequest) {
   return request.nextUrl.hostname === "localhost" || request.nextUrl.hostname === "127.0.0.1"
 }
@@ -17,7 +35,7 @@ function normalizeSetCookie(value: string, local: boolean) {
     .replace(/SameSite=None/gi, "SameSite=Lax")
 }
 
-async function proxy(request: NextRequest, context: RouteContext<"/api/backend/[...path]">) {
+async function proxyRequest(request: NextRequest, context: RouteContext<"/api/backend/[...path]">) {
   const { path } = await context.params
   const target = new URL(`/${path.join("/")}`, backendUrl)
   target.search = request.nextUrl.search
@@ -29,7 +47,8 @@ async function proxy(request: NextRequest, context: RouteContext<"/api/backend/[
   }
 
   if (mutationMethods.has(request.method) && !headers.get("authorization")) {
-    const csrfResponse = await fetch(new URL("/_csrf", backendUrl), {
+    const csrfResponse = await fetchBackend(new URL("/_csrf", backendUrl), {
+      method: "GET",
       cache: "no-store",
     })
     const csrfCookie = csrfResponse.headers.get("set-cookie")
@@ -41,7 +60,7 @@ async function proxy(request: NextRequest, context: RouteContext<"/api/backend/[
     }
   }
 
-  const response = await fetch(target, {
+  const response = await fetchBackend(target, {
     method: request.method,
     headers,
     body: mutationMethods.has(request.method) ? await request.arrayBuffer() : undefined,
@@ -71,9 +90,22 @@ async function proxy(request: NextRequest, context: RouteContext<"/api/backend/[
   })
 }
 
+async function proxy(request: NextRequest, context: RouteContext<"/api/backend/[...path]">) {
+  try {
+    return await proxyRequest(request, context)
+  } catch {
+    return Response.json(
+      { success: false, message: "Backend connection failed" },
+      { status: 502 },
+    )
+  }
+}
+
 export const GET = proxy
 export const POST = proxy
 export const PUT = proxy
 export const PATCH = proxy
 export const DELETE = proxy
 export const maxDuration = 30
+export const runtime = "edge"
+export const preferredRegion = "global"
