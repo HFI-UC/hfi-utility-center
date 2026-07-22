@@ -1,6 +1,8 @@
 import type { NextRequest } from "next/server"
 
-const backendUrl = process.env.BACKEND_URL ?? "https://api.hfiuc.org"
+const backendUrl = process.env.VERCEL
+  ? "https://api.hfiuc.org"
+  : (process.env.BACKEND_URL ?? "https://api.hfiuc.org")
 const mutationMethods = new Set(["POST", "PUT", "PATCH", "DELETE"])
 
 function isLocalRequest(request: NextRequest) {
@@ -8,10 +10,10 @@ function isLocalRequest(request: NextRequest) {
 }
 
 function normalizeSetCookie(value: string, local: boolean) {
-  if (!local) return value
-  return value
+  const sameOriginCookie = value.replace(/;\s*Domain=[^;]+/gi, "")
+  if (!local) return sameOriginCookie
+  return sameOriginCookie
     .replace(/;\s*Secure/gi, "")
-    .replace(/;\s*Domain=[^;]+/gi, "")
     .replace(/SameSite=None/gi, "SameSite=Lax")
 }
 
