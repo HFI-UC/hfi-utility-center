@@ -8,7 +8,7 @@ export default async function Page() {
   const nav = await getTranslations("nav")
   return (
     <main className="swiss-grid overflow-hidden px-4 sm:px-8">
-      <div className="mx-auto grid min-h-[calc(100svh-9.5rem)] max-w-[96rem] grid-cols-12 gap-x-4 py-7 sm:gap-x-6 sm:py-10">
+      <div className="mx-auto grid min-h-[calc(100svh-6.5rem)] max-w-[96rem] grid-cols-12 gap-x-4 py-7 sm:gap-x-6 sm:py-10">
         <div className="col-span-12 self-center lg:col-span-8">
           <h1 className="swiss-display text-[5rem] sm:text-[7.75rem] lg:text-[9rem] xl:text-[10.5rem]">
             <span className="block">HFI</span>
@@ -27,8 +27,8 @@ export default async function Page() {
         </div>
 
         <div className="col-span-12 self-end border-t border-foreground pt-3">
-          <p className="text-xs font-bold">高效 · 公平 · 透明</p>
-          <p className="mt-1 text-[0.6875rem] text-muted-foreground">Efficient · Fair · Transparent</p>
+          <p className="text-xs font-bold">让空间服务于学习</p>
+          <p className="mt-1 text-[0.6875rem] text-muted-foreground">Space, ready for learning.</p>
         </div>
       </div>
     </main>

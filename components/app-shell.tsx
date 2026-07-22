@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/language-switcher"
-import { SwissFooterBar, SwissMetaBar } from "@/components/swiss-frame"
+import { SwissFooterBar } from "@/components/swiss-frame"
 import { useLocale, useTranslations } from "next-intl"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 bg-background">
-        <SwissMetaBar />
         <div className="border-b border-foreground">
           <div className="mx-auto flex min-h-16 max-w-[96rem] items-center justify-between gap-4 px-4 py-2 sm:px-8">
           <Link href="/" className="shrink-0 leading-none">
