@@ -23,7 +23,13 @@ export function ReservationWizard() {
   const t = useTranslations("booking")
   const common = useTranslations("common")
   const schema = useMemo(() => createReservationSchema((key) => t(key)), [t])
-  const methods = useForm<ReservationFormValues>({ resolver: zodResolver(schema), defaultValues: reservationDefaults, mode: "onTouched" })
+  const methods = useForm<ReservationFormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: reservationDefaults,
+    mode: "onTouched",
+    reValidateMode: "onChange",
+    shouldUnregister: false,
+  })
   const resetForm = methods.reset
   const [step, setStep] = useState(0)
   const [catalog, setCatalog] = useState<BootstrapData>()
@@ -89,7 +95,7 @@ export function ReservationWizard() {
   const steps = [<ClassStep key="class" catalog={catalog} />, <LocationStep key="location" catalog={catalog} />, <DateTimeStep key="datetime" rooms={catalog.rooms} />, <ProfileStep key="profile" />, <ReviewStep key="review" catalog={catalog} />]
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(submit)} className="min-h-[calc(100svh-4rem)]">
+      <form noValidate onSubmit={methods.handleSubmit(submit)} className="min-h-[calc(100svh-4rem)]">
         <div className="mx-auto flex max-w-7xl items-center gap-0 px-4 pt-8 sm:px-8" aria-label={t("progress")}>
           {Array.from({ length: steps.length }, (_, index) => <span key={index} className={`h-1 flex-1 rounded-full ${index <= step ? "bg-primary" : "bg-muted"}`} />)}
         </div>

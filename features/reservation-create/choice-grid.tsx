@@ -5,24 +5,42 @@ export function ChoiceGrid<T extends number | string>({
   items,
   value,
   onChange,
+  onBlur,
+  name,
+  invalid,
+  label,
   emptyText = "暂无可选项目",
 }: {
   items: { value: T; label: string; description?: string; disabled?: boolean }[]
   value?: T
   onChange: (value: T) => void
+  onBlur?: () => void
+  name?: string
+  invalid?: boolean
+  label?: string
   emptyText?: string
 }) {
   if (!items.length) return <p className="border-y py-8 text-sm text-muted-foreground">{emptyText}</p>
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+    <div
+      className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4"
+      role="radiogroup"
+      aria-label={label}
+      aria-invalid={invalid || undefined}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) onBlur?.()
+      }}
+    >
       {items.map((item, index) => {
         const selected = item.value === value
         return (
           <button
             key={item.value}
+            name={name}
             type="button"
+            role="radio"
             disabled={item.disabled}
-            aria-pressed={selected}
+            aria-checked={selected}
             onClick={() => onChange(item.value)}
             className={cn(
               "relative min-h-24 rounded-lg border bg-background p-4 text-left outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-40",
