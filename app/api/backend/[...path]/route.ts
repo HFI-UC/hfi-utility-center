@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server"
 
-const backendUrl = process.env.BACKEND_URL ?? "http://127.0.0.1:8000"
+const backendUrl = process.env.BACKEND_URL ?? "https://api.hfiuc.org"
 const mutationMethods = new Set(["POST", "PUT", "PATCH", "DELETE"])
 
 function isLocalRequest(request: NextRequest) {
