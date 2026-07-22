@@ -1,3 +1,5 @@
 import { FacilitiesAdmin } from "@/features/admin/facilities-admin"
 
-export default function AdminFacilitiesPage() { return <FacilitiesAdmin /> }
+export default function AdminFacilitiesPage() {
+  return <FacilitiesAdmin />
+}

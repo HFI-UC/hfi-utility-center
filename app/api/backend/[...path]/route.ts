@@ -24,7 +24,10 @@ async function fetchBackend(target: URL, init: RequestInit) {
 }
 
 function isLocalRequest(request: NextRequest) {
-  return request.nextUrl.hostname === "localhost" || request.nextUrl.hostname === "127.0.0.1"
+  return (
+    request.nextUrl.hostname === "localhost" ||
+    request.nextUrl.hostname === "127.0.0.1"
+  )
 }
 
 function normalizeSetCookie(value: string, local: boolean) {
@@ -35,13 +38,22 @@ function normalizeSetCookie(value: string, local: boolean) {
     .replace(/SameSite=None/gi, "SameSite=Lax")
 }
 
-async function proxyRequest(request: NextRequest, context: RouteContext<"/api/backend/[...path]">) {
+async function proxyRequest(
+  request: NextRequest,
+  context: RouteContext<"/api/backend/[...path]">
+) {
   const { path } = await context.params
   const target = new URL(`/${path.join("/")}`, backendUrl)
   target.search = request.nextUrl.search
 
   const headers = new Headers()
-  for (const name of ["accept", "content-type", "cookie", "authorization", "user-agent"]) {
+  for (const name of [
+    "accept",
+    "content-type",
+    "cookie",
+    "authorization",
+    "user-agent",
+  ]) {
     const value = request.headers.get(name)
     if (value) headers.set(name, value)
   }
@@ -55,7 +67,10 @@ async function proxyRequest(request: NextRequest, context: RouteContext<"/api/ba
     const csrfToken = csrfCookie?.match(/_csrf=([^;]+)/)?.[1]
     if (csrfToken) {
       const existingCookie = headers.get("cookie")
-      headers.set("cookie", [existingCookie, `_csrf=${csrfToken}`].filter(Boolean).join("; "))
+      headers.set(
+        "cookie",
+        [existingCookie, `_csrf=${csrfToken}`].filter(Boolean).join("; ")
+      )
       headers.set("x-csrf-token", decodeURIComponent(csrfToken))
     }
   }
@@ -63,25 +78,43 @@ async function proxyRequest(request: NextRequest, context: RouteContext<"/api/ba
   const response = await fetchBackend(target, {
     method: request.method,
     headers,
-    body: mutationMethods.has(request.method) ? await request.arrayBuffer() : undefined,
+    body: mutationMethods.has(request.method)
+      ? await request.arrayBuffer()
+      : undefined,
     cache: "no-store",
     redirect: "manual",
   })
 
   const responseHeaders = new Headers()
-  for (const name of ["content-type", "content-disposition", "etag", "cache-control", "location", "x-request-id"]) {
+  for (const name of [
+    "content-type",
+    "content-disposition",
+    "etag",
+    "cache-control",
+    "location",
+    "x-request-id",
+  ]) {
     const value = response.headers.get(name)
     if (value) responseHeaders.set(name, value)
   }
 
-  const getSetCookie = (response.headers as Headers & { getSetCookie?: () => string[] }).getSetCookie
+  const getSetCookie = (
+    response.headers as Headers & { getSetCookie?: () => string[] }
+  ).getSetCookie
   const cookies = getSetCookie ? getSetCookie.call(response.headers) : []
   for (const cookie of cookies) {
-    responseHeaders.append("set-cookie", normalizeSetCookie(cookie, isLocalRequest(request)))
+    responseHeaders.append(
+      "set-cookie",
+      normalizeSetCookie(cookie, isLocalRequest(request))
+    )
   }
   if (!cookies.length) {
     const cookie = response.headers.get("set-cookie")
-    if (cookie) responseHeaders.append("set-cookie", normalizeSetCookie(cookie, isLocalRequest(request)))
+    if (cookie)
+      responseHeaders.append(
+        "set-cookie",
+        normalizeSetCookie(cookie, isLocalRequest(request))
+      )
   }
 
   return new Response(response.body, {
@@ -90,13 +123,16 @@ async function proxyRequest(request: NextRequest, context: RouteContext<"/api/ba
   })
 }
 
-async function proxy(request: NextRequest, context: RouteContext<"/api/backend/[...path]">) {
+async function proxy(
+  request: NextRequest,
+  context: RouteContext<"/api/backend/[...path]">
+) {
   try {
     return await proxyRequest(request, context)
   } catch {
     return Response.json(
       { success: false, message: "Backend connection failed" },
-      { status: 502 },
+      { status: 502 }
     )
   }
 }

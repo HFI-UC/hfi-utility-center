@@ -18,7 +18,11 @@ export default async function RootLayout({
       className="font-sans antialiased"
     >
       <body>
-        <NextIntlClientProvider messages={messages}><ThemeProvider><AppShell>{children}</AppShell></ThemeProvider></NextIntlClientProvider>
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider>
+            <AppShell>{children}</AppShell>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

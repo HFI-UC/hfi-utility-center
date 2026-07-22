@@ -1,3 +1,5 @@
 import { AdminUsers } from "@/features/admin/admin-users"
 
-export default function AdminUsersPage() { return <AdminUsers /> }
+export default function AdminUsersPage() {
+  return <AdminUsers />
+}

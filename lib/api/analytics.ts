@@ -12,7 +12,11 @@ export async function getWeeklyAnalytics() {
   return response.data
 }
 
-export function analyticsExportUrl(report: "overview" | "weekly", type: "pdf" | "png", turnstileToken: string) {
+export function analyticsExportUrl(
+  report: "overview" | "weekly",
+  type: "pdf" | "png",
+  turnstileToken: string
+) {
   const query = new URLSearchParams({ type, turnstileToken })
   return `/api/backend/analytics/${report}/export?${query}`
 }

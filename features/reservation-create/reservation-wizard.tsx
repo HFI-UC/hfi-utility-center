@@ -12,8 +12,12 @@ import { LocationStep } from "@/features/reservation-create/steps/location-step"
 import { ProfileStep } from "@/features/reservation-create/steps/profile-step"
 import { ReviewStep } from "@/features/reservation-create/steps/review-step"
 import { SuccessStep } from "@/features/reservation-create/steps/success-step"
-import { createReservationSchema, stepFields, type ReservationFormValues } from "@/features/reservation-create/schema"
-import { profileStorageKey, reservationDefaults, storedProfile } from "@/features/reservation-create/form-state"
+import {
+  createReservationSchema,
+  stepFields,
+  type ReservationFormValues,
+} from "@/features/reservation-create/schema"
+import { reservationDefaults } from "@/features/reservation-create/form-state"
 import { ApiError } from "@/lib/api/client"
 import { getBootstrap } from "@/lib/api/catalog"
 import { createReservation } from "@/lib/api/reservations"
@@ -30,37 +34,50 @@ export function ReservationWizard() {
     reValidateMode: "onChange",
     shouldUnregister: false,
   })
-  const resetForm = methods.reset
   const [step, setStep] = useState(0)
   const [catalog, setCatalog] = useState<BootstrapData>()
   const [loadingError, setLoadingError] = useState<string>()
   const [submitError, setSubmitError] = useState<string>()
   const [submitting, setSubmitting] = useState(false)
-  const [result, setResult] = useState<{ reservationId?: number; message?: string }>()
+  const [result, setResult] = useState<{
+    reservationId?: number
+    message?: string
+  }>()
 
   async function loadCatalog() {
     setLoadingError(undefined)
-    try { setCatalog(await getBootstrap()) } catch (error) { setLoadingError(error instanceof ApiError ? error.message : t("loadError")) }
+    try {
+      setCatalog(await getBootstrap())
+    } catch (error) {
+      setLoadingError(
+        error instanceof ApiError ? error.message : t("loadError")
+      )
+    }
   }
 
   useEffect(() => {
     let active = true
     getBootstrap()
-      .then((data) => { if (active) setCatalog(data) })
-      .catch((error) => { if (active) setLoadingError(error instanceof ApiError ? error.message : t("loadError")) })
-    return () => { active = false }
-  }, [t])
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem(profileStorageKey)
-    if (stored) {
-      try { resetForm({ ...reservationDefaults, ...JSON.parse(stored), rememberProfile: true }) } catch { window.localStorage.removeItem(profileStorageKey) }
+      .then((data) => {
+        if (active) setCatalog(data)
+      })
+      .catch((error) => {
+        if (active)
+          setLoadingError(
+            error instanceof ApiError ? error.message : t("loadError")
+          )
+      })
+    return () => {
+      active = false
     }
-  }, [resetForm])
+  }, [t])
 
   async function next() {
     const valid = await methods.trigger(stepFields[step], { shouldFocus: true })
-    if (valid) { setSubmitError(undefined); setStep((current) => Math.min(current + 1, 4)) }
+    if (valid) {
+      setSubmitError(undefined)
+      setStep((current) => Math.min(current + 1, 4))
+    }
   }
 
   async function submit(values: ReservationFormValues) {
@@ -77,38 +94,118 @@ export function ReservationWizard() {
         startTime: values.startTime,
         endTime: values.endTime,
       })
-      if (values.rememberProfile) {
-        window.localStorage.setItem(profileStorageKey, JSON.stringify(storedProfile(values)))
-      } else window.localStorage.removeItem(profileStorageKey)
-      setResult({ reservationId: response.data?.reservationId, message: response.message })
+      setResult({
+        reservationId: response.data?.reservationId,
+        message: response.message,
+      })
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : t("submitError")
+      const message =
+        error instanceof ApiError ? error.message : t("submitError")
       setSubmitError(message)
-      if (/conflict|冲突|policy|规则|occupied/i.test(message)) setStep(2)
-    } finally { setSubmitting(false) }
+      if (error instanceof ApiError && error.status === 409) setStep(2)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
-  if (result) return <main className="px-4 py-8 sm:px-6"><SuccessStep {...result} onReset={() => { resetForm(reservationDefaults); setStep(0); setResult(undefined) }} /></main>
+  if (result)
+    return (
+      <main className="px-4 py-8 sm:px-6">
+        <SuccessStep
+          {...result}
+          onReset={() => {
+            methods.reset(reservationDefaults)
+            setStep(0)
+            setResult(undefined)
+          }}
+        />
+      </main>
+    )
 
-  if (!catalog) return <main className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-3xl flex-col justify-center px-4 sm:px-6"><Loader2 className="mb-4 size-6 animate-spin" /><h1 className="text-2xl font-semibold">{t("loadingTitle")}</h1><p className="mt-3 text-sm text-muted-foreground">{t("loadingDescription")}</p>{loadingError ? <><p className="mt-5 text-sm text-destructive">{loadingError}</p><Button className="mt-4 w-fit" variant="outline" onClick={() => void loadCatalog()}>{common("retry")}</Button></> : null}</main>
+  if (!catalog)
+    return (
+      <main className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-3xl flex-col justify-center px-4 sm:px-6">
+        <Loader2 className="mb-4 size-6 animate-spin" />
+        <h1 className="text-2xl font-semibold">{t("loadingTitle")}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {t("loadingDescription")}
+        </p>
+        {loadingError ? (
+          <>
+            <p className="mt-5 text-sm text-destructive">{loadingError}</p>
+            <Button
+              className="mt-4 w-fit"
+              variant="outline"
+              onClick={() => void loadCatalog()}
+            >
+              {common("retry")}
+            </Button>
+          </>
+        ) : null}
+      </main>
+    )
 
-  const steps = [<ClassStep key="class" catalog={catalog} />, <LocationStep key="location" catalog={catalog} />, <DateTimeStep key="datetime" rooms={catalog.rooms} />, <ProfileStep key="profile" />, <ReviewStep key="review" catalog={catalog} />]
+  const steps = [
+    <ClassStep key="class" catalog={catalog} />,
+    <LocationStep key="location" catalog={catalog} />,
+    <DateTimeStep key="datetime" rooms={catalog.rooms} />,
+    <ProfileStep key="profile" />,
+    <ReviewStep key="review" catalog={catalog} />,
+  ]
   return (
     <FormProvider {...methods}>
-      <form noValidate onSubmit={methods.handleSubmit(submit)} className="min-h-[calc(100svh-4rem)]">
-        <div className="mx-auto flex max-w-7xl items-center gap-0 px-4 pt-8 sm:px-8" aria-label={t("progress")}>
-          {Array.from({ length: steps.length }, (_, index) => <span key={index} className={`h-1 flex-1 rounded-full ${index <= step ? "bg-primary" : "bg-muted"}`} />)}
+      <form
+        noValidate
+        onSubmit={methods.handleSubmit(submit)}
+        className="min-h-[calc(100svh-4rem)]"
+      >
+        <div
+          className="mx-auto flex max-w-7xl items-center gap-0 px-4 pt-8 sm:px-8"
+          aria-label={t("progress")}
+        >
+          {Array.from({ length: steps.length }, (_, index) => (
+            <span
+              key={index}
+              className={`h-1 flex-1 rounded-full ${index <= step ? "bg-primary" : "bg-muted"}`}
+            />
+          ))}
         </div>
         <div className="px-4 py-10 sm:px-8 sm:py-14">{steps[step]}</div>
         <div className="sticky bottom-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-8">
-            <Button type="button" variant="ghost" disabled={step === 0 || submitting} onClick={() => setStep((current) => Math.max(0, current - 1))}><ArrowLeft />{common("back")}</Button>
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={step === 0 || submitting}
+              onClick={() => setStep((current) => Math.max(0, current - 1))}
+            >
+              <ArrowLeft />
+              {common("back")}
+            </Button>
             <div className="flex items-center gap-3">
-              {submitError ? <p className="hidden max-w-md text-right text-xs text-destructive sm:block">{submitError}</p> : null}
-              {step < 4 ? <Button type="button" onClick={() => void next()}>{common("next")}<ArrowRight /></Button> : <Button type="submit" disabled={submitting}>{submitting ? <Loader2 className="animate-spin" /> : null}{common("submit")}</Button>}
+              {submitError ? (
+                <p className="hidden max-w-md text-right text-xs text-destructive sm:block">
+                  {submitError}
+                </p>
+              ) : null}
+              {step < 4 ? (
+                <Button type="button" onClick={() => void next()}>
+                  {common("next")}
+                  <ArrowRight />
+                </Button>
+              ) : (
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? <Loader2 className="animate-spin" /> : null}
+                  {common("submit")}
+                </Button>
+              )}
             </div>
           </div>
-          {submitError ? <p className="px-4 pb-3 text-xs text-destructive sm:hidden">{submitError}</p> : null}
+          {submitError ? (
+            <p className="px-4 pb-3 text-xs text-destructive sm:hidden">
+              {submitError}
+            </p>
+          ) : null}
         </div>
       </form>
     </FormProvider>
