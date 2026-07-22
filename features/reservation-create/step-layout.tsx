@@ -23,9 +23,7 @@ export function StepLayout({
   return (
     <section aria-labelledby="step-title" className="mx-auto w-full max-w-5xl">
       <header className="mb-8 space-y-3">
-        <Badge className="border-border bg-background">
-          {t("step", { current: step, total: totalSteps })}
-        </Badge>
+        <Badge>{t("step", { current: step, total: totalSteps })}</Badge>
         <h1 id="step-title" className="text-3xl font-semibold">
           {title}
         </h1>

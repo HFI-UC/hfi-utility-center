@@ -59,7 +59,7 @@ function FilterSelect({
       value={value ?? "all"}
       onValueChange={(next) => onChange(next === "all" ? undefined : next)}
     >
-      <SelectTrigger className="h-10 w-full">
+      <SelectTrigger className="w-full">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

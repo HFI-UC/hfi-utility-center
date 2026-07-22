@@ -7,7 +7,6 @@ import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { resolvedTheme, setTheme } = useTheme()
@@ -28,19 +27,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div>
           <div className="mx-auto flex min-h-16 max-w-[96rem] items-center justify-between gap-4 px-4 py-2 sm:px-8">
-            <Button
-              asChild
-              variant="link"
-              className="h-auto shrink-0 p-0 text-foreground no-underline hover:no-underline"
-            >
-              <Link
-                href="/"
-                className="text-sm leading-none font-semibold sm:text-base"
-              >
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/" className="font-semibold">
                 HFI Utility Center
               </Link>
             </Button>
-            <nav className="flex min-w-0 items-center text-xs font-medium sm:text-sm">
+            <nav className="flex min-w-0 items-center gap-1">
               {links.map((link) => {
                 const active =
                   link.href === "/"
@@ -52,7 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     asChild
                     variant={active ? "secondary" : "ghost"}
                     size="sm"
-                    className={cn("text-xs sm:text-sm", link.className)}
+                    className={link.className}
                   >
                     <Link
                       href={link.href}

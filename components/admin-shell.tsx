@@ -50,7 +50,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               key={item.href}
               asChild
               variant={pathname === item.href ? "secondary" : "ghost"}
-              className="h-11 justify-start"
+              className="justify-start"
             >
               <Link href={item.href}>
                 <span className="font-mono text-[0.625rem] text-muted-foreground">

@@ -39,7 +39,7 @@ export function ClassStep({ catalog }: { catalog: BootstrapData }) {
       error={classFieldState.error?.message}
     >
       <Input
-        className="mb-7 max-w-md border-x-0 border-t-0 px-0 text-base"
+        className="mb-7 max-w-md"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         placeholder={t("classSearch")}
@@ -63,7 +63,7 @@ export function ClassStep({ catalog }: { catalog: BootstrapData }) {
                     if (selectedClass?.campus !== item.id)
                       setValue("classId", 0, { shouldValidate: false })
                   }}
-                  className="h-11 w-full justify-between rounded-lg px-3"
+                  className="w-full justify-between"
                 >
                   <span>{item.name}</span>
                   {selected ? <Check /> : null}

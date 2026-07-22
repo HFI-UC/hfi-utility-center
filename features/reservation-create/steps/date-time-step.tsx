@@ -179,11 +179,6 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
                     startField.onChange(slot.startTime)
                     endField.onChange(0)
                   }}
-                  className={cn(
-                    "h-11",
-                    slot.status !== "available" &&
-                      "bg-muted text-muted-foreground"
-                  )}
                 >
                   {timeLabel(slot.startTime)}
                 </Button>

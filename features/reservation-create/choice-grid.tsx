@@ -1,6 +1,5 @@
 import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
 
 export function ChoiceGrid<T extends number | string>({
   items,
@@ -12,7 +11,7 @@ export function ChoiceGrid<T extends number | string>({
   label,
   emptyText,
 }: {
-  items: { value: T; label: string; description?: string; disabled?: boolean }[]
+  items: { value: T; label: string; disabled?: boolean }[]
   value?: T
   onChange: (value: T) => void
   onBlur?: () => void
@@ -47,25 +46,11 @@ export function ChoiceGrid<T extends number | string>({
             aria-checked={selected}
             onClick={() => onChange(item.value)}
             variant={selected ? "default" : "outline"}
-            className={cn(
-              "relative h-auto min-h-16 justify-start rounded-lg p-4 text-left whitespace-normal",
-              !selected && "bg-background"
-            )}
+            size="lg"
+            className="w-full justify-start"
           >
-            <span className="block pr-8 text-sm font-medium">{item.label}</span>
-            {item.description ? (
-              <span
-                className={cn(
-                  "mt-2 block text-xs text-muted-foreground",
-                  selected && "text-white/75"
-                )}
-              >
-                {item.description}
-              </span>
-            ) : null}
-            {selected ? (
-              <Check className="absolute top-4 right-4 size-4" />
-            ) : null}
+            {item.label}
+            {selected ? <Check className="ml-auto" /> : null}
           </Button>
         )
       })}

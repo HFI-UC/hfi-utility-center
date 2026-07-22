@@ -125,11 +125,3 @@
     @apply font-sans;
   }
 }
-
-button,
-a,
-input,
-textarea,
-select {
-  letter-spacing: 0;
-}

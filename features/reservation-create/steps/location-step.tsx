@@ -57,11 +57,6 @@ export function LocationStep({ catalog }: { catalog: BootstrapData }) {
             items={rooms.map((room) => ({
               value: room.id,
               label: room.name,
-              description: room.enabled
-                ? t("rules", {
-                    count: room.policies.filter((item) => item.enabled).length,
-                  })
-                : t("disabled"),
               disabled: !room.enabled,
             }))}
             onChange={(room) => {
