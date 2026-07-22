@@ -12,12 +12,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const t = useTranslations("nav")
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="text-sm font-semibold tracking-normal">
-            HFI Utility Center
+      <header className="sticky top-0 z-30 border-b border-foreground bg-background">
+        <div className="mx-auto flex h-16 max-w-[96rem] items-center justify-between px-4 sm:px-8">
+          <Link href="/" className="flex items-center gap-3 text-sm font-bold">
+            <span className="block size-3 bg-red-600" aria-hidden="true" />
+            <span>HFI <span className="hidden sm:inline">UTILITY CENTER</span><span className="sm:hidden">UC</span></span>
           </Link>
-          <nav className="flex items-center gap-1">
+          <nav className="flex items-center gap-0">
             <Button asChild variant="ghost" size="sm">
               <Link href="/reservation/search">{t("reservations")}</Link>
             </Button>

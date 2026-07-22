@@ -95,13 +95,13 @@ export function ReservationWizard() {
     : [<ClassStep key="class" catalog={catalog} />, <LocationStep key="location" catalog={catalog} onSelectAuditorium={() => setStep(2)} />, <DateTimeStep key="datetime" rooms={catalog.rooms} />, <ProfileStep key="profile" />, <ReviewStep key="review" catalog={catalog} />]
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(submit)} className="min-h-[calc(100svh-3.5rem)]">
-        <div className="mx-auto flex max-w-7xl items-center gap-1 px-4 pt-5 sm:px-6" aria-label={t("progress")}>
-          {Array.from({ length: steps.length }, (_, index) => <span key={index} className={`h-1 flex-1 ${index <= step ? "bg-red-600" : "bg-muted"}`} />)}
+      <form onSubmit={methods.handleSubmit(submit)} className="min-h-[calc(100svh-4rem)]">
+        <div className="mx-auto flex max-w-7xl items-center gap-0 px-4 pt-8 sm:px-8" aria-label={t("progress")}>
+          {Array.from({ length: steps.length }, (_, index) => <span key={index} className={`h-1 flex-1 ${index <= step ? "bg-red-600" : "bg-foreground/15"}`} />)}
         </div>
-        <div className="px-4 py-9 sm:px-6 sm:py-14">{steps[step]}</div>
-        <div className="sticky bottom-0 border-t bg-background/95 backdrop-blur">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+        <div className="px-4 py-10 sm:px-8 sm:py-14">{steps[step]}</div>
+        <div className="sticky bottom-0 border-t border-foreground bg-background">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-8">
             <Button type="button" variant="ghost" disabled={step === 0 || submitting} onClick={() => setStep((current) => Math.max(0, current - 1))}><ArrowLeft />{common("back")}</Button>
             <div className="flex items-center gap-3">
               {submitError ? <p className="hidden max-w-md text-right text-xs text-red-600 sm:block">{submitError}</p> : null}

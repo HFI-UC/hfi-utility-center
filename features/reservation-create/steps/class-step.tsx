@@ -17,10 +17,10 @@ export function ClassStep({ catalog }: { catalog: BootstrapData }) {
     classes: catalog.classes.filter((item) => item.campus === campus.id && item.name.toLowerCase().includes(query.toLowerCase())),
   })).filter((group) => group.classes.length), [catalog, query])
   return <StepLayout eyebrow="01 / 05" title={t("classTitle")} description={t("classDescription")} error={formState.errors.classId?.message}>
-    <Input className="mb-7 max-w-sm" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("classSearch")} aria-label={t("classSearch")} />
-    <div className="space-y-8">
+    <Input className="mb-10 max-w-md border-x-0 border-t-0 px-0 text-base" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("classSearch")} aria-label={t("classSearch")} />
+    <div className="space-y-12">
       {groups.map(({ campus, classes }) => <section key={campus.id}>
-        <h2 className="mb-3 text-sm font-semibold">{campus.name}</h2>
+        <h2 className="mb-3 text-xs font-bold uppercase text-red-600">{campus.name}</h2>
         <ChoiceGrid value={value} items={classes.map((item) => ({ value: item.id, label: item.name }))} onChange={(classId) => setValue("classId", classId, { shouldValidate: true })} />
       </section>)}
       {!groups.length ? <p className="border-y py-8 text-sm text-muted-foreground">{t("classEmpty")}</p> : null}
