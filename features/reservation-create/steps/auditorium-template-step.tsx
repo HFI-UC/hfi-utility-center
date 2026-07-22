@@ -98,7 +98,7 @@ export function AuditoriumTemplateStep({ catalog }: { catalog: BootstrapData }) 
     </div>
     <div className="mt-7"><Field label={t("reason")}><Textarea rows={4} {...register("reason")} /></Field></div>
 
-    <p className="mt-8 border-l-2 border-red-600 bg-muted/40 px-4 py-3 text-sm leading-6">{t("auditoriumSendInstruction")}</p>
+    <p className="mt-8 border-l-2 border-brand bg-brand-soft px-4 py-3 text-sm leading-6">{t("auditoriumSendInstruction")}</p>
     <div className="mt-8 space-y-6 border-t pt-7">
       <section><div className="mb-2 flex items-center justify-between gap-4"><h2 className="text-sm font-semibold">{t("subject")}</h2><Button type="button" size="sm" variant="outline" onClick={() => void copy("subject", subject)}>{copied === "subject" ? <Check /> : <Copy />}{copied === "subject" ? common("copied") : t("copySubject")}</Button></div><pre className="whitespace-pre-wrap border bg-muted/40 p-4 font-sans text-sm">{subject}</pre></section>
       <section><div className="mb-2 flex items-center justify-between gap-4"><h2 className="text-sm font-semibold">{t("body")}</h2><Button type="button" size="sm" variant="outline" onClick={() => void copy("body", body)}>{copied === "body" ? <Check /> : <Copy />}{copied === "body" ? common("copied") : t("copyBody")}</Button></div><pre className="whitespace-pre-wrap border bg-muted/40 p-4 font-sans text-sm leading-6">{body}</pre></section>

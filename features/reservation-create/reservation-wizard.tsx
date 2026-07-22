@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
 import { FormProvider, useForm, useWatch } from "react-hook-form"
 import { Button } from "@/components/ui/button"
+import { GlassSurface } from "@/components/glass-surface"
 import { useLocale, useTranslations } from "next-intl"
 import { ClassStep } from "@/features/reservation-create/steps/class-step"
 import { AuditoriumTemplateStep } from "@/features/reservation-create/steps/auditorium-template-step"
@@ -87,7 +88,7 @@ export function ReservationWizard() {
 
   if (result) return <main className="px-4 py-8 sm:px-6"><SuccessStep {...result} onReset={() => { methods.reset(reservationDefaults); setStep(0); setResult(undefined) }} /></main>
 
-  if (!catalog) return <main className="mx-auto flex min-h-[65svh] max-w-3xl flex-col justify-center px-4 sm:px-6"><Loader2 className="mb-4 size-6 animate-spin" /><h1 className="text-2xl font-semibold">{t("loadingTitle")}</h1><p className="mt-3 text-sm text-muted-foreground">{t("loadingDescription")}</p>{loadingError ? <><p className="mt-5 text-sm text-red-600">{loadingError}</p><Button className="mt-4 w-fit" variant="outline" onClick={() => void loadCatalog()}>{common("retry")}</Button></> : null}</main>
+  if (!catalog) return <main className="mx-auto flex min-h-[65svh] max-w-3xl flex-col justify-center px-4 sm:px-6"><Loader2 className="mb-4 size-6 animate-spin" /><h1 className="text-2xl font-semibold">{t("loadingTitle")}</h1><p className="mt-3 text-sm text-muted-foreground">{t("loadingDescription")}</p>{loadingError ? <><p className="mt-5 text-sm text-destructive">{loadingError}</p><Button className="mt-4 w-fit" variant="outline" onClick={() => void loadCatalog()}>{common("retry")}</Button></> : null}</main>
 
   const isAuditorium = specialFacility === "auditorium"
   const steps = isAuditorium
@@ -97,18 +98,18 @@ export function ReservationWizard() {
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(submit)} className="min-h-[calc(100svh-4rem)]">
         <div className="mx-auto flex max-w-7xl items-center gap-0 px-4 pt-8 sm:px-8" aria-label={t("progress")}>
-          {Array.from({ length: steps.length }, (_, index) => <span key={index} className={`h-1 flex-1 ${index <= step ? "bg-red-600" : "bg-foreground/15"}`} />)}
+          {Array.from({ length: steps.length }, (_, index) => <span key={index} className={`h-1 flex-1 ${index <= step ? "bg-brand" : "bg-foreground/12"}`} />)}
         </div>
         <div className="px-4 py-10 sm:px-8 sm:py-14">{steps[step]}</div>
-        <div className="sticky bottom-0 border-t border-foreground bg-background">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-8">
+        <div className="sticky bottom-0 z-20 px-3 pb-3 sm:px-6">
+          <GlassSurface className="mx-auto max-w-7xl" contentClassName="flex items-center justify-between px-4 py-3 sm:px-6" variant="toolbar">
             <Button type="button" variant="ghost" disabled={step === 0 || submitting} onClick={() => setStep((current) => Math.max(0, current - 1))}><ArrowLeft />{common("back")}</Button>
             <div className="flex items-center gap-3">
-              {submitError ? <p className="hidden max-w-md text-right text-xs text-red-600 sm:block">{submitError}</p> : null}
+              {submitError ? <p className="hidden max-w-md text-right text-xs text-destructive sm:block">{submitError}</p> : null}
               {!isAuditorium && step < 4 ? <Button type="button" onClick={() => void next()}>{common("next")}<ArrowRight /></Button> : !isAuditorium && step === 4 ? <Button type="submit" disabled={submitting}>{submitting ? <Loader2 className="animate-spin" /> : null}{common("submit")}</Button> : isAuditorium && step < 2 ? <Button type="button" onClick={() => void next()}>{common("next")}<ArrowRight /></Button> : null}
             </div>
-          </div>
-          {submitError ? <p className="px-4 pb-3 text-xs text-red-600 sm:hidden">{submitError}</p> : null}
+          </GlassSurface>
+          {submitError ? <p className="px-4 pt-2 text-xs text-destructive sm:hidden">{submitError}</p> : null}
         </div>
       </form>
     </FormProvider>

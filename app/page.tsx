@@ -2,30 +2,54 @@ import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { getLocale, getTranslations } from "next-intl/server"
 
-import { Button } from "@/components/ui/button"
+import { GlassSurface } from "@/components/glass-surface"
 
 export default async function Page() {
   const nav = await getTranslations("nav")
   const locale = await getLocale()
+  const home = await getTranslations("home")
   return (
-    <main className="swiss-grid overflow-hidden px-4 sm:px-8">
-      <div className="mx-auto grid min-h-[calc(100svh-6.5rem)] max-w-[96rem] grid-cols-12 gap-x-4 py-7 sm:gap-x-6 sm:py-10">
-        <div className="col-span-12 self-center lg:col-span-8">
-          <h1 className="swiss-display text-[5rem] sm:text-[7.75rem] lg:text-[9rem] xl:text-[10.5rem]">
+    <main className="relative isolate overflow-hidden px-4 sm:px-8">
+      <div className="absolute right-[7%] top-[18%] -z-10 hidden h-[52%] w-[24%] bg-[#43d9c0] lg:block dark:bg-[#007c83]" aria-hidden="true" />
+      <div className="absolute right-[3%] top-[14%] -z-10 hidden size-16 bg-signal lg:block" aria-hidden="true" />
+      <div className="mx-auto grid min-h-[calc(100svh-6.5rem)] max-w-[96rem] grid-cols-4 content-center gap-x-4 gap-y-12 py-12 sm:py-16 lg:grid-cols-12 lg:gap-x-6">
+        <section className="col-span-4 lg:col-span-7">
+          <p className="swiss-label mb-8">{home("eyebrow")}</p>
+          <h1 className="max-w-4xl text-[4rem] font-bold leading-[0.9] sm:text-[6rem] lg:text-[7rem]">
             <span className="block">HFI</span>
-            <span className="block">UTILITY</span>
-            <span className="block">CENTER</span>
+            <span className="block">Utility Center</span>
           </h1>
-        </div>
+          <p className="mt-8 max-w-md text-lg leading-7 text-muted-foreground sm:text-xl">{home("description")}</p>
 
-        <div className="col-span-12 mt-8 flex flex-col justify-center gap-5 lg:col-span-4 lg:mt-0 lg:pl-10">
-          <Button asChild className="group h-20 justify-start gap-4 border-0 bg-transparent p-0 text-left text-foreground hover:bg-transparent hover:text-red-600">
-            <Link href="/reservation/create"><span className="grid size-12 shrink-0 place-items-center bg-red-600 text-white group-hover:bg-black"><ArrowRight /></span><span className="text-xl font-black leading-tight">{nav("book")}{locale === "zh-CN" ? <span className="block text-base">Book</span> : null}</span></Link>
-          </Button>
-          <Button asChild className="group h-20 justify-start gap-4 border-0 bg-transparent p-0 text-left text-foreground hover:bg-transparent hover:text-red-600">
-            <Link href="/reservation/search"><span className="grid size-12 shrink-0 place-items-center border border-red-600 text-red-600 group-hover:bg-red-600 group-hover:text-white"><ArrowRight /></span><span className="text-xl font-black leading-tight">{nav("reservations")}{locale === "zh-CN" ? <span className="block text-base">Reservations</span> : null}</span></Link>
-          </Button>
-        </div>
+          <dl className="mt-12 grid max-w-2xl grid-cols-3 border-y border-foreground/20 py-5 text-sm">
+            {[home("slot"), home("days"), home("duration")].map((value, index) => (
+              <div key={value} className="border-l border-foreground/15 px-3 first:border-l-0 first:pl-0 sm:px-5">
+                <dt className="font-mono text-[0.625rem] text-brand">0{index + 1}</dt>
+                <dd className="mt-2 font-semibold leading-5">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <section className="relative col-span-4 self-center lg:col-span-4 lg:col-start-9">
+          <div className="absolute -bottom-5 -left-5 -z-10 h-24 w-32 bg-signal lg:hidden" aria-hidden="true" />
+          <GlassSurface className="w-full" contentClassName="p-3 sm:p-4" variant="action">
+            <div className="mb-8 flex items-center justify-between px-2 pt-2">
+              <p className="font-mono text-[0.625rem] font-bold uppercase">Start / 开始</p>
+              <span className="size-2 bg-signal" aria-hidden="true" />
+            </div>
+            <div className="grid gap-2">
+              <Link href="/reservation/create" className="group flex min-h-24 items-center justify-between rounded-md bg-brand px-5 text-brand-foreground outline-none transition-colors hover:bg-brand-strong focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2">
+                <span><span className="block text-xl font-bold">{nav("book")}</span>{locale === "zh-CN" ? <span className="mt-1 block text-sm opacity-75">Book</span> : null}</span>
+                <ArrowRight className="size-6 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link href="/reservation/search" className="group flex min-h-20 items-center justify-between rounded-md border border-foreground/20 bg-background/75 px-5 outline-none transition-colors hover:border-brand hover:text-brand focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2">
+                <span><span className="block text-lg font-bold">{nav("reservations")}</span>{locale === "zh-CN" ? <span className="mt-1 block text-sm text-muted-foreground">Reservations</span> : null}</span>
+                <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </GlassSurface>
+        </section>
       </div>
     </main>
   )
