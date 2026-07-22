@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/language-switcher"
-import { SwissFooterBar } from "@/components/swiss-frame"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 
@@ -50,7 +49,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       {children}
-      <SwissFooterBar />
     </div>
   )
 }
