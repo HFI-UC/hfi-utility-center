@@ -1,4 +1,5 @@
 import { apiRequest, jsonBody } from "@/lib/api/client"
+import { catalogSnapshot } from "@/lib/api/catalog-snapshot"
 import type { BootstrapData, Campus, Room, SchoolClass } from "@/lib/api/types"
 
 const auditorium = {
@@ -17,26 +18,13 @@ const auditorium = {
   },
 }
 
+export const bootstrapData = {
+  ...catalogSnapshot,
+  specialFacilities: [auditorium],
+} satisfies BootstrapData
+
 export async function getBootstrap() {
-  const [campuses, classes, rooms] = await Promise.all([
-    getCampuses(),
-    getClasses(),
-    getRooms(),
-  ])
-  const generatedAt = new Date().toISOString()
-  return {
-    schemaVersion: 1,
-    dataVersion: [
-      ...campuses.map((item) => `campus:${item.id}:${item.createdAt ?? ""}`),
-      ...classes.map((item) => `class:${item.id}:${item.createdAt ?? ""}`),
-      ...rooms.map((item) => `room:${item.id}:${item.createdAt ?? ""}:${item.enabled}`),
-    ].join("|"),
-    generatedAt,
-    campuses,
-    classes,
-    rooms,
-    specialFacilities: [auditorium],
-  } satisfies BootstrapData
+  return bootstrapData
 }
 
 export async function getCampuses() {

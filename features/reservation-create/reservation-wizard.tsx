@@ -16,7 +16,7 @@ import { SuccessStep } from "@/features/reservation-create/steps/success-step"
 import { createReservationSchema, stepFields, type ReservationFormValues } from "@/features/reservation-create/schema"
 import { profileStorageKey, reservationDefaults, storedProfile } from "@/features/reservation-create/form-state"
 import { ApiError } from "@/lib/api/client"
-import { getBootstrap } from "@/lib/api/catalog"
+import { bootstrapData } from "@/lib/api/catalog"
 import { createReservation } from "@/lib/api/reservations"
 import type { BootstrapData } from "@/lib/api/types"
 
@@ -26,30 +26,20 @@ export function ReservationWizard() {
   const locale = useLocale() as "zh-CN" | "en-US"
   const schema = useMemo(() => createReservationSchema((key) => t(key)), [t])
   const methods = useForm<ReservationFormValues>({ resolver: zodResolver(schema), defaultValues: reservationDefaults, mode: "onTouched" })
+  const resetForm = methods.reset
   const specialFacility = useWatch({ control: methods.control, name: "specialFacility" })
   const [step, setStep] = useState(0)
-  const [catalog, setCatalog] = useState<BootstrapData>()
-  const [loadingError, setLoadingError] = useState<string>()
+  const catalog: BootstrapData = bootstrapData
   const [submitError, setSubmitError] = useState<string>()
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<{ reservationId?: number; message?: string }>()
 
-  async function loadCatalog() {
-    setLoadingError(undefined)
-    try { setCatalog(await getBootstrap()) } catch (error) { setLoadingError(error instanceof ApiError ? error.message : t("loadError")) }
-  }
-
   useEffect(() => {
-    let active = true
-    getBootstrap()
-      .then((data) => { if (active) setCatalog(data) })
-      .catch((error) => { if (active) setLoadingError(error instanceof ApiError ? error.message : t("loadError")) })
     const stored = window.localStorage.getItem(profileStorageKey)
     if (stored) {
-      try { methods.reset({ ...reservationDefaults, ...JSON.parse(stored), rememberProfile: true }) } catch { window.localStorage.removeItem(profileStorageKey) }
+      try { resetForm({ ...reservationDefaults, ...JSON.parse(stored), rememberProfile: true }) } catch { window.localStorage.removeItem(profileStorageKey) }
     }
-    return () => { active = false }
-  }, [methods, t])
+  }, [resetForm])
 
   async function next() {
     const valid = await methods.trigger(stepFields[step], { shouldFocus: true })
@@ -85,9 +75,7 @@ export function ReservationWizard() {
     } finally { setSubmitting(false) }
   }
 
-  if (result) return <main className="px-4 py-8 sm:px-6"><SuccessStep {...result} onReset={() => { methods.reset(reservationDefaults); setStep(0); setResult(undefined) }} /></main>
-
-  if (!catalog) return <main className="mx-auto flex min-h-[65svh] max-w-3xl flex-col justify-center px-4 sm:px-6"><Loader2 className="mb-4 size-6 animate-spin" /><h1 className="text-2xl font-semibold">{t("loadingTitle")}</h1><p className="mt-3 text-sm text-muted-foreground">{t("loadingDescription")}</p>{loadingError ? <><p className="mt-5 text-sm text-destructive">{loadingError}</p><Button className="mt-4 w-fit" variant="outline" onClick={() => void loadCatalog()}>{common("retry")}</Button></> : null}</main>
+  if (result) return <main className="px-4 py-8 sm:px-6"><SuccessStep {...result} onReset={() => { resetForm(reservationDefaults); setStep(0); setResult(undefined) }} /></main>
 
   const isAuditorium = specialFacility === "auditorium"
   const steps = isAuditorium

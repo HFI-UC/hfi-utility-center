@@ -3,6 +3,8 @@ import { clearAfterDate, clearAfterLocation, reservationDefaults, storedProfile 
 import { dateToFormValue, formValueToDate, timestampForDate } from "@/features/reservation-create/date-utils"
 import { createReservationSchema } from "@/features/reservation-create/schema"
 import { availableDurations } from "@/features/reservation-create/time-options"
+import { catalogSnapshot } from "@/lib/api/catalog-snapshot"
+import { bootstrapData } from "@/lib/api/catalog"
 import { buildLegacyAvailability, buildLegacyReason, normalizeLegacyReservation } from "@/lib/api/reservations"
 import type { Reservation, Room } from "@/lib/api/types"
 
@@ -10,6 +12,15 @@ const reservationSchema = createReservationSchema((key) => key)
 const valid = { ...reservationDefaults, classId: 2, bookingCampusId: 3, room: 4, date: "2026-07-23", startTime: 1000, endTime: 1900, studentName: "Andy", studentId: "GJ12345678", email: "student.andy2024@gdhfi.com", reason: "小组讨论", isAgreed: true }
 
 describe("预约分步规则", () => {
+  it("内置生产目录快照，打开预约时不等待跨境接口", () => {
+    expect(catalogSnapshot.campuses).toHaveLength(3)
+    expect(catalogSnapshot.classes).toHaveLength(25)
+    expect(catalogSnapshot.rooms).toHaveLength(21)
+    expect(catalogSnapshot.rooms.filter((room) => room.enabled)).toHaveLength(13)
+    expect(catalogSnapshot.classes.find((item) => item.name === "Teachers")?.campus).toBe(3)
+    expect(bootstrapData.specialFacilities[0]?.key).toBe("auditorium")
+  })
+
   it("接受匹配的英文名和学校邮箱并拒绝错误学号", () => {
     expect(reservationSchema.safeParse(valid).success).toBe(true)
     expect(reservationSchema.safeParse({ ...valid, studentId: "123" }).success).toBe(false)
