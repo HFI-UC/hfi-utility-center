@@ -1,28 +1,27 @@
-import { PenSquare, Search } from "lucide-react"
+import { CalendarPlus, Search } from "lucide-react"
 import Link from "next/link"
+import { getTranslations } from "next-intl/server"
 
-export default function Page() {
+import { Button } from "@/components/ui/button"
+
+export default async function Page() {
+  const nav = await getTranslations("nav")
   return (
-    <div className="flex w-full flex-col items-center px-8 py-16 sm:px-10 md:px-16">
-      <div className="w-full max-w-2xl">
-        <h1 className="mb-12 text-4xl font-semibold tracking-tight sm:font-medium sm:text-6xl transition-all duration-300">HFI Utility Center</h1>
-        <div className="flex flex-col items-end">
-          <Link
-            href="/reservation/create"
-            className="group flex w-full items-baseline justify-between gap-10 border-b border-border py-3 text-2xl font-medium tracking-tight transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
-          >
-            <span>Book a room</span>
-            <PenSquare className="size-5 shrink-0 translate-y-0.5" />
-          </Link>
-          <Link
-            href="#"
-            className="group flex w-full items-baseline justify-between gap-10 border-b border-border py-3 text-2xl font-medium tracking-tight transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
-          >
-            <span>Search reservation</span>
-            <Search className="size-5 shrink-0 translate-y-0.5" />
-          </Link>
+    <main className="flex min-h-[calc(100svh-3.5rem)] items-center justify-center px-4 py-12 sm:px-6">
+      <div className="flex w-full max-w-5xl flex-col items-center text-center">
+        <div className="mb-7 h-1 w-12 bg-red-600" aria-hidden="true" />
+        <h1 className="text-5xl font-semibold leading-none sm:text-7xl lg:text-8xl">
+          HFI Utility Center
+        </h1>
+        <div className="mt-10 flex w-full max-w-md flex-col justify-center gap-3 sm:flex-row">
+          <Button asChild size="lg" className="h-12 flex-1 bg-red-600 px-6 text-base text-white hover:bg-red-700">
+            <Link href="/reservation/create"><CalendarPlus />{nav("book")}</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="h-12 flex-1 px-6 text-base">
+            <Link href="/reservation/search"><Search />{nav("reservations")}</Link>
+          </Button>
         </div>
       </div>
-    </div>
+    </main>
   )
 }

@@ -1,0 +1,19 @@
+{
+  "nav": {"book":"预约教室","reservations":"预约列表","admin":"管理平台","about":"关于我们","theme":"切换主题","language":"语言"},
+  "home": {"eyebrow":"校园空间预约系统","description":"快速选择班级、教室与可用时间。提交时服务器会再次检查冲突和房间政策。","slot":"15 分钟时间粒度","days":"最多提前 30 天","duration":"单次最长 2 小时","validation":"服务器实时校验"},
+  "common": {"loading":"正在加载…","retry":"重试","back":"上一步","next":"下一步","submit":"确认提交","search":"搜索","copy":"复制","copied":"已复制","cancel":"取消","save":"保存","unknown":"操作失败，请稍后重试。"},
+  "status": {"pending":"待审批","approved":"已通过","rejected":"已拒绝"},
+  "booking": {
+    "progress":"预约进度","loadingTitle":"正在准备预约数据","loadingDescription":"正在同步校区、班级、房间和使用规则。","loadError":"无法加载校区和房间数据","submitError":"预约提交失败",
+    "classTitle":"选择所属班级","classDescription":"全部班级按校区分组展示，也可以直接搜索。","classSearch":"搜索班级","classEmpty":"没有匹配班级",
+    "locationTitle":"选择预约地点","locationDescription":"选择可预约校区和教室；Auditorium 仅提供邮件申请模板。","campus":"预约校区","rooms":"教室","auditoriumDescription":"不可在线预约，生成邮件申请模板","disabled":"暂不可预约","rules":"{count} 条使用规则","roomEmpty":"该校区暂无教室",
+    "dateTitle":"选择日期","dateDescription":"可以预约今天至未来 30 天。",
+    "timeTitle":"选择时间","timeDescription":"选择开始时间和连续时长，最长 2 小时。","available":"可预约","policy":"使用规则限制","occupied":"已占用或已过期","checking":"正在检查可用时间…","refresh":"刷新时间","duration":"预约时长","minutes":"{count} 分钟","hours":"{count} 小时","availabilityError":"无法加载可用时间",
+    "profileTitle":"填写预约需求","profileDescription":"资料用于审批和邮件通知，邮箱必须使用 @gdhfi.com。","name":"姓名","studentId":"学号","email":"邮箱","purpose":"用途","purposePersonal":"个人","purposeClass":"班级","purposeClub":"社团","attendeeCount":"预计人数","multimedia":"需要多媒体设备","multimediaDetails":"所需设备","reason":"详细预约原因","agree":"我已阅读并同意预约规则，提交的信息真实有效。","remember":"在当前设备记住姓名、学号、邮箱和班级。",
+    "reviewTitle":"确认预约","reviewDescription":"提交时服务器会再次检查房间政策和时间冲突。","class":"班级","location":"预约地点","start":"开始时间","end":"结束时间","multimediaNone":"不需要","auditoriumTitle":"Auditorium 邮件申请模板","auditoriumDescription":"不可在线预约，选择后直接生成邮件申请模板。","auditoriumTemplateDescription":"填写使用日期、时间和申请需求，邮件主题与正文会实时生成。","auditoriumSendInstruction":"系统不会提交或发送这份申请。请复制主题和正文，自行打开学校邮箱并联系相关老师或行政办公室。","subject":"邮件主题","body":"邮件正文","copySubject":"复制主题","copyBody":"复制正文",
+    "success":"提交成功","successDescription":"预约已经提交，请留意审批邮件。","viewReservations":"查看预约","bookAgain":"继续预约","home":"返回首页"
+  },
+  "searchPage": {"eyebrow":"预约记录","title":"预约列表","total":"共 {count} 条记录","keyword":"姓名、邮箱、教室或预约编号","allRooms":"全部教室","allStatuses":"全部状态","startDate":"开始日期","endDate":"结束日期","loading":"正在查询预约…","emptyTitle":"没有找到预约","emptyDescription":"调整关键词或筛选条件后重试。","id":"编号","person":"预约人","classRoom":"班级 / 教室","time":"时间","reason":"原因","status":"状态","purpose":"用途","multimedia":"多媒体","previous":"上一页","next":"下一页","page":"第 {page} 页"},
+  "about": {"eyebrow":"关于我们","title":"为校园空间提供更清晰、更快速的预约体验。","body":"HFI Utility Center 是面向 HFI 学生、教师和管理人员的教室预约与审批平台。Web 与 iOS 使用同一套实时数据、房间政策和审批状态。","principleTitle":"设计原则","principleBody":"减少等待、清楚展示可用时间，并让预约和管理流程在中文与英文环境下保持一致。","privacyTitle":"数据说明","privacyBody":"预约列表延续现有 main 版本的公开查询行为。提交、审批和设施修改始终以服务器数据为准。"},
+  "admin": {"workspace":"管理工作台","reservations":"预约审批","facilities":"设施管理","users":"管理员","analytics":"数据分析","logout":"退出登录","checking":"正在检查管理员身份…","aiStrength":"AI 审核强度","relaxed":"宽松","standard":"标准","strict":"严格"}
+}

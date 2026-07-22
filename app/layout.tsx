@@ -1,30 +1,30 @@
-import { Geist_Mono, Inter } from "next/font/google"
-
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
+import { AppShell } from "@/components/app-shell"
+import { NextIntlClientProvider } from "next-intl"
+import { getLocale, getMessages } from "next-intl/server"
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const locale = await getLocale()
+  const messages = await getMessages()
   return (
     <html
-      lang="en"
+      lang={locale}
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
+      className="font-sans antialiased"
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <NextIntlClientProvider messages={messages}><ThemeProvider><AppShell>{children}</AppShell></ThemeProvider></NextIntlClientProvider>
       </body>
     </html>
   )
+}
+
+export const metadata = {
+  title: "HFI Utility Center",
+  description: "HFI campus space reservation and administration platform",
 }
