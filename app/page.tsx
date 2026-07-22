@@ -1,11 +1,12 @@
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
-import { getTranslations } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
 
 import { Button } from "@/components/ui/button"
 
 export default async function Page() {
   const nav = await getTranslations("nav")
+  const locale = await getLocale()
   return (
     <main className="swiss-grid overflow-hidden px-4 sm:px-8">
       <div className="mx-auto grid min-h-[calc(100svh-6.5rem)] max-w-[96rem] grid-cols-12 gap-x-4 py-7 sm:gap-x-6 sm:py-10">
@@ -19,16 +20,11 @@ export default async function Page() {
 
         <div className="col-span-12 mt-8 flex flex-col justify-center gap-5 lg:col-span-4 lg:mt-0 lg:pl-10">
           <Button asChild className="group h-20 justify-start gap-4 border-0 bg-transparent p-0 text-left text-foreground hover:bg-transparent hover:text-red-600">
-            <Link href="/reservation/create"><span className="grid size-12 shrink-0 place-items-center bg-red-600 text-white group-hover:bg-black"><ArrowRight /></span><span className="text-xl font-black leading-tight">{nav("book")}<span className="block text-base">Book</span></span></Link>
+            <Link href="/reservation/create"><span className="grid size-12 shrink-0 place-items-center bg-red-600 text-white group-hover:bg-black"><ArrowRight /></span><span className="text-xl font-black leading-tight">{nav("book")}{locale === "zh-CN" ? <span className="block text-base">Book</span> : null}</span></Link>
           </Button>
           <Button asChild className="group h-20 justify-start gap-4 border-0 bg-transparent p-0 text-left text-foreground hover:bg-transparent hover:text-red-600">
-            <Link href="/reservation/search"><span className="grid size-12 shrink-0 place-items-center border border-red-600 text-red-600 group-hover:bg-red-600 group-hover:text-white"><ArrowRight /></span><span className="text-xl font-black leading-tight">{nav("reservations")}<span className="block text-base">Reservations</span></span></Link>
+            <Link href="/reservation/search"><span className="grid size-12 shrink-0 place-items-center border border-red-600 text-red-600 group-hover:bg-red-600 group-hover:text-white"><ArrowRight /></span><span className="text-xl font-black leading-tight">{nav("reservations")}{locale === "zh-CN" ? <span className="block text-base">Reservations</span> : null}</span></Link>
           </Button>
-        </div>
-
-        <div className="col-span-12 self-end border-t border-foreground pt-3">
-          <p className="text-xs font-bold">让空间服务于学习</p>
-          <p className="mt-1 text-[0.6875rem] text-muted-foreground">Space, ready for learning.</p>
         </div>
       </div>
     </main>

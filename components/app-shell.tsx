@@ -19,7 +19,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="mx-auto flex min-h-16 max-w-[96rem] items-center justify-between gap-4 px-4 py-2 sm:px-8">
           <Link href="/" className="shrink-0 leading-none">
             <span className="block text-sm font-black sm:text-base">HFI Utility Center</span>
-            <span className="mt-1 hidden text-[0.6875rem] font-bold sm:block">{locale === "zh-CN" ? "教学空间预约系统" : "Campus Room Booking"}</span>
           </Link>
           <nav className="flex min-w-0 items-center text-xs font-bold sm:text-sm">
             <Link href="/" className="hidden px-3 py-2 hover:text-red-600 lg:block">{locale === "zh-CN" ? "首页" : "Home"}</Link>
