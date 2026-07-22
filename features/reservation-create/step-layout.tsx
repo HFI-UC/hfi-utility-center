@@ -15,18 +15,18 @@ export function StepLayout({
 }) {
   return (
     <section aria-labelledby="step-title" className="mx-auto grid w-full max-w-7xl grid-cols-12 gap-x-4 sm:gap-x-6">
-      <header className="col-span-12 border-t border-foreground pt-3 lg:col-span-4">
-        <p className="font-mono text-[0.6875rem] font-bold text-red-600">STEP {eyebrow}</p>
-        <p className="mt-3 text-7xl font-black leading-none text-red-600 sm:text-8xl" aria-hidden="true">{eyebrow.slice(0, 2)}</p>
-        <h1 id="step-title" className="mt-4 text-3xl font-black leading-none sm:text-4xl">{title}</h1>
+      <header className="col-span-12 border-t pt-4 lg:col-span-4">
+        <p className="font-mono text-[0.6875rem] font-medium text-muted-foreground">STEP {eyebrow}</p>
+        <p className="mt-4 text-5xl font-semibold leading-none sm:text-6xl" aria-hidden="true">{eyebrow.slice(0, 2)}</p>
+        <h1 id="step-title" className="mt-5 text-3xl font-semibold leading-tight sm:text-4xl">{title}</h1>
         <p className="mt-6 max-w-md text-sm leading-6 text-muted-foreground">{description}</p>
       {error ? (
-        <div className="mt-6 flex items-start gap-2 border-l-4 border-red-600 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+        <div className="mt-6 flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           <AlertCircle className="mt-0.5 size-4 shrink-0" />{error}
         </div>
       ) : null}
       </header>
-      <div className="col-span-12 mt-10 border-t border-foreground pt-6 lg:col-span-8 lg:mt-0">{children}</div>
+      <div className="col-span-12 mt-10 border-t pt-6 lg:col-span-8 lg:mt-0">{children}</div>
     </section>
   )
 }

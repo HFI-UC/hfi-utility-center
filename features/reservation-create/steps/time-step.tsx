@@ -59,7 +59,7 @@ export function TimeStep() {
   return (
     <StepLayout eyebrow="05 / 07" title="选择时间" description="绿色时段可预约。选择开始时间后，再选择连续时长，最长 2 小时。" error={error ?? formState.errors.startTime?.message ?? formState.errors.endTime?.message}>
       <div className="mb-5 flex items-center justify-between border-b pb-3 text-xs text-muted-foreground">
-        <div className="flex flex-wrap gap-4"><span>● 可预约</span><span className="text-amber-600">● 使用规则限制</span><span className="text-muted-foreground">● 已占用或已过期</span></div>
+        <div className="flex flex-wrap gap-4 text-muted-foreground"><span>● 可预约</span><span>○ 使用规则限制</span><span>× 已占用或已过期</span></div>
         <Button type="button" variant="ghost" size="icon-sm" onClick={() => void load()} title="刷新时间"><RefreshCw className={cn(loading && "animate-spin")} /></Button>
       </div>
       {loading ? <p className="py-10 text-sm text-muted-foreground">正在检查可用时间…</p> : null}
@@ -76,10 +76,10 @@ export function TimeStep() {
                 setValue("endTime", 0)
               }}
               className={cn(
-                "h-11 border text-sm outline-none focus-visible:ring-2 focus-visible:ring-red-600 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground",
-                slot.status === "available" && "border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30",
-                slot.status === "policy" && "border-amber-300 bg-amber-50 text-amber-700 dark:bg-amber-950/20",
-                slot.startTime === startTime && "bg-foreground text-background hover:bg-foreground dark:text-background",
+                "h-11 rounded-md border text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground",
+                slot.status === "available" && "hover:bg-accent",
+                slot.status === "policy" && "bg-muted text-muted-foreground",
+                slot.startTime === startTime && "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
               )}
             >{timeLabel(slot.startTime)}</button>
           ))}

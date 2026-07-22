@@ -43,7 +43,7 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
     return () => { if (widgetId && window.turnstile) window.turnstile.remove(widgetId) }
   }, [localDevelopment, onToken, siteKey])
 
-  if (localDevelopment) return <p className="border-y py-4 text-sm text-emerald-700 dark:text-emerald-300">本地开发验证已启用。</p>
-  if (!siteKey) return <p className="border-y py-4 text-sm text-amber-700 dark:text-amber-300">尚未配置 Cloudflare Turnstile 站点密钥。邮件登录链接仍可正常使用。</p>
+  if (localDevelopment) return <p className="border-y py-4 text-sm text-muted-foreground">本地开发验证已启用。</p>
+  if (!siteKey) return <p className="border-y py-4 text-sm text-muted-foreground">尚未配置 Cloudflare Turnstile 站点密钥。邮件登录链接仍可正常使用。</p>
   return <div ref={ref} className="min-h-16" />
 }

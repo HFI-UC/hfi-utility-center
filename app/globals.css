@@ -57,8 +57,8 @@
     --card-foreground: oklch(0.141 0.005 285.823);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.141 0.005 285.823);
-    --primary: oklch(0.577 0.245 27.325);
-    --primary-foreground: oklch(1 0 0);
+    --primary: oklch(0.21 0.006 285.885);
+    --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.967 0.001 286.375);
     --secondary-foreground: oklch(0.21 0.006 285.885);
     --muted: oklch(0.967 0.001 286.375);
@@ -74,7 +74,7 @@
     --chart-3: oklch(0.442 0.017 285.786);
     --chart-4: oklch(0.37 0.013 285.805);
     --chart-5: oklch(0.274 0.006 286.033);
-    --radius: 0.125rem;
+    --radius: 0.625rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.141 0.005 285.823);
     --sidebar-primary: oklch(0.21 0.006 285.885);
@@ -124,7 +124,7 @@
     @apply border-border outline-ring/50;
     }
   body {
-    @apply bg-background text-foreground selection:bg-red-600 selection:text-white;
+    @apply bg-background text-foreground selection:bg-primary selection:text-primary-foreground;
     font-variant-numeric: tabular-nums;
     }
   html {
@@ -138,7 +138,7 @@ button, a, input, textarea, select {
 
 @layer components {
   .swiss-label {
-    @apply text-[0.6875rem] font-bold uppercase text-red-600;
+    @apply text-[0.6875rem] font-semibold uppercase text-muted-foreground;
   }
 
   .swiss-display {
@@ -147,24 +147,17 @@ button, a, input, textarea, select {
   }
 
   .swiss-rule {
-    @apply border-t border-foreground;
-  }
-
-  .swiss-grid {
-    background-image:
-      linear-gradient(to right, color-mix(in oklch, var(--foreground) 8%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px);
-    background-size: calc((100% - 3rem) / 12) 100%, 100% 4rem;
+    @apply border-t border-border;
   }
 
   .swiss-registration {
-    @apply relative block size-4 rounded-full border border-red-600;
+    @apply relative block size-4 rounded-full border border-muted-foreground;
   }
 
   .swiss-registration::before,
   .swiss-registration::after {
     content: "";
-    @apply absolute left-1/2 top-1/2 bg-red-600;
+    @apply absolute left-1/2 top-1/2 bg-muted-foreground;
     transform: translate(-50%, -50%);
   }
 

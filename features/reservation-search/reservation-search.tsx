@@ -13,9 +13,9 @@ import { messages } from "@/lib/messages"
 import { useLocale, useTranslations } from "next-intl"
 
 const statusClass: Record<ReservationStatus, string> = {
-  pending: "border-foreground bg-foreground text-background",
-  approved: "border-red-600 bg-red-600 text-white",
-  rejected: "border-foreground/40 bg-background text-muted-foreground",
+  pending: "bg-secondary text-secondary-foreground",
+  approved: "bg-primary text-primary-foreground",
+  rejected: "bg-destructive text-white",
 }
 
 function formatDateTime(value: string, locale: string) {
@@ -73,20 +73,20 @@ export function ReservationSearch() {
 
   return (
     <main className="mx-auto max-w-[96rem] px-4 py-10 sm:px-8">
-      <div className="flex flex-col justify-between gap-6 border-t-4 border-foreground py-4 sm:flex-row sm:items-end">
-        <div><p className="swiss-label">{t("eyebrow")}</p><h1 className="mt-4 text-5xl font-bold leading-none sm:text-7xl">{t("title")}</h1></div>
-        <p className="border-l-4 border-red-600 pl-4 text-2xl font-bold sm:text-3xl">{t("total", { count: result.total })}</p>
+      <div className="flex flex-col justify-between gap-6 border-t py-5 sm:flex-row sm:items-end">
+        <div><p className="swiss-label">{t("eyebrow")}</p><h1 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">{t("title")}</h1></div>
+        <p className="rounded-lg border bg-muted/50 px-4 py-3 text-xl font-semibold sm:text-2xl">{t("total", { count: result.total })}</p>
       </div>
 
-      <div className="grid gap-3 border-y border-foreground py-5 md:grid-cols-6">
+      <div className="grid gap-3 border-y py-5 md:grid-cols-6">
         <label className="relative md:col-span-2"><Search className="absolute left-3 top-3 size-4 text-muted-foreground" /><Input defaultValue={keyword} className="pl-9" placeholder={t("keyword")} onKeyDown={(event) => { if (event.key === "Enter") updateQuery({ keyword: event.currentTarget.value || undefined }) }} /></label>
-        <select className="h-11 rounded-[2px] border border-foreground/50 bg-background px-3 text-sm" value={roomId || ""} onChange={(event) => updateQuery({ room: event.target.value || undefined })}><option value="">{t("allRooms")}</option>{catalog?.rooms.map((room) => <option key={room.id} value={room.id}>{room.name}</option>)}</select>
-        <select className="h-11 rounded-[2px] border border-foreground/50 bg-background px-3 text-sm" value={status ?? ""} onChange={(event) => updateQuery({ status: event.target.value || undefined })}><option value="">{t("allStatuses")}</option><option value="pending">{statusT("pending")}</option><option value="approved">{statusT("approved")}</option><option value="rejected">{statusT("rejected")}</option></select>
+        <select className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/50" value={roomId || ""} onChange={(event) => updateQuery({ room: event.target.value || undefined })}><option value="">{t("allRooms")}</option>{catalog?.rooms.map((room) => <option key={room.id} value={room.id}>{room.name}</option>)}</select>
+        <select className="h-10 rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/50" value={status ?? ""} onChange={(event) => updateQuery({ status: event.target.value || undefined })}><option value="">{t("allStatuses")}</option><option value="pending">{statusT("pending")}</option><option value="approved">{statusT("approved")}</option><option value="rejected">{statusT("rejected")}</option></select>
         <Input type="date" value={startDate} aria-label={t("startDate")} onChange={(event) => updateQuery({ start: event.target.value || undefined })} />
         <Input type="date" value={endDate} aria-label={t("endDate")} onChange={(event) => updateQuery({ end: event.target.value || undefined })} />
       </div>
 
-      {error ? <div className="border-b py-6 text-sm text-red-600">{error}</div> : null}
+      {error ? <div className="border-b py-6 text-sm text-destructive">{error}</div> : null}
       {loading ? <div className="border-b py-12 text-sm text-muted-foreground">{t("loading")}</div> : null}
       {!loading && !result.reservations.length ? <div className="border-b py-16"><p className="font-medium">{t("emptyTitle")}</p><p className="mt-2 text-sm text-muted-foreground">{t("emptyDescription")}</p></div> : null}
 
@@ -94,7 +94,7 @@ export function ReservationSearch() {
         <>
           <div className="hidden overflow-x-auto md:block">
             <table className="w-full border-collapse text-left text-sm">
-              <thead><tr className="bg-foreground text-xs text-background"><th className="px-3 py-3">{t("id")}</th><th className="px-3 py-3">{t("person")}</th><th className="px-3 py-3">{t("classRoom")}</th><th className="px-3 py-3">{t("time")}</th><th className="px-3 py-3">{t("reason")}</th><th className="px-3 py-3">{t("purpose")}</th><th className="px-3 py-3">{t("status")}</th></tr></thead>
+              <thead><tr className="border-b bg-muted/50 text-xs text-muted-foreground"><th className="px-3 py-3">{t("id")}</th><th className="px-3 py-3">{t("person")}</th><th className="px-3 py-3">{t("classRoom")}</th><th className="px-3 py-3">{t("time")}</th><th className="px-3 py-3">{t("reason")}</th><th className="px-3 py-3">{t("purpose")}</th><th className="px-3 py-3">{t("status")}</th></tr></thead>
               <tbody>{result.reservations.map((item) => <tr key={item.id} className="border-b align-top hover:bg-muted/60"><td className="px-3 py-4 font-mono">#{item.id}</td><td className="px-3 py-4"><p className="font-bold">{item.studentName}</p><p className="mt-1 text-xs text-muted-foreground">{item.email}</p></td><td className="px-3 py-4"><p>{item.className}</p><p className="mt-1 text-xs text-muted-foreground">{item.roomName}</p></td><td className="whitespace-nowrap px-3 py-4"><p>{formatDateTime(item.startTime, locale)}</p><p className="mt-1 text-xs text-muted-foreground">{formatDateTime(item.endTime, locale)}</p></td><td className="max-w-xs px-3 py-4 leading-6"><p>{item.reason}</p>{item.multimediaRequired ? <p className="mt-1 text-xs text-muted-foreground">{t("multimedia")}: {item.multimediaDetails}</p> : null}</td><td className="px-3 py-4">{bookingT(item.purposeType === "personal" ? "purposePersonal" : item.purposeType === "class" ? "purposeClass" : "purposeClub")}</td><td className="px-3 py-4"><Badge className={statusClass[item.status]}>{statusT(item.status)}</Badge></td></tr>)}</tbody>
             </table>
           </div>

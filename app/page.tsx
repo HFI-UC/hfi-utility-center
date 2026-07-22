@@ -1,31 +1,41 @@
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, CalendarDays, Clock3 } from "lucide-react"
 import Link from "next/link"
-import { getLocale, getTranslations } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
 
 import { Button } from "@/components/ui/button"
 
 export default async function Page() {
   const nav = await getTranslations("nav")
-  const locale = await getLocale()
+  const home = await getTranslations("home")
   return (
-    <main className="swiss-grid overflow-hidden px-4 sm:px-8">
-      <div className="mx-auto grid min-h-[calc(100svh-6.5rem)] max-w-[96rem] grid-cols-12 gap-x-4 py-7 sm:gap-x-6 sm:py-10">
-        <div className="col-span-12 self-center lg:col-span-8">
-          <h1 className="swiss-display text-[5rem] sm:text-[7.75rem] lg:text-[9rem] xl:text-[10.5rem]">
-            <span className="block">HFI</span>
-            <span className="block">UTILITY</span>
-            <span className="block">CENTER</span>
+    <main className="px-4 py-10 sm:px-8 sm:py-16">
+      <div className="mx-auto grid min-h-[calc(100svh-13rem)] max-w-7xl grid-cols-4 content-center gap-x-4 gap-y-12 lg:grid-cols-12 lg:gap-x-6">
+        <section className="col-span-4 lg:col-span-7">
+          <p className="swiss-label">{home("eyebrow")}</p>
+          <h1 className="mt-6 max-w-4xl text-6xl font-semibold leading-[0.92] tracking-normal sm:text-8xl lg:text-9xl">
+            HFI Utility<br />Center
           </h1>
-        </div>
+          <p className="mt-8 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">{home("description")}</p>
 
-        <div className="col-span-12 mt-8 flex flex-col justify-center gap-5 lg:col-span-4 lg:mt-0 lg:pl-10">
-          <Button asChild className="group h-20 justify-start gap-4 border-0 bg-transparent p-0 text-left text-foreground hover:bg-transparent hover:text-red-600">
-            <Link href="/reservation/create"><span className="grid size-12 shrink-0 place-items-center bg-red-600 text-white group-hover:bg-black"><ArrowRight /></span><span className="text-xl font-black leading-tight">{nav("book")}{locale === "zh-CN" ? <span className="block text-base">Book</span> : null}</span></Link>
-          </Button>
-          <Button asChild className="group h-20 justify-start gap-4 border-0 bg-transparent p-0 text-left text-foreground hover:bg-transparent hover:text-red-600">
-            <Link href="/reservation/search"><span className="grid size-12 shrink-0 place-items-center border border-red-600 text-red-600 group-hover:bg-red-600 group-hover:text-white"><ArrowRight /></span><span className="text-xl font-black leading-tight">{nav("reservations")}{locale === "zh-CN" ? <span className="block text-base">Reservations</span> : null}</span></Link>
-          </Button>
-        </div>
+          <div className="mt-10 grid max-w-2xl grid-cols-1 gap-4 border-t pt-5 text-sm sm:grid-cols-3">
+            <p className="flex items-center gap-2"><Clock3 className="size-4 text-muted-foreground" />{home("slot")}</p>
+            <p className="flex items-center gap-2"><CalendarDays className="size-4 text-muted-foreground" />{home("days")}</p>
+            <p className="flex items-center gap-2"><Clock3 className="size-4 text-muted-foreground" />{home("duration")}</p>
+          </div>
+        </section>
+
+        <section className="col-span-4 self-center rounded-xl border bg-card p-5 text-card-foreground shadow-sm sm:p-7 lg:col-span-5">
+          <p className="text-sm font-medium text-muted-foreground">HFI Utility Center</p>
+          <div className="mt-6 grid gap-3">
+            <Button asChild size="lg" className="h-14 justify-between px-5 text-base">
+              <Link href="/reservation/create"><span>{nav("book")}</span><ArrowRight /></Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="h-14 justify-between px-5 text-base">
+              <Link href="/reservation/search"><span>{nav("reservations")}</span><ArrowRight /></Link>
+            </Button>
+          </div>
+          <p className="mt-6 border-t pt-5 text-sm leading-6 text-muted-foreground">{home("validation")}</p>
+        </section>
       </div>
     </main>
   )

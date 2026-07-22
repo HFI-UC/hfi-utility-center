@@ -7,8 +7,8 @@ export function SuccessStep({ reservationId, message, onReset }: { reservationId
   const t = useTranslations("booking")
   return (
     <section className="mx-auto flex min-h-[60svh] max-w-3xl flex-col justify-center">
-      <CheckCircle2 className="mb-6 size-10 text-emerald-600" />
-      <p className="text-sm font-semibold text-emerald-700">{t("success")}</p>
+      <CheckCircle2 className="mb-6 size-10 text-foreground" />
+      <p className="text-sm font-semibold text-foreground">{t("success")}</p>
       <h1 className="mt-3 text-4xl font-semibold sm:text-6xl">#{reservationId}</h1>
       <p className="mt-5 max-w-xl leading-7 text-muted-foreground">{message ?? t("successDescription")}</p>
       <div className="mt-8 flex flex-wrap gap-2">
