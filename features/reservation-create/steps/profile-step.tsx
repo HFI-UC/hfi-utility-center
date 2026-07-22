@@ -19,9 +19,9 @@ export function ProfileStep() {
   const purpose = watch("purposeType")
   return <StepLayout eyebrow="04 / 05" title={t("profileTitle")} description={t("profileDescription")}>
     <div className="grid gap-5 sm:grid-cols-2">
-      <Field label={t("name")} error={errors.studentName?.message}><Input autoComplete="name" {...register("studentName")} /></Field>
+      <Field label={t("name")} error={errors.studentName?.message}><Input autoComplete="given-name" placeholder="Andy" {...register("studentName")} /></Field>
       <Field label={t("studentId")} error={errors.studentId?.message}><Input autoCapitalize="characters" placeholder="GJ00000000" {...register("studentId")} /></Field>
-      <Field label={t("email")} error={errors.email?.message}><Input type="email" autoComplete="email" placeholder="name@gdhfi.com" {...register("email")} /></Field>
+      <Field label={t("email")} error={errors.email?.message}><Input type="email" autoComplete="email" placeholder="student.andy2024@gdhfi.com" {...register("email")} /></Field>
     </div>
     <div className="mt-7"><Label>{t("purpose")}</Label><div className="mt-2"><ChoiceGrid value={purpose} items={[
       { value: "personal", label: t("purposePersonal") }, { value: "class", label: t("purposeClass") }, { value: "club", label: t("purposeClub") },

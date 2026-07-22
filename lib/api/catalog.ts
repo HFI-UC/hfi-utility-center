@@ -1,10 +1,42 @@
 import { apiRequest, jsonBody } from "@/lib/api/client"
 import type { BootstrapData, Campus, Room, SchoolClass } from "@/lib/api/types"
 
+const auditorium = {
+  key: "auditorium" as const,
+  name: "Auditorium",
+  bookingMode: "email-template" as const,
+  templates: {
+    "zh-CN": {
+      subject: "Auditorium 使用申请 - {studentName} - {date}",
+      body: "老师您好：\n\n我希望申请使用 Auditorium。\n\n姓名：{studentName}\n班级：{className}\n日期：{date}\n时间：{startTime} - {endTime}\n用途：{purpose}\n预计人数：{attendeeCount}\n多媒体需求：{multimedia}\n详细说明：{reason}\n\n谢谢。",
+    },
+    "en-US": {
+      subject: "Auditorium request - {studentName} - {date}",
+      body: "Hello,\n\nI would like to request use of the Auditorium.\n\nName: {studentName}\nClass: {className}\nDate: {date}\nTime: {startTime} - {endTime}\nPurpose: {purpose}\nExpected attendees: {attendeeCount}\nMultimedia requirements: {multimedia}\nDetails: {reason}\n\nThank you.",
+    },
+  },
+}
+
 export async function getBootstrap() {
-  const response = await apiRequest<BootstrapData>("/api/v1/bootstrap")
-  if (!response.data) throw new Error("Bootstrap data is missing")
-  return response.data
+  const [campuses, classes, rooms] = await Promise.all([
+    getCampuses(),
+    getClasses(),
+    getRooms(),
+  ])
+  const generatedAt = new Date().toISOString()
+  return {
+    schemaVersion: 1,
+    dataVersion: [
+      ...campuses.map((item) => `campus:${item.id}:${item.createdAt ?? ""}`),
+      ...classes.map((item) => `class:${item.id}:${item.createdAt ?? ""}`),
+      ...rooms.map((item) => `room:${item.id}:${item.createdAt ?? ""}:${item.enabled}`),
+    ].join("|"),
+    generatedAt,
+    campuses,
+    classes,
+    rooms,
+    specialFacilities: [auditorium],
+  } satisfies BootstrapData
 }
 
 export async function getCampuses() {

@@ -92,7 +92,7 @@ export function ReservationWizard() {
   const isAuditorium = specialFacility === "auditorium"
   const steps = isAuditorium
     ? [<ClassStep key="class" catalog={catalog} />, <LocationStep key="location" catalog={catalog} onSelectAuditorium={() => setStep(2)} />, <AuditoriumTemplateStep key="auditorium" catalog={catalog} />]
-    : [<ClassStep key="class" catalog={catalog} />, <LocationStep key="location" catalog={catalog} onSelectAuditorium={() => setStep(2)} />, <DateTimeStep key="datetime" />, <ProfileStep key="profile" />, <ReviewStep key="review" catalog={catalog} />]
+    : [<ClassStep key="class" catalog={catalog} />, <LocationStep key="location" catalog={catalog} onSelectAuditorium={() => setStep(2)} />, <DateTimeStep key="datetime" rooms={catalog.rooms} />, <ProfileStep key="profile" />, <ReviewStep key="review" catalog={catalog} />]
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(submit)} className="min-h-[calc(100svh-3.5rem)]">

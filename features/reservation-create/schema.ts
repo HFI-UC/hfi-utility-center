@@ -2,6 +2,12 @@ import { z } from "zod"
 
 type Translate = (key: string) => string
 
+const schoolEmailPattern = /^[^@\s]+\.([A-Za-z]+)(20\d{2})@gdhfi\.com$/i
+
+export function schoolEmailEnglishName(email: string) {
+  return schoolEmailPattern.exec(email.trim())?.[1]
+}
+
 export function createReservationSchema(t: Translate) {
   return z.object({
     classId: z.number().int().positive(t("classTitle")),
@@ -11,9 +17,9 @@ export function createReservationSchema(t: Translate) {
     date: z.string().min(1, t("dateTitle")),
     startTime: z.number().positive(t("timeTitle")),
     endTime: z.number().positive(t("duration")),
-    studentName: z.string().trim().min(1, t("name")),
+    studentName: z.string().trim().regex(/^[A-Za-z]+$/, t("englishNameError")),
     studentId: z.string().trim().regex(/^GJ\d{8}$/, "GJ + 8 digits"),
-    email: z.string().trim().email(t("email")).regex(/^[^@\s]+@gdhfi\.com$/i, "@gdhfi.com"),
+    email: z.string().trim().regex(schoolEmailPattern, t("schoolEmailError")),
     purposeType: z.enum(["personal", "class", "club"]),
     attendeeCount: z.number().int().min(1).max(1000),
     multimediaRequired: z.boolean(),
@@ -30,6 +36,10 @@ export function createReservationSchema(t: Translate) {
     }
     if (values.multimediaRequired && !values.multimediaDetails) {
       context.addIssue({ code: "custom", path: ["multimediaDetails"], message: t("multimediaDetails") })
+    }
+    const emailName = schoolEmailEnglishName(values.email)
+    if (emailName && emailName.toLowerCase() !== values.studentName.toLowerCase()) {
+      context.addIssue({ code: "custom", path: ["email"], message: t("emailNameMismatch") })
     }
   })
 }

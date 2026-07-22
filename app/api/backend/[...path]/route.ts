@@ -26,11 +26,7 @@ async function proxy(request: NextRequest, context: RouteContext<"/api/backend/[
     if (value) headers.set(name, value)
   }
 
-  if (
-    mutationMethods.has(request.method) &&
-    !headers.get("authorization") &&
-    !target.pathname.startsWith("/api/v1/auth/")
-  ) {
+  if (mutationMethods.has(request.method) && !headers.get("authorization")) {
     const csrfResponse = await fetch(new URL("/_csrf", backendUrl), {
       cache: "no-store",
     })
