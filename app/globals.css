@@ -156,4 +156,25 @@ button, a, input, textarea, select {
       linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px);
     background-size: calc((100% - 3rem) / 12) 100%, 100% 4rem;
   }
+
+  .swiss-registration {
+    @apply relative block size-4 rounded-full border border-red-600;
+  }
+
+  .swiss-registration::before,
+  .swiss-registration::after {
+    content: "";
+    @apply absolute left-1/2 top-1/2 bg-red-600;
+    transform: translate(-50%, -50%);
+  }
+
+  .swiss-registration::before {
+    width: 1.5rem;
+    height: 1px;
+  }
+
+  .swiss-registration::after {
+    width: 1px;
+    height: 1.5rem;
+  }
 }
