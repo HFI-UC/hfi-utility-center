@@ -21,15 +21,15 @@ export function ClassStep({ catalog }: { catalog: BootstrapData }) {
     <div className="grid gap-7 xl:grid-cols-[13rem_1fr]">
       <section>
         <h2 className="mb-3 text-xs font-bold">{t("campus")}</h2>
-        <div className="grid gap-2">
+        <div className="border border-foreground">
           {catalog.campuses.map((item, index) => {
             const selected = item.id === campusId
             return <button key={item.id} type="button" aria-pressed={selected} onClick={() => {
               setCampusId(item.id)
               setQuery("")
               if (selectedClass?.campus !== item.id) setValue("classId", 0, { shouldValidate: false })
-            }} className={`flex min-h-20 w-full items-center justify-between rounded-md border p-3 text-left transition-colors ${selected ? "border-brand bg-brand text-brand-foreground" : "border-foreground/20 bg-background hover:border-brand hover:bg-brand-soft"}`}>
-              <span><span className="block text-sm font-semibold">{item.name}</span><span className={`mt-1 block font-mono text-[0.625rem] ${selected ? "text-brand-foreground/70" : "text-brand"}`}>{String(index + 1).padStart(2, "0")}</span></span>
+            }} className={`flex min-h-20 w-full items-center justify-between border-b border-foreground p-3 text-left last:border-b-0 ${selected ? "bg-red-600 text-white" : "bg-background hover:bg-muted"}`}>
+              <span><span className="block text-sm font-black">{item.name}</span><span className={`mt-1 block font-mono text-[0.625rem] ${selected ? "text-white/70" : "text-red-600"}`}>{String(index + 1).padStart(2, "0")}</span></span>
               <span className="text-xl" aria-hidden="true">→</span>
             </button>
           })}

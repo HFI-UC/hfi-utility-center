@@ -1,6 +1,6 @@
 {
   "nav": {"book":"预约教室","reservations":"预约列表","admin":"管理平台","about":"关于我们","theme":"切换主题","language":"语言"},
-  "home": {"eyebrow":"校园空间预约系统","description":"快速预约校园教学空间","slot":"15 分钟时间格","days":"未来 30 天","duration":"最长 2 小时","validation":"服务器实时校验"},
+  "home": {"eyebrow":"校园空间预约系统","description":"快速选择班级、教室与可用时间。提交时服务器会再次检查冲突和房间政策。","slot":"15 分钟时间粒度","days":"最多提前 30 天","duration":"单次最长 2 小时","validation":"服务器实时校验"},
   "common": {"loading":"正在加载…","retry":"重试","back":"上一步","next":"下一步","submit":"确认提交","search":"搜索","copy":"复制","copied":"已复制","cancel":"取消","save":"保存","unknown":"操作失败，请稍后重试。"},
   "status": {"pending":"待审批","approved":"已通过","rejected":"已拒绝"},
   "booking": {

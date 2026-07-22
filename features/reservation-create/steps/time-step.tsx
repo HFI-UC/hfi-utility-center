@@ -76,7 +76,7 @@ export function TimeStep() {
                 setValue("endTime", 0)
               }}
               className={cn(
-                "h-11 border text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground",
+                "h-11 border text-sm outline-none focus-visible:ring-2 focus-visible:ring-red-600 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground",
                 slot.status === "available" && "border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30",
                 slot.status === "policy" && "border-amber-300 bg-amber-50 text-amber-700 dark:bg-amber-950/20",
                 slot.startTime === startTime && "bg-foreground text-background hover:bg-foreground dark:text-background",

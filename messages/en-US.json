@@ -1,6 +1,6 @@
 {
   "nav": {"book":"Book","reservations":"Reservations","admin":"Admin","about":"About Us","theme":"Toggle theme","language":"Language"},
-  "home": {"eyebrow":"Campus space reservation","description":"Book campus spaces with clarity","slot":"15-minute slots","days":"Next 30 days","duration":"Up to 2 hours","validation":"Live server validation"},
+  "home": {"eyebrow":"Campus space reservation","description":"Choose a class, room and available time quickly. The server rechecks conflicts and room policies before submission.","slot":"15-minute slots","days":"Up to 30 days ahead","duration":"Maximum 2 hours","validation":"Live server validation"},
   "common": {"loading":"Loading…","retry":"Retry","back":"Back","next":"Next","submit":"Submit","search":"Search","copy":"Copy","copied":"Copied","cancel":"Cancel","save":"Save","unknown":"Something went wrong. Please try again."},
   "status": {"pending":"Pending","approved":"Approved","rejected":"Rejected"},
   "booking": {
