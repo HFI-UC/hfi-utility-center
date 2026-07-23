@@ -16,14 +16,34 @@ type ActionError = "conflict" | "invalid" | "network" | "unknown"
 
 type ActionResult<T> =
   | { data: T; error?: never }
-  | { data?: never; error: ActionError }
+  | {
+      data?: never
+      error: ActionError
+      diagnostic?: { status?: number; code?: string; message?: string }
+    }
 
-function actionError(error: unknown): ActionError {
+function actionFailure(error: unknown): Exclude<ActionResult<never>, { data: never }> {
   if (error instanceof ApiError) {
-    if (error.status === 0) return "network"
-    if (error.status === 409) return "conflict"
+    return {
+      error:
+        error.status === 0
+          ? "network"
+          : error.status === 409
+            ? "conflict"
+            : "unknown",
+      diagnostic: {
+        status: error.status,
+        code: error.code,
+        message: error.message,
+      },
+    }
   }
-  return "unknown"
+  return {
+    error: "unknown",
+    diagnostic: {
+      message: error instanceof Error ? error.message : String(error),
+    },
+  }
 }
 
 export async function loadReservationCatalog(): Promise<
@@ -32,7 +52,7 @@ export async function loadReservationCatalog(): Promise<
   try {
     return { data: await getBootstrap() }
   } catch (error) {
-    return { error: actionError(error) }
+    return actionFailure(error)
   }
 }
 
@@ -47,7 +67,7 @@ export async function checkReservationAvailability(
   try {
     return { data: await getAvailability(roomId, date) }
   } catch (error) {
-    return { error: actionError(error) }
+    return actionFailure(error)
   }
 }
 
@@ -93,6 +113,6 @@ export async function submitReservation(
       },
     }
   } catch (error) {
-    return { error: actionError(error) }
+    return actionFailure(error)
   }
 }
