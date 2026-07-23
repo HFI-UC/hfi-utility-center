@@ -20,12 +20,21 @@ const api = axios.create({
   xsrfCookieName: "_csrf",
   xsrfHeaderName: "x-csrf-token",
   withXSRFToken: true,
+  timeout: 15_000,
 })
 
 api.interceptors.request.use(async (config) => {
   const method = config.method?.toUpperCase()
   if (method && ["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
-    await api.get("/_csrf")
+    const response = await api.get("/_csrf")
+    if (typeof window === "undefined") {
+      const rawCookie = response.headers["set-cookie"]
+      const cookie = Array.isArray(rawCookie) ? rawCookie[0] : rawCookie
+      const token = cookie?.match(/(?:^|;\s*)_csrf=([^;]+)/)?.[1]
+      if (!token) throw new Error("CSRF token is missing")
+      config.headers.set("Cookie", `_csrf=${token}`)
+      config.headers.set("x-csrf-token", decodeURIComponent(token))
+    }
   }
   return config
 })

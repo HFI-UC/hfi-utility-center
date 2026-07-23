@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { FormProvider, useForm } from "react-hook-form"
@@ -26,9 +26,11 @@ import {
   stepFields,
   type ReservationFormValues,
 } from "./form"
-import { ApiError } from "@/lib/api/client"
-import { getBootstrap } from "@/lib/api/catalog"
-import { createReservation, getAvailability } from "@/lib/api/reservations"
+import {
+  checkReservationAvailability,
+  loadReservationCatalog,
+  submitReservation,
+} from "./actions"
 import type { BootstrapData } from "@/lib/api/types"
 
 export function ReservationForm({
@@ -61,13 +63,34 @@ export function ReservationForm({
   async function loadCatalog() {
     setLoadingError(undefined)
     try {
-      setCatalog(await getBootstrap())
-    } catch (error) {
-      setLoadingError(
-        error instanceof ApiError ? error.message : t("loadError")
-      )
+      const result = await loadReservationCatalog()
+      if (result.data) setCatalog(result.data)
+      else setLoadingError(t("loadError"))
+    } catch {
+      setLoadingError(t("loadError"))
     }
   }
+
+  useEffect(() => {
+    if (initialCatalog) return
+    let ignore = false
+
+    async function loadInitialCatalog() {
+      try {
+        const result = await loadReservationCatalog()
+        if (ignore) return
+        if (result.data) setCatalog(result.data)
+        else setLoadingError(t("loadError"))
+      } catch {
+        if (!ignore) setLoadingError(t("loadError"))
+      }
+    }
+
+    void loadInitialCatalog()
+    return () => {
+      ignore = true
+    }
+  }, [initialCatalog, t])
 
   async function next() {
     const valid = await methods.trigger(stepFields[step], { shouldFocus: true })
@@ -78,14 +101,17 @@ export function ReservationForm({
       if (!room) return
       setSubmitting(true)
       try {
-        const availability = await getAvailability(
+        const availability = await checkReservationAvailability(
           values.room,
-          values.date,
-          room
+          values.date
         )
+        if (availability.error) {
+          setSubmitError(t("availabilityError"))
+          return
+        }
         if (
           !rangeIsAvailable(
-            availability.slots,
+            availability.data.slots,
             values.startTime,
             values.endTime
           )
@@ -95,10 +121,8 @@ export function ReservationForm({
           methods.setValue("endTime", 0)
           return
         }
-      } catch (error) {
-        setSubmitError(
-          error instanceof ApiError ? error.message : t("availabilityError")
-        )
+      } catch {
+        setSubmitError(t("availabilityError"))
         return
       } finally {
         setSubmitting(false)
@@ -112,33 +136,19 @@ export function ReservationForm({
     setSubmitting(true)
     setSubmitError(undefined)
     try {
-      const room = catalog?.rooms.find((item) => item.id === values.room)
-      if (!room) throw new Error(t("availabilityError"))
-      const availability = await getAvailability(values.room, values.date, room)
-      if (
-        !rangeIsAvailable(availability.slots, values.startTime, values.endTime)
-      ) {
-        setStep(2)
-        throw new Error(t("timeConflict"))
+      const response = await submitReservation(values)
+      if (response.error) {
+        if (response.error === "conflict") {
+          setStep(2)
+          setSubmitError(t("timeConflict"))
+        } else {
+          setSubmitError(t("submitError"))
+        }
+        return
       }
-      const response = await createReservation({
-        classId: values.classId,
-        room: values.room,
-        studentName: values.studentName.trim(),
-        studentId: values.studentId.trim().toUpperCase(),
-        email: values.email.trim(),
-        reason: values.reason.trim(),
-        startTime: values.startTime,
-        endTime: values.endTime,
-      })
-      setResult({
-        reservationId: response.data?.reservationId,
-        message: response.message,
-      })
-    } catch (error) {
-      const message = error instanceof Error ? error.message : t("submitError")
-      setSubmitError(message)
-      if (error instanceof ApiError && error.status === 409) setStep(2)
+      setResult(response.data)
+    } catch {
+      setSubmitError(t("submitError"))
     } finally {
       setSubmitting(false)
     }
@@ -161,7 +171,7 @@ export function ReservationForm({
   if (!catalog)
     return (
       <main className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-3xl flex-col justify-center px-4 sm:px-6">
-        <Spinner className="mb-4 size-6" />
+        {!loadingError ? <Spinner className="mb-4 size-6" /> : null}
         <h1 className="text-2xl font-semibold">{t("loadingTitle")}</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           {t("loadingDescription")}

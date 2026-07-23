@@ -14,8 +14,7 @@ import {
   type ReservationFormValues,
 } from "../form"
 import { StepLayout } from "../step-layout"
-import { ApiError } from "@/lib/api/client"
-import { getAvailability } from "@/lib/api/reservations"
+import { checkReservationAvailability } from "../actions"
 import type { AvailabilityData, AvailabilitySlot, Room } from "@/lib/api/types"
 
 const calendarLocales = { "zh-CN": zhCN, "en-US": enUS } as const
@@ -52,7 +51,9 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
     setLoading(true)
     setError(undefined)
     try {
-      const next = await getAvailability(room, date, roomData)
+      const result = await checkReservationAvailability(room, date)
+      if (result.error) throw new Error(t("availabilityError"))
+      const next = result.data
       setAvailability(next)
       const current = getValues()
       if (!rangeIsAvailable(next.slots, current.startTime, current.endTime)) {
@@ -61,12 +62,8 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
         setValue("endTime", 0)
         setError(t("timeConflict"))
       }
-    } catch (loadError) {
-      setError(
-        loadError instanceof ApiError
-          ? loadError.message
-          : t("availabilityError")
-      )
+    } catch {
+      setError(t("availabilityError"))
     } finally {
       setLoading(false)
     }
@@ -78,18 +75,16 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
 
     async function loadInitialAvailability() {
       try {
-        const next = await getAvailability(room, date, roomData)
+        const result = await checkReservationAvailability(room, date)
+        if (result.error) throw new Error(t("availabilityError"))
+        const next = result.data
         if (!ignore) {
           setAvailability(next)
           setError(undefined)
         }
-      } catch (loadError) {
+      } catch {
         if (!ignore) {
-          setError(
-            loadError instanceof ApiError
-              ? loadError.message
-              : t("availabilityError")
-          )
+          setError(t("availabilityError"))
         }
       } finally {
         if (!ignore) setLoading(false)
