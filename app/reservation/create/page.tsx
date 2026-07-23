@@ -1,7 +1,7 @@
+import { getBootstrap } from "@/lib/api/catalog"
 import { ReservationForm } from "./reservation-form"
 
-export const preferredRegion = "hkg1"
-
-export default function ReservationCreatePage() {
-  return <ReservationForm />
+export default async function ReservationCreatePage() {
+  const catalog = await getBootstrap().catch(() => undefined)
+  return <ReservationForm initialCatalog={catalog} />
 }

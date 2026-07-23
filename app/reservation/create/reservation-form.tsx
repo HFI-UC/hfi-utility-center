@@ -26,11 +26,9 @@ import {
   stepFields,
   type ReservationFormValues,
 } from "./form"
-import {
-  checkReservationAvailability,
-  loadReservationCatalog,
-  submitReservation,
-} from "./actions"
+import { ApiError } from "@/lib/api/client"
+import { getBootstrap } from "@/lib/api/catalog"
+import { createReservation, getAvailability } from "@/lib/api/reservations"
 import type { BootstrapData } from "@/lib/api/types"
 
 export function ReservationForm({
@@ -63,11 +61,11 @@ export function ReservationForm({
   async function loadCatalog() {
     setLoadingError(undefined)
     try {
-      const result = await loadReservationCatalog()
-      if (result.data) setCatalog(result.data)
-      else setLoadingError(t("loadError"))
-    } catch {
-      setLoadingError(t("loadError"))
+      setCatalog(await getBootstrap())
+    } catch (error) {
+      setLoadingError(
+        error instanceof ApiError ? error.message : t("loadError")
+      )
     }
   }
 
@@ -77,12 +75,15 @@ export function ReservationForm({
 
     async function loadInitialCatalog() {
       try {
-        const result = await loadReservationCatalog()
+        const result = await getBootstrap()
         if (ignore) return
-        if (result.data) setCatalog(result.data)
-        else setLoadingError(t("loadError"))
-      } catch {
-        if (!ignore) setLoadingError(t("loadError"))
+        setCatalog(result)
+      } catch (error) {
+        if (!ignore) {
+          setLoadingError(
+            error instanceof ApiError ? error.message : t("loadError")
+          )
+        }
       }
     }
 
@@ -101,17 +102,14 @@ export function ReservationForm({
       if (!room) return
       setSubmitting(true)
       try {
-        const availability = await checkReservationAvailability(
+        const availability = await getAvailability(
           values.room,
-          values.date
+          values.date,
+          room
         )
-        if (availability.error) {
-          setSubmitError(t("availabilityError"))
-          return
-        }
         if (
           !rangeIsAvailable(
-            availability.data.slots,
+            availability.slots,
             values.startTime,
             values.endTime
           )
@@ -121,8 +119,10 @@ export function ReservationForm({
           methods.setValue("endTime", 0)
           return
         }
-      } catch {
-        setSubmitError(t("availabilityError"))
+      } catch (error) {
+        setSubmitError(
+          error instanceof ApiError ? error.message : t("availabilityError")
+        )
         return
       } finally {
         setSubmitting(false)
@@ -136,19 +136,33 @@ export function ReservationForm({
     setSubmitting(true)
     setSubmitError(undefined)
     try {
-      const response = await submitReservation(values)
-      if (response.error) {
-        if (response.error === "conflict") {
-          setStep(2)
-          setSubmitError(t("timeConflict"))
-        } else {
-          setSubmitError(t("submitError"))
-        }
-        return
+      const room = catalog?.rooms.find((item) => item.id === values.room)
+      if (!room) throw new Error(t("availabilityError"))
+      const availability = await getAvailability(values.room, values.date, room)
+      if (
+        !rangeIsAvailable(availability.slots, values.startTime, values.endTime)
+      ) {
+        setStep(2)
+        throw new Error(t("timeConflict"))
       }
-      setResult(response.data)
-    } catch {
-      setSubmitError(t("submitError"))
+      const response = await createReservation({
+        classId: values.classId,
+        room: values.room,
+        studentName: values.studentName.trim(),
+        studentId: values.studentId.trim().toUpperCase(),
+        email: values.email.trim(),
+        reason: values.reason.trim(),
+        startTime: values.startTime,
+        endTime: values.endTime,
+      })
+      setResult({
+        reservationId: response.data?.reservationId,
+        message: response.message,
+      })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t("submitError")
+      setSubmitError(message)
+      if (error instanceof ApiError && error.status === 409) setStep(2)
     } finally {
       setSubmitting(false)
     }
