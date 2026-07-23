@@ -1,29 +1,41 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import { FormProvider, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination"
+import { Progress } from "@/components/ui/progress"
+import { Spinner } from "@/components/ui/spinner"
 import { useTranslations } from "next-intl"
-import { ClassStep } from "@/features/reservation-create/steps/class-step"
-import { DateTimeStep } from "@/features/reservation-create/steps/date-time-step"
-import { LocationStep } from "@/features/reservation-create/steps/location-step"
-import { ProfileStep } from "@/features/reservation-create/steps/profile-step"
-import { ReviewStep } from "@/features/reservation-create/steps/review-step"
-import { SuccessStep } from "@/features/reservation-create/steps/success-step"
+import { ClassStep } from "./steps/class-step"
+import { DateTimeStep } from "./steps/date-time-step"
+import { LocationStep } from "./steps/location-step"
+import { ProfileStep } from "./steps/profile-step"
+import { ReviewStep } from "./steps/review-step"
+import { SuccessStep } from "./steps/success-step"
 import {
   createReservationSchema,
+  rangeIsAvailable,
+  reservationDefaults,
   stepFields,
   type ReservationFormValues,
-} from "@/features/reservation-create/schema"
-import { reservationDefaults } from "@/features/reservation-create/form-state"
+} from "./form"
 import { ApiError } from "@/lib/api/client"
 import { getBootstrap } from "@/lib/api/catalog"
-import { createReservation } from "@/lib/api/reservations"
+import { createReservation, getAvailability } from "@/lib/api/reservations"
 import type { BootstrapData } from "@/lib/api/types"
 
-export function ReservationWizard() {
+export function ReservationForm({
+  initialCatalog,
+}: {
+  initialCatalog?: BootstrapData
+}) {
   const t = useTranslations("booking")
   const common = useTranslations("common")
   const schema = useMemo(() => createReservationSchema((key) => t(key)), [t])
@@ -35,7 +47,9 @@ export function ReservationWizard() {
     shouldUnregister: false,
   })
   const [step, setStep] = useState(0)
-  const [catalog, setCatalog] = useState<BootstrapData>()
+  const [catalog, setCatalog] = useState<BootstrapData | undefined>(
+    initialCatalog
+  )
   const [loadingError, setLoadingError] = useState<string>()
   const [submitError, setSubmitError] = useState<string>()
   const [submitting, setSubmitting] = useState(false)
@@ -55,35 +69,58 @@ export function ReservationWizard() {
     }
   }
 
-  useEffect(() => {
-    let active = true
-    getBootstrap()
-      .then((data) => {
-        if (active) setCatalog(data)
-      })
-      .catch((error) => {
-        if (active)
-          setLoadingError(
-            error instanceof ApiError ? error.message : t("loadError")
-          )
-      })
-    return () => {
-      active = false
-    }
-  }, [t])
-
   async function next() {
     const valid = await methods.trigger(stepFields[step], { shouldFocus: true })
-    if (valid) {
-      setSubmitError(undefined)
-      setStep((current) => Math.min(current + 1, 4))
+    if (!valid) return
+    if (step === 2 && catalog) {
+      const values = methods.getValues()
+      const room = catalog.rooms.find((item) => item.id === values.room)
+      if (!room) return
+      setSubmitting(true)
+      try {
+        const availability = await getAvailability(
+          values.room,
+          values.date,
+          room
+        )
+        if (
+          !rangeIsAvailable(
+            availability.slots,
+            values.startTime,
+            values.endTime
+          )
+        ) {
+          setSubmitError(t("timeConflict"))
+          methods.setValue("startTime", 0)
+          methods.setValue("endTime", 0)
+          return
+        }
+      } catch (error) {
+        setSubmitError(
+          error instanceof ApiError ? error.message : t("availabilityError")
+        )
+        return
+      } finally {
+        setSubmitting(false)
+      }
     }
+    setSubmitError(undefined)
+    setStep((current) => Math.min(current + 1, 4))
   }
 
   async function submit(values: ReservationFormValues) {
     setSubmitting(true)
     setSubmitError(undefined)
     try {
+      const room = catalog?.rooms.find((item) => item.id === values.room)
+      if (!room) throw new Error(t("availabilityError"))
+      const availability = await getAvailability(values.room, values.date, room)
+      if (
+        !rangeIsAvailable(availability.slots, values.startTime, values.endTime)
+      ) {
+        setStep(2)
+        throw new Error(t("timeConflict"))
+      }
       const response = await createReservation({
         classId: values.classId,
         room: values.room,
@@ -99,8 +136,7 @@ export function ReservationWizard() {
         message: response.message,
       })
     } catch (error) {
-      const message =
-        error instanceof ApiError ? error.message : t("submitError")
+      const message = error instanceof Error ? error.message : t("submitError")
       setSubmitError(message)
       if (error instanceof ApiError && error.status === 409) setStep(2)
     } finally {
@@ -125,7 +161,7 @@ export function ReservationWizard() {
   if (!catalog)
     return (
       <main className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-3xl flex-col justify-center px-4 sm:px-6">
-        <Loader2 className="mb-4 size-6 animate-spin" />
+        <Spinner className="mb-4 size-6" />
         <h1 className="text-2xl font-semibold">{t("loadingTitle")}</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           {t("loadingDescription")}
@@ -159,47 +195,56 @@ export function ReservationWizard() {
         onSubmit={methods.handleSubmit(submit)}
         className="min-h-[calc(100svh-4rem)]"
       >
-        <div
-          className="mx-auto flex max-w-7xl items-center gap-0 px-4 pt-8 sm:px-8"
+        <Progress
+          className="mx-auto mt-8 max-w-7xl"
+          value={((step + 1) / steps.length) * 100}
           aria-label={t("progress")}
-        >
-          {Array.from({ length: steps.length }, (_, index) => (
-            <span
-              key={index}
-              className={`h-1 flex-1 rounded-full ${index <= step ? "bg-primary" : "bg-muted"}`}
-            />
-          ))}
-        </div>
+        />
         <div className="px-4 py-10 sm:px-8 sm:py-14">{steps[step]}</div>
         <div className="sticky bottom-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-8">
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={step === 0 || submitting}
-              onClick={() => setStep((current) => Math.max(0, current - 1))}
-            >
-              <ArrowLeft />
-              {common("back")}
-            </Button>
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-8">
             <div className="flex items-center gap-3">
               {submitError ? (
                 <p className="hidden max-w-md text-right text-xs text-destructive sm:block">
                   {submitError}
                 </p>
               ) : null}
-              {step < 4 ? (
-                <Button type="button" onClick={() => void next()}>
-                  {common("next")}
-                  <ArrowRight />
-                </Button>
-              ) : (
-                <Button type="submit" disabled={submitting}>
-                  {submitting ? <Loader2 className="animate-spin" /> : null}
-                  {common("submit")}
-                </Button>
-              )}
             </div>
+            <Pagination className="mx-0 w-auto">
+              <PaginationContent>
+                <PaginationItem>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    disabled={step === 0 || submitting}
+                    onClick={() =>
+                      setStep((current) => Math.max(0, current - 1))
+                    }
+                  >
+                    <ArrowLeft />
+                    {common("back")}
+                  </Button>
+                </PaginationItem>
+                <PaginationItem>
+                  {step < 4 ? (
+                    <Button
+                      type="button"
+                      disabled={submitting}
+                      onClick={() => void next()}
+                    >
+                      {submitting ? <Spinner /> : null}
+                      {common("next")}
+                      <ArrowRight />
+                    </Button>
+                  ) : (
+                    <Button type="submit" disabled={submitting}>
+                      {submitting ? <Spinner /> : null}
+                      {common("submit")}
+                    </Button>
+                  )}
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
           {submitError ? (
             <p className="px-4 pb-3 text-xs text-destructive sm:hidden">

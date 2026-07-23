@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl"
 import { useController, useFormContext } from "react-hook-form"
-import { ChoiceGrid } from "@/features/reservation-create/choice-grid"
-import { StepLayout } from "@/features/reservation-create/step-layout"
-import type { ReservationFormValues } from "@/features/reservation-create/schema"
+import { ChoiceGrid } from "../choice-grid"
+import { StepLayout } from "../step-layout"
+import type { ReservationFormValues } from "../form"
 import type { BootstrapData } from "@/lib/api/types"
 
 export function LocationStep({ catalog }: { catalog: BootstrapData }) {

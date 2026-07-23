@@ -1,11 +1,18 @@
 "use client"
 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { Pencil, Plus, Power, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { Field, FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { RhfSelect } from "@/components/rhf-select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { ConfirmAction, TextActionDialog } from "@/components/action-dialogs"
 import type { Campus, Room, SchoolClass } from "@/lib/api/types"
 import {
@@ -65,7 +72,7 @@ export function CampusEditor({
   reload: Reload
   report: (value?: string) => void
 }) {
-  const form = useForm<{ name: string }>()
+  const form = useForm<{ name: string }>({ defaultValues: { name: "" } })
   const t = useTranslations("admin")
   const common = useTranslations("common")
   return (
@@ -83,9 +90,20 @@ export function CampusEditor({
           }
         })}
       >
-        <Input
-          {...form.register("name", { required: true })}
-          placeholder={t("newCampus")}
+        <Controller
+          control={form.control}
+          name="name"
+          rules={{ required: t("fieldRequired") }}
+          render={({ field, fieldState }) => (
+            <Field className="flex-1" data-invalid={fieldState.invalid}>
+              <Input
+                {...field}
+                placeholder={t("newCampus")}
+                aria-invalid={fieldState.invalid}
+              />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
         />
         <Button>
           <Plus />
@@ -143,7 +161,9 @@ export function ClassEditor({
   reload: Reload
   report: (value?: string) => void
 }) {
-  const form = useForm<{ name: string; campus: string }>()
+  const form = useForm<{ name: string; campus: string }>({
+    defaultValues: { name: "", campus: "" },
+  })
   const t = useTranslations("admin")
   const common = useTranslations("common")
   return (
@@ -161,18 +181,50 @@ export function ClassEditor({
           }
         })}
       >
-        <Input
-          {...form.register("name", { required: true })}
-          placeholder={t("newClass")}
+        <Controller
+          control={form.control}
+          name="name"
+          rules={{ required: t("fieldRequired") }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Input
+                {...field}
+                placeholder={t("newClass")}
+                aria-invalid={fieldState.invalid}
+              />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
         />
-        <RhfSelect
+        <Controller
           control={form.control}
           name="campus"
-          placeholder={t("selectCampus")}
-          options={campuses.map((campus) => ({
-            value: String(campus.id),
-            label: campus.name,
-          }))}
+          rules={{ required: t("fieldRequired") }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
+                onOpenChange={(open) => !open && field.onBlur()}
+              >
+                <SelectTrigger
+                  ref={field.ref}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <SelectValue placeholder={t("selectCampus")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {campuses.map((campus) => (
+                    <SelectItem key={campus.id} value={String(campus.id)}>
+                      {campus.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
         />
         <Button>
           <Plus />
@@ -231,7 +283,9 @@ export function RoomEditor({
   reload: Reload
   report: (value?: string) => void
 }) {
-  const form = useForm<{ name: string; campus: string }>()
+  const form = useForm<{ name: string; campus: string }>({
+    defaultValues: { name: "", campus: "" },
+  })
   const t = useTranslations("admin")
   const common = useTranslations("common")
   return (
@@ -249,18 +303,50 @@ export function RoomEditor({
           }
         })}
       >
-        <Input
-          {...form.register("name", { required: true })}
-          placeholder={t("newRoom")}
+        <Controller
+          control={form.control}
+          name="name"
+          rules={{ required: t("fieldRequired") }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Input
+                {...field}
+                placeholder={t("newRoom")}
+                aria-invalid={fieldState.invalid}
+              />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
         />
-        <RhfSelect
+        <Controller
           control={form.control}
           name="campus"
-          placeholder={t("selectCampus")}
-          options={campuses.map((campus) => ({
-            value: String(campus.id),
-            label: campus.name,
-          }))}
+          rules={{ required: t("fieldRequired") }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
+                onOpenChange={(open) => !open && field.onBlur()}
+              >
+                <SelectTrigger
+                  ref={field.ref}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <SelectValue placeholder={t("selectCampus")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {campuses.map((campus) => (
+                    <SelectItem key={campus.id} value={String(campus.id)}>
+                      {campus.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
         />
         <Button>
           <Plus />

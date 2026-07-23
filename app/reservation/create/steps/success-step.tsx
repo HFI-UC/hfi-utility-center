@@ -24,15 +24,17 @@ export function SuccessStep({
         {message ?? t("successDescription")}
       </p>
       <div className="mt-8 flex flex-wrap gap-2">
-        <Button asChild>
-          <Link href="/reservation/search">{t("viewReservations")}</Link>
-        </Button>
+        <Link href="/reservation/search">
+          <Button>{t("viewReservations")}</Button>
+        </Link>
         <Button type="button" variant="outline" onClick={onReset}>
           {t("bookAgain")}
         </Button>
-        <Button asChild type="button" variant="ghost">
-          <Link href="/">{t("home")}</Link>
-        </Button>
+        <Link href="/">
+          <Button type="button" variant="ghost">
+            {t("home")}
+          </Button>
+        </Link>
       </div>
     </section>
   )

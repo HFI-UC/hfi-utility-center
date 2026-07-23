@@ -1,12 +1,14 @@
+"use client"
+
 import { CalendarPlus, Search } from "lucide-react"
 import Link from "next/link"
-import { getTranslations } from "next-intl/server"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
-export default async function Page() {
-  const nav = await getTranslations("nav")
+export default function Page() {
+  const nav = useTranslations("nav")
   return (
     <main className="flex min-h-[calc(100svh-4rem)] items-center justify-center px-4 py-12 sm:px-8">
       <section className="w-full max-w-4xl text-center">
@@ -15,18 +17,18 @@ export default async function Page() {
           HFI Utility Center
         </h1>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <Button asChild size="lg">
-            <Link href="/reservation/create">
+          <Link href="/reservation/create">
+            <Button size="lg">
               <CalendarPlus />
               {nav("book")}
-            </Link>
-          </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link href="/reservation/search">
+            </Button>
+          </Link>
+          <Link href="/reservation/search">
+            <Button size="lg" variant="outline">
               <Search />
               {nav("reservations")}
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </section>
     </main>

@@ -1,5 +1,7 @@
-import { ReservationWizard } from "@/features/reservation-create/reservation-wizard"
+import { getBootstrap } from "@/lib/api/catalog"
+import { ReservationForm } from "./reservation-form"
 
-export default function ReservationCreatePage() {
-  return <ReservationWizard />
+export default async function ReservationCreatePage() {
+  const catalog = await getBootstrap().catch(() => undefined)
+  return <ReservationForm initialCatalog={catalog} />
 }

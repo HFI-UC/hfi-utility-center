@@ -1,9 +1,23 @@
 import { Suspense } from "react"
-import { AdminLoginForm } from "@/features/admin/admin-login-form"
 import { getTranslations } from "next-intl/server"
 
-export default async function AdminLoginPage() {
-  const t = await getTranslations("admin")
+import { AdminLoginForm } from "./login-form"
+
+function safeRedirect(value?: string) {
+  return value?.startsWith("/") && !value.startsWith("//")
+    ? value
+    : "/admin/reservations"
+}
+
+export default async function AdminLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string; redirect?: string }>
+}) {
+  const [t, params] = await Promise.all([
+    getTranslations("admin"),
+    searchParams,
+  ])
   return (
     <Suspense
       fallback={
@@ -12,7 +26,10 @@ export default async function AdminLoginPage() {
         </main>
       }
     >
-      <AdminLoginForm />
+      <AdminLoginForm
+        token={params.token}
+        redirectTo={safeRedirect(params.redirect)}
+      />
     </Suspense>
   )
 }

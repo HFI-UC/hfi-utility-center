@@ -1,7 +1,6 @@
 import { AlertCircle } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
 
 export function StepLayout({
   step,
@@ -23,7 +22,9 @@ export function StepLayout({
   return (
     <section aria-labelledby="step-title" className="mx-auto w-full max-w-5xl">
       <header className="mb-8 space-y-3">
-        <Badge>{t("step", { current: step, total: totalSteps })}</Badge>
+        <p className="text-sm font-medium text-muted-foreground">
+          {t("step", { current: step, total: totalSteps })}
+        </p>
         <h1 id="step-title" className="text-3xl font-semibold">
           {title}
         </h1>

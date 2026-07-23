@@ -1,11 +1,18 @@
 "use client"
 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { Bell, BellOff, Plus, Power, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { RhfSelect } from "@/components/rhf-select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { ConfirmAction } from "@/components/action-dialogs"
 import type { Admin, Room } from "@/lib/api/types"
 import {
@@ -31,7 +38,9 @@ export function PolicyEditor({ rooms, reload, report }: Props) {
     day: string
     start: string
     end: string
-  }>({ defaultValues: { day: "1", start: "08:00", end: "18:00" } })
+  }>({
+    defaultValues: { room: "", day: "1", start: "08:00", end: "18:00" },
+  })
   return (
     <section>
       <h2 className="border-b pb-3 text-lg font-semibold">
@@ -50,26 +59,88 @@ export function PolicyEditor({ rooms, reload, report }: Props) {
           }
         })}
       >
-        <RhfSelect
+        <Controller
           control={form.control}
           name="room"
-          placeholder={t("selectRoom")}
-          options={rooms.map((room) => ({
-            value: String(room.id),
-            label: room.name,
-          }))}
+          rules={{ required: t("fieldRequired") }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
+                onOpenChange={(open) => !open && field.onBlur()}
+              >
+                <SelectTrigger
+                  ref={field.ref}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <SelectValue placeholder={t("selectRoom")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {rooms.map((room) => (
+                    <SelectItem key={room.id} value={String(room.id)}>
+                      {room.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
         />
-        <RhfSelect
+        <Controller
           control={form.control}
           name="day"
-          placeholder={t("selectDay")}
-          options={weekdays.map((day, index) => ({
-            value: String(index),
-            label: day,
-          }))}
+          rules={{ required: t("fieldRequired") }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
+                onOpenChange={(open) => !open && field.onBlur()}
+              >
+                <SelectTrigger
+                  ref={field.ref}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <SelectValue placeholder={t("selectDay")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {weekdays.map((day, index) => (
+                    <SelectItem key={day} value={String(index)}>
+                      {day}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
         />
-        <Input type="time" {...form.register("start", { required: true })} />
-        <Input type="time" {...form.register("end", { required: true })} />
+        {(["start", "end"] as const).map((name) => (
+          <Controller
+            key={name}
+            control={form.control}
+            name={name}
+            rules={{ required: t("fieldRequired") }}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel className="sr-only" htmlFor={`policy-${name}`}>
+                  {t(name === "start" ? "policyStart" : "policyEnd")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={`policy-${name}`}
+                  type="time"
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
+        ))}
         <Button>
           <Plus />
           {common("add")}
@@ -135,7 +206,9 @@ export function PolicyEditor({ rooms, reload, report }: Props) {
 export function ApproverEditor({ rooms, admins, reload, report }: Props) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
-  const form = useForm<{ room: string; admin: string }>()
+  const form = useForm<{ room: string; admin: string }>({
+    defaultValues: { room: "", admin: "" },
+  })
   return (
     <section>
       <h2 className="border-b pb-3 text-lg font-semibold">{t("approvers")}</h2>
@@ -150,23 +223,65 @@ export function ApproverEditor({ rooms, admins, reload, report }: Props) {
           }
         })}
       >
-        <RhfSelect
+        <Controller
           control={form.control}
           name="room"
-          placeholder={t("selectRoom")}
-          options={rooms.map((room) => ({
-            value: String(room.id),
-            label: room.name,
-          }))}
+          rules={{ required: t("fieldRequired") }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
+                onOpenChange={(open) => !open && field.onBlur()}
+              >
+                <SelectTrigger
+                  ref={field.ref}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <SelectValue placeholder={t("selectRoom")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {rooms.map((room) => (
+                    <SelectItem key={room.id} value={String(room.id)}>
+                      {room.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
         />
-        <RhfSelect
+        <Controller
           control={form.control}
           name="admin"
-          placeholder={t("selectAdmin")}
-          options={admins.map((admin) => ({
-            value: String(admin.id),
-            label: `${admin.name} · ${admin.email}`,
-          }))}
+          rules={{ required: t("fieldRequired") }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
+                onOpenChange={(open) => !open && field.onBlur()}
+              >
+                <SelectTrigger
+                  ref={field.ref}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <SelectValue placeholder={t("selectAdmin")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {admins.map((admin) => (
+                    <SelectItem key={admin.id} value={String(admin.id)}>
+                      {admin.name} · {admin.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
         />
         <Button>
           <Plus />

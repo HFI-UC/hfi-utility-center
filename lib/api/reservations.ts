@@ -84,11 +84,13 @@ export async function getAvailability(
   const room = rooms.find((item) => item.id === roomId && item.enabled)
   if (!room) throw new Error("Room is unavailable")
   const reservations = [...firstPage.reservations]
-  const pageCount = Math.min(Math.ceil(firstPage.total / 20), 5)
-  for (let page = 1; page < pageCount; page += 1) {
-    const nextPage = await getReservations({ roomId, startTime, endTime, page })
-    reservations.push(...nextPage.reservations)
-  }
+  const pageCount = Math.ceil(firstPage.total / 20)
+  const additionalPages = await Promise.all(
+    Array.from({ length: Math.max(0, pageCount - 1) }, (_, index) =>
+      getReservations({ roomId, startTime, endTime, page: index + 1 })
+    )
+  )
+  reservations.push(...additionalPages.flatMap((page) => page.reservations))
   return buildLegacyAvailability(room, date, reservations)
 }
 

@@ -46,20 +46,22 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </p>
         <nav className="grid grid-cols-2 gap-1 sm:grid-cols-4 lg:grid-cols-1">
           {items.map((item, index) => (
-            <Button
+            <Link
               key={item.href}
-              asChild
-              variant={pathname === item.href ? "secondary" : "ghost"}
-              className="justify-start"
+              href={item.href}
+              aria-current={pathname === item.href ? "page" : undefined}
             >
-              <Link href={item.href}>
-                <span className="font-mono text-[0.625rem] text-muted-foreground">
+              <Button
+                variant={pathname === item.href ? "secondary" : "ghost"}
+                className="w-full justify-start"
+              >
+                <span className="text-xs text-muted-foreground">
                   0{index + 1}
                 </span>
                 <item.icon />
                 {item.label}
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           ))}
         </nav>
         <Button

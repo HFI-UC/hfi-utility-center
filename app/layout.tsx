@@ -1,8 +1,13 @@
 import "./globals.css"
+import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AppShell } from "@/components/app-shell"
-import { NextIntlClientProvider } from "next-intl"
-import { getLocale, getMessages } from "next-intl/server"
+import { LocaleProvider } from "@/components/locale-provider"
+import { getLocale } from "next-intl/server"
+import enMessages from "@/messages/en-US.json"
+import zhMessages from "@/messages/zh-CN.json"
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 export default async function RootLayout({
   children,
@@ -10,19 +15,21 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const locale = await getLocale()
-  const messages = await getMessages()
   return (
     <html
       lang={locale}
       suppressHydrationWarning
-      className="font-sans antialiased"
+      className={`${inter.variable} font-sans antialiased`}
     >
       <body>
-        <NextIntlClientProvider messages={messages}>
+        <LocaleProvider
+          initialLocale={locale as "zh-CN" | "en-US"}
+          messages={{ "zh-CN": zhMessages, "en-US": enMessages }}
+        >
           <ThemeProvider>
             <AppShell>{children}</AppShell>
           </ThemeProvider>
-        </NextIntlClientProvider>
+        </LocaleProvider>
       </body>
     </html>
   )

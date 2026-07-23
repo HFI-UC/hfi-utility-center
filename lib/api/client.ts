@@ -1,5 +1,85 @@
-import { localizedApiError } from "@/lib/messages"
+import axios, { type AxiosRequestConfig } from "axios"
+import { createTranslator } from "next-intl"
+
+import enMessages from "@/messages/en-US.json"
+import zhMessages from "@/messages/zh-CN.json"
 import type { ApiResponse } from "@/lib/api/types"
+
+const messages = {
+  "en-US": enMessages,
+  "zh-CN": zhMessages,
+} as const
+
+const api = axios.create({
+  baseURL:
+    process.env.NEXT_PUBLIC_BACKEND_URL ??
+    process.env.BACKEND_URL ??
+    "https://api.hfiuc.org",
+  withCredentials: true,
+  validateStatus: () => true,
+  xsrfCookieName: "_csrf",
+  xsrfHeaderName: "x-csrf-token",
+  withXSRFToken: true,
+})
+
+api.interceptors.request.use(async (config) => {
+  const method = config.method?.toUpperCase()
+  if (method && ["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
+    await api.get("/_csrf")
+  }
+  return config
+})
+
+const codeKeys: Record<string, string> = {
+  ROOM_UNAVAILABLE: "roomUnavailable",
+  INVALID_CREDENTIALS: "invalidCredentials",
+  INVALID_REFRESH_TOKEN: "sessionExpired",
+  ADMIN_NOT_FOUND: "adminNotFound",
+  UNAUTHORIZED: "sessionExpired",
+}
+
+const messageKeys: Record<string, string> = {
+  "Room not found.": "roomNotFound",
+  "Class not found.": "classNotFound",
+  "Campus not found.": "campusNotFound",
+  "Reservation not found.": "reservationNotFound",
+  "User is not logged in.": "sessionExpired",
+  "Invalid email or password.": "invalidCredentials",
+  "Turnstile verification failed.": "verificationFailed",
+  "Admin already exists.": "adminExists",
+  "Email already in use.": "emailInUse",
+}
+
+function localizedError(
+  status: number,
+  message?: string | null,
+  code?: string
+) {
+  const storedLocale =
+    typeof window === "undefined"
+      ? undefined
+      : window.localStorage.getItem("hfiuc-locale")
+  const locale =
+    storedLocale === "en-US" || storedLocale === "zh-CN"
+      ? storedLocale
+      : typeof document !== "undefined" &&
+          document.documentElement.lang === "en-US"
+        ? "en-US"
+        : "zh-CN"
+  const t = createTranslator({
+    locale,
+    messages: messages[locale],
+    namespace: "apiErrors",
+  })
+  const key = (code && codeKeys[code]) || (message && messageKeys[message])
+  if (key) return t(key as never)
+  if (status === 0) return t("network")
+  if (status === 401 || status === 403) return t("sessionExpired")
+  if (status === 404) return t("notFound")
+  if (status === 409) return t("conflict")
+  if (status >= 500) return t("server")
+  return t("unknown")
+}
 
 export class ApiError extends Error {
   constructor(
@@ -13,49 +93,31 @@ export class ApiError extends Error {
 
 export async function apiRequest<T>(
   path: string,
-  init: RequestInit = {}
+  init: AxiosRequestConfig = {}
 ): Promise<ApiResponse<T>> {
-  const locale =
-    typeof document !== "undefined" &&
-    document.cookie.includes("hfiuc-locale=en-US")
-      ? "en-US"
-      : "zh-CN"
-  let response: Response
   try {
-    response = await fetch(`/api/backend${path}`, {
-      credentials: "include",
-      ...init,
-      headers: {
-        Accept: "application/json",
-        ...(init.body ? { "Content-Type": "application/json" } : {}),
-        ...init.headers,
-      },
-    })
-  } catch {
-    throw new ApiError(localizedApiError(0, undefined, undefined, locale), 0)
-  }
-
-  const contentType = response.headers.get("content-type") ?? ""
-  if (!contentType.includes("application/json")) {
-    if (!response.ok)
+    const response = await api.request<ApiResponse<T>>({ url: path, ...init })
+    const payload = response.data
+    if (response.status < 200 || response.status >= 300 || !payload.success) {
       throw new ApiError(
-        localizedApiError(response.status, undefined, undefined, locale),
-        response.status
+        localizedError(response.status, payload.message, payload.code),
+        response.status,
+        payload.code
       )
-    return { success: true, data: (await response.blob()) as T }
+    }
+    return payload
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    throw new ApiError(localizedError(0), 0)
   }
-
-  const payload = (await response.json()) as ApiResponse<T>
-  if (!response.ok || !payload.success) {
-    throw new ApiError(
-      localizedApiError(response.status, payload.message, payload.code, locale),
-      response.status,
-      payload.code
-    )
-  }
-  return payload
 }
 
-export function jsonBody(value: unknown): Pick<RequestInit, "body"> {
-  return { body: JSON.stringify(value) }
+export function jsonBody(value: unknown): Pick<AxiosRequestConfig, "data"> {
+  return { data: value }
 }
+
+export function backendHref(path: string) {
+  return new URL(path, api.defaults.baseURL).toString()
+}
+
+export { api }

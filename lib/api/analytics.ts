@@ -1,4 +1,4 @@
-import { apiRequest } from "@/lib/api/client"
+import { apiRequest, backendHref } from "@/lib/api/client"
 import type { OverviewAnalytics, WeeklyAnalytics } from "@/lib/api/types"
 
 export async function getOverviewAnalytics() {
@@ -18,5 +18,5 @@ export function analyticsExportUrl(
   turnstileToken: string
 ) {
   const query = new URLSearchParams({ type, turnstileToken })
-  return `/api/backend/analytics/${report}/export?${query}`
+  return backendHref(`/analytics/${report}/export?${query}`)
 }

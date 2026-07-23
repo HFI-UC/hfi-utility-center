@@ -1,8 +1,9 @@
 "use client"
 
 import { useId, useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +26,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 export function ConfirmAction({
   children,
@@ -109,18 +109,30 @@ export function TextActionDialog({
             setOpen(false)
           })}
         >
-          <div className="space-y-2">
-            <Label htmlFor={inputId}>{label}</Label>
-            <Input
-              id={inputId}
-              type={inputType}
-              autoFocus
-              {...form.register("value", {
-                required: true,
-                minLength: inputType === "password" ? 6 : 1,
-              })}
-            />
-          </div>
+          <Controller
+            control={form.control}
+            name="value"
+            rules={{
+              required: label,
+              minLength: {
+                value: inputType === "password" ? 6 : 1,
+                message: label,
+              },
+            }}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
+                <Input
+                  {...field}
+                  id={inputId}
+                  type={inputType}
+                  autoFocus
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">

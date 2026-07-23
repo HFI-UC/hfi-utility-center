@@ -1,7 +1,7 @@
 import { useLocale, useTranslations } from "next-intl"
 import { useFormContext } from "react-hook-form"
-import { StepLayout } from "@/features/reservation-create/step-layout"
-import type { ReservationFormValues } from "@/features/reservation-create/schema"
+import { StepLayout } from "../step-layout"
+import type { ReservationFormValues } from "../form"
 import type { BootstrapData } from "@/lib/api/types"
 
 export function ReviewStep({ catalog }: { catalog: BootstrapData }) {
