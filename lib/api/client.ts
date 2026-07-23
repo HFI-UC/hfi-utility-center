@@ -11,6 +11,7 @@ const messages = {
 } as const
 
 const api = axios.create({
+  adapter: "fetch",
   baseURL:
     process.env.NEXT_PUBLIC_BACKEND_URL ??
     process.env.BACKEND_URL ??
@@ -20,7 +21,7 @@ const api = axios.create({
   xsrfCookieName: "_csrf",
   xsrfHeaderName: "x-csrf-token",
   withXSRFToken: true,
-  timeout: 15_000,
+  timeout: 45_000,
 })
 
 api.interceptors.request.use(async (config) => {
