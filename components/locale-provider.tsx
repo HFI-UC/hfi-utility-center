@@ -38,7 +38,11 @@ export function LocaleProvider({
   }, [locale])
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages[locale]}>
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages[locale]}
+      timeZone="Asia/Hong_Kong"
+    >
       {children}
     </NextIntlClientProvider>
   )

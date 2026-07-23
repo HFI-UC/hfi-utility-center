@@ -77,7 +77,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   setTheme(resolvedTheme === "dark" ? "light" : "dark")
                 }
               >
-                {resolvedTheme === "dark" ? <Sun /> : <Moon />}
+                <Sun className="hidden dark:block" />
+                <Moon className="dark:hidden" />
               </Button>
             </nav>
           </div>
