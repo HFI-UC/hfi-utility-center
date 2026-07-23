@@ -11,10 +11,7 @@ const messages = {
 } as const
 
 const api = axios.create({
-  baseURL:
-    process.env.NEXT_PUBLIC_BACKEND_URL ??
-    process.env.BACKEND_URL ??
-    "https://api.hfiuc.org",
+  baseURL: "/api/backend",
   withCredentials: true,
   validateStatus: () => true,
   xsrfCookieName: "_csrf",
@@ -117,7 +114,7 @@ export function jsonBody(value: unknown): Pick<AxiosRequestConfig, "data"> {
 }
 
 export function backendHref(path: string) {
-  return new URL(path, api.defaults.baseURL).toString()
+  return `/api/backend${path}`
 }
 
 export { api }

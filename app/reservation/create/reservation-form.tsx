@@ -31,11 +31,7 @@ import { getBootstrap } from "@/lib/api/catalog"
 import { createReservation, getAvailability } from "@/lib/api/reservations"
 import type { BootstrapData } from "@/lib/api/types"
 
-export function ReservationForm({
-  initialCatalog,
-}: {
-  initialCatalog?: BootstrapData
-}) {
+export function ReservationForm() {
   const t = useTranslations("booking")
   const common = useTranslations("common")
   const schema = useMemo(() => createReservationSchema((key) => t(key)), [t])
@@ -47,9 +43,7 @@ export function ReservationForm({
     shouldUnregister: false,
   })
   const [step, setStep] = useState(0)
-  const [catalog, setCatalog] = useState<BootstrapData | undefined>(
-    initialCatalog
-  )
+  const [catalog, setCatalog] = useState<BootstrapData>()
   const [loadingError, setLoadingError] = useState<string>()
   const [submitError, setSubmitError] = useState<string>()
   const [submitting, setSubmitting] = useState(false)
@@ -70,7 +64,6 @@ export function ReservationForm({
   }
 
   useEffect(() => {
-    if (initialCatalog) return
     let ignore = false
 
     async function loadInitialCatalog() {
@@ -91,7 +84,7 @@ export function ReservationForm({
     return () => {
       ignore = true
     }
-  }, [initialCatalog, t])
+  }, [t])
 
   async function next() {
     const valid = await methods.trigger(stepFields[step], { shouldFocus: true })
