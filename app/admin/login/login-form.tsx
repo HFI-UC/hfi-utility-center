@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
-import { checkLogin, login } from "@/lib/api/auth"
+import { checkLogin, loginWithPassword, loginWithToken } from "@/lib/api/auth"
+import { getErrorMessage } from "@/lib/api/client"
 
 type LoginFields = { email: string; password: string }
 
@@ -39,16 +40,12 @@ export function AdminLoginForm({
 
     async function restoreSession() {
       try {
-        if (token) await login(null, null, token, null)
+        if (token) await loginWithToken(token)
         else await checkLogin()
         if (!ignore) router.replace(redirectTo)
       } catch (loadError) {
         if (!ignore && token) {
-          setError(
-            loadError instanceof Error
-              ? loadError.message
-              : t("invalidLoginLink")
-          )
+          setError(getErrorMessage(loadError, t("invalidLoginLink")))
         }
       }
     }
@@ -66,12 +63,10 @@ export function AdminLoginForm({
     }
     setError(undefined)
     try {
-      await login(email, password, null, turnstileToken)
+      await loginWithPassword(email, password, turnstileToken)
       router.replace(redirectTo)
     } catch (submitError) {
-      setError(
-        submitError instanceof Error ? submitError.message : t("loginFailed")
-      )
+      setError(getErrorMessage(submitError, t("loginFailed")))
     }
   }
 

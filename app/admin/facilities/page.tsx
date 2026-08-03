@@ -45,7 +45,7 @@ export default function AdminFacilitiesPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const facilityResource = useAdminResource({
-    load: loadFacilityData,
+    loadResource: loadFacilityData,
     initialData: emptyFacilityData,
     fallbackError: t("facilitiesLoadError"),
   })

@@ -10,24 +10,29 @@ export function ReviewStep({ catalog }: { catalog: BootstrapData }) {
   const locale = useLocale()
   const { getValues } = useFormContext<ReservationFormValues>()
   const values = getValues()
-  const className =
-    catalog.classes.find((item) => item.id === values.classId)?.name ?? "-"
   const dateTimeFormatter = createAppDateTimeFormatter(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   })
-  const format = (timestamp: number) =>
+  const formatDateTime = (timestamp: number) =>
     dateTimeFormatter.format(new Date(timestamp * 1000))
-  const location = `${catalog.campuses.find((item) => item.id === values.bookingCampusId)?.name ?? ""} · ${catalog.rooms.find((item) => item.id === values.room)?.name ?? ""}`
+  const className =
+    catalog.classes.find((schoolClass) => schoolClass.id === values.classId)
+      ?.name ?? "-"
+  const campusName = catalog.campuses.find(
+    (campus) => campus.id === values.bookingCampusId
+  )?.name
+  const roomName = catalog.rooms.find((room) => room.id === values.room)?.name
+  const location = [campusName, roomName].filter(Boolean).join(" · ") || "-"
   const rows = [
-    [t("class"), className],
-    [t("location"), location],
-    [t("start"), format(values.startTime)],
-    [t("end"), format(values.endTime)],
-    [t("name"), values.studentName],
-    [t("studentId"), values.studentId],
-    [t("email"), values.email],
-    [t("reason"), values.reason],
+    { label: t("class"), value: className },
+    { label: t("location"), value: location },
+    { label: t("start"), value: formatDateTime(values.startTime) },
+    { label: t("end"), value: formatDateTime(values.endTime) },
+    { label: t("name"), value: values.studentName },
+    { label: t("studentId"), value: values.studentId },
+    { label: t("email"), value: values.email },
+    { label: t("reason"), value: values.reason },
   ]
   return (
     <StepLayout
@@ -36,7 +41,7 @@ export function ReviewStep({ catalog }: { catalog: BootstrapData }) {
       description={t("reviewDescription")}
     >
       <dl className="border-t">
-        {rows.map(([label, value]) => (
+        {rows.map(({ label, value }) => (
           <div
             key={label}
             className="grid gap-2 border-b py-4 sm:grid-cols-[10rem_1fr]"

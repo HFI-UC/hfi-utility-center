@@ -14,7 +14,10 @@ import {
 
 export function ReservationTermsDialog() {
   const t = useTranslations("booking")
-  const terms = t.raw("terms.items") as string[]
+  const translatedTerms = t.raw("terms.items")
+  const terms = Array.isArray(translatedTerms)
+    ? translatedTerms.filter((term): term is string => typeof term === "string")
+    : []
 
   return (
     <Dialog>

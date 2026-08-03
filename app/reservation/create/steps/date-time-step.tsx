@@ -25,8 +25,6 @@ import {
 } from "./time-options"
 import { useRoomAvailability } from "./use-room-availability"
 
-const calendarLocales = { "zh-CN": zhCN, "en-US": enUS } as const
-
 export function DateTimeStep({ rooms }: { rooms: Room[] }) {
   const t = useTranslations("booking")
   const locale = useLocale()
@@ -160,9 +158,7 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
           render={({ field, fieldState }) => (
             <Calendar
               mode="single"
-              locale={
-                calendarLocales[locale as keyof typeof calendarLocales] ?? enUS
-              }
+              locale={locale === "zh-CN" ? zhCN : enUS}
               selected={inputValueToDate(field.value)}
               defaultMonth={inputValueToDate(field.value) ?? today}
               startMonth={today}

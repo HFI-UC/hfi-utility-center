@@ -17,7 +17,7 @@ export default function AdminUsersPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const adminResource = useAdminResource<Admin[]>({
-    load: getAdmins,
+    loadResource: getAdmins,
     initialData: [],
     fallbackError: t("usersLoadError"),
   })

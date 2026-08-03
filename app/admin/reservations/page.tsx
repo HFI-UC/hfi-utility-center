@@ -15,7 +15,7 @@ import {
   updateReservationApproval,
 } from "@/lib/api/reservations"
 import type { Reservation } from "@/lib/api/types"
-import { backendHref } from "@/lib/api/client"
+import { backendHref, getErrorMessage } from "@/lib/api/client"
 import {
   backendDateTimeToDate,
   createAppDateTimeFormatter,
@@ -31,7 +31,7 @@ export default function AdminReservationsPage() {
   const [rejectingId, setRejectingId] = useState<number>()
   const [reason, setReason] = useState("")
   const reservationResource = useAdminResource<Reservation[]>({
-    load: getFutureReservations,
+    loadResource: getFutureReservations,
     initialData: [],
     fallbackError: common("unknown"),
   })
@@ -91,11 +91,23 @@ export default function AdminReservationsPage() {
       reservationResource.reportError(undefined)
     } catch (actionError) {
       reservationResource.reportError(
-        actionError instanceof Error ? actionError.message : common("unknown")
+        getErrorMessage(actionError, common("unknown"))
       )
     } finally {
       setWorkingId(undefined)
     }
+  }
+
+  function startRejection(id: number) {
+    setRejectingId(id)
+    setReason("")
+    reservationResource.reportError(undefined)
+  }
+
+  function cancelRejection() {
+    setRejectingId(undefined)
+    setReason("")
+    reservationResource.reportError(undefined)
   }
 
   return (
@@ -115,12 +127,12 @@ export default function AdminReservationsPage() {
               <RefreshCw />
               {common("refresh")}
             </Button>
-            <Link href={backendHref("/reservation/export")}>
-              <Button variant="outline">
+            <Button variant="outline" asChild>
+              <Link href={backendHref("/reservation/export")}>
                 <Download />
                 {t("exportReservations")}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </>
         }
       />
@@ -199,7 +211,7 @@ export default function AdminReservationsPage() {
                   <Button
                     size="sm"
                     variant="destructive"
-                    onClick={() => setRejectingId(item.id)}
+                    onClick={() => startRejection(item.id)}
                   >
                     <X />
                     {t("reject")}
@@ -222,13 +234,7 @@ export default function AdminReservationsPage() {
                   >
                     {t("confirmReject")}
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setRejectingId(undefined)
-                      setReason("")
-                    }}
-                  >
+                  <Button variant="outline" onClick={cancelRejection}>
                     {common("cancel")}
                   </Button>
                 </div>

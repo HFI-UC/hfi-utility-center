@@ -5,23 +5,18 @@ import { useLocale } from "next-intl"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 
-const alternateLocale: Record<string, "zh-CN" | "en-US"> = {
-  "zh-CN": "en-US",
-  "en-US": "zh-CN",
-}
-
 export function LanguageSwitcher() {
   const locale = useLocale()
   const t = useTranslations("nav")
-  const next = alternateLocale[locale] ?? "zh-CN"
+  const nextLocale = locale === "zh-CN" ? "en-US" : "zh-CN"
   return (
     <Button
       variant="ghost"
       size="sm"
       onClick={() => {
-        window.localStorage.setItem("hfiuc-locale", next)
+        window.localStorage.setItem("hfiuc-locale", nextLocale)
         window.dispatchEvent(
-          new CustomEvent("hfiuc-locale-change", { detail: next })
+          new CustomEvent("hfiuc-locale-change", { detail: nextLocale })
         )
       }}
       title={t("switchLanguage")}

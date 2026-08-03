@@ -42,12 +42,9 @@ contracts.
 
 ```bash
 npm run format:check
-npm run test
 npm run typecheck
 npm run lint
 npm run build
 ```
 
 Use `npm run format` to format TypeScript and JavaScript configuration files.
-Vitest covers pure reservation, date, search-query, pagination, and API response
-behavior.

@@ -42,8 +42,21 @@ export function ConfirmAction({
   confirmLabel: string
   onConfirm: () => Promise<unknown> | void
 }) {
+  const [open, setOpen] = useState(false)
+  const [confirming, setConfirming] = useState(false)
+
+  async function handleConfirm() {
+    setConfirming(true)
+    try {
+      const confirmed = await onConfirm()
+      if (confirmed !== false) setOpen(false)
+    } finally {
+      setConfirming(false)
+    }
+  }
+
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -54,7 +67,11 @@ export function ConfirmAction({
           <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            onClick={() => void onConfirm()}
+            disabled={confirming}
+            onClick={(event) => {
+              event.preventDefault()
+              void handleConfirm()
+            }}
           >
             {confirmLabel}
           </AlertDialogAction>

@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState } from "react"
 
+import { getErrorMessage } from "@/lib/api/client"
+
 export type AdminMutation = (
   key: string,
   action: () => Promise<unknown>,
@@ -34,7 +36,7 @@ export function useAdminMutation({
         setNotice(successMessage)
         return true
       } catch (error) {
-        reportError(error instanceof Error ? error.message : fallbackError)
+        reportError(getErrorMessage(error, fallbackError))
         return false
       } finally {
         mutationInProgress.current = false

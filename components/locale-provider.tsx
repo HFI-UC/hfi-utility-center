@@ -3,7 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react"
 import { NextIntlClientProvider } from "next-intl"
 
-import type { AppLocale } from "@/i18n/request"
+import { isAppLocale, type AppLocale } from "@/i18n/config"
 
 type LocaleMessages = Record<AppLocale, Record<string, unknown>>
 
@@ -14,7 +14,7 @@ function subscribe(onStoreChange: () => void) {
 
 function getStoredLocale(): AppLocale {
   const saved = window.localStorage.getItem("hfiuc-locale")
-  if (saved === "zh-CN" || saved === "en-US") return saved
+  if (saved && isAppLocale(saved)) return saved
   return document.documentElement.lang === "en-US" ? "en-US" : "zh-CN"
 }
 

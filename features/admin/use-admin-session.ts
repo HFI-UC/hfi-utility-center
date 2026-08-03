@@ -12,15 +12,19 @@ export function useAdminSession(enabled = true) {
   useEffect(() => {
     if (!enabled) return
     let active = true
-    checkLogin()
-      .then(() => {
+
+    async function verifySession() {
+      try {
+        await checkLogin()
         if (active) setSession({ pathname, authenticated: true })
-      })
-      .catch(() => {
+      } catch {
         if (!active) return
         setSession({ pathname, authenticated: false })
         router.replace(`/admin/login?redirect=${encodeURIComponent(pathname)}`)
-      })
+      }
+    }
+
+    void verifySession()
     return () => {
       active = false
     }

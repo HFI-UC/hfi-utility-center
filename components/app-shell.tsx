@@ -6,13 +6,14 @@ import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/language-switcher"
+import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { resolvedTheme, setTheme } = useTheme()
   const t = useTranslations("nav")
   const pathname = usePathname()
-  const links = [
+  const navigationLinks = [
     {
       href: "/",
       label: t("home"),
@@ -27,32 +28,38 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div>
           <div className="mx-auto flex min-h-16 max-w-[96rem] items-center justify-between gap-4 px-4 py-2 sm:px-8">
-            <Link href="/" className="shrink-0">
-              <Button variant="ghost" size="sm" className="px-2 font-semibold">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="shrink-0 px-2 font-semibold"
+              asChild
+            >
+              <Link href="/">
                 <span className="sm:hidden">HFI UC</span>
                 <span className="hidden sm:inline">HFI Utility Center</span>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <nav className="flex min-w-0 items-center gap-1">
-              {links.map((link) => {
+              {navigationLinks.map((link) => {
                 const active =
                   link.href === "/"
                     ? pathname === "/"
                     : pathname.startsWith(link.href)
                 return (
-                  <Link
+                  <Button
                     key={link.href}
-                    className={link.className}
-                    href={link.href}
-                    aria-current={active ? "page" : undefined}
+                    variant={active ? "secondary" : "ghost"}
+                    size="sm"
+                    className={cn(
+                      link.className,
+                      link.icon && "w-8 px-0 sm:w-auto sm:px-2.5"
+                    )}
+                    title={link.label}
+                    asChild
                   >
-                    <Button
-                      variant={active ? "secondary" : "ghost"}
-                      size="sm"
-                      className={
-                        link.icon ? "w-8 px-0 sm:w-auto sm:px-2.5" : undefined
-                      }
-                      title={link.label}
+                    <Link
+                      href={link.href}
+                      aria-current={active ? "page" : undefined}
                     >
                       {link.icon ? <link.icon className="sm:hidden" /> : null}
                       <span
@@ -60,8 +67,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       >
                         {link.label}
                       </span>
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 )
               })}
               <span

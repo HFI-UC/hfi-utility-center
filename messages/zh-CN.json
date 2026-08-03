@@ -46,14 +46,7 @@
     "server": "服务器暂时不可用，请稍后重试。",
     "roomUnavailable": "该房间目前不可预约。",
     "invalidCredentials": "邮箱、密码或安全验证不正确。",
-    "adminNotFound": "管理员账号不存在。",
-    "roomNotFound": "房间不存在。",
-    "classNotFound": "班级不存在。",
-    "campusNotFound": "校区不存在。",
-    "reservationNotFound": "预约不存在。",
-    "verificationFailed": "安全验证失败，请重新验证。",
-    "adminExists": "该管理员账号已存在。",
-    "emailInUse": "该邮箱已被使用。"
+    "adminNotFound": "管理员账号不存在。"
   },
   "booking": {
     "progress": "预约进度",

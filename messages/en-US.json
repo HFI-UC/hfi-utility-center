@@ -50,14 +50,7 @@
     "server": "The server is temporarily unavailable.",
     "roomUnavailable": "This room is currently unavailable.",
     "invalidCredentials": "Email, password or verification is incorrect.",
-    "adminNotFound": "Administrator not found.",
-    "roomNotFound": "Room not found.",
-    "classNotFound": "Class not found.",
-    "campusNotFound": "Campus not found.",
-    "reservationNotFound": "Reservation not found.",
-    "verificationFailed": "Verification failed. Please try again.",
-    "adminExists": "This administrator already exists.",
-    "emailInUse": "This email is already in use."
+    "adminNotFound": "Administrator not found."
   },
   "booking": {
     "progress": "Booking progress",

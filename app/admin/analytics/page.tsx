@@ -58,7 +58,7 @@ export default function AdminAnalyticsPage() {
   const weekdays = t("weekdays").split(",")
   const [token, setToken] = useState("")
   const analyticsResource = useAdminResource({
-    load: loadAnalyticsData,
+    loadResource: loadAnalyticsData,
     initialData: { overview: undefined, weekly: undefined },
     fallbackError: t("analyticsLoadError"),
   })

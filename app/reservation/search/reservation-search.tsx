@@ -5,7 +5,10 @@ import { useTranslations } from "next-intl"
 import { ReservationResults } from "./reservation-results"
 import { ReservationSearchFilterForm } from "./reservation-search-filters"
 import { ReservationSearchPagination } from "./reservation-search-pagination"
-import type { ReservationSearchFilters } from "./search-query"
+import {
+  reservationSearchHref,
+  type ReservationSearchFilters,
+} from "./search-query"
 import { useReservationSearch } from "./use-reservation-search"
 
 export function ReservationSearch({
@@ -29,7 +32,11 @@ export function ReservationSearch({
         </p>
       </header>
 
-      <ReservationSearchFilterForm catalog={catalog} filters={filters} />
+      <ReservationSearchFilterForm
+        key={reservationSearchHref(filters, filters.page)}
+        catalog={catalog}
+        filters={filters}
+      />
 
       {loading ? (
         <p

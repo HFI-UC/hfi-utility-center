@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/pagination"
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
-import { ApiError } from "@/lib/api/client"
+import { ApiError, getErrorMessage } from "@/lib/api/client"
 import { createReservation, getAvailability } from "@/lib/api/reservations"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
 
@@ -35,7 +35,6 @@ import { useReservationCatalog } from "./use-reservation-catalog"
 
 type ReservationResult = {
   reservationId?: number
-  message?: string
 }
 
 export function ReservationForm() {
@@ -86,9 +85,7 @@ export function ReservationForm() {
       setFlowError(t("timeConflict"))
       return false
     } catch (error) {
-      setFlowError(
-        error instanceof ApiError ? error.message : t("availabilityError")
-      )
+      setFlowError(getErrorMessage(error, t("availabilityError")))
       return false
     }
   }
@@ -136,10 +133,9 @@ export function ReservationForm() {
       })
       setResult({
         reservationId: response.data?.reservationId,
-        message: response.message,
       })
     } catch (error) {
-      setFlowError(error instanceof Error ? error.message : t("submitError"))
+      setFlowError(getErrorMessage(error, t("submitError")))
       if (error instanceof ApiError && error.status === 409) {
         setCurrentStepId("dateTime")
       }

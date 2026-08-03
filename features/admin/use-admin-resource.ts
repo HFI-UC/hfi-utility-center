@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 
+import { getErrorMessage } from "@/lib/api/client"
+
 export function useAdminResource<T>({
-  load,
+  loadResource,
   initialData,
   fallbackError,
 }: {
-  load: () => Promise<T>
+  loadResource: () => Promise<T>
   initialData: T
   fallbackError: string
 }) {
@@ -20,22 +22,22 @@ export function useAdminResource<T>({
     setError(undefined)
 
     try {
-      const nextData = await load()
+      const nextData = await loadResource()
       if (requestId.current === currentRequest) setData(nextData)
     } catch (loadError) {
       if (requestId.current !== currentRequest) return
-      setError(loadError instanceof Error ? loadError.message : fallbackError)
+      setError(getErrorMessage(loadError, fallbackError))
     } finally {
       if (requestId.current === currentRequest) setLoading(false)
     }
-  }, [fallbackError, load])
+  }, [fallbackError, loadResource])
 
   useEffect(() => {
-    async function loadInitialData() {
+    async function loadInitialResource() {
       await reload()
     }
 
-    void loadInitialData()
+    void loadInitialResource()
     return () => {
       requestId.current += 1
     }

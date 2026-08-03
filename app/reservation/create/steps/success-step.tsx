@@ -5,11 +5,9 @@ import { useTranslations } from "next-intl"
 
 export function SuccessStep({
   reservationId,
-  message,
   onReset,
 }: {
   reservationId?: number
-  message?: string
   onReset: () => void
 }) {
   const t = useTranslations("booking")
@@ -23,20 +21,18 @@ export function SuccessStep({
         </h1>
       ) : null}
       <p className="mt-5 max-w-xl leading-7 text-muted-foreground">
-        {message ?? t("successDescription")}
+        {t("successDescription")}
       </p>
       <div className="mt-8 flex flex-wrap gap-2">
-        <Link href="/reservation/search">
-          <Button>{t("viewReservations")}</Button>
-        </Link>
+        <Button asChild>
+          <Link href="/reservation/search">{t("viewReservations")}</Link>
+        </Button>
         <Button type="button" variant="outline" onClick={onReset}>
           {t("bookAgain")}
         </Button>
-        <Link href="/">
-          <Button type="button" variant="ghost">
-            {t("home")}
-          </Button>
-        </Link>
+        <Button type="button" variant="ghost" asChild>
+          <Link href="/">{t("home")}</Link>
+        </Button>
       </div>
     </section>
   )

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 
-import { ApiError } from "@/lib/api/client"
 import { getBootstrap } from "@/lib/api/catalog"
+import { getErrorMessage } from "@/lib/api/client"
 import type { BootstrapData } from "@/lib/api/types"
 
 export function useReservationCatalog(fallbackError: string) {
@@ -20,9 +20,7 @@ export function useReservationCatalog(fallbackError: string) {
       if (requestId.current === currentRequest) setCatalog(nextCatalog)
     } catch (loadError) {
       if (requestId.current !== currentRequest) return
-      setError(
-        loadError instanceof ApiError ? loadError.message : fallbackError
-      )
+      setError(getErrorMessage(loadError, fallbackError))
     } finally {
       if (requestId.current === currentRequest) setLoading(false)
     }

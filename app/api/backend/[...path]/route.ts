@@ -6,7 +6,7 @@ const backendUrl = process.env.VERCEL
   ? "https://api.hfiuc.org"
   : (process.env.BACKEND_URL ?? "https://api.hfiuc.org")
 
-const requestHeaders = [
+const forwardedRequestHeaders = [
   "accept",
   "authorization",
   "content-type",
@@ -15,7 +15,7 @@ const requestHeaders = [
   "x-csrf-token",
 ]
 
-const responseHeaders = [
+const forwardedResponseHeaders = [
   "cache-control",
   "content-disposition",
   "content-type",
@@ -32,46 +32,57 @@ function normalizeCookie(cookie: string, local: boolean) {
     .replace(/SameSite=None/gi, "SameSite=Lax")
 }
 
+function copyHeaders(source: Headers, names: string[]) {
+  const headers = new Headers()
+  for (const name of names) {
+    const value = source.get(name)
+    if (value) headers.set(name, value)
+  }
+  return headers
+}
+
+async function requestBody(request: NextRequest) {
+  if (request.method === "GET" || request.method === "HEAD") return undefined
+  return request.arrayBuffer()
+}
+
+function appendResponseCookies(
+  headers: Headers,
+  response: Response,
+  local: boolean
+) {
+  const cookies = response.headers.getSetCookie?.() ?? []
+  if (cookies.length) {
+    for (const cookie of cookies) {
+      headers.append("set-cookie", normalizeCookie(cookie, local))
+    }
+    return
+  }
+
+  const cookie = response.headers.get("set-cookie")
+  if (cookie) headers.append("set-cookie", normalizeCookie(cookie, local))
+}
+
 async function forward(request: NextRequest, context: BackendContext) {
   try {
     const { path } = await context.params
     const target = new URL(`/${path.join("/")}`, backendUrl)
     target.search = request.nextUrl.search
 
-    const headers = new Headers()
-    for (const name of requestHeaders) {
-      const value = request.headers.get(name)
-      if (value) headers.set(name, value)
-    }
-
     const response = await fetch(target, {
       method: request.method,
-      headers,
-      body:
-        request.method === "GET" || request.method === "HEAD"
-          ? undefined
-          : await request.arrayBuffer(),
+      headers: copyHeaders(request.headers, forwardedRequestHeaders),
+      body: await requestBody(request),
       cache: "no-store",
       redirect: "manual",
     })
 
-    const outgoingHeaders = new Headers()
-    for (const name of responseHeaders) {
-      const value = response.headers.get(name)
-      if (value) outgoingHeaders.set(name, value)
-    }
-
+    const outgoingHeaders = copyHeaders(
+      response.headers,
+      forwardedResponseHeaders
+    )
     const local = ["localhost", "127.0.0.1"].includes(request.nextUrl.hostname)
-    const cookies = response.headers.getSetCookie?.() ?? []
-    for (const cookie of cookies) {
-      outgoingHeaders.append("set-cookie", normalizeCookie(cookie, local))
-    }
-    if (!cookies.length) {
-      const cookie = response.headers.get("set-cookie")
-      if (cookie) {
-        outgoingHeaders.append("set-cookie", normalizeCookie(cookie, local))
-      }
-    }
+    appendResponseCookies(outgoingHeaders, response, local)
 
     return new Response(response.body, {
       status: response.status,

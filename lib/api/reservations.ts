@@ -50,16 +50,7 @@ export async function getAvailability(
 export const createReservation = (input: CreateReservationInput) =>
   apiRequest<{ reservationId: number }>("/reservation/create", {
     method: "POST",
-    ...jsonBody({
-      classId: input.classId,
-      room: input.room,
-      studentName: input.studentName,
-      studentId: input.studentId,
-      email: input.email,
-      reason: input.reason,
-      startTime: input.startTime,
-      endTime: input.endTime,
-    }),
+    ...jsonBody(input),
   })
 
 export async function getReservations(params: {

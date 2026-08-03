@@ -17,18 +17,18 @@ export default function Page() {
           HFI Utility Center
         </h1>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <Link href="/reservation/create">
-            <Button size="lg">
+          <Button size="lg" asChild>
+            <Link href="/reservation/create">
               <CalendarPlus />
               {nav("book")}
-            </Button>
-          </Link>
-          <Link href="/reservation/search">
-            <Button size="lg" variant="outline">
+            </Link>
+          </Button>
+          <Button size="lg" variant="outline" asChild>
+            <Link href="/reservation/search">
               <Search />
               {nav("reservations")}
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </section>
     </main>

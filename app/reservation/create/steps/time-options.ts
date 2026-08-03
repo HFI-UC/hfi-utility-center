@@ -7,7 +7,8 @@ export type TimeOption = {
 }
 
 export function buildTimeOptions(slots: AvailabilitySlot[]): TimeOption[] {
-  if (!slots.length) return []
+  const finalSlot = slots.at(-1)
+  if (!finalSlot) return []
 
   return [
     ...slots.map((slot) => ({
@@ -15,7 +16,7 @@ export function buildTimeOptions(slots: AvailabilitySlot[]): TimeOption[] {
       canStartRange: slot.status === "available",
     })),
     {
-      timestamp: slots.at(-1)!.endTime,
+      timestamp: finalSlot.endTime,
       canStartRange: false,
     },
   ]

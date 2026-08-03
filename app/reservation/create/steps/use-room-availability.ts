@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 
-import { ApiError } from "@/lib/api/client"
 import { getAvailability } from "@/lib/api/reservations"
 import type { AvailabilityData, Room } from "@/lib/api/types"
+import { getErrorMessage } from "@/lib/api/client"
 
 export function useRoomAvailability({
   room,
@@ -38,9 +38,7 @@ export function useRoomAvailability({
     } catch (loadError) {
       if (requestId.current !== currentRequest) return
       setAvailability(undefined)
-      setError(
-        loadError instanceof ApiError ? loadError.message : fallbackError
-      )
+      setError(getErrorMessage(loadError, fallbackError))
     } finally {
       if (requestId.current === currentRequest) setLoading(false)
     }

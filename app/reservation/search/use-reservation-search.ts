@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
 import { getBootstrap } from "@/lib/api/catalog"
+import { getErrorMessage } from "@/lib/api/client"
 import { getReservations } from "@/lib/api/reservations"
 import type { BootstrapData, ReservationPage } from "@/lib/api/types"
 
@@ -54,7 +55,7 @@ export function useReservationSearch(
       } catch (loadError) {
         if (requestId.current !== currentRequest) return
         setResult(emptyResult)
-        setError(loadError instanceof Error ? loadError.message : fallbackError)
+        setError(getErrorMessage(loadError, fallbackError))
       } finally {
         if (requestId.current === currentRequest) setLoading(false)
       }

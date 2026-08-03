@@ -4,6 +4,7 @@ import { Bell, BellOff, Plus, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm } from "react-hook-form"
 
+import { ConfirmAction } from "@/components/action-dialogs"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError } from "@/components/ui/field"
 import {
@@ -157,17 +158,24 @@ export function ApproverEditor({
                   >
                     {approver.notificationsEnabled ? <Bell /> : <BellOff />}
                   </Button>
-                  <Button
-                    size="icon-sm"
-                    variant="ghost"
+                  <ConfirmAction
                     title={t("removeApprover")}
-                    disabled={Boolean(workingKey)}
-                    onClick={() =>
-                      void mutate(deleteKey, () => deleteApprover(approver.id))
+                    description={t("confirmDelete", { name: adminName })}
+                    cancelLabel={common("cancel")}
+                    confirmLabel={common("delete")}
+                    onConfirm={() =>
+                      mutate(deleteKey, () => deleteApprover(approver.id))
                     }
                   >
-                    <Trash2 />
-                  </Button>
+                    <Button
+                      size="icon-sm"
+                      variant="ghost"
+                      title={t("removeApprover")}
+                      disabled={Boolean(workingKey)}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </ConfirmAction>
                 </div>
               </div>
             )

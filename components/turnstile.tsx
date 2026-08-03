@@ -19,6 +19,42 @@ declare global {
   }
 }
 
+const turnstileScriptSelector = 'script[data-hfiuc-turnstile="true"]'
+const turnstileScriptUrl =
+  "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+let turnstileScriptRequest: Promise<void> | undefined
+
+function loadTurnstileScript() {
+  if (window.turnstile) return Promise.resolve()
+  if (turnstileScriptRequest) return turnstileScriptRequest
+
+  turnstileScriptRequest = new Promise<void>((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(
+      turnstileScriptSelector
+    )
+    const script = existing ?? document.createElement("script")
+
+    script.addEventListener("load", () => resolve(), { once: true })
+    script.addEventListener(
+      "error",
+      () => {
+        turnstileScriptRequest = undefined
+        reject(new Error("Unable to load Turnstile"))
+      },
+      { once: true }
+    )
+
+    if (!existing) {
+      script.src = turnstileScriptUrl
+      script.async = true
+      script.defer = true
+      script.dataset.hfiucTurnstile = "true"
+      document.head.appendChild(script)
+    }
+  })
+  return turnstileScriptRequest
+}
+
 export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
   const t = useTranslations("admin")
   const ref = useRef<HTMLDivElement>(null)
@@ -26,31 +62,28 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
 
   useEffect(() => {
     if (!siteKey || !ref.current) return
+    const widgetSiteKey = siteKey
+    let active = true
     let widgetId: string | undefined
-    const render = () => {
-      if (window.turnstile && ref.current && !widgetId) {
-        widgetId = window.turnstile.render(ref.current, {
-          sitekey: siteKey,
-          callback: onToken,
-          "expired-callback": () => onToken(""),
-        })
+
+    async function renderWidget() {
+      try {
+        await loadTurnstileScript()
+      } catch {
+        return
       }
+      if (!active || !window.turnstile || !ref.current) return
+
+      widgetId = window.turnstile.render(ref.current, {
+        sitekey: widgetSiteKey,
+        callback: onToken,
+        "expired-callback": () => onToken(""),
+      })
     }
-    const existing = document.querySelector<HTMLScriptElement>(
-      'script[data-hfiuc-turnstile="true"]'
-    )
-    if (existing) render()
-    else {
-      const script = document.createElement("script")
-      script.src =
-        "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-      script.async = true
-      script.defer = true
-      script.dataset.hfiucTurnstile = "true"
-      script.onload = render
-      document.head.appendChild(script)
-    }
+
+    void renderWidget()
     return () => {
+      active = false
       if (widgetId && window.turnstile) window.turnstile.remove(widgetId)
     }
   }, [onToken, siteKey])

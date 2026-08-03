@@ -6,6 +6,7 @@ import { LocaleProvider } from "@/components/locale-provider"
 import { getLocale } from "next-intl/server"
 import enMessages from "@/messages/en-US.json"
 import zhMessages from "@/messages/zh-CN.json"
+import { appLocale } from "@/i18n/config"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -14,7 +15,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const locale = await getLocale()
+  const locale = appLocale(await getLocale())
   return (
     <html
       lang={locale}
@@ -23,7 +24,7 @@ export default async function RootLayout({
     >
       <body>
         <LocaleProvider
-          initialLocale={locale as "zh-CN" | "en-US"}
+          initialLocale={locale}
           messages={{ "zh-CN": zhMessages, "en-US": enMessages }}
         >
           <ThemeProvider>

@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl"
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const t = useTranslations("admin")
-  const items = [
+  const navigationItems = [
     {
       href: "/admin/reservations",
       label: t("reservations"),
@@ -30,6 +30,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const isLoginPage = pathname === "/admin/login"
   const session = useAdminSession(!isLoginPage)
+
+  async function signOut() {
+    try {
+      await logout()
+    } catch {
+      // The server session may already be expired; return to login either way.
+    }
+    router.replace("/admin/login")
+  }
+
   if (isLoginPage) return children
   if (session.checking)
     return (
@@ -45,32 +55,30 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           {t("workspace")}
         </p>
         <nav className="grid grid-cols-2 gap-1 sm:grid-cols-4 lg:grid-cols-1">
-          {items.map((item, index) => (
-            <Link
+          {navigationItems.map((item, index) => (
+            <Button
               key={item.href}
-              href={item.href}
-              aria-current={pathname === item.href ? "page" : undefined}
+              variant={pathname === item.href ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
             >
-              <Button
-                variant={pathname === item.href ? "secondary" : "ghost"}
-                className="w-full justify-start"
+              <Link
+                href={item.href}
+                aria-current={pathname === item.href ? "page" : undefined}
               >
                 <span className="text-xs text-muted-foreground">
                   0{index + 1}
                 </span>
                 <item.icon />
                 {item.label}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           ))}
         </nav>
         <Button
           variant="ghost"
           className="mt-4 justify-start"
-          onClick={async () => {
-            await logout().catch(() => undefined)
-            router.replace("/admin/login")
-          }}
+          onClick={() => void signOut()}
         >
           <LogOut />
           {t("logout")}

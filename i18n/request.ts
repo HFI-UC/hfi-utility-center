@@ -1,8 +1,7 @@
 import { headers } from "next/headers"
 import { getRequestConfig } from "next-intl/server"
 
-export const locales = ["zh-CN", "en-US"] as const
-export type AppLocale = (typeof locales)[number]
+import type { AppLocale } from "@/i18n/config"
 
 export default getRequestConfig(async () => {
   const accepted = (await headers()).get("accept-language") ?? ""

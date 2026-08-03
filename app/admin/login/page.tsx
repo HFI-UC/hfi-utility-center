@@ -4,9 +4,8 @@ import { getTranslations } from "next-intl/server"
 import { AdminLoginForm } from "./login-form"
 
 function safeRedirect(value?: string) {
-  return value?.startsWith("/") && !value.startsWith("//")
-    ? value
-    : "/admin/reservations"
+  if (value?.startsWith("/") && !value.startsWith("//")) return value
+  return "/admin/reservations"
 }
 
 export default async function AdminLoginPage({
