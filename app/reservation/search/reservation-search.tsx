@@ -2,25 +2,23 @@
 
 import { useTranslations } from "next-intl"
 
-import type { BootstrapData, ReservationPage } from "@/lib/api/types"
-
 import { ReservationResults } from "./reservation-results"
 import { ReservationSearchFilterForm } from "./reservation-search-filters"
 import { ReservationSearchPagination } from "./reservation-search-pagination"
 import type { ReservationSearchFilters } from "./search-query"
+import { useReservationSearch } from "./use-reservation-search"
 
 export function ReservationSearch({
-  catalog,
-  result,
   filters,
-  error,
 }: {
-  catalog?: BootstrapData
-  result: ReservationPage
   filters: ReservationSearchFilters
-  error?: string
 }) {
   const t = useTranslations("searchPage")
+  const common = useTranslations("common")
+  const { catalog, result, error, loading } = useReservationSearch(
+    filters,
+    common("unknown")
+  )
 
   return (
     <main className="mx-auto max-w-[96rem] px-4 py-8 sm:px-8 sm:py-10">
@@ -33,10 +31,16 @@ export function ReservationSearch({
 
       <ReservationSearchFilterForm catalog={catalog} filters={filters} />
 
-      {error ? (
+      {loading ? (
+        <p
+          className="border-b py-16 text-sm text-muted-foreground"
+          aria-live="polite"
+        >
+          {t("loading")}
+        </p>
+      ) : error ? (
         <p className="border-b py-6 text-sm text-destructive">{error}</p>
-      ) : null}
-      {result.reservations.length ? (
+      ) : result.reservations.length ? (
         <ReservationResults reservations={result.reservations} />
       ) : (
         <section className="border-b py-16">
@@ -47,12 +51,14 @@ export function ReservationSearch({
         </section>
       )}
 
-      <ReservationSearchPagination
-        filters={filters}
-        totalReservations={result.total}
-        previousLabel={t("previous")}
-        nextLabel={t("next")}
-      />
+      {!loading && !error ? (
+        <ReservationSearchPagination
+          filters={filters}
+          totalReservations={result.total}
+          previousLabel={t("previous")}
+          nextLabel={t("next")}
+        />
+      ) : null}
     </main>
   )
 }
