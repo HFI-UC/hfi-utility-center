@@ -12,7 +12,7 @@ export default function Page() {
   return (
     <main className="flex min-h-[calc(100svh-4rem)] items-center justify-center px-4 py-12 sm:px-8">
       <section className="w-full max-w-4xl text-center">
-        <Badge>MAKERs</Badge>
+        <Badge>MAKERs‘</Badge>
         <h1 className="mt-6 text-4xl font-semibold sm:text-6xl">
           HFI Utility Center
         </h1>

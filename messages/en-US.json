@@ -99,7 +99,30 @@
     "email": "Email",
     "reason": "Reason",
     "agree": "I have read and agree to the booking rules.",
+    "agreementPrefix": "I have read and agree to the",
+    "terms": {
+      "link": "booking rules",
+      "title": "Terms and Conditions",
+      "description": "Terms and conditions for reserving study areas and classrooms.",
+      "close": "Close",
+      "items": [
+        "Do not bring food or drinks into study areas for consumption. Students are responsible for keeping study rooms clean and tidy.",
+        "Students are responsible for their personal belongings, including wallets, phones, and computers. Keep valuables with you or locked in a secure place, and take them when leaving the room. The school is not responsible for their safekeeping.",
+        "Take all personal belongings with you when leaving a common area. The Administration Office regularly clears and cleans these spaces, and the school is not responsible for any loss.",
+        "Students must help maintain classroom cleanliness and public order.",
+        "Take care of teaching equipment and use it properly. Report any problem or missing item to the Administration Office as soon as possible. Students must compensate for equipment lost through their actions or damaged deliberately.",
+        "Before leaving a classroom, turn off all electrical equipment, including air conditioners, fans, and lights, and return remote controls to their designated places.",
+        "Do not move teaching equipment without permission.",
+        "Do not reserve seats in any way. When leaving a seat, take your belongings with you, or put books into your bag and place it beside and under the desk or chair without preventing others from using the seat. Staff regularly inspect the area and may move or collect items used to reserve a seat so the seat can be used by another student.",
+        "Respect public standards and present yourself appropriately. Do not lie down on benches or sofas.",
+        "Do not make loud noise in public areas. Keep phones on silent and go outside to make or answer calls.",
+        "Do not connect unauthorized power supplies or use high-power appliances. Do not move fire-safety equipment without approval.",
+        "Study areas may not be used for activities unrelated to study at any time, including but not limited to video games on phones or computers, board or card games, and entertainment programs or films. Violations will be handled according to the Student Misconduct Regulations and the circumstances of the case."
+      ]
+    },
     "reviewTitle": "Review reservation",
+    "reviewDescription": "Check the details below. The reservation is only sent after you confirm.",
+    "confirmReservation": "Confirm reservation",
     "class": "Class",
     "location": "Location",
     "start": "Start",
@@ -255,7 +278,6 @@
     "month": "{month}",
     "weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
     "policyWeekdays": "Sun,Mon,Tue,Wed,Thu,Fri,Sat",
-    "turnstileLocal": "Local development verification is enabled.",
     "turnstileMissing": "Cloudflare Turnstile is not configured. Email login links remain available.",
     "searchLoading": "Loading reservation search…",
     "loginLoading": "Preparing login…"

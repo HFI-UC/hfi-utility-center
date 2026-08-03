@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { StepLayout } from "../step-layout"
 import type { ReservationFormValues } from "../form"
+import { ReservationTermsDialog } from "./reservation-terms-dialog"
 
 export function ProfileStep() {
   const t = useTranslations("booking")
@@ -81,8 +82,13 @@ export function ProfileStep() {
                 onBlur={field.onBlur}
                 aria-invalid={fieldState.invalid}
               />
-              <div>
-                <FieldLabel htmlFor={field.name}>{t("agree")}</FieldLabel>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-baseline gap-x-1">
+                  <FieldLabel htmlFor={field.name}>
+                    {t("agreementPrefix")}
+                  </FieldLabel>
+                  <ReservationTermsDialog />
+                </div>
                 <FieldError errors={[fieldState.error]} />
               </div>
             </Field>

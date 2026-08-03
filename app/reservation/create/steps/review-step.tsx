@@ -3,6 +3,7 @@ import { useFormContext } from "react-hook-form"
 import { StepLayout } from "../step-layout"
 import type { ReservationFormValues } from "../form"
 import type { BootstrapData } from "@/lib/api/types"
+import { createAppDateTimeFormatter } from "@/lib/date-time"
 
 export function ReviewStep({ catalog }: { catalog: BootstrapData }) {
   const t = useTranslations("booking")
@@ -11,11 +12,12 @@ export function ReviewStep({ catalog }: { catalog: BootstrapData }) {
   const values = getValues()
   const className =
     catalog.classes.find((item) => item.id === values.classId)?.name ?? "-"
+  const dateTimeFormatter = createAppDateTimeFormatter(locale, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  })
   const format = (timestamp: number) =>
-    new Intl.DateTimeFormat(locale, {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(timestamp * 1000))
+    dateTimeFormatter.format(new Date(timestamp * 1000))
   const location = `${catalog.campuses.find((item) => item.id === values.bookingCampusId)?.name ?? ""} · ${catalog.rooms.find((item) => item.id === values.room)?.name ?? ""}`
   const rows = [
     [t("class"), className],
@@ -28,7 +30,11 @@ export function ReviewStep({ catalog }: { catalog: BootstrapData }) {
     [t("reason"), values.reason],
   ]
   return (
-    <StepLayout step={5} title={t("reviewTitle")}>
+    <StepLayout
+      step={5}
+      title={t("reviewTitle")}
+      description={t("reviewDescription")}
+    >
       <dl className="border-t">
         {rows.map(([label, value]) => (
           <div

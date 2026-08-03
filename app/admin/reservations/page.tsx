@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { Check, Download, RefreshCw, Search, X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -9,59 +9,52 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { useAdminResource } from "@/features/admin/use-admin-resource"
 import {
   getFutureReservations,
   updateReservationApproval,
 } from "@/lib/api/reservations"
 import type { Reservation } from "@/lib/api/types"
 import { backendHref } from "@/lib/api/client"
-
-function formatDateTime(value: string, locale: string) {
-  return new Intl.DateTimeFormat(locale, {
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    weekday: "short",
-  }).format(new Date(value))
-}
+import {
+  backendDateTimeToDate,
+  createAppDateTimeFormatter,
+} from "@/lib/date-time"
 
 export default function AdminReservationsPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const statusT = useTranslations("status")
   const locale = useLocale()
-  const [items, setItems] = useState<Reservation[]>([])
   const [query, setQuery] = useState("")
-  const [loading, setLoading] = useState(true)
   const [workingId, setWorkingId] = useState<number>()
   const [rejectingId, setRejectingId] = useState<number>()
   const [reason, setReason] = useState("")
-  const [error, setError] = useState<string>()
+  const reservationResource = useAdminResource<Reservation[]>({
+    load: getFutureReservations,
+    initialData: [],
+    fallbackError: common("unknown"),
+  })
+  const dateTimeFormatter = useMemo(
+    () =>
+      createAppDateTimeFormatter(locale, {
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        weekday: "short",
+      }),
+    [locale]
+  )
 
-  const load = useCallback(async () => {
-    try {
-      setItems(await getFutureReservations())
-      setError(undefined)
-    } catch (loadError) {
-      setError(
-        loadError instanceof Error ? loadError.message : common("unknown")
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [common])
-
-  useEffect(() => {
-    // Data updates occur after the request resolves.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void load()
-  }, [load])
+  function formatDateTime(value: string) {
+    return dateTimeFormatter.format(backendDateTimeToDate(value))
+  }
 
   const filtered = useMemo(() => {
     const keyword = query.trim().toLowerCase()
-    if (!keyword) return items
-    return items.filter((item) =>
+    if (!keyword) return reservationResource.data
+    return reservationResource.data.filter((item) =>
       [
         item.studentName,
         item.email,
@@ -72,11 +65,11 @@ export default function AdminReservationsPage() {
         String(item.id),
       ].some((value) => value?.toLowerCase().includes(keyword))
     )
-  }, [items, query])
+  }, [query, reservationResource.data])
 
   async function decide(id: number, approved: boolean) {
     if (!approved && !reason.trim()) {
-      setError(t("rejectionRequired"))
+      reservationResource.reportError(t("rejectionRequired"))
       return
     }
     setWorkingId(id)
@@ -86,7 +79,7 @@ export default function AdminReservationsPage() {
         approved,
         approved ? undefined : reason.trim()
       )
-      setItems((current) =>
+      reservationResource.setData((current) =>
         current.map((item) =>
           item.id === id
             ? { ...item, status: approved ? "approved" : "rejected" }
@@ -95,9 +88,9 @@ export default function AdminReservationsPage() {
       )
       setRejectingId(undefined)
       setReason("")
-      setError(undefined)
+      reservationResource.reportError(undefined)
     } catch (actionError) {
-      setError(
+      reservationResource.reportError(
         actionError instanceof Error ? actionError.message : common("unknown")
       )
     } finally {
@@ -115,10 +108,9 @@ export default function AdminReservationsPage() {
             <Button
               variant="outline"
               onClick={() => {
-                setLoading(true)
-                void load()
+                void reservationResource.reload()
               }}
-              disabled={loading}
+              disabled={reservationResource.loading}
             >
               <RefreshCw />
               {common("refresh")}
@@ -141,15 +133,17 @@ export default function AdminReservationsPage() {
           placeholder={t("reservationSearch")}
         />
       </div>
-      {error ? (
-        <p className="border-y py-3 text-sm text-destructive">{error}</p>
+      {reservationResource.error ? (
+        <p className="border-y py-3 text-sm text-destructive">
+          {reservationResource.error}
+        </p>
       ) : null}
-      {loading ? (
+      {reservationResource.loading ? (
         <p className="py-12 text-sm text-muted-foreground">
           {t("reservationsLoading")}
         </p>
       ) : null}
-      {!loading && !filtered.length ? (
+      {!reservationResource.loading && !filtered.length ? (
         <div className="border-t py-16">
           <p className="font-medium">{t("reservationsEmpty")}</p>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -171,8 +165,8 @@ export default function AdminReservationsPage() {
               <p className="font-semibold">{item.roomName}</p>
               <p className="mt-1 text-sm">
                 {t("timeRange", {
-                  start: formatDateTime(item.startTime, locale),
-                  end: formatDateTime(item.endTime, locale),
+                  start: formatDateTime(item.startTime),
+                  end: formatDateTime(item.endTime),
                 })}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">

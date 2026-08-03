@@ -11,7 +11,6 @@ const messages = {
 } as const
 
 const api = axios.create({
-  baseURL: "/api/backend",
   withCredentials: true,
   validateStatus: () => true,
   xsrfCookieName: "_csrf",
@@ -19,10 +18,15 @@ const api = axios.create({
   withXSRFToken: true,
 })
 
+function apiBaseUrl() {
+  if (typeof window !== "undefined") return "/api/backend"
+  return process.env.BACKEND_URL ?? "https://api.hfiuc.org"
+}
+
 api.interceptors.request.use(async (config) => {
   const method = config.method?.toUpperCase()
   if (method && ["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
-    await api.get("/_csrf")
+    await api.get("/_csrf", { baseURL: apiBaseUrl() })
   }
   return config
 })
@@ -93,13 +97,17 @@ export async function apiRequest<T>(
   init: AxiosRequestConfig = {}
 ): Promise<ApiResponse<T>> {
   try {
-    const response = await api.request<ApiResponse<T>>({ url: path, ...init })
+    const response = await api.request<ApiResponse<T>>({
+      ...init,
+      baseURL: apiBaseUrl(),
+      url: path,
+    })
     const payload = response.data
-    if (response.status < 200 || response.status >= 300 || !payload.success) {
+    if (response.status < 200 || response.status >= 300 || !payload?.success) {
       throw new ApiError(
-        localizedError(response.status, payload.message, payload.code),
+        localizedError(response.status, payload?.message, payload?.code),
         response.status,
-        payload.code
+        payload?.code
       )
     }
     return payload
@@ -107,6 +115,11 @@ export async function apiRequest<T>(
     if (error instanceof ApiError) throw error
     throw new ApiError(localizedError(0), 0)
   }
+}
+
+export function requireData<T>(response: ApiResponse<T>, message: string): T {
+  if (response.data === undefined) throw new Error(message)
+  return response.data
 }
 
 export function jsonBody(value: unknown): Pick<AxiosRequestConfig, "data"> {

@@ -1,8 +1,8 @@
-import { apiRequest, jsonBody } from "@/lib/api/client"
+import { apiRequest, jsonBody, requireData } from "@/lib/api/client"
 import { getRooms } from "@/lib/api/catalog"
+import { inputValueToTimestamp } from "@/lib/date-time"
+import { buildLegacyAvailability } from "@/lib/reservations/availability"
 import type {
-  AvailabilityData,
-  AvailabilitySlot,
   Reservation,
   ReservationPage,
   ReservationStatus,
@@ -20,63 +20,16 @@ export interface CreateReservationInput {
   endTime: number
 }
 
-function overlapsPolicy(room: Room, slotStart: Date, slotEnd: Date) {
-  return room.policies.some((policy) => {
-    if (!policy.enabled || !policy.days.includes(slotStart.getDay()))
-      return false
-    const blockedStart = new Date(slotStart)
-    const blockedEnd = new Date(slotStart)
-    blockedStart.setHours(policy.startTime[0], policy.startTime[1], 0, 0)
-    blockedEnd.setHours(policy.endTime[0], policy.endTime[1], 0, 0)
-    return blockedStart < slotEnd && blockedEnd > slotStart
-  })
-}
-
-export function buildLegacyAvailability(
-  room: Room,
-  date: string,
-  reservations: Reservation[],
-  now = new Date()
-): AvailabilityData {
-  const slots: AvailabilitySlot[] = []
-  const dayStart = new Date(`${date}T08:00:00`)
-  for (let index = 0; index < 54; index += 1) {
-    const slotStart = new Date(dayStart.getTime() + index * 15 * 60 * 1000)
-    const slotEnd = new Date(slotStart.getTime() + 15 * 60 * 1000)
-    let status: AvailabilitySlot["status"] = "available"
-    if (slotEnd <= now) status = "past"
-    else if (
-      reservations.some(
-        (item) =>
-          item.status !== "rejected" &&
-          new Date(item.startTime) < slotEnd &&
-          new Date(item.endTime) > slotStart
-      )
-    )
-      status = "occupied"
-    else if (overlapsPolicy(room, slotStart, slotEnd)) status = "policy"
-    slots.push({
-      startTime: Math.floor(slotStart.getTime() / 1000),
-      endTime: Math.floor(slotEnd.getTime() / 1000),
-      status,
-    })
-  }
-  return {
-    roomId: room.id,
-    date,
-    slotMinutes: 15,
-    maxDurationMinutes: 120,
-    slots,
-  }
-}
-
 export async function getAvailability(
   roomId: number,
   date: string,
   knownRoom?: Room
 ) {
-  const startTime = Math.floor(new Date(`${date}T00:00:00`).getTime() / 1000)
-  const endTime = Math.floor(new Date(`${date}T23:59:59`).getTime() / 1000)
+  const startTime = inputValueToTimestamp(date)
+  const endTime = inputValueToTimestamp(date, true)
+  if (startTime === undefined || endTime === undefined) {
+    throw new Error("Invalid availability date")
+  }
   const [rooms, firstPage] = await Promise.all([
     knownRoom ? Promise.resolve([knownRoom]) : getRooms(),
     getReservations({ roomId, startTime, endTime, page: 0 }),
@@ -127,8 +80,7 @@ export async function getReservations(params: {
   const response = await apiRequest<ReservationPage>(
     `/reservation/get?${query}`
   )
-  if (!response.data) throw new Error("Reservation data is missing")
-  return response.data
+  return requireData(response, "Reservation data is missing")
 }
 
 export const getFutureReservations = async () => {

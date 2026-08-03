@@ -23,13 +23,8 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
   const t = useTranslations("admin")
   const ref = useRef<HTMLDivElement>(null)
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
-  const localDevelopment = process.env.NODE_ENV === "development" && !siteKey
 
   useEffect(() => {
-    if (localDevelopment) {
-      onToken("development")
-      return () => onToken("")
-    }
     if (!siteKey || !ref.current) return
     let widgetId: string | undefined
     const render = () => {
@@ -58,14 +53,8 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
     return () => {
       if (widgetId && window.turnstile) window.turnstile.remove(widgetId)
     }
-  }, [localDevelopment, onToken, siteKey])
+  }, [onToken, siteKey])
 
-  if (localDevelopment)
-    return (
-      <p className="border-y py-4 text-sm text-muted-foreground">
-        {t("turnstileLocal")}
-      </p>
-    )
   if (!siteKey)
     return (
       <p className="border-y py-4 text-sm text-muted-foreground">

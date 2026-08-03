@@ -1,7 +1,5 @@
 import { z } from "zod"
 
-import type { AvailabilitySlot } from "@/lib/api/types"
-
 type Translate = (key: string) => string
 
 export function createReservationSchema(t: Translate) {
@@ -41,42 +39,18 @@ export const reservationDefaults: ReservationFormValues = {
   isAgreed: false,
 }
 
-export const stepFields: (keyof ReservationFormValues)[][] = [
-  ["classId"],
-  ["bookingCampusId", "room"],
-  ["date", "startTime", "endTime"],
-  ["studentName", "studentId", "email", "reason", "isAgreed"],
-  [],
-]
+export const bookingSteps = [
+  { id: "class", fields: ["classId"] },
+  { id: "location", fields: ["bookingCampusId", "room"] },
+  { id: "dateTime", fields: ["date", "startTime", "endTime"] },
+  {
+    id: "profile",
+    fields: ["studentName", "studentId", "email", "reason", "isAgreed"],
+  },
+  { id: "review", fields: [] },
+] as const satisfies ReadonlyArray<{
+  id: string
+  fields: ReadonlyArray<keyof ReservationFormValues>
+}>
 
-export function dateToFormValue(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
-}
-
-export function formValueToDate(value: string) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined
-  const [year, month, day] = value.split("-").map(Number)
-  const date = new Date(year, month - 1, day)
-  return date.getFullYear() === year &&
-    date.getMonth() === month - 1 &&
-    date.getDate() === day
-    ? date
-    : undefined
-}
-
-export function rangeIsAvailable(
-  slots: AvailabilitySlot[],
-  startTime: number,
-  endTime: number,
-  maxMinutes = 120
-) {
-  if (!startTime || endTime <= startTime) return false
-  if (endTime - startTime > maxMinutes * 60) return false
-  const selected = slots.filter(
-    (slot) => slot.startTime >= startTime && slot.endTime <= endTime
-  )
-  return (
-    selected.length === (endTime - startTime) / (15 * 60) &&
-    selected.every((slot) => slot.status === "available")
-  )
-}
+export type BookingStepId = (typeof bookingSteps)[number]["id"]

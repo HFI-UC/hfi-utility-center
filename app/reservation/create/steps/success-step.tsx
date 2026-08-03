@@ -17,9 +17,11 @@ export function SuccessStep({
     <section className="mx-auto flex min-h-[60svh] max-w-3xl flex-col justify-center">
       <CheckCircle2 className="mb-6 size-10 text-foreground" />
       <p className="text-sm font-semibold text-foreground">{t("success")}</p>
-      <h1 className="mt-3 text-4xl font-semibold sm:text-6xl">
-        #{reservationId}
-      </h1>
+      {reservationId ? (
+        <h1 className="mt-3 text-4xl font-semibold sm:text-6xl">
+          #{reservationId}
+        </h1>
+      ) : null}
       <p className="mt-5 max-w-xl leading-7 text-muted-foreground">
         {message ?? t("successDescription")}
       </p>

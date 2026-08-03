@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { enUS, zhCN } from "date-fns/locale"
 import { RefreshCw } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
@@ -8,135 +8,139 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Spinner } from "@/components/ui/spinner"
 import {
-  dateToFormValue,
-  formValueToDate,
-  rangeIsAvailable,
-  type ReservationFormValues,
-} from "../form"
+  createAppDateTimeFormatter,
+  dateToInputValue,
+  inputValueToDate,
+} from "@/lib/date-time"
+import type { Room } from "@/lib/api/types"
+import { rangeIsAvailable } from "@/lib/reservations/availability"
+
+import type { ReservationFormValues } from "../form"
 import { StepLayout } from "../step-layout"
-import { ApiError } from "@/lib/api/client"
-import { getAvailability } from "@/lib/api/reservations"
-import type { AvailabilityData, AvailabilitySlot, Room } from "@/lib/api/types"
+import {
+  buildTimeOptions,
+  timeCanBeSelected,
+  timeIsSelected,
+  type TimeOption,
+} from "./time-options"
+import { useRoomAvailability } from "./use-room-availability"
 
 const calendarLocales = { "zh-CN": zhCN, "en-US": enUS } as const
 
 export function DateTimeStep({ rooms }: { rooms: Room[] }) {
   const t = useTranslations("booking")
   const locale = useLocale()
-  const { control, getValues, setValue, formState } =
+  const { clearErrors, control, getValues, setValue, formState } =
     useFormContext<ReservationFormValues>()
-  const [room, date, startTime, endTime] = useWatch({
+  const [roomId, date, startTime, endTime] = useWatch({
     control,
     name: ["room", "date", "startTime", "endTime"],
   })
-  const roomData = useMemo(
-    () => rooms.find((item) => item.id === room),
-    [room, rooms]
+  const room = useMemo(
+    () => rooms.find((candidate) => candidate.id === roomId),
+    [roomId, rooms]
   )
-  const [availability, setAvailability] = useState<AvailabilityData>()
-  const [error, setError] = useState<string>()
-  const [loading, setLoading] = useState(false)
-  const today = useMemo(() => {
-    const value = new Date()
-    value.setHours(0, 0, 0, 0)
-    return value
-  }, [])
-  const maximum = useMemo(() => {
-    const value = new Date(today)
-    value.setDate(value.getDate() + 30)
-    return value
-  }, [today])
-
-  const loadAvailability = useCallback(async () => {
-    if (!date || !roomData) return
-    setLoading(true)
-    setError(undefined)
-    try {
-      const next = await getAvailability(room, date, roomData)
-      setAvailability(next)
-      const current = getValues()
-      if (!rangeIsAvailable(next.slots, current.startTime, current.endTime)) {
-        if (!current.startTime || !current.endTime) return
-        setValue("startTime", 0)
-        setValue("endTime", 0)
-        setError(t("timeConflict"))
-      }
-    } catch (loadError) {
-      setError(
-        loadError instanceof ApiError
-          ? loadError.message
-          : t("availabilityError")
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [date, getValues, room, roomData, setValue, t])
+  const { availability, error, loading, refresh, clearError, reportError } =
+    useRoomAvailability({
+      room,
+      date,
+      fallbackError: t("availabilityError"),
+    })
+  const today = useMemo(() => startOfToday(), [])
+  const maximumDate = useMemo(() => addDays(today, 30), [today])
+  const timeFormatter = useMemo(
+    () =>
+      createAppDateTimeFormatter(locale, {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
+    [locale]
+  )
+  const timeOptions = useMemo(
+    () => buildTimeOptions(availability?.slots ?? []),
+    [availability]
+  )
 
   useEffect(() => {
-    if (!date || !roomData) return
-    let ignore = false
-
-    async function loadInitialAvailability() {
-      try {
-        const next = await getAvailability(room, date, roomData)
-        if (!ignore) {
-          setAvailability(next)
-          setError(undefined)
-        }
-      } catch (loadError) {
-        if (!ignore) {
-          setError(
-            loadError instanceof ApiError
-              ? loadError.message
-              : t("availabilityError")
-          )
-        }
-      } finally {
-        if (!ignore) setLoading(false)
-      }
-    }
-
-    void loadInitialAvailability()
-    return () => {
-      ignore = true
-    }
-  }, [date, room, roomData, t])
-
-  function selectSlot(slot: AvailabilitySlot) {
-    const choosingStart =
-      !startTime || Boolean(endTime) || slot.startTime <= startTime
-    if (choosingStart) {
-      setValue("startTime", slot.startTime, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      })
-      setValue("endTime", 0, { shouldDirty: true, shouldValidate: true })
-      return
-    }
-
+    if (!availability) return
+    const selectedRange = getValues()
+    if (!selectedRange.startTime || !selectedRange.endTime) return
     if (
-      availability &&
-      rangeIsAvailable(availability.slots, startTime, slot.endTime)
+      rangeIsAvailable(
+        availability.slots,
+        selectedRange.startTime,
+        selectedRange.endTime
+      )
     ) {
-      setValue("endTime", slot.endTime, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      })
-      setError(undefined)
       return
     }
 
-    setError(t("rangeUnavailable"))
+    setValue("startTime", 0)
+    setValue("endTime", 0)
+    reportError(t("timeConflict"))
+  }, [availability, getValues, reportError, setValue, t])
+
+  function clearSelectedRange() {
+    setValue("startTime", 0)
+    setValue("endTime", 0)
+    clearErrors(["startTime", "endTime"])
   }
 
-  const timeLabel = (value: number) =>
-    new Intl.DateTimeFormat(locale, {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(new Date(value * 1000))
+  function selectRangeStart(timestamp: number) {
+    setValue("startTime", timestamp, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    })
+    setValue("endTime", 0, { shouldDirty: true, shouldValidate: false })
+    clearErrors("endTime")
+  }
+
+  function selectRangeEnd(timestamp: number) {
+    if (
+      availability &&
+      rangeIsAvailable(availability.slots, startTime, timestamp)
+    ) {
+      setValue("endTime", timestamp, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      })
+      clearErrors("endTime")
+      clearError()
+      return
+    }
+
+    reportError(t("rangeUnavailable"))
+  }
+
+  function selectTime(option: TimeOption) {
+    if (timeIsSelected(option.timestamp, startTime, endTime)) {
+      clearSelectedRange()
+      clearError()
+      return
+    }
+
+    const startsNewRange =
+      !startTime || Boolean(endTime) || option.timestamp < startTime
+    if (startsNewRange) selectRangeStart(option.timestamp)
+    else selectRangeEnd(option.timestamp)
+  }
+
+  function selectDate(
+    selected: Date | undefined,
+    onChange: (date: string) => void
+  ) {
+    if (!selected) return
+    clearError()
+    clearSelectedRange()
+    onChange(dateToInputValue(selected))
+  }
+
+  function formatTime(value: number) {
+    return timeFormatter.format(new Date(value * 1000))
+  }
 
   const fieldError =
     formState.errors.date?.message ??
@@ -149,99 +153,136 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
       title={`${t("dateTitle")} · ${t("timeTitle")}`}
       error={error ?? fieldError}
     >
-      <Controller
-        control={control}
-        name="date"
-        render={({ field, fieldState }) => (
-          <Calendar
-            mode="single"
-            locale={
-              calendarLocales[locale as keyof typeof calendarLocales] ?? enUS
-            }
-            selected={formValueToDate(field.value)}
-            defaultMonth={formValueToDate(field.value) ?? today}
-            startMonth={today}
-            endMonth={maximum}
-            disabled={{ before: today, after: maximum }}
-            aria-invalid={fieldState.invalid}
-            onSelect={(selected) => {
-              if (!selected) return
-              setLoading(true)
-              setAvailability(undefined)
-              setError(undefined)
-              field.onChange(dateToFormValue(selected))
-              setValue("startTime", 0)
-              setValue("endTime", 0)
-            }}
-          />
-        )}
-      />
+      <div className="grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
+        <Controller
+          control={control}
+          name="date"
+          render={({ field, fieldState }) => (
+            <Calendar
+              mode="single"
+              locale={
+                calendarLocales[locale as keyof typeof calendarLocales] ?? enUS
+              }
+              selected={inputValueToDate(field.value)}
+              defaultMonth={inputValueToDate(field.value) ?? today}
+              startMonth={today}
+              endMonth={maximumDate}
+              disabled={{ before: today, after: maximumDate }}
+              aria-invalid={fieldState.invalid}
+              onSelect={(selected) => selectDate(selected, field.onChange)}
+            />
+          )}
+        />
 
-      {date ? (
-        <section className="mt-8 border-t pt-6" aria-labelledby="time-heading">
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <div>
-              <h2 id="time-heading" className="text-sm font-semibold">
-                {t("timeRange")}
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {startTime && endTime
-                  ? t("selectedRange", {
-                      start: timeLabel(startTime),
-                      end: timeLabel(endTime),
-                    })
-                  : startTime
-                    ? t("selectEndHint")
-                    : t("selectStartHint")}
-              </p>
+        {date ? (
+          <section
+            className="border-t pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8"
+            aria-labelledby="time-heading"
+          >
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <h2 id="time-heading" className="text-sm font-semibold">
+                  {t("timeRange")}
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {selectedRangeLabel({
+                    startTime,
+                    endTime,
+                    formatTime,
+                    selectedRange: (start, end) =>
+                      t("selectedRange", { start, end }),
+                    selectEnd: t("selectEndHint"),
+                    selectStart: t("selectStartHint"),
+                  })}
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => void refresh()}
+                title={t("refresh")}
+                disabled={loading}
+              >
+                {loading ? <Spinner /> : <RefreshCw />}
+              </Button>
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => void loadAvailability()}
-              title={t("refresh")}
-              disabled={loading}
-            >
-              {loading ? <Spinner /> : <RefreshCw />}
-            </Button>
-          </div>
 
-          {loading && !availability ? (
-            <div className="flex items-center gap-2 py-10 text-sm text-muted-foreground">
-              <Spinner />
-              {t("checking")}
-            </div>
-          ) : null}
+            {loading && !availability ? (
+              <div className="flex items-center gap-2 py-10 text-sm text-muted-foreground">
+                <Spinner />
+                {t("checking")}
+              </div>
+            ) : null}
 
-          {availability ? (
-            <div
-              className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-8"
-              aria-label={t("timeTitle")}
-            >
-              {availability.slots.map((slot) => {
-                const selected =
-                  slot.startTime === startTime ||
-                  (Boolean(endTime) &&
-                    slot.startTime >= startTime &&
-                    slot.endTime <= endTime)
-                return (
-                  <Button
-                    type="button"
-                    key={slot.startTime}
-                    disabled={slot.status !== "available"}
-                    aria-pressed={selected}
-                    variant={selected ? "default" : "outline"}
-                    onClick={() => selectSlot(slot)}
-                  >
-                    {timeLabel(slot.startTime)}
-                  </Button>
-                )
-              })}
-            </div>
-          ) : null}
-        </section>
-      ) : null}
+            {availability ? (
+              <div
+                className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-8"
+                aria-label={t("timeTitle")}
+              >
+                {timeOptions.map((option) => {
+                  const selected = timeIsSelected(
+                    option.timestamp,
+                    startTime,
+                    endTime
+                  )
+                  const selectable = timeCanBeSelected({
+                    option,
+                    slots: availability.slots,
+                    startTime,
+                    endTime,
+                  })
+                  return (
+                    <Button
+                      type="button"
+                      key={option.timestamp}
+                      disabled={!selectable && !selected}
+                      aria-pressed={selected}
+                      variant={selected ? "default" : "outline"}
+                      onClick={() => selectTime(option)}
+                    >
+                      {formatTime(option.timestamp)}
+                    </Button>
+                  )
+                })}
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+      </div>
     </StepLayout>
   )
+}
+
+function startOfToday() {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return today
+}
+
+function addDays(date: Date, days: number) {
+  const result = new Date(date)
+  result.setDate(result.getDate() + days)
+  return result
+}
+
+function selectedRangeLabel({
+  startTime,
+  endTime,
+  formatTime,
+  selectedRange,
+  selectEnd,
+  selectStart,
+}: {
+  startTime: number
+  endTime: number
+  formatTime: (value: number) => string
+  selectedRange: (start: string, end: string) => string
+  selectEnd: string
+  selectStart: string
+}) {
+  if (startTime && endTime) {
+    return selectedRange(formatTime(startTime), formatTime(endTime))
+  }
+  return startTime ? selectEnd : selectStart
 }

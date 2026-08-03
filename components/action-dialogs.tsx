@@ -40,7 +40,7 @@ export function ConfirmAction({
   description: string
   cancelLabel: string
   confirmLabel: string
-  onConfirm: () => Promise<void> | void
+  onConfirm: () => Promise<unknown> | void
 }) {
   return (
     <AlertDialog>
@@ -81,7 +81,7 @@ export function TextActionDialog({
   inputType?: "text" | "password" | "email"
   cancelLabel: string
   saveLabel: string
-  onSave: (value: string) => Promise<void> | void
+  onSave: (value: string) => Promise<unknown> | void
 }) {
   const [open, setOpen] = useState(false)
   const inputId = useId()
@@ -105,8 +105,8 @@ export function TextActionDialog({
         <form
           className="space-y-5"
           onSubmit={form.handleSubmit(async ({ value }) => {
-            await onSave(value.trim())
-            setOpen(false)
+            const saved = await onSave(value.trim())
+            if (saved !== false) setOpen(false)
           })}
         >
           <Controller
@@ -139,7 +139,9 @@ export function TextActionDialog({
                 {cancelLabel}
               </Button>
             </DialogClose>
-            <Button type="submit">{saveLabel}</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {saveLabel}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

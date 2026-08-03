@@ -1,17 +1,31 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { Download, RefreshCw } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { AdminPageHeader } from "@/components/admin-page-header"
 import { Button } from "@/components/ui/button"
 import { Turnstile } from "@/components/turnstile"
+import { useAdminResource } from "@/features/admin/use-admin-resource"
 import {
   analyticsExportUrl,
   getOverviewAnalytics,
   getWeeklyAnalytics,
 } from "@/lib/api/analytics"
 import type { OverviewAnalytics, WeeklyAnalytics } from "@/lib/api/types"
+
+type AnalyticsData = {
+  overview?: OverviewAnalytics
+  weekly?: WeeklyAnalytics
+}
+
+async function loadAnalyticsData(): Promise<AnalyticsData> {
+  const [overview, weekly] = await Promise.all([
+    getOverviewAnalytics(),
+    getWeeklyAnalytics(),
+  ])
+  return { overview, weekly }
+}
 
 function Bars({ values, labels }: { values: number[]; labels: string[] }) {
   const max = Math.max(...values, 1)
@@ -42,30 +56,13 @@ export default function AdminAnalyticsPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const weekdays = t("weekdays").split(",")
-  const [overview, setOverview] = useState<OverviewAnalytics>()
-  const [weekly, setWeekly] = useState<WeeklyAnalytics>()
   const [token, setToken] = useState("")
-  const [error, setError] = useState<string>()
-  const load = useCallback(async () => {
-    try {
-      const [nextOverview, nextWeekly] = await Promise.all([
-        getOverviewAnalytics(),
-        getWeeklyAnalytics(),
-      ])
-      setOverview(nextOverview)
-      setWeekly(nextWeekly)
-      setError(undefined)
-    } catch (loadError) {
-      setError(
-        loadError instanceof Error ? loadError.message : t("analyticsLoadError")
-      )
-    }
-  }, [t])
-  useEffect(() => {
-    // Data updates occur after the request resolves.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void load()
-  }, [load])
+  const analyticsResource = useAdminResource({
+    load: loadAnalyticsData,
+    initialData: { overview: undefined, weekly: undefined },
+    fallbackError: t("analyticsLoadError"),
+  })
+  const { overview, weekly } = analyticsResource.data
   const monthLabels = useMemo(
     () =>
       Array.from({ length: 12 }, (_, index) => {
@@ -82,14 +79,20 @@ export default function AdminAnalyticsPage() {
         title={t("analyticsTitle")}
         description={t("analyticsDescription")}
         actions={
-          <Button variant="outline" onClick={() => void load()}>
+          <Button
+            variant="outline"
+            onClick={() => void analyticsResource.reload()}
+            disabled={analyticsResource.loading}
+          >
             <RefreshCw />
             {common("refresh")}
           </Button>
         }
       />
-      {error ? (
-        <p className="mt-5 border-y py-3 text-sm text-destructive">{error}</p>
+      {analyticsResource.error ? (
+        <p className="mt-5 border-y py-3 text-sm text-destructive">
+          {analyticsResource.error}
+        </p>
       ) : null}
       {!overview || !weekly ? (
         <p className="py-12 text-sm text-muted-foreground">
