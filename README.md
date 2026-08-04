@@ -27,9 +27,8 @@ backend or Turnstile widget is required.
 
 - `app/` contains routes and feature-specific UI. Route pages coordinate data;
   large interactive views are split into named feature components.
-- `features/` contains focused stateful workflows shared within a feature, such
-  as administrator resource and mutation handling.
-- `lib/api/` contains the backend transport, endpoint functions, and API types.
+- `lib/api/` contains the backend transport, endpoint functions, API types, and
+  focused administrator resource/mutation hooks.
 - `lib/reservations/` contains pure reservation availability rules.
 - `components/ui/` contains shadcn primitives and should remain domain-agnostic.
 - `messages/` contains the English and Simplified Chinese translation catalogs.

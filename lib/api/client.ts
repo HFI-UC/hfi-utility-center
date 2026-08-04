@@ -1,10 +1,10 @@
-import axios from "axios"
+import axios, { type AxiosRequestConfig } from "axios"
 import { createTranslator } from "next-intl"
 
-import enMessages from "@/messages/en-US.json"
-import zhMessages from "@/messages/zh-CN.json"
 import { isAppLocale, type AppLocale } from "@/i18n/config"
 import type { ApiResponse } from "@/lib/api/types"
+import enMessages from "@/messages/en-US.json"
+import zhMessages from "@/messages/zh-CN.json"
 
 const messages = {
   "en-US": enMessages,
@@ -12,8 +12,30 @@ const messages = {
 } as const
 
 type ApiErrorKey = keyof (typeof enMessages)["apiErrors"]
+type RequestOptions = Omit<
+  AxiosRequestConfig,
+  "baseURL" | "data" | "method" | "url"
+>
 
-export const api = axios.create({
+const errorKeyByCode = {
+  ADMIN_ALREADY_EXISTS: "adminExists",
+  ADMIN_EXISTS: "adminExists",
+  ADMIN_NOT_FOUND: "adminNotFound",
+  CAMPUS_NOT_FOUND: "campusNotFound",
+  CLASS_NOT_FOUND: "classNotFound",
+  EMAIL_IN_USE: "emailInUse",
+  INVALID_CREDENTIALS: "invalidCredentials",
+  INVALID_REFRESH_TOKEN: "sessionExpired",
+  RESERVATION_NOT_FOUND: "reservationNotFound",
+  ROOM_NOT_FOUND: "roomNotFound",
+  ROOM_UNAVAILABLE: "roomUnavailable",
+  TURNSTILE_VERIFICATION_FAILED: "verificationFailed",
+  UNAUTHORIZED: "sessionExpired",
+  USER_NOT_LOGGED_IN: "sessionExpired",
+  VERIFICATION_FAILED: "verificationFailed",
+} as const satisfies Record<string, ApiErrorKey>
+
+const transport = axios.create({
   withCredentials: true,
   validateStatus: () => true,
   xsrfCookieName: "_csrf",
@@ -26,44 +48,13 @@ function apiBaseUrl() {
   return process.env.BACKEND_URL ?? "https://api.hfiuc.org"
 }
 
-api.interceptors.request.use(async (config) => {
-  config.baseURL ??= apiBaseUrl()
-  const method = config.method?.toUpperCase()
-  if (method && ["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
-    await api.get("/_csrf", { baseURL: apiBaseUrl() })
-  }
-  return config
-})
-
-api.interceptors.response.use(
-  (response) => {
-    const payload = response.data as ApiResponse
-    if (response.status < 200 || response.status >= 300 || !payload?.success) {
-      throw new ApiError(
-        localizedError(response.status, payload?.code),
-        response.status,
-        payload?.code
-      )
-    }
-    return response
-  },
-  () => Promise.reject(new ApiError(localizedError(0), 0))
-)
-
-function errorKeyFromCode(code?: string): ApiErrorKey | undefined {
-  switch (code) {
-    case "ROOM_UNAVAILABLE":
-      return "roomUnavailable"
-    case "INVALID_CREDENTIALS":
-      return "invalidCredentials"
-    case "INVALID_REFRESH_TOKEN":
-    case "UNAUTHORIZED":
-      return "sessionExpired"
-    case "ADMIN_NOT_FOUND":
-      return "adminNotFound"
-    default:
-      return undefined
-  }
+function isApiResponse(value: unknown): value is ApiResponse<unknown> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "success" in value &&
+    typeof value.success === "boolean"
+  )
 }
 
 function currentLocale(): AppLocale {
@@ -72,9 +63,7 @@ function currentLocale(): AppLocale {
       ? undefined
       : window.localStorage.getItem("hfiuc-locale")
 
-  if (storedLocale && isAppLocale(storedLocale)) {
-    return storedLocale
-  }
+  if (storedLocale && isAppLocale(storedLocale)) return storedLocale
   if (
     typeof document !== "undefined" &&
     document.documentElement.lang === "en-US"
@@ -85,8 +74,9 @@ function currentLocale(): AppLocale {
 }
 
 function errorKey(status: number, code?: string): ApiErrorKey {
-  const codeKey = errorKeyFromCode(code)
-  if (codeKey) return codeKey
+  if (code && Object.prototype.hasOwnProperty.call(errorKeyByCode, code)) {
+    return errorKeyByCode[code as keyof typeof errorKeyByCode]
+  }
   if (status === 0) return "network"
   if (status === 401 || status === 403) return "sessionExpired"
   if (status === 404) return "notFound"
@@ -106,13 +96,118 @@ function localizedError(status: number, code?: string) {
 }
 
 export class ApiError extends Error {
+  readonly name = "ApiError"
+
   constructor(
     message: string,
-    public status: number,
-    public code?: string
+    public readonly status: number,
+    public readonly code?: string,
+    public readonly backendMessage?: string,
+    options?: ErrorOptions
   ) {
-    super(message)
+    super(message, options)
   }
+}
+
+function responseError(status: number, value: unknown, cause?: unknown) {
+  const payload = isApiResponse(value) ? value : undefined
+  return new ApiError(
+    localizedError(status, payload?.code),
+    status,
+    payload?.code,
+    payload?.message,
+    { cause }
+  )
+}
+
+function normalizeError(error: unknown) {
+  if (error instanceof ApiError) return error
+  if (axios.isAxiosError(error)) {
+    return responseError(
+      error.response?.status ?? 0,
+      error.response?.data,
+      error
+    )
+  }
+  return new ApiError(localizedError(0), 0, undefined, undefined, {
+    cause: error,
+  })
+}
+
+transport.interceptors.request.use(async (config) => {
+  config.baseURL ??= apiBaseUrl()
+  const method = config.method?.toUpperCase()
+  if (method && ["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
+    await transport.get("/_csrf", { baseURL: apiBaseUrl() })
+  }
+  return config
+})
+
+transport.interceptors.response.use(
+  (response) => {
+    if (
+      response.status < 200 ||
+      response.status >= 300 ||
+      !isApiResponse(response.data) ||
+      !response.data.success
+    ) {
+      throw responseError(response.status, response.data)
+    }
+    return response
+  },
+  (error: unknown) => Promise.reject(normalizeError(error))
+)
+
+async function request<T>(
+  method: "GET" | "POST",
+  path: string,
+  data?: unknown,
+  options?: RequestOptions
+) {
+  try {
+    const response = await transport.request<ApiResponse<T>>({
+      ...options,
+      method,
+      url: path,
+      data,
+    })
+    return { payload: response.data, status: response.status }
+  } catch (error) {
+    throw normalizeError(error)
+  }
+}
+
+async function requestData<T>(
+  method: "GET" | "POST",
+  path: string,
+  data?: unknown,
+  options?: RequestOptions
+) {
+  const { payload, status } = await request<T>(method, path, data, options)
+  if (payload.data == null) {
+    throw new ApiError(
+      localizedError(status, "INVALID_RESPONSE"),
+      status,
+      "INVALID_RESPONSE",
+      payload.message
+    )
+  }
+  return payload.data
+}
+
+export const apiClient = {
+  get<T>(path: string, options?: RequestOptions) {
+    return requestData<T>("GET", path, undefined, options)
+  },
+  async getVoid(path: string, options?: RequestOptions) {
+    await request("GET", path, undefined, options)
+  },
+  async post<TBody>(path: string, data: TBody, options?: RequestOptions) {
+    await request("POST", path, data, options)
+  },
+  postForData<T, TBody>(path: string, data: TBody, options?: RequestOptions) {
+    return requestData<T>("POST", path, data, options)
+  },
 }
 
 export function getErrorMessage(error: unknown, fallback: string) {

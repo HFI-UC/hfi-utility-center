@@ -1,10 +1,9 @@
-import { api } from "@/lib/api/client"
+import { apiClient } from "@/lib/api/client"
 import { getRooms } from "@/lib/api/catalog"
 import { inputValueToTimestamp } from "@/lib/date-time"
 import { buildLegacyAvailability } from "@/lib/reservations/availability"
 import type {
   Reservation,
-  ApiResponse,
   ReservationPage,
   ReservationStatus,
   Room,
@@ -49,11 +48,10 @@ export async function getAvailability(
 }
 
 export async function createReservation(input: CreateReservationInput) {
-  const response = await api.post<ApiResponse<{ reservationId: number }>>(
-    "/reservation/create",
-    input
-  )
-  return response.data.data
+  return apiClient.postForData<
+    { reservationId: number },
+    CreateReservationInput
+  >("/reservation/create", input)
 }
 
 export async function getReservations(params: {
@@ -64,28 +62,21 @@ export async function getReservations(params: {
   startTime?: number
   endTime?: number
 }) {
-  const query = new URLSearchParams()
-  if (params.keyword) query.set("keyword", params.keyword)
-  if (params.roomId) query.set("roomId", String(params.roomId))
-  if (params.status) query.set("status", params.status)
-  query.set("page", String(params.page ?? 0))
-  if (params.startTime) query.set("startTime", String(params.startTime))
-  if (params.endTime) query.set("endTime", String(params.endTime))
-  const response = await api.get<ApiResponse<ReservationPage>>(
-    `/reservation/get?${query}`
-  )
-  return response.data.data ?? { reservations: [], total: 0 }
+  return apiClient.get<ReservationPage>("/reservation/get", {
+    params: { ...params, page: params.page ?? 0 },
+  })
 }
 
-export const getFutureReservations = async () => {
-  const response = await api.get<ApiResponse<Reservation[]>>(
-    "/reservation/future"
-  )
-  return response.data.data ?? []
-}
+export const getFutureReservations = () =>
+  apiClient.get<Reservation[]>("/reservation/future")
 
 export const updateReservationApproval = (
   id: number,
   approved: boolean,
   reason?: string
-) => api.post("/reservation/approval", { id, approved, reason: reason || null })
+) =>
+  apiClient.post("/reservation/approval", {
+    id,
+    approved,
+    reason: reason || null,
+  })
