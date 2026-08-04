@@ -1,5 +1,5 @@
 import { CheckCircle2 } from "lucide-react"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,6 @@ export function SuccessStep({
   onReset: () => void
 }) {
   const t = useTranslations("booking")
-  const router = useRouter()
   return (
     <section className="mx-auto flex min-h-[60svh] max-w-3xl flex-col justify-center">
       <CheckCircle2 className="mb-6 size-10 text-foreground" />
@@ -26,18 +25,17 @@ export function SuccessStep({
         {t("successDescription")}
       </p>
       <div className="mt-8 flex flex-wrap gap-2">
-        <Button
-          type="button"
-          onClick={() => router.push("/reservation/search")}
-        >
-          {t("viewReservations")}
-        </Button>
+        <Link href="/reservation/search">
+          <Button type="button">{t("viewReservations")}</Button>
+        </Link>
         <Button type="button" variant="outline" onClick={onReset}>
           {t("bookAgain")}
         </Button>
-        <Button type="button" variant="ghost" onClick={() => router.push("/")}>
-          {t("home")}
-        </Button>
+        <Link href="/">
+          <Button type="button" variant="ghost">
+            {t("home")}
+          </Button>
+        </Link>
       </div>
     </section>
   )

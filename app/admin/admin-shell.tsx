@@ -1,6 +1,7 @@
 "use client"
 
 import { Building2, CalendarClock, LogOut, Users } from "lucide-react"
+import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 
@@ -63,17 +64,21 @@ function AuthenticatedAdminShell({
           {navigationItems.map((item) => {
             const active = pathname === item.href
             return (
-              <Button
+              <Link
                 key={item.href}
-                type="button"
+                href={item.href}
                 aria-current={active ? "page" : undefined}
-                variant={active ? "secondary" : "ghost"}
-                className="w-full justify-start"
-                onClick={() => router.push(item.href)}
+                className="w-full"
               >
-                <item.icon />
-                {item.label}
-              </Button>
+                <Button
+                  type="button"
+                  variant={active ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                >
+                  <item.icon />
+                  {item.label}
+                </Button>
+              </Link>
             )
           })}
         </nav>

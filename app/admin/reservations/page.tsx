@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { Check, Download, RefreshCw, Search, X } from "lucide-react"
+import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { AdminPageHeader } from "@/app/admin/admin-shell"
 import { Badge } from "@/components/ui/badge"
@@ -118,16 +119,12 @@ export default function AdminReservationsPage() {
               <RefreshCw />
               {common("refresh")}
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() =>
-                window.location.assign(backendHref("/reservation/export"))
-              }
-            >
-              <Download />
-              {t("exportReservations")}
-            </Button>
+            <Link href={backendHref("/reservation/export")}>
+              <Button type="button" variant="outline">
+                <Download />
+                {t("exportReservations")}
+              </Button>
+            </Link>
           </>
         }
       />
