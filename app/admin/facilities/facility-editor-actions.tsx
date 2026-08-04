@@ -27,7 +27,7 @@ export function ConfirmFacilityDelete({
   working,
 }: FacilityEditorActions & {
   label: string
-  action: () => Promise<void>
+  action: () => Promise<unknown>
 }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")

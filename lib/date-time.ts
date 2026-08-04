@@ -1,5 +1,4 @@
 const DATE_VALUE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
-export const APP_TIME_ZONE = "Asia/Hong_Kong"
 
 export function dateToInputValue(date: Date) {
   const year = date.getFullYear()
@@ -23,9 +22,10 @@ export function inputValueToDate(value: string) {
 
 export function inputValueToTimestamp(value: string, endOfDay = false) {
   if (!DATE_VALUE_PATTERN.test(value)) return undefined
-  if (!inputValueToDate(value)) return undefined
-  const time = endOfDay ? "23:59:59" : "00:00:00"
-  return new Date(`${value}T${time}+08:00`).getTime() / 1000
+  const date = inputValueToDate(value)
+  if (!date) return undefined
+  if (endOfDay) date.setHours(23, 59, 59, 0)
+  return date.getTime() / 1000
 }
 
 export function timeOnInputDateTimestamp(
@@ -38,21 +38,5 @@ export function timeOnInputDateTimestamp(
 }
 
 export function weekdayFromInputValue(value: string) {
-  if (!inputValueToDate(value)) return undefined
-  const [year, month, day] = value.split("-").map(Number)
-  return new Date(Date.UTC(year, month - 1, day)).getUTCDay()
-}
-
-export function backendDateTimeToDate(value: string) {
-  return new Date(value)
-}
-
-export function createAppDateTimeFormatter(
-  locale: string,
-  options: Intl.DateTimeFormatOptions
-) {
-  return new Intl.DateTimeFormat(locale, {
-    ...options,
-    timeZone: APP_TIME_ZONE,
-  })
+  return inputValueToDate(value)?.getDay()
 }

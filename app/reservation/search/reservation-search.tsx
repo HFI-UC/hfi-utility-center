@@ -19,11 +19,7 @@ export function ReservationSearch({
   filters: ReservationSearchFilters
 }) {
   const t = useTranslations("searchPage")
-  const common = useTranslations("common")
-  const { catalog, result, error, loading } = useReservationSearch(
-    filters,
-    common("unknown")
-  )
+  const { catalog, result, loading } = useReservationSearch(filters)
 
   return (
     <main className="mx-auto max-w-[96rem] px-4 py-8 sm:px-8 sm:py-10">
@@ -40,13 +36,9 @@ export function ReservationSearch({
         filters={filters}
       />
 
-      <SearchContent
-        loading={loading}
-        error={error}
-        reservations={result.reservations}
-      />
+      <SearchContent loading={loading} reservations={result.reservations} />
 
-      {!loading && !error ? (
+      {!loading ? (
         <ReservationSearchPagination
           filters={filters}
           totalReservations={result.total}
@@ -60,11 +52,9 @@ export function ReservationSearch({
 
 function SearchContent({
   loading,
-  error,
   reservations,
 }: {
   loading: boolean
-  error?: string
   reservations: Reservation[]
 }) {
   const t = useTranslations("searchPage")
@@ -78,9 +68,6 @@ function SearchContent({
         {t("loading")}
       </p>
     )
-  }
-  if (error) {
-    return <p className="border-b py-6 text-sm text-destructive">{error}</p>
   }
   if (reservations.length) {
     return <ReservationResults reservations={reservations} />

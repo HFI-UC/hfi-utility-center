@@ -46,12 +46,9 @@ export default function AdminFacilitiesPage() {
   const facilityResource = useAdminResource({
     loadResource: loadFacilityData,
     initialData: emptyFacilityData,
-    fallbackError: t("facilitiesLoadError"),
   })
   const { mutate, working } = useAdminMutation({
     reload: facilityResource.reload,
-    reportError: facilityResource.reportError,
-    fallbackError: common("unknown"),
   })
   const { campuses, classes, rooms, admins } = facilityResource.data
   const editorActions = { mutate, working }
@@ -72,11 +69,6 @@ export default function AdminFacilitiesPage() {
           </Button>
         }
       />
-      {facilityResource.error ? (
-        <p className="mt-5 border-y py-3 text-sm text-destructive">
-          {facilityResource.error}
-        </p>
-      ) : null}
       {facilityResource.loading && !rooms.length ? (
         <p className="py-12 text-sm text-muted-foreground">
           {t("facilitiesLoading")}

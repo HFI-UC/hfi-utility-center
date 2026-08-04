@@ -41,24 +41,6 @@
     "approved": "Approved",
     "rejected": "Rejected"
   },
-  "apiErrors": {
-    "network": "Unable to reach the server. Check your connection and try again.",
-    "unknown": "Something went wrong. Please try again.",
-    "sessionExpired": "Your session has expired. Please sign in again.",
-    "notFound": "The requested data was not found.",
-    "conflict": "That time is no longer available. Choose another time.",
-    "server": "The server is temporarily unavailable.",
-    "roomUnavailable": "This room is currently unavailable.",
-    "invalidCredentials": "Email, password or verification is incorrect.",
-    "adminNotFound": "Administrator not found.",
-    "roomNotFound": "The requested room does not exist.",
-    "classNotFound": "The requested class does not exist.",
-    "campusNotFound": "The requested campus does not exist.",
-    "reservationNotFound": "The reservation does not exist.",
-    "verificationFailed": "Security verification failed. Please try again.",
-    "adminExists": "An administrator with these details already exists.",
-    "emailInUse": "This email address is already in use."
-  },
   "booking": {
     "progress": "Booking progress",
     "step": "Step {current} of {total}",

@@ -5,7 +5,6 @@ import type {
   Room,
 } from "@/lib/api/types"
 import {
-  backendDateTimeToDate,
   inputValueToTimestamp,
   timeOnInputDateTimestamp,
   weekdayFromInputValue,
@@ -45,8 +44,8 @@ function overlapsReservation(
   return reservations.some(
     (reservation) =>
       reservation.status !== "rejected" &&
-      backendDateTimeToDate(reservation.startTime).getTime() / 1000 < slotEnd &&
-      backendDateTimeToDate(reservation.endTime).getTime() / 1000 > slotStart
+      new Date(reservation.startTime).getTime() / 1000 < slotEnd &&
+      new Date(reservation.endTime).getTime() / 1000 > slotStart
   )
 }
 

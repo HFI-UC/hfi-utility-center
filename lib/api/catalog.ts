@@ -1,5 +1,11 @@
 import { api } from "@/lib/api/client"
-import type { Campus, CatalogData, Room, SchoolClass } from "@/lib/api/types"
+import type {
+  ApiResponse,
+  Campus,
+  CatalogData,
+  Room,
+  SchoolClass,
+} from "@/lib/api/types"
 
 export async function getCatalog(): Promise<CatalogData> {
   const [campuses, classes, rooms] = await Promise.all([
@@ -10,9 +16,20 @@ export async function getCatalog(): Promise<CatalogData> {
   return { campuses, classes, rooms }
 }
 
-export const getCampuses = () => api.get<Campus[]>("/campus/list")
-export const getClasses = () => api.get<SchoolClass[]>("/class/list")
-export const getRooms = () => api.get<Room[]>("/room/list")
+export async function getCampuses() {
+  const response = await api.get<ApiResponse<Campus[]>>("/campus/list")
+  return response.data.data!
+}
+
+export async function getClasses() {
+  const response = await api.get<ApiResponse<SchoolClass[]>>("/class/list")
+  return response.data.data!
+}
+
+export async function getRooms() {
+  const response = await api.get<ApiResponse<Room[]>>("/room/list")
+  return response.data.data!
+}
 
 export const createCampus = (name: string) =>
   api.post("/campus/create", { name })

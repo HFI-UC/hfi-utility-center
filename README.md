@@ -15,7 +15,7 @@ The development server uses `http://localhost:3000` by default.
 
 Environment variables:
 
-- `BACKEND_URL` selects the backend used by the local same-origin API proxy.
+- `NEXT_PUBLIC_BACKEND_URL` selects the backend used by the browser.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` enables the real Cloudflare Turnstile
   widget. Password login on localhost requires that site key to allow the
   `localhost` hostname; there is no development verification bypass.
@@ -33,9 +33,8 @@ backend or Turnstile widget is required.
 - `components/ui/` contains shadcn primitives and should remain domain-agnostic.
 - `messages/` contains the English and Simplified Chinese translation catalogs.
 
-The browser calls `/api/backend/*`. The Next.js route handler forwards those
-requests to the legacy backend while preserving the existing URL and payload
-contracts.
+The browser calls the configured backend directly. The API client preserves the
+legacy response and payload contracts.
 
 ## Quality Checks
 

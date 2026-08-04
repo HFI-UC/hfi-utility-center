@@ -7,11 +7,7 @@ import { Controller, useFormContext, useWatch } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Spinner } from "@/components/ui/spinner"
-import {
-  createAppDateTimeFormatter,
-  dateToInputValue,
-  inputValueToDate,
-} from "@/lib/date-time"
+import { dateToInputValue, inputValueToDate } from "@/lib/date-time"
 import type { Room } from "@/lib/api/types"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
 
@@ -42,13 +38,12 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
     useRoomAvailability({
       room,
       date,
-      fallbackError: t("availabilityError"),
     })
   const today = useMemo(() => startOfToday(), [])
   const maximumDate = useMemo(() => addDays(today, 30), [today])
   const timeFormatter = useMemo(
     () =>
-      createAppDateTimeFormatter(locale, {
+      new Intl.DateTimeFormat(locale, {
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,

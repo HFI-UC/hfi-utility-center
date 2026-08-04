@@ -2,16 +2,13 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 import { getAvailability } from "@/lib/api/reservations"
 import type { AvailabilityData, Room } from "@/lib/api/types"
-import { getErrorMessage } from "@/lib/api/client"
 
 export function useRoomAvailability({
   room,
   date,
-  fallbackError,
 }: {
   room?: Room
   date: string
-  fallbackError: string
 }) {
   const requestId = useRef(0)
   const [availability, setAvailability] = useState<AvailabilityData>()
@@ -31,19 +28,11 @@ export function useRoomAvailability({
     setLoading(true)
     setError(undefined)
 
-    try {
-      const nextAvailability = await getAvailability(room.id, date, room)
-      if (requestId.current === currentRequest) {
-        setAvailability(nextAvailability)
-      }
-    } catch (loadError) {
-      if (requestId.current !== currentRequest) return
-      setAvailability(undefined)
-      setError(getErrorMessage(loadError, fallbackError))
-    } finally {
-      if (requestId.current === currentRequest) setLoading(false)
-    }
-  }, [date, fallbackError, room])
+    const nextAvailability = await getAvailability(room.id, date, room)
+    if (requestId.current !== currentRequest) return
+    setAvailability(nextAvailability)
+    setLoading(false)
+  }, [date, room])
 
   useEffect(() => {
     async function loadCurrentAvailability() {

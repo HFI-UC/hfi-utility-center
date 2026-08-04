@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/pagination"
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
-import { ApiError, getErrorMessage } from "@/lib/api/client"
 import { createReservation, getAvailability } from "@/lib/api/reservations"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
 
@@ -52,12 +51,7 @@ export function ReservationForm() {
   const [flowError, setFlowError] = useState<string>()
   const [isWorking, setIsWorking] = useState(false)
   const [result, setResult] = useState<ReservationResult>()
-  const {
-    catalog,
-    error: catalogError,
-    loading: catalogLoading,
-    reload: reloadCatalog,
-  } = useReservationCatalog(t("loadError"))
+  const { catalog, loading: catalogLoading } = useReservationCatalog()
   const currentStepIndex = bookingSteps.findIndex(
     (step) => step.id === currentStepId
   )
@@ -72,22 +66,17 @@ export function ReservationForm() {
       return false
     }
 
-    try {
-      const availability = await getAvailability(values.room, values.date, room)
-      if (
-        rangeIsAvailable(availability.slots, values.startTime, values.endTime)
-      ) {
-        return true
-      }
-
-      form.setValue("startTime", 0)
-      form.setValue("endTime", 0)
-      setFlowError(t("timeConflict"))
-      return false
-    } catch (error) {
-      setFlowError(getErrorMessage(error, t("availabilityError")))
-      return false
+    const availability = await getAvailability(values.room, values.date, room)
+    if (
+      rangeIsAvailable(availability.slots, values.startTime, values.endTime)
+    ) {
+      return true
     }
+
+    form.setValue("startTime", 0)
+    form.setValue("endTime", 0)
+    setFlowError(t("timeConflict"))
+    return false
   }
 
   async function continueToNextStep() {
@@ -134,20 +123,6 @@ export function ReservationForm() {
       setResult({
         reservationId: response?.reservationId,
       })
-    } catch (error) {
-      const availabilityConflict =
-        error instanceof ApiError &&
-        (error.status === 409 || error.code === "ROOM_UNAVAILABLE")
-
-      if (availabilityConflict) {
-        form.setValue("startTime", 0)
-        form.setValue("endTime", 0)
-        setFlowError(t("timeConflict"))
-        setCurrentStepId("dateTime")
-        return
-      }
-
-      setFlowError(getErrorMessage(error, t("submitError")))
     } finally {
       setIsWorking(false)
     }
@@ -193,18 +168,6 @@ export function ReservationForm() {
         <p className="mt-3 text-sm text-muted-foreground">
           {t("loadingDescription")}
         </p>
-        {catalogError ? (
-          <>
-            <p className="mt-5 text-sm text-destructive">{catalogError}</p>
-            <Button
-              className="mt-4 w-fit"
-              variant="outline"
-              onClick={() => void reloadCatalog()}
-            >
-              {common("retry")}
-            </Button>
-          </>
-        ) : null}
       </main>
     )
   }

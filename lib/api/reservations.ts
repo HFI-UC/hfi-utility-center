@@ -3,6 +3,7 @@ import { getRooms } from "@/lib/api/catalog"
 import { inputValueToTimestamp } from "@/lib/date-time"
 import { buildLegacyAvailability } from "@/lib/reservations/availability"
 import type {
+  ApiResponse,
   Reservation,
   ReservationPage,
   ReservationStatus,
@@ -48,10 +49,11 @@ export async function getAvailability(
 }
 
 export async function createReservation(input: CreateReservationInput) {
-  return api.postForData<{ reservationId: number }, CreateReservationInput>(
+  const { data } = await api.post<ApiResponse<{ reservationId: number }>>(
     "/reservation/create",
     input
   )
+  return data.data!
 }
 
 export async function getReservations(params: {
@@ -62,13 +64,19 @@ export async function getReservations(params: {
   startTime?: number
   endTime?: number
 }) {
-  return api.get<ReservationPage>("/reservation/get", {
-    params: { ...params, page: params.page ?? 0 },
-  })
+  const { data } = await api.get<ApiResponse<ReservationPage>>(
+    "/reservation/get",
+    { params: { ...params, page: params.page ?? 0 } }
+  )
+  return data.data!
 }
 
-export const getFutureReservations = () =>
-  api.get<Reservation[]>("/reservation/future")
+export async function getFutureReservations() {
+  const response = await api.get<ApiResponse<Reservation[]>>(
+    "/reservation/future"
+  )
+  return response.data.data!
+}
 
 export const updateReservationApproval = (
   id: number,

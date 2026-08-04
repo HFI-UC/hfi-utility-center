@@ -3,14 +3,13 @@ import { useFormContext } from "react-hook-form"
 import { StepLayout } from "../step-layout"
 import type { ReservationFormValues } from "../form"
 import type { CatalogData } from "@/lib/api/types"
-import { createAppDateTimeFormatter } from "@/lib/date-time"
 
 export function ReviewStep({ catalog }: { catalog: CatalogData }) {
   const t = useTranslations("booking")
   const locale = useLocale()
   const { getValues } = useFormContext<ReservationFormValues>()
   const values = getValues()
-  const dateTimeFormatter = createAppDateTimeFormatter(locale, {
+  const dateTimeFormatter = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   })

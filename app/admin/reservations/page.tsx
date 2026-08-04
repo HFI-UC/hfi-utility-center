@@ -16,10 +16,6 @@ import {
 } from "@/lib/api/reservations"
 import type { Reservation } from "@/lib/api/types"
 import { backendHref } from "@/lib/api/client"
-import {
-  backendDateTimeToDate,
-  createAppDateTimeFormatter,
-} from "@/lib/date-time"
 
 export default function AdminReservationsPage() {
   const t = useTranslations("admin")
@@ -29,19 +25,17 @@ export default function AdminReservationsPage() {
   const [query, setQuery] = useState("")
   const [rejectingId, setRejectingId] = useState<number>()
   const [reason, setReason] = useState("")
+  const [error, setError] = useState<string>()
   const reservationResource = useAdminResource<Reservation[]>({
     loadResource: getFutureReservations,
     initialData: [],
-    fallbackError: common("unknown"),
   })
   const { mutate, working } = useAdminMutation({
     reload: reservationResource.reload,
-    reportError: reservationResource.reportError,
-    fallbackError: common("unknown"),
   })
   const dateTimeFormatter = useMemo(
     () =>
-      createAppDateTimeFormatter(locale, {
+      new Intl.DateTimeFormat(locale, {
         month: "numeric",
         day: "numeric",
         hour: "2-digit",
@@ -52,7 +46,7 @@ export default function AdminReservationsPage() {
   )
 
   function formatDateTime(value: string) {
-    return dateTimeFormatter.format(backendDateTimeToDate(value))
+    return dateTimeFormatter.format(new Date(value))
   }
 
   const filtered = useMemo(() => {
@@ -78,10 +72,11 @@ export default function AdminReservationsPage() {
     const approved = nextStatus === "approved"
     const rejectionReason = reason.trim()
     if (!approved && !rejectionReason) {
-      reservationResource.reportError(t("rejectionRequired"))
+      setError(t("rejectionRequired"))
       return
     }
 
+    setError(undefined)
     const saved = await mutate(() =>
       updateReservationApproval(
         id,
@@ -98,13 +93,13 @@ export default function AdminReservationsPage() {
   function startRejection(id: number) {
     setRejectingId(id)
     setReason("")
-    reservationResource.reportError(undefined)
+    setError(undefined)
   }
 
   function cancelRejection() {
     setRejectingId(undefined)
     setReason("")
-    reservationResource.reportError(undefined)
+    setError(undefined)
   }
 
   return (
@@ -143,10 +138,8 @@ export default function AdminReservationsPage() {
           placeholder={t("reservationSearch")}
         />
       </div>
-      {reservationResource.error ? (
-        <p className="border-y py-3 text-sm text-destructive">
-          {reservationResource.error}
-        </p>
+      {error ? (
+        <p className="border-y py-3 text-sm text-destructive">{error}</p>
       ) : null}
       {reservationResource.loading ? (
         <p className="py-12 text-sm text-muted-foreground">

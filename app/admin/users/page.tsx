@@ -18,12 +18,9 @@ export default function AdminUsersPage() {
   const adminResource = useAdminResource<Admin[]>({
     loadResource: getAdmins,
     initialData: [],
-    fallbackError: t("usersLoadError"),
   })
   const { mutate, working, notice } = useAdminMutation({
     reload: adminResource.reload,
-    reportError: adminResource.reportError,
-    fallbackError: common("unknown"),
   })
 
   return (
@@ -43,11 +40,6 @@ export default function AdminUsersPage() {
         }
       />
       <CreateAdminForm mutate={mutate} working={working} />
-      {adminResource.error ? (
-        <p className="border-b py-3 text-sm text-destructive">
-          {adminResource.error}
-        </p>
-      ) : null}
       {notice ? (
         <p className="border-b py-3 text-sm text-foreground">{notice}</p>
       ) : null}

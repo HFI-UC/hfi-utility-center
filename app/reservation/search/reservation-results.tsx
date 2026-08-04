@@ -13,10 +13,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import type { Reservation, ReservationStatus } from "@/lib/api/types"
-import {
-  backendDateTimeToDate,
-  createAppDateTimeFormatter,
-} from "@/lib/date-time"
 
 const statusClass: Record<ReservationStatus, string> = {
   pending: "bg-secondary text-secondary-foreground",
@@ -138,11 +134,11 @@ function useReservationDateFormatter() {
   const locale = useLocale()
   const formatter = useMemo(
     () =>
-      createAppDateTimeFormatter(locale, {
+      new Intl.DateTimeFormat(locale, {
         dateStyle: "short",
         timeStyle: "short",
       }),
     [locale]
   )
-  return (value: string) => formatter.format(backendDateTimeToDate(value))
+  return (value: string) => formatter.format(new Date(value))
 }

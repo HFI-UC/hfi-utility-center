@@ -4,11 +4,12 @@ import { useEffect, useSyncExternalStore } from "react"
 import { NextIntlClientProvider } from "next-intl"
 import { ThemeProvider } from "next-themes"
 
-import { defaultLocale, isAppLocale, type AppLocale } from "@/i18n/config"
 import enMessages from "@/messages/en-US.json"
 import zhMessages from "@/messages/zh-CN.json"
 
+type AppLocale = "zh-CN" | "en-US"
 type LocaleMessages = Record<AppLocale, Record<string, unknown>>
+const defaultLocale: AppLocale = "zh-CN"
 
 const messages = {
   "zh-CN": zhMessages,
@@ -22,7 +23,7 @@ function subscribeToLocale(onLocaleChange: () => void) {
 
 function storedLocale(): AppLocale {
   const saved = window.localStorage.getItem("hfiuc-locale")
-  if (saved && isAppLocale(saved)) return saved
+  if (saved === "zh-CN" || saved === "en-US") return saved
   return window.navigator.language.toLowerCase().startsWith("zh")
     ? "zh-CN"
     : "en-US"
@@ -40,11 +41,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, [locale])
 
   return (
-    <NextIntlClientProvider
-      locale={locale}
-      messages={messages[locale]}
-      timeZone="Asia/Hong_Kong"
-    >
+    <NextIntlClientProvider locale={locale} messages={messages[locale]}>
       <ThemeProvider
         attribute="class"
         defaultTheme="system"

@@ -1,7 +1,10 @@
 import { api } from "@/lib/api/client"
-import type { Admin } from "@/lib/api/types"
+import type { Admin, ApiResponse } from "@/lib/api/types"
 
-export const getAdmins = () => api.get<Admin[]>("/admin/list")
+export async function getAdmins() {
+  const response = await api.get<ApiResponse<Admin[]>>("/admin/list")
+  return response.data.data!
+}
 export const createAdmin = (name: string, email: string, password: string) =>
   api.post("/admin/create", { name, email, password })
 export const editAdmin = (id: number, name: string, email: string) =>

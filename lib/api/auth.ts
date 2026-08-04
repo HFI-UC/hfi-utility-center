@@ -20,5 +20,5 @@ export const loginWithToken = (token: string) =>
     turnstileToken: null,
   })
 
-export const checkLogin = () => api.getVoid("/admin/check-login")
-export const logout = () => api.getVoid("/admin/logout")
+export const checkLogin = () => api.get("/admin/check-login")
+export const logout = () => api.get("/admin/logout")

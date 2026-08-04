@@ -3,7 +3,6 @@ import { Geist_Mono, Inter } from "next/font/google"
 
 import { Providers } from "@/app/providers"
 import { Navbar } from "@/components/navbar"
-import { defaultLocale } from "@/i18n/config"
 import { cn } from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -19,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang={defaultLocale}
+      lang="zh-CN"
       suppressHydrationWarning
       className={cn(
         "antialiased",
