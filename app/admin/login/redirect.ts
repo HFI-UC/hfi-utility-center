@@ -1,18 +1,12 @@
 const DEFAULT_REDIRECT = "/admin/reservations"
-const LOCAL_ORIGIN = "https://hfiuc.local"
+const ADMIN_ROUTES = new Set([
+  "/admin",
+  "/admin/reservations",
+  "/admin/facilities",
+  "/admin/users",
+])
 
 export function safeAdminRedirect(value?: string) {
-  if (!value || value.includes("\\") || !URL.canParse(value, LOCAL_ORIGIN)) {
-    return DEFAULT_REDIRECT
-  }
-
-  const target = new URL(value, LOCAL_ORIGIN)
-  const staysOnSite = target.origin === LOCAL_ORIGIN
-  const staysInAdmin =
-    target.pathname === "/admin" ||
-    (target.pathname.startsWith("/admin/") &&
-      target.pathname !== "/admin/login")
-
-  if (!staysOnSite || !staysInAdmin) return DEFAULT_REDIRECT
-  return `${target.pathname}${target.search}${target.hash}`
+  const path = value?.split(/[?#]/, 1)[0]
+  return path && ADMIN_ROUTES.has(path) ? value : DEFAULT_REDIRECT
 }

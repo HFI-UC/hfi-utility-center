@@ -4,9 +4,16 @@ import { useEffect, useSyncExternalStore } from "react"
 import { NextIntlClientProvider } from "next-intl"
 import { ThemeProvider } from "next-themes"
 
-import { isAppLocale, type AppLocale } from "@/i18n/config"
+import { defaultLocale, isAppLocale, type AppLocale } from "@/i18n/config"
+import enMessages from "@/messages/en-US.json"
+import zhMessages from "@/messages/zh-CN.json"
 
 type LocaleMessages = Record<AppLocale, Record<string, unknown>>
+
+const messages = {
+  "zh-CN": zhMessages,
+  "en-US": enMessages,
+} satisfies LocaleMessages
 
 function subscribeToLocale(onLocaleChange: () => void) {
   window.addEventListener("hfiuc-locale-change", onLocaleChange)
@@ -16,22 +23,16 @@ function subscribeToLocale(onLocaleChange: () => void) {
 function storedLocale(): AppLocale {
   const saved = window.localStorage.getItem("hfiuc-locale")
   if (saved && isAppLocale(saved)) return saved
-  return document.documentElement.lang === "en-US" ? "en-US" : "zh-CN"
+  return window.navigator.language.toLowerCase().startsWith("zh")
+    ? "zh-CN"
+    : "en-US"
 }
 
-export function Providers({
-  initialLocale,
-  messages,
-  children,
-}: {
-  initialLocale: AppLocale
-  messages: LocaleMessages
-  children: React.ReactNode
-}) {
+export function Providers({ children }: { children: React.ReactNode }) {
   const locale = useSyncExternalStore(
     subscribeToLocale,
     storedLocale,
-    () => initialLocale
+    () => defaultLocale
   )
 
   useEffect(() => {

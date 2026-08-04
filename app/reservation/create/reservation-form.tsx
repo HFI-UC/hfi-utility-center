@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState, type FormEvent } from "react"
+import { useState, type FormEvent } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -20,8 +20,8 @@ import { rangeIsAvailable } from "@/lib/reservations/availability"
 
 import {
   bookingSteps,
-  createReservationSchema,
   reservationDefaults,
+  useReservationSchema,
   type BookingStepId,
   type ReservationFormValues,
 } from "./form"
@@ -40,7 +40,7 @@ type ReservationResult = {
 export function ReservationForm() {
   const t = useTranslations("booking")
   const common = useTranslations("common")
-  const schema = useMemo(() => createReservationSchema((key) => t(key)), [t])
+  const schema = useReservationSchema()
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(schema),
     defaultValues: reservationDefaults,

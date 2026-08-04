@@ -1,28 +1,41 @@
+"use client"
+
+import { useMemo } from "react"
+import { useTranslations } from "next-intl"
 import { z } from "zod"
 
-type Translate = (key: string) => string
+export function useReservationSchema() {
+  const t = useTranslations("booking")
 
-export function createReservationSchema(t: Translate) {
-  return z.object({
-    classId: z.number().int().positive(t("validation.classRequired")),
-    bookingCampusId: z.number().int().positive(t("validation.campusRequired")),
-    room: z.number().int().positive(t("validation.roomRequired")),
-    date: z.string().min(1, t("validation.dateRequired")),
-    startTime: z.number().positive(t("validation.startTimeRequired")),
-    endTime: z.number().positive(t("validation.endTimeRequired")),
-    studentName: z.string().trim().min(1, t("validation.nameRequired")),
-    studentId: z
-      .string()
-      .trim()
-      .regex(/^GJ\d{8}$/, t("validation.studentIdFormat")),
-    email: z.string().trim().email(t("validation.emailInvalid")),
-    reason: z.string().trim().min(1, t("validation.reasonRequired")),
-    isAgreed: z.boolean().refine(Boolean, t("validation.agreementRequired")),
-  })
+  return useMemo(
+    () =>
+      z.object({
+        classId: z.number().int().positive(t("validation.classRequired")),
+        bookingCampusId: z
+          .number()
+          .int()
+          .positive(t("validation.campusRequired")),
+        room: z.number().int().positive(t("validation.roomRequired")),
+        date: z.string().min(1, t("validation.dateRequired")),
+        startTime: z.number().positive(t("validation.startTimeRequired")),
+        endTime: z.number().positive(t("validation.endTimeRequired")),
+        studentName: z.string().trim().min(1, t("validation.nameRequired")),
+        studentId: z
+          .string()
+          .trim()
+          .regex(/^GJ\d{8}$/, t("validation.studentIdFormat")),
+        email: z.string().trim().email(t("validation.emailInvalid")),
+        reason: z.string().trim().min(1, t("validation.reasonRequired")),
+        isAgreed: z
+          .boolean()
+          .refine(Boolean, t("validation.agreementRequired")),
+      }),
+    [t]
+  )
 }
 
 export type ReservationFormValues = z.infer<
-  ReturnType<typeof createReservationSchema>
+  ReturnType<typeof useReservationSchema>
 >
 
 export const reservationDefaults: ReservationFormValues = {

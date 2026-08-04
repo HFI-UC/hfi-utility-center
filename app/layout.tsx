@@ -1,31 +1,35 @@
 import "./globals.css"
-import { Inter } from "next/font/google"
+import { Geist_Mono, Inter } from "next/font/google"
+
 import { Providers } from "@/app/providers"
 import { Navbar } from "@/components/navbar"
-import { getLocale } from "next-intl/server"
-import enMessages from "@/messages/en-US.json"
-import zhMessages from "@/messages/zh-CN.json"
-import { appLocale } from "@/i18n/config"
+import { defaultLocale } from "@/i18n/config"
+import { cn } from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+const fontMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+})
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const locale = appLocale(await getLocale())
   return (
     <html
-      lang={locale}
+      lang={defaultLocale}
       suppressHydrationWarning
-      className={`${inter.variable} font-sans antialiased`}
+      className={cn(
+        "antialiased",
+        fontMono.variable,
+        "font-sans",
+        inter.variable
+      )}
     >
       <body>
-        <Providers
-          initialLocale={locale}
-          messages={{ "zh-CN": zhMessages, "en-US": enMessages }}
-        >
+        <Providers>
           <Navbar>{children}</Navbar>
         </Providers>
       </body>
