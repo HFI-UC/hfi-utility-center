@@ -19,10 +19,23 @@ export function LocationStep({ catalog }: { catalog: BootstrapData }) {
   const campusId = campusField.value
   const roomId = roomField.value
   const rooms = catalog.rooms.filter((room) => room.campus === campusId)
-  const resetTime = () => {
+
+  function clearSelectedTime() {
     setValue("startTime", 0)
     setValue("endTime", 0)
   }
+
+  function selectCampus(campusId: number) {
+    campusField.onChange(campusId)
+    roomField.onChange(0)
+    clearSelectedTime()
+  }
+
+  function selectRoom(roomId: number) {
+    roomField.onChange(roomId)
+    clearSelectedTime()
+  }
+
   return (
     <StepLayout
       step={2}
@@ -38,11 +51,7 @@ export function LocationStep({ catalog }: { catalog: BootstrapData }) {
         items={catalog.campuses
           .filter((campus) => !campus.isPrivileged)
           .map((campus) => ({ value: campus.id, label: campus.name }))}
-        onChange={(bookingCampusId) => {
-          campusField.onChange(bookingCampusId)
-          roomField.onChange(0)
-          resetTime()
-        }}
+        onChange={selectCampus}
         onBlur={campusField.onBlur}
         emptyText={t("roomEmpty")}
       />
@@ -59,10 +68,7 @@ export function LocationStep({ catalog }: { catalog: BootstrapData }) {
               label: room.name,
               disabled: !room.enabled,
             }))}
-            onChange={(room) => {
-              roomField.onChange(room)
-              resetTime()
-            }}
+            onChange={selectRoom}
             onBlur={roomField.onBlur}
             emptyText={t("roomEmpty")}
           />

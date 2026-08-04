@@ -2,7 +2,7 @@
 
 import { Pencil, Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 
 import { TextActionDialog } from "@/app/admin/text-action-dialog"
 import { Button } from "@/components/ui/button"
@@ -24,9 +24,12 @@ export function CampusEditor({
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const form = useForm<{ name: string }>({ defaultValues: { name: "" } })
+  const nameError = form.formState.errors.name
 
   async function createNewCampus({ name }: { name: string }) {
-    const created = await mutate("campus:create", () => createCampus(name))
+    const created = await mutate("campus:create", () =>
+      createCampus(name.trim())
+    )
     if (created) form.reset()
   }
 
@@ -37,21 +40,16 @@ export function CampusEditor({
         className="flex gap-2 py-4"
         onSubmit={form.handleSubmit(createNewCampus)}
       >
-        <Controller
-          control={form.control}
-          name="name"
-          rules={{ required: t("fieldRequired") }}
-          render={({ field, fieldState }) => (
-            <Field className="flex-1" data-invalid={fieldState.invalid}>
-              <Input
-                {...field}
-                placeholder={t("newCampus")}
-                aria-invalid={fieldState.invalid}
-              />
-              <FieldError errors={[fieldState.error]} />
-            </Field>
-          )}
-        />
+        <Field className="flex-1" data-invalid={Boolean(nameError)}>
+          <Input
+            {...form.register("name", {
+              validate: (name) => Boolean(name.trim()) || t("fieldRequired"),
+            })}
+            placeholder={t("newCampus")}
+            aria-invalid={Boolean(nameError)}
+          />
+          <FieldError errors={[nameError]} />
+        </Field>
         <Button disabled={Boolean(workingKey)}>
           <Plus />
           {common("add")}

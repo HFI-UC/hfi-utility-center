@@ -32,6 +32,15 @@ export function ClassStep({ catalog }: { catalog: BootstrapData }) {
       ),
     [catalog, campusId, query]
   )
+
+  function selectCampus(nextCampusId: number) {
+    setCampusId(nextCampusId)
+    setQuery("")
+    if (selectedClass?.campus !== nextCampusId) {
+      setValue("classId", 0, { shouldValidate: false })
+    }
+  }
+
   return (
     <StepLayout
       step={1}
@@ -57,12 +66,7 @@ export function ClassStep({ catalog }: { catalog: BootstrapData }) {
                   type="button"
                   variant={selected ? "default" : "outline"}
                   aria-pressed={selected}
-                  onClick={() => {
-                    setCampusId(item.id)
-                    setQuery("")
-                    if (selectedClass?.campus !== item.id)
-                      setValue("classId", 0, { shouldValidate: false })
-                  }}
+                  onClick={() => selectCampus(item.id)}
                   className="w-full justify-between"
                 >
                   <span>{item.name}</span>

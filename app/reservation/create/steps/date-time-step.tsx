@@ -140,6 +140,16 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
     return timeFormatter.format(new Date(value * 1000))
   }
 
+  function selectedRangeLabel() {
+    if (startTime && endTime) {
+      return t("selectedRange", {
+        start: formatTime(startTime),
+        end: formatTime(endTime),
+      })
+    }
+    return startTime ? t("selectEndHint") : t("selectStartHint")
+  }
+
   const fieldError =
     formState.errors.date?.message ??
     formState.errors.startTime?.message ??
@@ -181,15 +191,7 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
                   {t("timeRange")}
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {selectedRangeLabel({
-                    startTime,
-                    endTime,
-                    formatTime,
-                    selectedRange: (start, end) =>
-                      t("selectedRange", { start, end }),
-                    selectEnd: t("selectEndHint"),
-                    selectStart: t("selectStartHint"),
-                  })}
+                  {selectedRangeLabel()}
                 </p>
               </div>
               <Button
@@ -260,25 +262,4 @@ function addDays(date: Date, days: number) {
   const result = new Date(date)
   result.setDate(result.getDate() + days)
   return result
-}
-
-function selectedRangeLabel({
-  startTime,
-  endTime,
-  formatTime,
-  selectedRange,
-  selectEnd,
-  selectStart,
-}: {
-  startTime: number
-  endTime: number
-  formatTime: (value: number) => string
-  selectedRange: (start: string, end: string) => string
-  selectEnd: string
-  selectStart: string
-}) {
-  if (startTime && endTime) {
-    return selectedRange(formatTime(startTime), formatTime(endTime))
-  }
-  return startTime ? selectEnd : selectStart
 }

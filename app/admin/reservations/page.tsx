@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { Check, Download, RefreshCw, Search, X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -27,6 +27,7 @@ export default function AdminReservationsPage() {
   const statusT = useTranslations("status")
   const locale = useLocale()
   const [query, setQuery] = useState("")
+  const decisionInProgress = useRef(false)
   const [workingId, setWorkingId] = useState<number>()
   const [rejectingId, setRejectingId] = useState<number>()
   const [reason, setReason] = useState("")
@@ -67,23 +68,30 @@ export default function AdminReservationsPage() {
     )
   }, [query, reservationResource.data])
 
-  async function decide(id: number, approved: boolean) {
-    if (!approved && !reason.trim()) {
+  async function submitDecision(
+    id: number,
+    nextStatus: "approved" | "rejected"
+  ) {
+    if (decisionInProgress.current) return
+
+    const approved = nextStatus === "approved"
+    const rejectionReason = reason.trim()
+    if (!approved && !rejectionReason) {
       reservationResource.reportError(t("rejectionRequired"))
       return
     }
+
+    decisionInProgress.current = true
     setWorkingId(id)
     try {
       await updateReservationApproval(
         id,
         approved,
-        approved ? undefined : reason.trim()
+        approved ? undefined : rejectionReason
       )
       reservationResource.setData((current) =>
         current.map((item) =>
-          item.id === id
-            ? { ...item, status: approved ? "approved" : "rejected" }
-            : item
+          item.id === id ? { ...item, status: nextStatus } : item
         )
       )
       setRejectingId(undefined)
@@ -94,6 +102,7 @@ export default function AdminReservationsPage() {
         getErrorMessage(actionError, common("unknown"))
       )
     } finally {
+      decisionInProgress.current = false
       setWorkingId(undefined)
     }
   }
@@ -203,8 +212,8 @@ export default function AdminReservationsPage() {
                 <>
                   <Button
                     size="sm"
-                    disabled={workingId === item.id}
-                    onClick={() => void decide(item.id, true)}
+                    disabled={workingId !== undefined}
+                    onClick={() => void submitDecision(item.id, "approved")}
                   >
                     <Check />
                     {t("approve")}
@@ -212,6 +221,7 @@ export default function AdminReservationsPage() {
                   <Button
                     size="sm"
                     variant="destructive"
+                    disabled={workingId !== undefined}
                     onClick={() => startRejection(item.id)}
                   >
                     <X />
@@ -230,12 +240,16 @@ export default function AdminReservationsPage() {
                 <div className="flex gap-2">
                   <Button
                     variant="destructive"
-                    disabled={workingId === item.id}
-                    onClick={() => void decide(item.id, false)}
+                    disabled={workingId !== undefined}
+                    onClick={() => void submitDecision(item.id, "rejected")}
                   >
                     {t("confirmReject")}
                   </Button>
-                  <Button variant="outline" onClick={cancelRejection}>
+                  <Button
+                    variant="outline"
+                    disabled={workingId !== undefined}
+                    onClick={cancelRejection}
+                  >
                     {common("cancel")}
                   </Button>
                 </div>

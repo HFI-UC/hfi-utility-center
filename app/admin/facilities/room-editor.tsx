@@ -34,13 +34,14 @@ export function RoomEditor({
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const form = useForm<RoomForm>({ defaultValues: { name: "", campus: "" } })
+  const nameError = form.formState.errors.name
   const campusNames = new Map(
     campuses.map((campus) => [campus.id, campus.name])
   )
 
   async function createNewRoom({ name, campus }: RoomForm) {
     const created = await mutate("room:create", () =>
-      createRoom(name, Number(campus))
+      createRoom(name.trim(), Number(campus))
     )
     if (created) form.reset()
   }
@@ -52,21 +53,16 @@ export function RoomEditor({
         className="grid gap-2 py-4 sm:grid-cols-[1fr_10rem_auto]"
         onSubmit={form.handleSubmit(createNewRoom)}
       >
-        <Controller
-          control={form.control}
-          name="name"
-          rules={{ required: t("fieldRequired") }}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <Input
-                {...field}
-                placeholder={t("newRoom")}
-                aria-invalid={fieldState.invalid}
-              />
-              <FieldError errors={[fieldState.error]} />
-            </Field>
-          )}
-        />
+        <Field data-invalid={Boolean(nameError)}>
+          <Input
+            {...form.register("name", {
+              validate: (name) => Boolean(name.trim()) || t("fieldRequired"),
+            })}
+            placeholder={t("newRoom")}
+            aria-invalid={Boolean(nameError)}
+          />
+          <FieldError errors={[nameError]} />
+        </Field>
         <RoomCampusField control={form.control} campuses={campuses} />
         <Button disabled={Boolean(workingKey)}>
           <Plus />

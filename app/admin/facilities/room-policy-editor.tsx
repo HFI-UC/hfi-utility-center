@@ -51,8 +51,17 @@ export function PolicyEditor({
   const form = useForm<PolicyForm>({
     defaultValues: { room: "", day: "1", start: "08:00", end: "18:00" },
   })
+  const { errors } = form.formState
 
   async function createRoomPolicy({ room, day, start, end }: PolicyForm) {
+    const startMinutes = timeInMinutes(start)
+    const endMinutes = timeInMinutes(end)
+    if (endMinutes <= startMinutes) {
+      form.setError("end", { message: t("policyEndAfterStart") })
+      return
+    }
+    form.clearErrors("end")
+
     const created = await mutate("policy:create", () =>
       createPolicy(
         Number(room),
@@ -133,28 +142,30 @@ export function PolicyEditor({
             </Field>
           )}
         />
-        {(["start", "end"] as const).map((name) => (
-          <Controller
-            key={name}
-            control={form.control}
-            name={name}
-            rules={{ required: t("fieldRequired") }}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel className="sr-only" htmlFor={`policy-${name}`}>
-                  {t(name === "start" ? "policyStart" : "policyEnd")}
-                </FieldLabel>
-                <Input
-                  {...field}
-                  id={`policy-${name}`}
-                  type="time"
-                  aria-invalid={fieldState.invalid}
-                />
-                <FieldError errors={[fieldState.error]} />
-              </Field>
-            )}
+        <Field data-invalid={Boolean(errors.start)}>
+          <FieldLabel className="sr-only" htmlFor="policy-start">
+            {t("policyStart")}
+          </FieldLabel>
+          <Input
+            {...form.register("start", { required: t("fieldRequired") })}
+            id="policy-start"
+            type="time"
+            aria-invalid={Boolean(errors.start)}
           />
-        ))}
+          <FieldError errors={[errors.start]} />
+        </Field>
+        <Field data-invalid={Boolean(errors.end)}>
+          <FieldLabel className="sr-only" htmlFor="policy-end">
+            {t("policyEnd")}
+          </FieldLabel>
+          <Input
+            {...form.register("end", { required: t("fieldRequired") })}
+            id="policy-end"
+            type="time"
+            aria-invalid={Boolean(errors.end)}
+          />
+          <FieldError errors={[errors.end]} />
+        </Field>
         <Button disabled={Boolean(workingKey)}>
           <Plus />
           {common("add")}
@@ -235,8 +246,14 @@ export function PolicyEditor({
   )
 }
 
-function parseTime(value: string) {
-  return value.split(":").map(Number)
+function parseTime(value: string): [number, number] {
+  const [hours, minutes] = value.split(":").map(Number)
+  return [hours, minutes]
+}
+
+function timeInMinutes(value: string) {
+  const [hours, minutes] = parseTime(value)
+  return hours * 60 + minutes
 }
 
 function formatTime([hour, minute]: number[]) {

@@ -45,11 +45,11 @@ export function useRoomAvailability({
   }, [date, fallbackError, room])
 
   useEffect(() => {
-    async function loadInitialAvailability() {
+    async function fetchCurrentAvailability() {
       await loadAvailability()
     }
 
-    void loadInitialAvailability()
+    void fetchCurrentAvailability()
     return () => {
       requestId.current += 1
     }

@@ -10,62 +10,58 @@ import { ReservationTermsDialog } from "./reservation-terms-dialog"
 
 export function ProfileStep() {
   const t = useTranslations("booking")
-  const { control } = useFormContext<ReservationFormValues>()
-  const fields = [
-    { name: "studentName" as const, label: t("name"), autoComplete: "name" },
-    {
-      name: "studentId" as const,
-      label: t("studentId"),
-      autoComplete: "off",
-      placeholder: "GJ00000000",
-    },
-    { name: "email" as const, label: t("email"), autoComplete: "email" },
-  ]
+  const { control, register, formState } =
+    useFormContext<ReservationFormValues>()
+  const { errors } = formState
+
   return (
     <StepLayout step={4} title={t("profileTitle")}>
       <div className="grid gap-5 sm:grid-cols-2">
-        {fields.map((item) => (
-          <Controller
-            key={item.name}
-            control={control}
-            name={item.name}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{item.label}</FieldLabel>
-                <Input
-                  {...field}
-                  id={field.name}
-                  type={field.name === "email" ? "email" : "text"}
-                  autoComplete={item.autoComplete}
-                  autoCapitalize={
-                    field.name === "studentId" ? "characters" : undefined
-                  }
-                  placeholder={item.placeholder}
-                  aria-invalid={fieldState.invalid}
-                />
-                <FieldError errors={[fieldState.error]} />
-              </Field>
-            )}
+        <Field data-invalid={Boolean(errors.studentName)}>
+          <FieldLabel htmlFor="studentName">{t("name")}</FieldLabel>
+          <Input
+            {...register("studentName")}
+            id="studentName"
+            autoComplete="name"
+            aria-invalid={Boolean(errors.studentName)}
           />
-        ))}
+          <FieldError errors={[errors.studentName]} />
+        </Field>
+        <Field data-invalid={Boolean(errors.studentId)}>
+          <FieldLabel htmlFor="studentId">{t("studentId")}</FieldLabel>
+          <Input
+            {...register("studentId")}
+            id="studentId"
+            autoComplete="off"
+            autoCapitalize="characters"
+            placeholder="GJ00000000"
+            aria-invalid={Boolean(errors.studentId)}
+          />
+          <FieldError errors={[errors.studentId]} />
+        </Field>
+        <Field data-invalid={Boolean(errors.email)}>
+          <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
+          <Input
+            {...register("email")}
+            id="email"
+            type="email"
+            autoComplete="email"
+            aria-invalid={Boolean(errors.email)}
+          />
+          <FieldError errors={[errors.email]} />
+        </Field>
       </div>
       <div className="mt-7">
-        <Controller
-          control={control}
-          name="reason"
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>{t("reason")}</FieldLabel>
-              <Textarea
-                {...field}
-                id={field.name}
-                rows={5}
-                aria-invalid={fieldState.invalid}
-              />
-              <FieldError errors={[fieldState.error]} />
-            </Field>
-          )}
-        />
+        <Field data-invalid={Boolean(errors.reason)}>
+          <FieldLabel htmlFor="reason">{t("reason")}</FieldLabel>
+          <Textarea
+            {...register("reason")}
+            id="reason"
+            rows={5}
+            aria-invalid={Boolean(errors.reason)}
+          />
+          <FieldError errors={[errors.reason]} />
+        </Field>
       </div>
       <div className="mt-6 border-y py-5 text-sm">
         <Controller

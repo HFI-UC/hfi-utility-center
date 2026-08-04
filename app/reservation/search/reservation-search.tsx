@@ -2,6 +2,8 @@
 
 import { useTranslations } from "next-intl"
 
+import type { Reservation } from "@/lib/api/types"
+
 import { ReservationResults } from "./reservation-results"
 import { ReservationSearchFilterForm } from "./reservation-search-filters"
 import { ReservationSearchPagination } from "./reservation-search-pagination"
@@ -38,25 +40,11 @@ export function ReservationSearch({
         filters={filters}
       />
 
-      {loading ? (
-        <p
-          className="border-b py-16 text-sm text-muted-foreground"
-          aria-live="polite"
-        >
-          {t("loading")}
-        </p>
-      ) : error ? (
-        <p className="border-b py-6 text-sm text-destructive">{error}</p>
-      ) : result.reservations.length ? (
-        <ReservationResults reservations={result.reservations} />
-      ) : (
-        <section className="border-b py-16">
-          <p className="font-medium">{t("emptyTitle")}</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {t("emptyDescription")}
-          </p>
-        </section>
-      )}
+      <SearchContent
+        loading={loading}
+        error={error}
+        reservations={result.reservations}
+      />
 
       {!loading && !error ? (
         <ReservationSearchPagination
@@ -67,5 +55,43 @@ export function ReservationSearch({
         />
       ) : null}
     </main>
+  )
+}
+
+function SearchContent({
+  loading,
+  error,
+  reservations,
+}: {
+  loading: boolean
+  error?: string
+  reservations: Reservation[]
+}) {
+  const t = useTranslations("searchPage")
+
+  if (loading) {
+    return (
+      <p
+        className="border-b py-16 text-sm text-muted-foreground"
+        aria-live="polite"
+      >
+        {t("loading")}
+      </p>
+    )
+  }
+  if (error) {
+    return <p className="border-b py-6 text-sm text-destructive">{error}</p>
+  }
+  if (reservations.length) {
+    return <ReservationResults reservations={reservations} />
+  }
+
+  return (
+    <section className="border-b py-16">
+      <p className="font-medium">{t("emptyTitle")}</p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        {t("emptyDescription")}
+      </p>
+    </section>
   )
 }

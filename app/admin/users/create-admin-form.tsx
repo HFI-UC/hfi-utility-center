@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
@@ -23,11 +23,16 @@ export function CreateAdminForm({
   const form = useForm<CreateAdminFields>({
     defaultValues: { name: "", email: "", password: "" },
   })
+  const { errors } = form.formState
+  const requiredText = {
+    validate: (value: string) => Boolean(value.trim()) || t("fieldRequired"),
+  }
 
   async function createAccount(values: CreateAdminFields) {
     const created = await mutate(
       "admin:create",
-      () => createAdmin(values.name, values.email, values.password),
+      () =>
+        createAdmin(values.name.trim(), values.email.trim(), values.password),
       t("adminCreated")
     )
     if (created) form.reset()
@@ -40,31 +45,40 @@ export function CreateAdminForm({
         className="mt-4 grid gap-3 md:grid-cols-4"
         onSubmit={form.handleSubmit(createAccount)}
       >
-        {(["name", "email", "password"] as const).map((name) => (
-          <Controller
-            key={name}
-            control={form.control}
-            name={name}
-            rules={{
-              required: t("fieldRequired"),
-              minLength: name === "password" ? 6 : undefined,
-            }}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={`new-admin-${name}`}>
-                  {t(name === "password" ? "initialPassword" : name)}
-                </FieldLabel>
-                <Input
-                  {...field}
-                  id={`new-admin-${name}`}
-                  type={inputType(name)}
-                  aria-invalid={fieldState.invalid}
-                />
-                <FieldError errors={[fieldState.error]} />
-              </Field>
-            )}
+        <Field data-invalid={Boolean(errors.name)}>
+          <FieldLabel htmlFor="new-admin-name">{t("name")}</FieldLabel>
+          <Input
+            {...form.register("name", requiredText)}
+            id="new-admin-name"
+            aria-invalid={Boolean(errors.name)}
           />
-        ))}
+          <FieldError errors={[errors.name]} />
+        </Field>
+        <Field data-invalid={Boolean(errors.email)}>
+          <FieldLabel htmlFor="new-admin-email">{t("email")}</FieldLabel>
+          <Input
+            {...form.register("email", requiredText)}
+            id="new-admin-email"
+            type="email"
+            aria-invalid={Boolean(errors.email)}
+          />
+          <FieldError errors={[errors.email]} />
+        </Field>
+        <Field data-invalid={Boolean(errors.password)}>
+          <FieldLabel htmlFor="new-admin-password">
+            {t("initialPassword")}
+          </FieldLabel>
+          <Input
+            {...form.register("password", {
+              ...requiredText,
+              minLength: { value: 6, message: t("newPassword") },
+            })}
+            id="new-admin-password"
+            type="password"
+            aria-invalid={Boolean(errors.password)}
+          />
+          <FieldError errors={[errors.password]} />
+        </Field>
         <Button className="self-end" disabled={Boolean(workingKey)}>
           <Plus />
           {t("addAccount")}
@@ -72,10 +86,4 @@ export function CreateAdminForm({
       </form>
     </section>
   )
-}
-
-function inputType(name: keyof CreateAdminFields) {
-  if (name === "password") return "password"
-  if (name === "email") return "email"
-  return "text"
 }

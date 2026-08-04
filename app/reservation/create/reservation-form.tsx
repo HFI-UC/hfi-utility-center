@@ -246,18 +246,13 @@ export function ReservationForm() {
                   </Button>
                 </PaginationItem>
                 <PaginationItem>
-                  {currentStep.id !== "review" ? (
-                    <Button type="submit" disabled={isWorking}>
-                      {isWorking ? <Spinner /> : null}
-                      {common("next")}
-                      <ArrowRight />
-                    </Button>
-                  ) : (
-                    <Button type="submit" disabled={isWorking}>
-                      {isWorking ? <Spinner /> : null}
-                      {t("confirmReservation")}
-                    </Button>
-                  )}
+                  <Button type="submit" disabled={isWorking}>
+                    {isWorking ? <Spinner /> : null}
+                    {currentStep.id === "review"
+                      ? t("confirmReservation")
+                      : common("next")}
+                    {currentStep.id !== "review" ? <ArrowRight /> : null}
+                  </Button>
                 </PaginationItem>
               </PaginationContent>
             </Pagination>

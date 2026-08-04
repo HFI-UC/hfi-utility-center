@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import { LogIn } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 
 import { Turnstile } from "@/components/turnstile"
 import { Button } from "@/components/ui/button"
@@ -28,6 +28,7 @@ export function AdminLoginForm({
   const form = useForm<LoginFields>({
     defaultValues: { email: "", password: "" },
   })
+  const { errors } = form.formState
   const [turnstileToken, setTurnstileToken] = useState("")
   const [error, setError] = useState<string>()
   const handleToken = useCallback(
@@ -85,27 +86,30 @@ export function AdminLoginForm({
         onSubmit={form.handleSubmit(submit)}
         className="space-y-5 pt-10 lg:pt-0 lg:pl-14"
       >
-        {(["email", "password"] as const).map((name) => (
-          <Controller
-            key={name}
-            control={form.control}
-            name={name}
-            rules={{ required: t(`${name}Required`) }}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t(name)}</FieldLabel>
-                <Input
-                  {...field}
-                  id={field.name}
-                  type={name}
-                  autoComplete={name === "email" ? "email" : "current-password"}
-                  aria-invalid={fieldState.invalid}
-                />
-                <FieldError errors={[fieldState.error]} />
-              </Field>
-            )}
+        <Field data-invalid={Boolean(errors.email)}>
+          <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
+          <Input
+            {...form.register("email", { required: t("emailRequired") })}
+            id="email"
+            type="email"
+            autoComplete="email"
+            aria-invalid={Boolean(errors.email)}
           />
-        ))}
+          <FieldError errors={[errors.email]} />
+        </Field>
+        <Field data-invalid={Boolean(errors.password)}>
+          <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
+          <Input
+            {...form.register("password", {
+              required: t("passwordRequired"),
+            })}
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            aria-invalid={Boolean(errors.password)}
+          />
+          <FieldError errors={[errors.password]} />
+        </Field>
         <Turnstile onToken={handleToken} />
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
         <Button

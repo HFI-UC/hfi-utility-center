@@ -1,7 +1,10 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
+import { RefreshCw } from "lucide-react"
 import { useTranslations } from "next-intl"
+
+import { Button } from "@/components/ui/button"
 
 declare global {
   interface Window {
@@ -39,6 +42,7 @@ function loadTurnstileScript() {
       "error",
       () => {
         turnstileScriptRequest = undefined
+        script.remove()
         reject(new Error("Unable to load Turnstile"))
       },
       { once: true }
@@ -58,6 +62,8 @@ function loadTurnstileScript() {
 export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
   const t = useTranslations("admin")
   const ref = useRef<HTMLDivElement>(null)
+  const [loadFailed, setLoadFailed] = useState(false)
+  const [loadAttempt, setLoadAttempt] = useState(0)
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
   useEffect(() => {
@@ -67,9 +73,11 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
     let widgetId: string | undefined
 
     async function renderWidget() {
+      setLoadFailed(false)
       try {
         await loadTurnstileScript()
       } catch {
+        if (active) setLoadFailed(true)
         return
       }
       if (!active || !window.turnstile || !ref.current) return
@@ -86,7 +94,7 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
       active = false
       if (widgetId && window.turnstile) window.turnstile.remove(widgetId)
     }
-  }, [onToken, siteKey])
+  }, [loadAttempt, onToken, siteKey])
 
   if (!siteKey)
     return (
@@ -94,5 +102,22 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
         {t("turnstileMissing")}
       </p>
     )
+  if (loadFailed) {
+    return (
+      <div className="flex items-center justify-between gap-3 border-y py-3">
+        <p className="text-sm text-destructive">{t("turnstileLoadFailed")}</p>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => setLoadAttempt((attempt) => attempt + 1)}
+        >
+          <RefreshCw />
+          {t("retryVerification")}
+        </Button>
+      </div>
+    )
+  }
+
   return <div ref={ref} className="min-h-16" />
 }

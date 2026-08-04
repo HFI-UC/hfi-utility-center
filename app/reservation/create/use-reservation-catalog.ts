@@ -27,11 +27,11 @@ export function useReservationCatalog(fallbackError: string) {
   }, [fallbackError])
 
   useEffect(() => {
-    async function loadInitialCatalog() {
+    async function fetchInitialCatalog() {
       await loadCatalog()
     }
 
-    void loadInitialCatalog()
+    void fetchInitialCatalog()
     return () => {
       requestId.current += 1
     }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useId, useState } from "react"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -39,6 +39,7 @@ export function TextActionDialog({
   const [open, setOpen] = useState(false)
   const inputId = useId()
   const form = useForm({ defaultValues: { value: initialValue } })
+  const valueError = form.formState.errors.value
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen)
@@ -46,7 +47,8 @@ export function TextActionDialog({
   }
 
   async function saveValue({ value }: { value: string }) {
-    const saved = await onSave(value.trim())
+    const submittedValue = inputType === "password" ? value : value.trim()
+    const saved = await onSave(submittedValue)
     if (saved !== false) setOpen(false)
   }
 
@@ -59,30 +61,23 @@ export function TextActionDialog({
           <DialogDescription>{label}</DialogDescription>
         </DialogHeader>
         <form className="space-y-5" onSubmit={form.handleSubmit(saveValue)}>
-          <Controller
-            control={form.control}
-            name="value"
-            rules={{
-              required: label,
-              minLength: {
-                value: inputType === "password" ? 6 : 1,
-                message: label,
-              },
-            }}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
-                <Input
-                  {...field}
-                  id={inputId}
-                  type={inputType}
-                  autoFocus
-                  aria-invalid={fieldState.invalid}
-                />
-                <FieldError errors={[fieldState.error]} />
-              </Field>
-            )}
-          />
+          <Field data-invalid={Boolean(valueError)}>
+            <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
+            <Input
+              {...form.register("value", {
+                validate: (value) => Boolean(value.trim()) || label,
+                minLength: {
+                  value: inputType === "password" ? 6 : 1,
+                  message: label,
+                },
+              })}
+              id={inputId}
+              type={inputType}
+              autoFocus
+              aria-invalid={Boolean(valueError)}
+            />
+            <FieldError errors={[valueError]} />
+          </Field>
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
