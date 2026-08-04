@@ -1,14 +1,12 @@
 "use client"
 
 import { Building2, CalendarClock, LogOut, Users } from "lucide-react"
-import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { useAdminSession } from "@/lib/api/admin-hooks"
 import { logout } from "@/lib/api/auth"
-import { cn } from "@/lib/utils"
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -65,20 +63,17 @@ function AuthenticatedAdminShell({
           {navigationItems.map((item) => {
             const active = pathname === item.href
             return (
-              <Link
+              <Button
                 key={item.href}
-                href={item.href}
+                type="button"
                 aria-current={active ? "page" : undefined}
-                className={cn(
-                  buttonVariants({
-                    variant: active ? "secondary" : "ghost",
-                  }),
-                  "w-full justify-start"
-                )}
+                variant={active ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => router.push(item.href)}
               >
                 <item.icon />
                 {item.label}
-              </Link>
+              </Button>
             )
           })}
         </nav>

@@ -1,16 +1,16 @@
 "use client"
 
 import { CalendarPlus, Languages, List, Moon, Sun } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 import { useTheme } from "next-themes"
 
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export function Navbar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
   const t = useTranslations("nav")
   const { resolvedTheme, setTheme } = useTheme()
   const navigationLinks = [
@@ -28,17 +28,16 @@ export function Navbar({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="mx-auto flex min-h-16 max-w-[96rem] items-center justify-between gap-4 px-4 py-2 sm:px-8">
-          <Link
-            href="/"
-            className={buttonVariants({
-              variant: "ghost",
-              size: "sm",
-              className: "shrink-0 px-2 font-semibold",
-            })}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="shrink-0 px-2 font-semibold"
+            onClick={() => router.push("/")}
           >
             <span className="sm:hidden">HFI UC</span>
             <span className="hidden sm:inline">HFI Utility Center</span>
-          </Link>
+          </Button>
           <nav className="flex min-w-0 items-center gap-1">
             {navigationLinks.map((item) => {
               const active =
@@ -46,16 +45,15 @@ export function Navbar({ children }: { children: React.ReactNode }) {
                   ? pathname === "/"
                   : pathname.startsWith(item.href)
               return (
-                <Link
+                <Button
                   key={item.href}
-                  href={item.href}
+                  type="button"
                   aria-current={active ? "page" : undefined}
                   title={item.label}
+                  variant={active ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => router.push(item.href)}
                   className={cn(
-                    buttonVariants({
-                      variant: active ? "secondary" : "ghost",
-                      size: "sm",
-                    }),
                     item.className,
                     item.icon && "w-8 px-0 sm:w-auto sm:px-2.5"
                   )}
@@ -64,7 +62,7 @@ export function Navbar({ children }: { children: React.ReactNode }) {
                   <span className={item.icon ? "hidden sm:inline" : undefined}>
                     {item.label}
                   </span>
-                </Link>
+                </Button>
               )
             })}
             <span className="mx-1 hidden h-5 border-l sm:block" aria-hidden />
