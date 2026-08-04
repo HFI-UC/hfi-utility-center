@@ -132,7 +132,7 @@ export function ReservationForm() {
         endTime: values.endTime,
       })
       setResult({
-        reservationId: response.data?.reservationId,
+        reservationId: response?.reservationId,
       })
     } catch (error) {
       setFlowError(getErrorMessage(error, t("submitError")))

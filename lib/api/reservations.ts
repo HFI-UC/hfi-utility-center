@@ -1,9 +1,10 @@
-import { apiRequest, jsonBody, requireData } from "@/lib/api/client"
+import { api } from "@/lib/api/client"
 import { getRooms } from "@/lib/api/catalog"
 import { inputValueToTimestamp } from "@/lib/date-time"
 import { buildLegacyAvailability } from "@/lib/reservations/availability"
 import type {
   Reservation,
+  ApiResponse,
   ReservationPage,
   ReservationStatus,
   Room,
@@ -47,11 +48,13 @@ export async function getAvailability(
   return buildLegacyAvailability(room, date, reservations)
 }
 
-export const createReservation = (input: CreateReservationInput) =>
-  apiRequest<{ reservationId: number }>("/reservation/create", {
-    method: "POST",
-    ...jsonBody(input),
-  })
+export async function createReservation(input: CreateReservationInput) {
+  const response = await api.post<ApiResponse<{ reservationId: number }>>(
+    "/reservation/create",
+    input
+  )
+  return response.data.data
+}
 
 export async function getReservations(params: {
   keyword?: string
@@ -68,23 +71,21 @@ export async function getReservations(params: {
   query.set("page", String(params.page ?? 0))
   if (params.startTime) query.set("startTime", String(params.startTime))
   if (params.endTime) query.set("endTime", String(params.endTime))
-  const response = await apiRequest<ReservationPage>(
+  const response = await api.get<ApiResponse<ReservationPage>>(
     `/reservation/get?${query}`
   )
-  return requireData(response, "Reservation data is missing")
+  return response.data.data ?? { reservations: [], total: 0 }
 }
 
 export const getFutureReservations = async () => {
-  const response = await apiRequest<Reservation[]>("/reservation/future")
-  return response.data ?? []
+  const response = await api.get<ApiResponse<Reservation[]>>(
+    "/reservation/future"
+  )
+  return response.data.data ?? []
 }
 
 export const updateReservationApproval = (
   id: number,
   approved: boolean,
   reason?: string
-) =>
-  apiRequest("/reservation/approval", {
-    method: "POST",
-    ...jsonBody({ id, approved, reason: reason || null }),
-  })
+) => api.post("/reservation/approval", { id, approved, reason: reason || null })

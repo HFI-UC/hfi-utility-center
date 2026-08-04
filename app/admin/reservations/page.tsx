@@ -4,12 +4,12 @@ import { useMemo, useState } from "react"
 import { Check, Download, RefreshCw, Search, X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
-import { AdminPageHeader } from "@/components/admin-page-header"
+import { AdminPageHeader } from "@/app/admin/admin-shell"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { useAdminResource } from "@/features/admin/use-admin-resource"
+import { useAdminResource } from "@/lib/api/admin-hooks"
 import {
   getFutureReservations,
   updateReservationApproval,
@@ -127,12 +127,13 @@ export default function AdminReservationsPage() {
               <RefreshCw />
               {common("refresh")}
             </Button>
-            <Button variant="outline" asChild>
-              <Link href={backendHref("/reservation/export")}>
-                <Download />
-                {t("exportReservations")}
-              </Link>
-            </Button>
+            <Link
+              href={backendHref("/reservation/export")}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              <Download />
+              {t("exportReservations")}
+            </Link>
           </>
         }
       />

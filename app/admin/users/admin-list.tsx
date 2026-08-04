@@ -3,9 +3,20 @@
 import { KeyRound, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 
-import { ConfirmAction, TextActionDialog } from "@/components/action-dialogs"
+import { TextActionDialog } from "@/app/admin/text-action-dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import type { AdminMutation } from "@/features/admin/use-admin-mutation"
+import type { AdminMutation } from "@/lib/api/admin-hooks"
 import { changeAdminPassword, deleteAdmin } from "@/lib/api/admins"
 import type { Admin } from "@/lib/api/types"
 
@@ -68,28 +79,41 @@ export function AdminList({
                   {t("changePassword")}
                 </Button>
               </TextActionDialog>
-              <ConfirmAction
-                title={common("delete")}
-                description={t("confirmDelete", { name: admin.name })}
-                cancelLabel={common("cancel")}
-                confirmLabel={common("delete")}
-                onConfirm={() =>
-                  mutate(
-                    deleteKey,
-                    () => deleteAdmin(admin.id),
-                    t("adminDeleted")
-                  )
-                }
-              >
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  disabled={Boolean(workingKey)}
-                >
-                  <Trash2 />
-                  {common("delete")}
-                </Button>
-              </ConfirmAction>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={Boolean(workingKey)}
+                  >
+                    <Trash2 />
+                    {common("delete")}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{common("delete")}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t("confirmDelete", { name: admin.name })}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
+                    <AlertDialogAction
+                      variant="destructive"
+                      onClick={() =>
+                        void mutate(
+                          deleteKey,
+                          () => deleteAdmin(admin.id),
+                          t("adminDeleted")
+                        )
+                      }
+                    >
+                      {common("delete")}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </article>
         )

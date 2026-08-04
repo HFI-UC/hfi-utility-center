@@ -1,4 +1,4 @@
-import { AdminShell } from "@/components/admin-shell"
+import { AdminShell } from "@/app/admin/admin-shell"
 
 export default function AdminLayout({
   children,

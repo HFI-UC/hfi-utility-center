@@ -1,6 +1,6 @@
 import { CheckCircle2 } from "lucide-react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { useTranslations } from "next-intl"
 
 export function SuccessStep({
@@ -24,15 +24,15 @@ export function SuccessStep({
         {t("successDescription")}
       </p>
       <div className="mt-8 flex flex-wrap gap-2">
-        <Button asChild>
-          <Link href="/reservation/search">{t("viewReservations")}</Link>
-        </Button>
+        <Link href="/reservation/search" className={buttonVariants()}>
+          {t("viewReservations")}
+        </Link>
         <Button type="button" variant="outline" onClick={onReset}>
           {t("bookAgain")}
         </Button>
-        <Button type="button" variant="ghost" asChild>
-          <Link href="/">{t("home")}</Link>
-        </Button>
+        <Link href="/" className={buttonVariants({ variant: "ghost" })}>
+          {t("home")}
+        </Link>
       </div>
     </section>
   )

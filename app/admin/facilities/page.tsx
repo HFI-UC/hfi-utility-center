@@ -3,10 +3,9 @@
 import { RefreshCw } from "lucide-react"
 import { useTranslations } from "next-intl"
 
-import { AdminPageHeader } from "@/components/admin-page-header"
+import { AdminPageHeader } from "@/app/admin/admin-shell"
 import { Button } from "@/components/ui/button"
-import { useAdminMutation } from "@/features/admin/use-admin-mutation"
-import { useAdminResource } from "@/features/admin/use-admin-resource"
+import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import { getAdmins } from "@/lib/api/admins"
 import { getCampuses, getClasses, getRooms } from "@/lib/api/catalog"
 import type { Admin, Campus, Room, SchoolClass } from "@/lib/api/types"
@@ -49,13 +48,13 @@ export default function AdminFacilitiesPage() {
     initialData: emptyFacilityData,
     fallbackError: t("facilitiesLoadError"),
   })
-  const { runMutation, workingKey } = useAdminMutation({
+  const { mutate, workingKey } = useAdminMutation({
     reload: facilityResource.reload,
     reportError: facilityResource.reportError,
     fallbackError: common("unknown"),
   })
   const { campuses, classes, rooms, admins } = facilityResource.data
-  const editorActions = { mutate: runMutation, workingKey }
+  const editorActions = { mutate, workingKey }
 
   return (
     <main>

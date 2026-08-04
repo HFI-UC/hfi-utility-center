@@ -7,7 +7,7 @@ import { Controller, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import type { AdminMutation } from "@/features/admin/use-admin-mutation"
+import type { AdminMutation } from "@/lib/api/admin-hooks"
 import { createAdmin } from "@/lib/api/admins"
 
 type CreateAdminFields = { name: string; email: string; password: string }

@@ -3,10 +3,9 @@
 import { RefreshCw } from "lucide-react"
 import { useTranslations } from "next-intl"
 
-import { AdminPageHeader } from "@/components/admin-page-header"
+import { AdminPageHeader } from "@/app/admin/admin-shell"
 import { Button } from "@/components/ui/button"
-import { useAdminMutation } from "@/features/admin/use-admin-mutation"
-import { useAdminResource } from "@/features/admin/use-admin-resource"
+import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import { getAdmins } from "@/lib/api/admins"
 import type { Admin } from "@/lib/api/types"
 
@@ -21,7 +20,7 @@ export default function AdminUsersPage() {
     initialData: [],
     fallbackError: t("usersLoadError"),
   })
-  const { runMutation, workingKey, notice } = useAdminMutation({
+  const { mutate, workingKey, notice } = useAdminMutation({
     reload: adminResource.reload,
     reportError: adminResource.reportError,
     fallbackError: common("unknown"),
@@ -43,7 +42,7 @@ export default function AdminUsersPage() {
           </Button>
         }
       />
-      <CreateAdminForm mutate={runMutation} workingKey={workingKey} />
+      <CreateAdminForm mutate={mutate} workingKey={workingKey} />
       {adminResource.error ? (
         <p className="border-b py-3 text-sm text-destructive">
           {adminResource.error}
@@ -54,7 +53,7 @@ export default function AdminUsersPage() {
       ) : null}
       <AdminList
         admins={adminResource.data}
-        mutate={runMutation}
+        mutate={mutate}
         workingKey={workingKey}
       />
     </main>

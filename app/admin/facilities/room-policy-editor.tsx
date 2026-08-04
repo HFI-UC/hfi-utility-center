@@ -4,7 +4,17 @@ import { Plus, Power, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm } from "react-hook-form"
 
-import { ConfirmAction } from "@/components/action-dialogs"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -15,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { AdminMutation } from "@/features/admin/use-admin-mutation"
+import type { AdminMutation } from "@/lib/api/admin-hooks"
 import { createPolicy, deletePolicy, togglePolicy } from "@/lib/api/catalog"
 import type { Room } from "@/lib/api/types"
 
@@ -180,26 +190,41 @@ export function PolicyEditor({
                   >
                     <Power />
                   </Button>
-                  <ConfirmAction
-                    title={t("deletePolicy")}
-                    description={t("confirmDelete", {
-                      name: t("roomPolicies"),
-                    })}
-                    cancelLabel={common("cancel")}
-                    confirmLabel={common("delete")}
-                    onConfirm={() =>
-                      mutate(deleteKey, () => deletePolicy(policy.id))
-                    }
-                  >
-                    <Button
-                      size="icon-sm"
-                      variant="ghost"
-                      title={t("deletePolicy")}
-                      disabled={Boolean(workingKey)}
-                    >
-                      <Trash2 />
-                    </Button>
-                  </ConfirmAction>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        title={t("deletePolicy")}
+                        disabled={Boolean(workingKey)}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t("deletePolicy")}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t("confirmDelete", { name: t("roomPolicies") })}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>
+                          {common("cancel")}
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          variant="destructive"
+                          onClick={() =>
+                            void mutate(deleteKey, () =>
+                              deletePolicy(policy.id)
+                            )
+                          }
+                        >
+                          {common("delete")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             )

@@ -1,9 +1,19 @@
 import { Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 
-import { ConfirmAction } from "@/components/action-dialogs"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import type { AdminMutation } from "@/features/admin/use-admin-mutation"
+import type { AdminMutation } from "@/lib/api/admin-hooks"
 
 export type FacilityEditorActions = {
   mutate: AdminMutation
@@ -25,22 +35,35 @@ export function ConfirmFacilityDelete({
   const common = useTranslations("common")
 
   return (
-    <ConfirmAction
-      title={common("delete")}
-      description={t("confirmDelete", { name: label })}
-      cancelLabel={common("cancel")}
-      confirmLabel={common("delete")}
-      onConfirm={() => mutate(mutationKey, action)}
-    >
-      <Button
-        type="button"
-        size="icon-sm"
-        variant="ghost"
-        title={`${common("delete")} ${label}`}
-        disabled={Boolean(workingKey)}
-      >
-        <Trash2 />
-      </Button>
-    </ConfirmAction>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button
+          type="button"
+          size="icon-sm"
+          variant="ghost"
+          title={`${common("delete")} ${label}`}
+          disabled={Boolean(workingKey)}
+        >
+          <Trash2 />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{common("delete")}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t("confirmDelete", { name: label })}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            onClick={() => void mutate(mutationKey, action)}
+          >
+            {common("delete")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

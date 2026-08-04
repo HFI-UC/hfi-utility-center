@@ -1,25 +1,18 @@
-import { apiRequest, jsonBody } from "@/lib/api/client"
+import { api } from "@/lib/api/client"
 
 export const loginWithPassword = (
   email: string,
   password: string,
   turnstileToken: string
-) =>
-  apiRequest("/admin/login", {
-    method: "POST",
-    ...jsonBody({ email, password, token: null, turnstileToken }),
-  })
+) => api.post("/admin/login", { email, password, token: null, turnstileToken })
 
 export const loginWithToken = (token: string) =>
-  apiRequest("/admin/login", {
-    method: "POST",
-    ...jsonBody({
-      email: null,
-      password: null,
-      token,
-      turnstileToken: null,
-    }),
+  api.post("/admin/login", {
+    email: null,
+    password: null,
+    token,
+    turnstileToken: null,
   })
 
-export const checkLogin = () => apiRequest("/admin/check-login")
-export const logout = () => apiRequest("/admin/logout")
+export const checkLogin = () => api.get("/admin/check-login")
+export const logout = () => api.get("/admin/logout")

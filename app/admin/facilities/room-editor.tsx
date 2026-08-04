@@ -4,7 +4,7 @@ import { Pencil, Plus, Power } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm, type Control } from "react-hook-form"
 
-import { TextActionDialog } from "@/components/action-dialogs"
+import { TextActionDialog } from "@/app/admin/text-action-dialog"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"

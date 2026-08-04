@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import type { AdminMutation } from "@/features/admin/use-admin-mutation"
+import type { AdminMutation } from "@/lib/api/admin-hooks"
 import { editAdmin } from "@/lib/api/admins"
 import type { Admin } from "@/lib/api/types"
 

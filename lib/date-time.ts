@@ -1,8 +1,4 @@
 const DATE_VALUE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
-const DATE_TIME_VALUE_PATTERN =
-  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?$/
-const HONG_KONG_OFFSET_SECONDS = 8 * 60 * 60
-
 export const APP_TIME_ZONE = "Asia/Hong_Kong"
 
 export function dateToInputValue(date: Date) {
@@ -27,19 +23,9 @@ export function inputValueToDate(value: string) {
 
 export function inputValueToTimestamp(value: string, endOfDay = false) {
   if (!DATE_VALUE_PATTERN.test(value)) return undefined
-  const [year, month, day] = value.split("-").map(Number)
   if (!inputValueToDate(value)) return undefined
-
-  const utcSeconds =
-    Date.UTC(
-      year,
-      month - 1,
-      day,
-      endOfDay ? 23 : 0,
-      endOfDay ? 59 : 0,
-      endOfDay ? 59 : 0
-    ) / 1000
-  return utcSeconds - HONG_KONG_OFFSET_SECONDS
+  const time = endOfDay ? "23:59:59" : "00:00:00"
+  return new Date(`${value}T${time}+08:00`).getTime() / 1000
 }
 
 export function timeOnInputDateTimestamp(
@@ -58,35 +44,7 @@ export function weekdayFromInputValue(value: string) {
 }
 
 export function backendDateTimeToDate(value: string) {
-  const match = DATE_TIME_VALUE_PATTERN.exec(value)
-  if (!match) return new Date(value)
-
-  const [, year, month, day, hour, minute, second = "0"] = match
-  const parts = [year, month, day, hour, minute, second].map(Number)
-  const [numericYear, numericMonth, numericDay, numericHour, numericMinute] =
-    parts
-  const numericSecond = parts[5]
-  const utcValue = Date.UTC(
-    numericYear,
-    numericMonth - 1,
-    numericDay,
-    numericHour,
-    numericMinute,
-    numericSecond
-  )
-  const normalized = new Date(utcValue)
-  const isValid =
-    normalized.getUTCFullYear() === numericYear &&
-    normalized.getUTCMonth() === numericMonth - 1 &&
-    normalized.getUTCDate() === numericDay &&
-    normalized.getUTCHours() === numericHour &&
-    normalized.getUTCMinutes() === numericMinute &&
-    normalized.getUTCSeconds() === numericSecond
-
-  if (!isValid) return new Date(Number.NaN)
-
-  const timestamp = utcValue - HONG_KONG_OFFSET_SECONDS * 1000
-  return new Date(timestamp)
+  return new Date(value)
 }
 
 export function createAppDateTimeFormatter(

@@ -2,19 +2,8 @@
 
 import { useId, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
+
 import { Button } from "@/components/ui/button"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import {
   Dialog,
   DialogClose,
@@ -25,61 +14,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-
-export function ConfirmAction({
-  children,
-  title,
-  description,
-  cancelLabel,
-  confirmLabel,
-  onConfirm,
-}: {
-  children: React.ReactNode
-  title: string
-  description: string
-  cancelLabel: string
-  confirmLabel: string
-  onConfirm: () => Promise<unknown> | void
-}) {
-  const [open, setOpen] = useState(false)
-  const [confirming, setConfirming] = useState(false)
-
-  async function handleConfirm() {
-    setConfirming(true)
-    try {
-      const confirmed = await onConfirm()
-      if (confirmed !== false) setOpen(false)
-    } finally {
-      setConfirming(false)
-    }
-  }
-
-  return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
-          <AlertDialogAction
-            variant="destructive"
-            disabled={confirming}
-            onClick={(event) => {
-              event.preventDefault()
-              void handleConfirm()
-            }}
-          >
-            {confirmLabel}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  )
-}
 
 export function TextActionDialog({
   children,
@@ -102,13 +38,16 @@ export function TextActionDialog({
 }) {
   const [open, setOpen] = useState(false)
   const inputId = useId()
-  const form = useForm<{ value: string }>({
-    defaultValues: { value: initialValue },
-  })
+  const form = useForm({ defaultValues: { value: initialValue } })
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen)
     if (nextOpen) form.reset({ value: initialValue })
+  }
+
+  async function saveValue({ value }: { value: string }) {
+    const saved = await onSave(value.trim())
+    if (saved !== false) setOpen(false)
   }
 
   return (
@@ -119,13 +58,7 @@ export function TextActionDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{label}</DialogDescription>
         </DialogHeader>
-        <form
-          className="space-y-5"
-          onSubmit={form.handleSubmit(async ({ value }) => {
-            const saved = await onSave(value.trim())
-            if (saved !== false) setOpen(false)
-          })}
-        >
+        <form className="space-y-5" onSubmit={form.handleSubmit(saveValue)}>
           <Controller
             control={form.control}
             name="value"

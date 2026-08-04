@@ -4,7 +4,17 @@ import { Bell, BellOff, Plus, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm } from "react-hook-form"
 
-import { ConfirmAction } from "@/components/action-dialogs"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError } from "@/components/ui/field"
 import {
@@ -14,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { AdminMutation } from "@/features/admin/use-admin-mutation"
+import type { AdminMutation } from "@/lib/api/admin-hooks"
 import {
   createApprover,
   deleteApprover,
@@ -158,24 +168,43 @@ export function ApproverEditor({
                   >
                     {approver.notificationsEnabled ? <Bell /> : <BellOff />}
                   </Button>
-                  <ConfirmAction
-                    title={t("removeApprover")}
-                    description={t("confirmDelete", { name: adminName })}
-                    cancelLabel={common("cancel")}
-                    confirmLabel={common("delete")}
-                    onConfirm={() =>
-                      mutate(deleteKey, () => deleteApprover(approver.id))
-                    }
-                  >
-                    <Button
-                      size="icon-sm"
-                      variant="ghost"
-                      title={t("removeApprover")}
-                      disabled={Boolean(workingKey)}
-                    >
-                      <Trash2 />
-                    </Button>
-                  </ConfirmAction>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        title={t("removeApprover")}
+                        disabled={Boolean(workingKey)}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          {t("removeApprover")}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t("confirmDelete", { name: adminName })}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>
+                          {common("cancel")}
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          variant="destructive"
+                          onClick={() =>
+                            void mutate(deleteKey, () =>
+                              deleteApprover(approver.id)
+                            )
+                          }
+                        >
+                          {common("delete")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             )

@@ -1,4 +1,4 @@
-import axios, { type AxiosRequestConfig } from "axios"
+import axios from "axios"
 import { createTranslator } from "next-intl"
 
 import enMessages from "@/messages/en-US.json"
@@ -13,7 +13,7 @@ const messages = {
 
 type ApiErrorKey = keyof (typeof enMessages)["apiErrors"]
 
-const api = axios.create({
+export const api = axios.create({
   withCredentials: true,
   validateStatus: () => true,
   xsrfCookieName: "_csrf",
@@ -27,12 +27,28 @@ function apiBaseUrl() {
 }
 
 api.interceptors.request.use(async (config) => {
+  config.baseURL ??= apiBaseUrl()
   const method = config.method?.toUpperCase()
   if (method && ["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
     await api.get("/_csrf", { baseURL: apiBaseUrl() })
   }
   return config
 })
+
+api.interceptors.response.use(
+  (response) => {
+    const payload = response.data as ApiResponse
+    if (response.status < 200 || response.status >= 300 || !payload?.success) {
+      throw new ApiError(
+        localizedError(response.status, payload?.code),
+        response.status,
+        payload?.code
+      )
+    }
+    return response
+  },
+  () => Promise.reject(new ApiError(localizedError(0), 0))
+)
 
 function errorKeyFromCode(code?: string): ApiErrorKey | undefined {
   switch (code) {
@@ -103,42 +119,6 @@ export function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof ApiError ? error.message : fallback
 }
 
-export async function apiRequest<T>(
-  path: string,
-  init: AxiosRequestConfig = {}
-): Promise<ApiResponse<T>> {
-  try {
-    const response = await api.request<ApiResponse<T>>({
-      ...init,
-      baseURL: apiBaseUrl(),
-      url: path,
-    })
-    const payload = response.data
-    if (response.status < 200 || response.status >= 300 || !payload?.success) {
-      throw new ApiError(
-        localizedError(response.status, payload?.code),
-        response.status,
-        payload?.code
-      )
-    }
-    return payload
-  } catch (error) {
-    if (error instanceof ApiError) throw error
-    throw new ApiError(localizedError(0), 0)
-  }
-}
-
-export function requireData<T>(response: ApiResponse<T>, message: string): T {
-  if (response.data === undefined) throw new Error(message)
-  return response.data
-}
-
-export function jsonBody(value: unknown): Pick<AxiosRequestConfig, "data"> {
-  return { data: value }
-}
-
 export function backendHref(path: string) {
   return `/api/backend${path}`
 }
-
-export { api }
