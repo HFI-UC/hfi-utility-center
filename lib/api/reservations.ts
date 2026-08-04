@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api/client"
+import { api } from "@/lib/api/client"
 import { getRooms } from "@/lib/api/catalog"
 import { inputValueToTimestamp } from "@/lib/date-time"
 import { buildLegacyAvailability } from "@/lib/reservations/availability"
@@ -48,10 +48,10 @@ export async function getAvailability(
 }
 
 export async function createReservation(input: CreateReservationInput) {
-  return apiClient.postForData<
-    { reservationId: number },
-    CreateReservationInput
-  >("/reservation/create", input)
+  return api.postForData<{ reservationId: number }, CreateReservationInput>(
+    "/reservation/create",
+    input
+  )
 }
 
 export async function getReservations(params: {
@@ -62,20 +62,20 @@ export async function getReservations(params: {
   startTime?: number
   endTime?: number
 }) {
-  return apiClient.get<ReservationPage>("/reservation/get", {
+  return api.get<ReservationPage>("/reservation/get", {
     params: { ...params, page: params.page ?? 0 },
   })
 }
 
 export const getFutureReservations = () =>
-  apiClient.get<Reservation[]>("/reservation/future")
+  api.get<Reservation[]>("/reservation/future")
 
 export const updateReservationApproval = (
   id: number,
   approved: boolean,
   reason?: string
 ) =>
-  apiClient.post("/reservation/approval", {
+  api.post("/reservation/approval", {
     id,
     approved,
     reason: reason || null,

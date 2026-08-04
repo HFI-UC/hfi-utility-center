@@ -195,7 +195,7 @@ async function requestData<T>(
   return payload.data
 }
 
-export const apiClient = {
+export const api = {
   get<T>(path: string, options?: RequestOptions) {
     return requestData<T>("GET", path, undefined, options)
   },
