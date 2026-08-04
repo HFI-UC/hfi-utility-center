@@ -1,5 +1,4 @@
 import * as React from "react"
-import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -41,34 +40,28 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 type PaginationLinkProps = {
   isActive?: boolean
 } & Pick<React.ComponentProps<typeof Button>, "size"> &
-  React.ComponentProps<typeof Link>
+  React.ComponentProps<"a">
 
 function PaginationLink({
-  "aria-disabled": ariaDisabled,
   className,
-  children,
   isActive,
   size = "icon",
   ...props
 }: PaginationLinkProps) {
   return (
-    <Link
-      aria-current={isActive ? "page" : undefined}
-      aria-disabled={ariaDisabled}
-      data-slot="pagination-link"
-      data-active={isActive}
-      className={ariaDisabled ? "pointer-events-none" : undefined}
-      {...props}
+    <Button
+      asChild
+      variant={isActive ? "outline" : "ghost"}
+      size={size}
+      className={cn(className)}
     >
-      <Button
-        type="button"
-        variant={isActive ? "outline" : "ghost"}
-        size={size}
-        className={className}
-      >
-        {children}
-      </Button>
-    </Link>
+      <a
+        aria-current={isActive ? "page" : undefined}
+        data-slot="pagination-link"
+        data-active={isActive}
+        {...props}
+      />
+    </Button>
   )
 }
 
