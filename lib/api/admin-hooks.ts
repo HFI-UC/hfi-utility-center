@@ -7,8 +7,7 @@ import { checkLogin } from "@/lib/api/auth"
 import { getErrorMessage } from "@/lib/api/client"
 
 export type AdminMutation = (
-  key: string,
-  action: () => Promise<unknown>,
+  action: () => Promise<void>,
   successMessage?: string
 ) => Promise<boolean>
 
@@ -46,11 +45,11 @@ export function useAdminResource<T>({
   }, [fallbackError, loadResource])
 
   useEffect(() => {
-    async function fetchInitialResource() {
+    async function loadInitialResource() {
       await reload()
     }
 
-    void fetchInitialResource()
+    void loadInitialResource()
     return () => {
       requestId.current += 1
     }
@@ -58,7 +57,6 @@ export function useAdminResource<T>({
 
   return {
     data,
-    setData,
     loading,
     error,
     reload,
@@ -76,51 +74,39 @@ export function useAdminMutation({
   fallbackError: string
 }) {
   const mutationInProgress = useRef(false)
-  const [workingKey, setWorkingKey] = useState<string>()
+  const [working, setWorking] = useState(false)
   const [notice, setNotice] = useState<string>()
 
-  const performAction = useCallback(
-    async (action: () => Promise<unknown>) => {
-      try {
-        await action()
-        return true
-      } catch (error) {
-        reportError(getErrorMessage(error, fallbackError))
-        return false
-      }
-    },
-    [fallbackError, reportError]
-  )
-
   const mutate: AdminMutation = useCallback(
-    async (key, action, successMessage) => {
+    async (action, successMessage) => {
       if (mutationInProgress.current) return false
 
       mutationInProgress.current = true
-      setWorkingKey(key)
+      setWorking(true)
       setNotice(undefined)
       reportError(undefined)
 
       try {
-        if (!(await performAction(action))) return false
-
+        await action()
         setNotice(successMessage)
         await reload()
         return true
+      } catch (error) {
+        reportError(getErrorMessage(error, fallbackError))
+        return false
       } finally {
         mutationInProgress.current = false
-        setWorkingKey(undefined)
+        setWorking(false)
       }
     },
-    [performAction, reload, reportError]
+    [fallbackError, reload, reportError]
   )
 
-  return { mutate, workingKey, notice }
+  return { mutate, working, notice }
 }
 
 export function useAdminSession(initialPath: string) {
   const router = useRouter()
-  const [redirectPath] = useState(initialPath)
   const [status, setStatus] = useState<AdminSessionStatus>("checking")
 
   useEffect(() => {
@@ -134,7 +120,7 @@ export function useAdminSession(initialPath: string) {
         if (active) {
           setStatus("unauthenticated")
           router.replace(
-            `/admin/login?redirect=${encodeURIComponent(redirectPath)}`
+            `/admin/login?redirect=${encodeURIComponent(initialPath)}`
           )
         }
       })
@@ -142,7 +128,7 @@ export function useAdminSession(initialPath: string) {
     return () => {
       active = false
     }
-  }, [redirectPath, router])
+  }, [initialPath, router])
 
   return {
     checking: status === "checking",

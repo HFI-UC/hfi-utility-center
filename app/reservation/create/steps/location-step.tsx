@@ -3,9 +3,9 @@ import { useController, useFormContext } from "react-hook-form"
 import { ChoiceGrid } from "../choice-grid"
 import { StepLayout } from "../step-layout"
 import type { ReservationFormValues } from "../form"
-import type { BootstrapData } from "@/lib/api/types"
+import type { CatalogData } from "@/lib/api/types"
 
-export function LocationStep({ catalog }: { catalog: BootstrapData }) {
+export function LocationStep({ catalog }: { catalog: CatalogData }) {
   const t = useTranslations("booking")
   const { control, setValue } = useFormContext<ReservationFormValues>()
   const { field: campusField, fieldState: campusFieldState } = useController({

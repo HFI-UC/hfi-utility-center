@@ -26,16 +26,15 @@ type EditAdminFields = { name: string; email: string }
 export function EditAdminDialog({
   admin,
   mutate,
-  workingKey,
+  working,
 }: {
   admin: Admin
   mutate: AdminMutation
-  workingKey?: string
+  working: boolean
 }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const [open, setOpen] = useState(false)
-  const mutationKey = `admin:${admin.id}:edit`
   const form = useForm<EditAdminFields>({
     defaultValues: { name: admin.name, email: admin.email },
   })
@@ -51,7 +50,6 @@ export function EditAdminDialog({
 
   async function saveAdmin({ name, email }: EditAdminFields) {
     const saved = await mutate(
-      mutationKey,
       () => editAdmin(admin.id, name.trim(), email.trim()),
       t("adminUpdated")
     )
@@ -61,7 +59,7 @@ export function EditAdminDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" disabled={Boolean(workingKey)}>
+        <Button size="sm" variant="outline" disabled={working}>
           <Pencil />
           {common("edit")}
         </Button>
@@ -102,7 +100,7 @@ export function EditAdminDialog({
             </DialogClose>
             <Button
               type="submit"
-              disabled={form.formState.isSubmitting || Boolean(workingKey)}
+              disabled={form.formState.isSubmitting || working}
             >
               {common("save")}
             </Button>

@@ -17,19 +17,17 @@ import type { AdminMutation } from "@/lib/api/admin-hooks"
 
 export type FacilityEditorActions = {
   mutate: AdminMutation
-  workingKey?: string
+  working: boolean
 }
 
 export function ConfirmFacilityDelete({
-  mutationKey,
   label,
   action,
   mutate,
-  workingKey,
+  working,
 }: FacilityEditorActions & {
-  mutationKey: string
   label: string
-  action: () => Promise<unknown>
+  action: () => Promise<void>
 }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
@@ -42,7 +40,7 @@ export function ConfirmFacilityDelete({
           size="icon-sm"
           variant="ghost"
           title={`${common("delete")} ${label}`}
-          disabled={Boolean(workingKey)}
+          disabled={working}
         >
           <Trash2 />
         </Button>
@@ -58,7 +56,7 @@ export function ConfirmFacilityDelete({
           <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            onClick={() => void mutate(mutationKey, action)}
+            onClick={() => void mutate(action)}
           >
             {common("delete")}
           </AlertDialogAction>

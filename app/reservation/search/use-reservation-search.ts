@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 
-import { getBootstrap } from "@/lib/api/catalog"
+import { getCatalog } from "@/lib/api/catalog"
 import { getErrorMessage } from "@/lib/api/client"
 import { getReservations } from "@/lib/api/reservations"
-import type { BootstrapData, ReservationPage } from "@/lib/api/types"
+import type { CatalogData, ReservationPage } from "@/lib/api/types"
 
 import {
   reservationSearchRequest,
@@ -11,37 +11,37 @@ import {
 } from "./search-query"
 
 const emptyResult: ReservationPage = { reservations: [], total: 0 }
-let catalogRequest: Promise<BootstrapData> | undefined
-
-function getSearchCatalog() {
-  catalogRequest ??= getBootstrap().catch((error) => {
-    catalogRequest = undefined
-    throw error
-  })
-  return catalogRequest
-}
 
 export function useReservationSearch(
   filters: ReservationSearchFilters,
   fallbackError: string
 ) {
   const requestId = useRef(0)
-  const [catalog, setCatalog] = useState<BootstrapData>()
+  const [catalog, setCatalog] = useState<CatalogData>()
   const [result, setResult] = useState<ReservationPage>(emptyResult)
   const [error, setError] = useState<string>()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const currentRequest = ++requestId.current
+    let active = true
 
     async function loadCatalog() {
       try {
-        const nextCatalog = await getSearchCatalog()
-        if (requestId.current === currentRequest) setCatalog(nextCatalog)
+        const nextCatalog = await getCatalog()
+        if (active) setCatalog(nextCatalog)
       } catch {
         // Search results remain usable when room filter metadata is unavailable.
       }
     }
+
+    void loadCatalog()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    const currentRequest = ++requestId.current
 
     async function loadReservations() {
       setLoading(true)
@@ -61,7 +61,6 @@ export function useReservationSearch(
       }
     }
 
-    void loadCatalog()
     void loadReservations()
 
     return () => {

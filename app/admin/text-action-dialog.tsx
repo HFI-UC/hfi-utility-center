@@ -34,7 +34,7 @@ export function TextActionDialog({
   inputType?: "text" | "password" | "email"
   cancelLabel: string
   saveLabel: string
-  onSave: (value: string) => Promise<unknown> | void
+  onSave: (value: string) => Promise<boolean>
 }) {
   const [open, setOpen] = useState(false)
   const inputId = useId()
@@ -49,7 +49,7 @@ export function TextActionDialog({
   async function saveValue({ value }: { value: string }) {
     const submittedValue = inputType === "password" ? value : value.trim()
     const saved = await onSave(submittedValue)
-    if (saved !== false) setOpen(false)
+    if (saved) setOpen(false)
   }
 
   return (

@@ -39,11 +39,11 @@ type PolicyForm = {
 export function PolicyEditor({
   rooms,
   mutate,
-  workingKey,
+  working,
 }: {
   rooms: Room[]
   mutate: AdminMutation
-  workingKey?: string
+  working: boolean
 }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
@@ -62,7 +62,7 @@ export function PolicyEditor({
     }
     form.clearErrors("end")
 
-    const created = await mutate("policy:create", () =>
+    const created = await mutate(() =>
       createPolicy(
         Number(room),
         [Number(day)],
@@ -166,80 +166,70 @@ export function PolicyEditor({
           />
           <FieldError errors={[errors.end]} />
         </Field>
-        <Button disabled={Boolean(workingKey)}>
+        <Button disabled={working}>
           <Plus />
           {common("add")}
         </Button>
       </form>
       <div className="divide-y border-t">
         {rooms.flatMap((room) =>
-          room.policies.map((policy) => {
-            const toggleKey = `policy:${policy.id}:toggle`
-            const deleteKey = `policy:${policy.id}:delete`
-            return (
-              <div
-                key={policy.id}
-                className="flex items-center justify-between gap-4 py-3"
-              >
-                <div>
-                  <p className="text-sm font-medium">{room.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {policy.days.map((day) => weekdays[day]).join("、")} ·{" "}
-                    {formatTime(policy.startTime)}–{formatTime(policy.endTime)}{" "}
-                    · {policy.enabled ? common("enabled") : common("disabled")}
-                  </p>
-                </div>
-                <div className="flex">
-                  <Button
-                    size="icon-sm"
-                    variant="ghost"
-                    title={t("togglePolicy")}
-                    disabled={Boolean(workingKey)}
-                    onClick={() =>
-                      void mutate(toggleKey, () => togglePolicy(policy.id))
-                    }
-                  >
-                    <Power />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        size="icon-sm"
-                        variant="ghost"
-                        title={t("deletePolicy")}
-                        disabled={Boolean(workingKey)}
-                      >
-                        <Trash2 />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>{t("deletePolicy")}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t("confirmDelete", { name: t("roomPolicies") })}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>
-                          {common("cancel")}
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                          variant="destructive"
-                          onClick={() =>
-                            void mutate(deleteKey, () =>
-                              deletePolicy(policy.id)
-                            )
-                          }
-                        >
-                          {common("delete")}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+          room.policies.map((policy) => (
+            <div
+              key={policy.id}
+              className="flex items-center justify-between gap-4 py-3"
+            >
+              <div>
+                <p className="text-sm font-medium">{room.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {policy.days.map((day) => weekdays[day]).join("、")} ·{" "}
+                  {formatTime(policy.startTime)}–{formatTime(policy.endTime)} ·{" "}
+                  {policy.enabled ? common("enabled") : common("disabled")}
+                </p>
               </div>
-            )
-          })
+              <div className="flex">
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  title={t("togglePolicy")}
+                  disabled={working}
+                  onClick={() => void mutate(() => togglePolicy(policy.id))}
+                >
+                  <Power />
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      size="icon-sm"
+                      variant="ghost"
+                      title={t("deletePolicy")}
+                      disabled={working}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{t("deletePolicy")}</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t("confirmDelete", { name: t("roomPolicies") })}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
+                      <AlertDialogAction
+                        variant="destructive"
+                        onClick={() =>
+                          void mutate(() => deletePolicy(policy.id))
+                        }
+                      >
+                        {common("delete")}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </div>
+          ))
         )}
       </div>
     </section>

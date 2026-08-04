@@ -20,7 +20,7 @@ export default function AdminUsersPage() {
     initialData: [],
     fallbackError: t("usersLoadError"),
   })
-  const { mutate, workingKey, notice } = useAdminMutation({
+  const { mutate, working, notice } = useAdminMutation({
     reload: adminResource.reload,
     reportError: adminResource.reportError,
     fallbackError: common("unknown"),
@@ -42,7 +42,7 @@ export default function AdminUsersPage() {
           </Button>
         }
       />
-      <CreateAdminForm mutate={mutate} workingKey={workingKey} />
+      <CreateAdminForm mutate={mutate} working={working} />
       {adminResource.error ? (
         <p className="border-b py-3 text-sm text-destructive">
           {adminResource.error}
@@ -54,7 +54,7 @@ export default function AdminUsersPage() {
       <AdminList
         admins={adminResource.data}
         mutate={mutate}
-        workingKey={workingKey}
+        working={working}
       />
     </main>
   )

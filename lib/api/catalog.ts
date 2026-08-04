@@ -1,20 +1,13 @@
 import { api } from "@/lib/api/client"
-import type { BootstrapData, Campus, Room, SchoolClass } from "@/lib/api/types"
+import type { Campus, CatalogData, Room, SchoolClass } from "@/lib/api/types"
 
-export async function getBootstrap() {
+export async function getCatalog(): Promise<CatalogData> {
   const [campuses, classes, rooms] = await Promise.all([
     getCampuses(),
     getClasses(),
     getRooms(),
   ])
-  return {
-    schemaVersion: 1,
-    dataVersion: new Date().toISOString(),
-    generatedAt: new Date().toISOString(),
-    campuses,
-    classes,
-    rooms,
-  } satisfies BootstrapData
+  return { campuses, classes, rooms }
 }
 
 export const getCampuses = () => api.get<Campus[]>("/campus/list")

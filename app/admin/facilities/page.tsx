@@ -48,13 +48,13 @@ export default function AdminFacilitiesPage() {
     initialData: emptyFacilityData,
     fallbackError: t("facilitiesLoadError"),
   })
-  const { mutate, workingKey } = useAdminMutation({
+  const { mutate, working } = useAdminMutation({
     reload: facilityResource.reload,
     reportError: facilityResource.reportError,
     fallbackError: common("unknown"),
   })
   const { campuses, classes, rooms, admins } = facilityResource.data
-  const editorActions = { mutate, workingKey }
+  const editorActions = { mutate, working }
 
   return (
     <main>

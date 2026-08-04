@@ -19,7 +19,7 @@ import {
 export function CampusEditor({
   campuses,
   mutate,
-  workingKey,
+  working,
 }: FacilityEditorActions & { campuses: Campus[] }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
@@ -27,9 +27,7 @@ export function CampusEditor({
   const nameError = form.formState.errors.name
 
   async function createNewCampus({ name }: { name: string }) {
-    const created = await mutate("campus:create", () =>
-      createCampus(name.trim())
-    )
+    const created = await mutate(() => createCampus(name.trim()))
     if (created) form.reset()
   }
 
@@ -50,52 +48,45 @@ export function CampusEditor({
           />
           <FieldError errors={[nameError]} />
         </Field>
-        <Button disabled={Boolean(workingKey)}>
+        <Button disabled={working}>
           <Plus />
           {common("add")}
         </Button>
       </form>
       <div className="divide-y border-t">
-        {campuses.map((campus) => {
-          const editKey = `campus:${campus.id}:edit`
-          const deleteKey = `campus:${campus.id}:delete`
-          return (
-            <div
-              key={campus.id}
-              className="flex items-center justify-between gap-3 py-3"
-            >
-              <span className="text-sm font-medium">{campus.name}</span>
-              <div className="flex">
-                <TextActionDialog
+        {campuses.map((campus) => (
+          <div
+            key={campus.id}
+            className="flex items-center justify-between gap-3 py-3"
+          >
+            <span className="text-sm font-medium">{campus.name}</span>
+            <div className="flex">
+              <TextActionDialog
+                title={t("renameCampus")}
+                label={t("campusName")}
+                initialValue={campus.name}
+                cancelLabel={common("cancel")}
+                saveLabel={common("save")}
+                onSave={(name) => mutate(() => editCampus(campus.id, name))}
+              >
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
                   title={t("renameCampus")}
-                  label={t("campusName")}
-                  initialValue={campus.name}
-                  cancelLabel={common("cancel")}
-                  saveLabel={common("save")}
-                  onSave={(name) =>
-                    mutate(editKey, () => editCampus(campus.id, name))
-                  }
+                  disabled={working}
                 >
-                  <Button
-                    size="icon-sm"
-                    variant="ghost"
-                    title={t("renameCampus")}
-                    disabled={Boolean(workingKey)}
-                  >
-                    <Pencil />
-                  </Button>
-                </TextActionDialog>
-                <ConfirmFacilityDelete
-                  mutationKey={deleteKey}
-                  label={campus.name}
-                  action={() => deleteCampus(campus.id)}
-                  mutate={mutate}
-                  workingKey={workingKey}
-                />
-              </div>
+                  <Pencil />
+                </Button>
+              </TextActionDialog>
+              <ConfirmFacilityDelete
+                label={campus.name}
+                action={() => deleteCampus(campus.id)}
+                mutate={mutate}
+                working={working}
+              />
             </div>
-          )
-        })}
+          </div>
+        ))}
       </div>
     </section>
   )

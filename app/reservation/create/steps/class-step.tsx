@@ -7,9 +7,9 @@ import { Check } from "lucide-react"
 import { ChoiceGrid } from "../choice-grid"
 import { StepLayout } from "../step-layout"
 import type { ReservationFormValues } from "../form"
-import type { BootstrapData } from "@/lib/api/types"
+import type { CatalogData } from "@/lib/api/types"
 
-export function ClassStep({ catalog }: { catalog: BootstrapData }) {
+export function ClassStep({ catalog }: { catalog: CatalogData }) {
   const t = useTranslations("booking")
   const [query, setQuery] = useState("")
   const { control, setValue } = useFormContext<ReservationFormValues>()

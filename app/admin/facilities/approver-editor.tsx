@@ -38,12 +38,12 @@ export function ApproverEditor({
   rooms,
   admins,
   mutate,
-  workingKey,
+  working,
 }: {
   rooms: Room[]
   admins: Admin[]
   mutate: AdminMutation
-  workingKey?: string
+  working: boolean
 }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
@@ -53,7 +53,7 @@ export function ApproverEditor({
   const adminNames = new Map(admins.map((admin) => [admin.id, admin.name]))
 
   async function addApprover({ room, admin }: ApproverForm) {
-    const created = await mutate("approver:create", () =>
+    const created = await mutate(() =>
       createApprover(Number(room), Number(admin))
     )
     if (created) form.reset()
@@ -126,7 +126,7 @@ export function ApproverEditor({
             </Field>
           )}
         />
-        <Button disabled={Boolean(workingKey)}>
+        <Button disabled={working}>
           <Plus />
           {common("add")}
         </Button>
@@ -134,8 +134,6 @@ export function ApproverEditor({
       <div className="divide-y border-t">
         {rooms.flatMap((room) =>
           (room.approvers ?? []).map((approver) => {
-            const notificationKey = `approver:${approver.id}:notifications`
-            const deleteKey = `approver:${approver.id}:delete`
             const adminName =
               adminNames.get(approver.adminId) ??
               t("adminNumber", { id: approver.adminId })
@@ -159,9 +157,9 @@ export function ApproverEditor({
                     size="icon-sm"
                     variant="ghost"
                     title={t("toggleNotifications")}
-                    disabled={Boolean(workingKey)}
+                    disabled={working}
                     onClick={() =>
-                      void mutate(notificationKey, () =>
+                      void mutate(() =>
                         toggleApproverNotifications(approver.id)
                       )
                     }
@@ -174,7 +172,7 @@ export function ApproverEditor({
                         size="icon-sm"
                         variant="ghost"
                         title={t("removeApprover")}
-                        disabled={Boolean(workingKey)}
+                        disabled={working}
                       >
                         <Trash2 />
                       </Button>
@@ -195,9 +193,7 @@ export function ApproverEditor({
                         <AlertDialogAction
                           variant="destructive"
                           onClick={() =>
-                            void mutate(deleteKey, () =>
-                              deleteApprover(approver.id)
-                            )
+                            void mutate(() => deleteApprover(approver.id))
                           }
                         >
                           {common("delete")}

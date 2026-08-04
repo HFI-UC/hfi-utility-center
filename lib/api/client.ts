@@ -74,9 +74,10 @@ function currentLocale(): AppLocale {
 }
 
 function errorKey(status: number, code?: string): ApiErrorKey {
-  if (code && Object.prototype.hasOwnProperty.call(errorKeyByCode, code)) {
-    return errorKeyByCode[code as keyof typeof errorKeyByCode]
-  }
+  const knownKey = code
+    ? errorKeyByCode[code as keyof typeof errorKeyByCode]
+    : undefined
+  if (knownKey) return knownKey
   if (status === 0) return "network"
   if (status === 401 || status === 403) return "sessionExpired"
   if (status === 404) return "notFound"
@@ -163,7 +164,7 @@ async function request<T>(
   path: string,
   data?: unknown,
   options?: RequestOptions
-) {
+): Promise<T> {
   try {
     const response = await transport.request<ApiResponse<T>>({
       ...options,
@@ -171,33 +172,15 @@ async function request<T>(
       url: path,
       data,
     })
-    return { payload: response.data, status: response.status }
+    return response.data.data as T
   } catch (error) {
     throw normalizeError(error)
   }
 }
 
-async function requestData<T>(
-  method: "GET" | "POST",
-  path: string,
-  data?: unknown,
-  options?: RequestOptions
-) {
-  const { payload, status } = await request<T>(method, path, data, options)
-  if (payload.data == null) {
-    throw new ApiError(
-      localizedError(status, "INVALID_RESPONSE"),
-      status,
-      "INVALID_RESPONSE",
-      payload.message
-    )
-  }
-  return payload.data
-}
-
 export const api = {
   get<T>(path: string, options?: RequestOptions) {
-    return requestData<T>("GET", path, undefined, options)
+    return request<T>("GET", path, undefined, options)
   },
   async getVoid(path: string, options?: RequestOptions) {
     await request("GET", path, undefined, options)
@@ -206,7 +189,7 @@ export const api = {
     await request("POST", path, data, options)
   },
   postForData<T, TBody>(path: string, data: TBody, options?: RequestOptions) {
-    return requestData<T>("POST", path, data, options)
+    return request<T>("POST", path, data, options)
   },
 }
 

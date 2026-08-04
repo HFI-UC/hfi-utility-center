@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { BootstrapData, ReservationStatus } from "@/lib/api/types"
+import type { CatalogData, ReservationStatus } from "@/lib/api/types"
 import { inputValueToDate } from "@/lib/date-time"
 
 import {
@@ -42,7 +42,7 @@ export function ReservationSearchFilterForm({
   catalog,
   filters,
 }: {
-  catalog?: BootstrapData
+  catalog?: CatalogData
   filters: ReservationSearchFilters
 }) {
   const router = useRouter()

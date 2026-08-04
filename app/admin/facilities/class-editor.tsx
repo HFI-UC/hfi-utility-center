@@ -29,7 +29,7 @@ export function ClassEditor({
   classes,
   campuses,
   mutate,
-  workingKey,
+  working,
 }: FacilityEditorActions & {
   classes: SchoolClass[]
   campuses: Campus[]
@@ -45,9 +45,7 @@ export function ClassEditor({
   )
 
   async function createNewClass({ name, campus }: ClassForm) {
-    const created = await mutate("class:create", () =>
-      createClass(name.trim(), Number(campus))
-    )
+    const created = await mutate(() => createClass(name.trim(), Number(campus)))
     if (created) form.reset()
   }
 
@@ -69,59 +67,54 @@ export function ClassEditor({
           <FieldError errors={[nameError]} />
         </Field>
         <CampusField control={form.control} campuses={campuses} />
-        <Button disabled={Boolean(workingKey)}>
+        <Button disabled={working}>
           <Plus />
           {common("add")}
         </Button>
       </form>
       <div className="divide-y border-t">
-        {classes.map((schoolClass) => {
-          const editKey = `class:${schoolClass.id}:edit`
-          const deleteKey = `class:${schoolClass.id}:delete`
-          return (
-            <div
-              key={schoolClass.id}
-              className="flex items-center justify-between gap-3 py-3"
-            >
-              <div>
-                <p className="text-sm font-medium">{schoolClass.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {campusNames.get(schoolClass.campus)}
-                </p>
-              </div>
-              <div className="flex">
-                <TextActionDialog
-                  title={t("renameClass")}
-                  label={t("className")}
-                  initialValue={schoolClass.name}
-                  cancelLabel={common("cancel")}
-                  saveLabel={common("save")}
-                  onSave={(name) =>
-                    mutate(editKey, () =>
-                      editClass(schoolClass.id, name, schoolClass.campus)
-                    )
-                  }
-                >
-                  <Button
-                    size="icon-sm"
-                    variant="ghost"
-                    title={t("renameClass")}
-                    disabled={Boolean(workingKey)}
-                  >
-                    <Pencil />
-                  </Button>
-                </TextActionDialog>
-                <ConfirmFacilityDelete
-                  mutationKey={deleteKey}
-                  label={schoolClass.name}
-                  action={() => deleteClass(schoolClass.id)}
-                  mutate={mutate}
-                  workingKey={workingKey}
-                />
-              </div>
+        {classes.map((schoolClass) => (
+          <div
+            key={schoolClass.id}
+            className="flex items-center justify-between gap-3 py-3"
+          >
+            <div>
+              <p className="text-sm font-medium">{schoolClass.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {campusNames.get(schoolClass.campus)}
+              </p>
             </div>
-          )
-        })}
+            <div className="flex">
+              <TextActionDialog
+                title={t("renameClass")}
+                label={t("className")}
+                initialValue={schoolClass.name}
+                cancelLabel={common("cancel")}
+                saveLabel={common("save")}
+                onSave={(name) =>
+                  mutate(() =>
+                    editClass(schoolClass.id, name, schoolClass.campus)
+                  )
+                }
+              >
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  title={t("renameClass")}
+                  disabled={working}
+                >
+                  <Pencil />
+                </Button>
+              </TextActionDialog>
+              <ConfirmFacilityDelete
+                label={schoolClass.name}
+                action={() => deleteClass(schoolClass.id)}
+                mutate={mutate}
+                working={working}
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   )

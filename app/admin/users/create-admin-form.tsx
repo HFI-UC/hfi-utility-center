@@ -14,10 +14,10 @@ type CreateAdminFields = { name: string; email: string; password: string }
 
 export function CreateAdminForm({
   mutate,
-  workingKey,
+  working,
 }: {
   mutate: AdminMutation
-  workingKey?: string
+  working: boolean
 }) {
   const t = useTranslations("admin")
   const form = useForm<CreateAdminFields>({
@@ -30,7 +30,6 @@ export function CreateAdminForm({
 
   async function createAccount(values: CreateAdminFields) {
     const created = await mutate(
-      "admin:create",
       () =>
         createAdmin(values.name.trim(), values.email.trim(), values.password),
       t("adminCreated")
@@ -79,7 +78,7 @@ export function CreateAdminForm({
           />
           <FieldError errors={[errors.password]} />
         </Field>
-        <Button className="self-end" disabled={Boolean(workingKey)}>
+        <Button className="self-end" disabled={working}>
           <Plus />
           {t("addAccount")}
         </Button>

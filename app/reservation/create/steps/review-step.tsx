@@ -2,10 +2,10 @@ import { useLocale, useTranslations } from "next-intl"
 import { useFormContext } from "react-hook-form"
 import { StepLayout } from "../step-layout"
 import type { ReservationFormValues } from "../form"
-import type { BootstrapData } from "@/lib/api/types"
+import type { CatalogData } from "@/lib/api/types"
 import { createAppDateTimeFormatter } from "@/lib/date-time"
 
-export function ReviewStep({ catalog }: { catalog: BootstrapData }) {
+export function ReviewStep({ catalog }: { catalog: CatalogData }) {
   const t = useTranslations("booking")
   const locale = useLocale()
   const { getValues } = useFormContext<ReservationFormValues>()

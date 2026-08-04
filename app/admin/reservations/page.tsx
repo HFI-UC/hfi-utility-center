@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import { Check, Download, RefreshCw, Search, X } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -9,13 +9,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { useAdminResource } from "@/lib/api/admin-hooks"
+import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import {
   getFutureReservations,
   updateReservationApproval,
 } from "@/lib/api/reservations"
 import type { Reservation } from "@/lib/api/types"
-import { backendHref, getErrorMessage } from "@/lib/api/client"
+import { backendHref } from "@/lib/api/client"
 import {
   backendDateTimeToDate,
   createAppDateTimeFormatter,
@@ -27,13 +27,16 @@ export default function AdminReservationsPage() {
   const statusT = useTranslations("status")
   const locale = useLocale()
   const [query, setQuery] = useState("")
-  const decisionInProgress = useRef(false)
-  const [workingId, setWorkingId] = useState<number>()
   const [rejectingId, setRejectingId] = useState<number>()
   const [reason, setReason] = useState("")
   const reservationResource = useAdminResource<Reservation[]>({
     loadResource: getFutureReservations,
     initialData: [],
+    fallbackError: common("unknown"),
+  })
+  const { mutate, working } = useAdminMutation({
+    reload: reservationResource.reload,
+    reportError: reservationResource.reportError,
     fallbackError: common("unknown"),
   })
   const dateTimeFormatter = useMemo(
@@ -72,8 +75,6 @@ export default function AdminReservationsPage() {
     id: number,
     nextStatus: "approved" | "rejected"
   ) {
-    if (decisionInProgress.current) return
-
     const approved = nextStatus === "approved"
     const rejectionReason = reason.trim()
     if (!approved && !rejectionReason) {
@@ -81,29 +82,16 @@ export default function AdminReservationsPage() {
       return
     }
 
-    decisionInProgress.current = true
-    setWorkingId(id)
-    try {
-      await updateReservationApproval(
+    const saved = await mutate(() =>
+      updateReservationApproval(
         id,
         approved,
         approved ? undefined : rejectionReason
       )
-      reservationResource.setData((current) =>
-        current.map((item) =>
-          item.id === id ? { ...item, status: nextStatus } : item
-        )
-      )
+    )
+    if (saved) {
       setRejectingId(undefined)
       setReason("")
-      reservationResource.reportError(undefined)
-    } catch (actionError) {
-      reservationResource.reportError(
-        getErrorMessage(actionError, common("unknown"))
-      )
-    } finally {
-      decisionInProgress.current = false
-      setWorkingId(undefined)
     }
   }
 
@@ -212,7 +200,7 @@ export default function AdminReservationsPage() {
                 <>
                   <Button
                     size="sm"
-                    disabled={workingId !== undefined}
+                    disabled={working}
                     onClick={() => void submitDecision(item.id, "approved")}
                   >
                     <Check />
@@ -221,7 +209,7 @@ export default function AdminReservationsPage() {
                   <Button
                     size="sm"
                     variant="destructive"
-                    disabled={workingId !== undefined}
+                    disabled={working}
                     onClick={() => startRejection(item.id)}
                   >
                     <X />
@@ -240,14 +228,14 @@ export default function AdminReservationsPage() {
                 <div className="flex gap-2">
                   <Button
                     variant="destructive"
-                    disabled={workingId !== undefined}
+                    disabled={working}
                     onClick={() => void submitDecision(item.id, "rejected")}
                   >
                     {t("confirmReject")}
                   </Button>
                   <Button
                     variant="outline"
-                    disabled={workingId !== undefined}
+                    disabled={working}
                     onClick={cancelRejection}
                   >
                     {common("cancel")}

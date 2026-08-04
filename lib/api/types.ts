@@ -52,10 +52,7 @@ export interface Room {
   approvers?: RoomApprover[]
 }
 
-export interface BootstrapData {
-  schemaVersion: number
-  dataVersion: string
-  generatedAt: string
+export interface CatalogData {
   campuses: Campus[]
   classes: SchoolClass[]
   rooms: Room[]

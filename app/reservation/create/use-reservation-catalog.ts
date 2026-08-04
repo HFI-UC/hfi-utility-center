@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 
-import { getBootstrap } from "@/lib/api/catalog"
+import { getCatalog } from "@/lib/api/catalog"
 import { getErrorMessage } from "@/lib/api/client"
-import type { BootstrapData } from "@/lib/api/types"
+import type { CatalogData } from "@/lib/api/types"
 
 export function useReservationCatalog(fallbackError: string) {
   const requestId = useRef(0)
-  const [catalog, setCatalog] = useState<BootstrapData>()
+  const [catalog, setCatalog] = useState<CatalogData>()
   const [error, setError] = useState<string>()
   const [loading, setLoading] = useState(true)
 
@@ -16,7 +16,7 @@ export function useReservationCatalog(fallbackError: string) {
     setError(undefined)
 
     try {
-      const nextCatalog = await getBootstrap()
+      const nextCatalog = await getCatalog()
       if (requestId.current === currentRequest) setCatalog(nextCatalog)
     } catch (loadError) {
       if (requestId.current !== currentRequest) return
@@ -27,11 +27,11 @@ export function useReservationCatalog(fallbackError: string) {
   }, [fallbackError])
 
   useEffect(() => {
-    async function fetchInitialCatalog() {
+    async function loadInitialCatalog() {
       await loadCatalog()
     }
 
-    void fetchInitialCatalog()
+    void loadInitialCatalog()
     return () => {
       requestId.current += 1
     }

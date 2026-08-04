@@ -29,7 +29,7 @@ export function RoomEditor({
   rooms,
   campuses,
   mutate,
-  workingKey,
+  working,
 }: FacilityEditorActions & { rooms: Room[]; campuses: Campus[] }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
@@ -40,9 +40,7 @@ export function RoomEditor({
   )
 
   async function createNewRoom({ name, campus }: RoomForm) {
-    const created = await mutate("room:create", () =>
-      createRoom(name.trim(), Number(campus))
-    )
+    const created = await mutate(() => createRoom(name.trim(), Number(campus)))
     if (created) form.reset()
   }
 
@@ -64,74 +62,68 @@ export function RoomEditor({
           <FieldError errors={[nameError]} />
         </Field>
         <RoomCampusField control={form.control} campuses={campuses} />
-        <Button disabled={Boolean(workingKey)}>
+        <Button disabled={working}>
           <Plus />
           {common("add")}
         </Button>
       </form>
       <div className="divide-y border-t">
-        {rooms.map((room) => {
-          const toggleKey = `room:${room.id}:toggle`
-          const editKey = `room:${room.id}:edit`
-          const deleteKey = `room:${room.id}:delete`
-          return (
-            <div
-              key={room.id}
-              className="flex items-center justify-between gap-3 py-3"
-            >
-              <div>
-                <p className="text-sm font-medium">{room.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {campusNames.get(room.campus)} ·{" "}
-                  {room.enabled ? t("roomOpen") : t("roomClosed")}
-                </p>
-              </div>
-              <div className="flex">
+        {rooms.map((room) => (
+          <div
+            key={room.id}
+            className="flex items-center justify-between gap-3 py-3"
+          >
+            <div>
+              <p className="text-sm font-medium">{room.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {campusNames.get(room.campus)} ·{" "}
+                {room.enabled ? t("roomOpen") : t("roomClosed")}
+              </p>
+            </div>
+            <div className="flex">
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                title={room.enabled ? t("roomClosed") : t("restoreBooking")}
+                disabled={working}
+                onClick={() =>
+                  void mutate(() =>
+                    editRoom(room.id, room.name, room.campus, !room.enabled)
+                  )
+                }
+              >
+                <Power />
+              </Button>
+              <TextActionDialog
+                title={t("renameRoom")}
+                label={t("roomName")}
+                initialValue={room.name}
+                cancelLabel={common("cancel")}
+                saveLabel={common("save")}
+                onSave={(name) =>
+                  mutate(() =>
+                    editRoom(room.id, name, room.campus, room.enabled)
+                  )
+                }
+              >
                 <Button
                   size="icon-sm"
                   variant="ghost"
-                  title={room.enabled ? t("roomClosed") : t("restoreBooking")}
-                  disabled={Boolean(workingKey)}
-                  onClick={() =>
-                    void mutate(toggleKey, () =>
-                      editRoom(room.id, room.name, room.campus, !room.enabled)
-                    )
-                  }
-                >
-                  <Power />
-                </Button>
-                <TextActionDialog
                   title={t("renameRoom")}
-                  label={t("roomName")}
-                  initialValue={room.name}
-                  cancelLabel={common("cancel")}
-                  saveLabel={common("save")}
-                  onSave={(name) =>
-                    mutate(editKey, () =>
-                      editRoom(room.id, name, room.campus, room.enabled)
-                    )
-                  }
+                  disabled={working}
                 >
-                  <Button
-                    size="icon-sm"
-                    variant="ghost"
-                    title={t("renameRoom")}
-                    disabled={Boolean(workingKey)}
-                  >
-                    <Pencil />
-                  </Button>
-                </TextActionDialog>
-                <ConfirmFacilityDelete
-                  mutationKey={deleteKey}
-                  label={room.name}
-                  action={() => deleteRoom(room.id)}
-                  mutate={mutate}
-                  workingKey={workingKey}
-                />
-              </div>
+                  <Pencil />
+                </Button>
+              </TextActionDialog>
+              <ConfirmFacilityDelete
+                label={room.name}
+                action={() => deleteRoom(room.id)}
+                mutate={mutate}
+                working={working}
+              />
             </div>
-          )
-        })}
+          </div>
+        ))}
       </div>
     </section>
   )
