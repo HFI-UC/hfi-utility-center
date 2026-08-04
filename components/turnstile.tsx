@@ -96,6 +96,11 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
     }
   }, [loadAttempt, onToken, siteKey])
 
+  function retry() {
+    setLoadFailed(false)
+    setLoadAttempt((attempt) => attempt + 1)
+  }
+
   if (!siteKey)
     return (
       <p className="border-y py-4 text-sm text-muted-foreground">
@@ -106,12 +111,7 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
     return (
       <div className="flex items-center justify-between gap-3 border-y py-3">
         <p className="text-sm text-destructive">{t("turnstileLoadFailed")}</p>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={() => setLoadAttempt((attempt) => attempt + 1)}
-        >
+        <Button type="button" size="sm" variant="outline" onClick={retry}>
           <RefreshCw />
           {t("retryVerification")}
         </Button>

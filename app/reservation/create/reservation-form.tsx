@@ -135,10 +135,19 @@ export function ReservationForm() {
         reservationId: response?.reservationId,
       })
     } catch (error) {
-      setFlowError(getErrorMessage(error, t("submitError")))
-      if (error instanceof ApiError && error.status === 409) {
+      const availabilityConflict =
+        error instanceof ApiError &&
+        (error.status === 409 || error.code === "ROOM_UNAVAILABLE")
+
+      if (availabilityConflict) {
+        form.setValue("startTime", 0)
+        form.setValue("endTime", 0)
+        setFlowError(t("timeConflict"))
         setCurrentStepId("dateTime")
+        return
       }
+
+      setFlowError(getErrorMessage(error, t("submitError")))
     } finally {
       setIsWorking(false)
     }

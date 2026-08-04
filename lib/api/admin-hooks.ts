@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 import { checkLogin } from "@/lib/api/auth"
 import { getErrorMessage } from "@/lib/api/client"
@@ -118,13 +118,12 @@ export function useAdminMutation({
   return { mutate, workingKey, notice }
 }
 
-export function useAdminSession(enabled = true) {
+export function useAdminSession(initialPath: string) {
   const router = useRouter()
-  const pathname = usePathname()
+  const [redirectPath] = useState(initialPath)
   const [status, setStatus] = useState<AdminSessionStatus>("checking")
 
   useEffect(() => {
-    if (!enabled || status !== "checking") return
     let active = true
 
     checkLogin()
@@ -135,7 +134,7 @@ export function useAdminSession(enabled = true) {
         if (active) {
           setStatus("unauthenticated")
           router.replace(
-            `/admin/login?redirect=${encodeURIComponent(pathname)}`
+            `/admin/login?redirect=${encodeURIComponent(redirectPath)}`
           )
         }
       })
@@ -143,10 +142,10 @@ export function useAdminSession(enabled = true) {
     return () => {
       active = false
     }
-  }, [enabled, pathname, router, status])
+  }, [redirectPath, router])
 
   return {
-    checking: enabled && status === "checking",
-    authenticated: enabled && status === "authenticated",
+    checking: status === "checking",
+    authenticated: status === "authenticated",
   }
 }

@@ -11,11 +11,26 @@ import { logout } from "@/lib/api/auth"
 import { cn } from "@/lib/utils"
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
-  const t = useTranslations("admin")
   const pathname = usePathname()
+  if (pathname === "/admin/login") return children
+
+  return (
+    <AuthenticatedAdminShell pathname={pathname}>
+      {children}
+    </AuthenticatedAdminShell>
+  )
+}
+
+function AuthenticatedAdminShell({
+  pathname,
+  children,
+}: {
+  pathname: string
+  children: React.ReactNode
+}) {
+  const t = useTranslations("admin")
   const router = useRouter()
-  const isLoginPage = pathname === "/admin/login"
-  const session = useAdminSession(!isLoginPage)
+  const session = useAdminSession(pathname)
   const navigationItems = [
     {
       href: "/admin/reservations",
@@ -31,7 +46,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     router.replace("/admin/login")
   }
 
-  if (isLoginPage) return children
   if (session.checking) {
     return (
       <main className="mx-auto max-w-7xl px-4 py-12 text-sm text-muted-foreground sm:px-6">

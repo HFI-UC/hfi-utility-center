@@ -2,11 +2,7 @@ import { Suspense } from "react"
 import { getTranslations } from "next-intl/server"
 
 import { AdminLoginForm } from "./login-form"
-
-function safeRedirect(value?: string) {
-  if (value?.startsWith("/") && !value.startsWith("//")) return value
-  return "/admin/reservations"
-}
+import { safeAdminRedirect } from "./redirect"
 
 export default async function AdminLoginPage({
   searchParams,
@@ -27,7 +23,7 @@ export default async function AdminLoginPage({
     >
       <AdminLoginForm
         token={params.token}
-        redirectTo={safeRedirect(params.redirect)}
+        redirectTo={safeAdminRedirect(params.redirect)}
       />
     </Suspense>
   )
