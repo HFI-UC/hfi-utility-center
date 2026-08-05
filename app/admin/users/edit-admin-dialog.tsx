@@ -94,9 +94,7 @@ export function EditAdminDialog({
           </Field>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline">
-                {common("cancel")}
-              </Button>
+              <Button variant="outline">{common("cancel")}</Button>
             </DialogClose>
             <Button
               type="submit"

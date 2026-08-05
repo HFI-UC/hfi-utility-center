@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { LogIn } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
@@ -31,10 +31,6 @@ export function AdminLoginForm({
   const { errors } = form.formState
   const [turnstileToken, setTurnstileToken] = useState("")
   const [error, setError] = useState<string>()
-  const handleToken = useCallback(
-    (value: string) => setTurnstileToken(value),
-    []
-  )
 
   useEffect(() => {
     let ignore = false
@@ -110,7 +106,7 @@ export function AdminLoginForm({
           />
           <FieldError errors={[errors.password]} />
         </Field>
-        <Turnstile onToken={handleToken} />
+        <Turnstile onToken={setTurnstileToken} />
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
         <Button
           className="w-full"

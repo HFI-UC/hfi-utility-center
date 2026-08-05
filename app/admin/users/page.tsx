@@ -7,6 +7,7 @@ import { AdminPageHeader } from "@/app/admin/admin-shell"
 import { Button } from "@/components/ui/button"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import { getAdmins } from "@/lib/api/admins"
+import { getErrorMessage } from "@/lib/api/client"
 import type { Admin } from "@/lib/api/types"
 
 import { AdminList } from "./admin-list"
@@ -15,13 +16,14 @@ import { CreateAdminForm } from "./create-admin-form"
 export default function AdminUsersPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
-  const adminResource = useAdminResource<Admin[]>({
-    loadResource: getAdmins,
-    initialData: [],
-  })
-  const { mutate, working, notice } = useAdminMutation({
-    reload: adminResource.reload,
-  })
+  const adminResource = useAdminResource<Admin[]>(getAdmins, [])
+  const {
+    mutate,
+    working,
+    notice,
+    error: mutationError,
+  } = useAdminMutation(adminResource.reload)
+  const error = mutationError ?? adminResource.error
 
   return (
     <main>
@@ -42,6 +44,11 @@ export default function AdminUsersPage() {
       <CreateAdminForm mutate={mutate} working={working} />
       {notice ? (
         <p className="border-b py-3 text-sm text-foreground">{notice}</p>
+      ) : null}
+      {error ? (
+        <p className="border-b py-3 text-sm text-destructive">
+          {getErrorMessage(error, t("usersLoadError"))}
+        </p>
       ) : null}
       <AdminList
         admins={adminResource.data}

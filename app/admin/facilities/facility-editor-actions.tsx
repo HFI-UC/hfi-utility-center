@@ -36,7 +36,6 @@ export function ConfirmFacilityDelete({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          type="button"
           size="icon-sm"
           variant="ghost"
           title={`${common("delete")} ${label}`}

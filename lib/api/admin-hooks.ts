@@ -12,49 +12,67 @@ export type AdminMutation = (
 
 type AdminSessionStatus = "checking" | "authenticated" | "unauthenticated"
 
-export function useAdminResource<T>({
-  loadResource,
-  initialData,
-}: {
-  loadResource: () => Promise<T>
+export function useAdminResource<T>(
+  loadResource: () => Promise<T>,
   initialData: T
-}) {
+) {
   const requestId = useRef(0)
   const [data, setData] = useState(initialData)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<unknown>()
 
   const reload = useCallback(async () => {
     const currentRequest = ++requestId.current
     setLoading(true)
+    setError(undefined)
 
-    const nextData = await loadResource()
-    if (requestId.current !== currentRequest) return
-    setData(nextData)
-    setLoading(false)
+    try {
+      const nextData = await loadResource()
+      if (requestId.current !== currentRequest) return false
+      setData(nextData)
+      return true
+    } catch (error) {
+      if (requestId.current === currentRequest) setError(error)
+      return false
+    } finally {
+      if (requestId.current === currentRequest) setLoading(false)
+    }
   }, [loadResource])
 
   useEffect(() => {
-    async function loadInitialResource() {
-      await reload()
-    }
+    const currentRequest = ++requestId.current
 
-    void loadInitialResource()
+    loadResource()
+      .then(
+        (nextData) => {
+          if (requestId.current === currentRequest) setData(nextData)
+        },
+        (error: unknown) => {
+          if (requestId.current === currentRequest) setError(error)
+        }
+      )
+      .finally(() => {
+        if (requestId.current === currentRequest) setLoading(false)
+      })
+
     return () => {
-      requestId.current += 1
+      if (requestId.current === currentRequest) requestId.current += 1
     }
-  }, [reload])
+  }, [loadResource])
 
   return {
     data,
     loading,
+    error,
     reload,
   }
 }
 
-export function useAdminMutation({ reload }: { reload: () => Promise<void> }) {
+export function useAdminMutation(reload: () => Promise<boolean>) {
   const mutationInProgress = useRef(false)
   const [working, setWorking] = useState(false)
   const [notice, setNotice] = useState<string>()
+  const [error, setError] = useState<unknown>()
 
   const mutate: AdminMutation = useCallback(
     async (action, successMessage) => {
@@ -63,18 +81,25 @@ export function useAdminMutation({ reload }: { reload: () => Promise<void> }) {
       mutationInProgress.current = true
       setWorking(true)
       setNotice(undefined)
+      setError(undefined)
 
-      await action()
-      setNotice(successMessage)
-      await reload()
-      mutationInProgress.current = false
-      setWorking(false)
-      return true
+      try {
+        await action()
+        if (!(await reload())) return false
+        setNotice(successMessage)
+        return true
+      } catch (error) {
+        setError(error)
+        return false
+      } finally {
+        mutationInProgress.current = false
+        setWorking(false)
+      }
     },
     [reload]
   )
 
-  return { mutate, working, notice }
+  return { mutate, working, notice, error }
 }
 
 export function useAdminSession(initialPath: string) {

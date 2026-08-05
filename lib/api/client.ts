@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { type AxiosResponse } from "axios"
 
 import type { ApiResponse } from "@/lib/api/types"
 
@@ -23,11 +23,19 @@ api.interceptors.request.use(async (config) => {
 })
 
 api.interceptors.response.use(
-  (response) => {
-    const payload = response.data as ApiResponse
-    if (response.status < 200 || response.status >= 300 || !payload.success) {
-      throw new Error(payload.message ?? response.statusText)
+  (response: AxiosResponse<unknown>) => {
+    if (!isApiResponse(response.data)) {
+      throw new Error("The backend returned an invalid response.")
     }
+
+    if (
+      response.status < 200 ||
+      response.status >= 300 ||
+      !response.data.success
+    ) {
+      throw new Error(response.data.message ?? response.statusText)
+    }
+
     return response
   },
   (error: unknown) => {
@@ -39,9 +47,27 @@ api.interceptors.response.use(
 )
 
 export function getErrorMessage(error: unknown, fallback: string) {
-  return error instanceof Error ? error.message : fallback
+  return error instanceof Error && error.message ? error.message : fallback
 }
 
 export function backendHref(path: string) {
   return new URL(path, backendUrl).toString()
+}
+
+export function apiData<T>(response: AxiosResponse<ApiResponse<T>>): T {
+  if (response.data.data === undefined) {
+    throw new Error("The backend returned a successful response without data.")
+  }
+
+  return response.data.data
+}
+
+function isApiResponse(value: unknown): value is ApiResponse {
+  if (!value || typeof value !== "object") return false
+
+  const { success, message } = value as { success?: unknown; message?: unknown }
+  return (
+    typeof success === "boolean" &&
+    (message === undefined || typeof message === "string")
+  )
 }

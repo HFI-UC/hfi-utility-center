@@ -1,6 +1,5 @@
 "use client"
 
-import { useMemo } from "react"
 import { useLocale, useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
@@ -25,22 +24,37 @@ export function ReservationResults({
 }: {
   reservations: Reservation[]
 }) {
+  const locale = useLocale()
+  const dateTimeFormatter = new Intl.DateTimeFormat(locale, {
+    dateStyle: "short",
+    timeStyle: "short",
+  })
+  const formatDateTime = (value: string) =>
+    dateTimeFormatter.format(new Date(value))
+
   return (
     <>
-      <DesktopReservationTable reservations={reservations} />
-      <MobileReservationList reservations={reservations} />
+      <DesktopReservationTable
+        reservations={reservations}
+        formatDateTime={formatDateTime}
+      />
+      <MobileReservationList
+        reservations={reservations}
+        formatDateTime={formatDateTime}
+      />
     </>
   )
 }
 
 function DesktopReservationTable({
   reservations,
+  formatDateTime,
 }: {
   reservations: Reservation[]
+  formatDateTime: (value: string) => string
 }) {
   const t = useTranslations("searchPage")
   const statusT = useTranslations("status")
-  const formatDateTime = useReservationDateFormatter()
 
   return (
     <div className="hidden md:block">
@@ -89,12 +103,13 @@ function DesktopReservationTable({
 
 function MobileReservationList({
   reservations,
+  formatDateTime,
 }: {
   reservations: Reservation[]
+  formatDateTime: (value: string) => string
 }) {
   const t = useTranslations("searchPage")
   const statusT = useTranslations("status")
-  const formatDateTime = useReservationDateFormatter()
 
   return (
     <div className="divide-y md:hidden">
@@ -128,17 +143,4 @@ function MobileReservationList({
       ))}
     </div>
   )
-}
-
-function useReservationDateFormatter() {
-  const locale = useLocale()
-  const formatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(locale, {
-        dateStyle: "short",
-        timeStyle: "short",
-      }),
-    [locale]
-  )
-  return (value: string) => formatter.format(new Date(value))
 }

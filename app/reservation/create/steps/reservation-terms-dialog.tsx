@@ -22,11 +22,7 @@ export function ReservationTermsDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          type="button"
-          variant="link"
-          className="h-auto p-0 align-baseline"
-        >
+        <Button variant="link" className="h-auto p-0 align-baseline">
           {t("terms.link")}
         </Button>
       </DialogTrigger>
@@ -51,9 +47,7 @@ export function ReservationTermsDialog() {
         </div>
         <DialogFooter className="border-t pt-5">
           <DialogClose asChild>
-            <Button type="button" variant="outline">
-              {t("terms.close")}
-            </Button>
+            <Button variant="outline">{t("terms.close")}</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

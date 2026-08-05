@@ -134,6 +134,7 @@
     "endDate": "结束日期",
     "dateRange": "选择日期范围",
     "loading": "正在查询预约…",
+    "loadError": "无法加载预约记录。",
     "emptyTitle": "没有找到预约",
     "emptyDescription": "调整关键词或筛选条件后重试。",
     "id": "编号",

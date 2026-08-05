@@ -23,8 +23,8 @@ export interface RoomPolicy {
   id: number
   roomId: number
   days: number[]
-  startTime: number[]
-  endTime: number[]
+  startTime: [number, number]
+  endTime: [number, number]
   enabled: boolean
 }
 
@@ -33,13 +33,6 @@ export interface RoomApprover {
   roomId: number
   adminId: number
   notificationsEnabled: boolean
-}
-
-export interface CatalogAdminData {
-  campuses: Campus[]
-  classes: SchoolClass[]
-  rooms: Room[]
-  admins: Admin[]
 }
 
 export interface Room {

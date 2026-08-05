@@ -1,7 +1,7 @@
 import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export function ChoiceGrid<T extends number | string>({
+export function ChoiceGrid({
   items,
   value,
   onChange,
@@ -11,9 +11,9 @@ export function ChoiceGrid<T extends number | string>({
   label,
   emptyText,
 }: {
-  items: { value: T; label: string; disabled?: boolean }[]
-  value?: T
-  onChange: (value: T) => void
+  items: { value: number; label: string; disabled?: boolean }[]
+  value?: number
+  onChange: (value: number) => void
   onBlur?: () => void
   name?: string
   invalid?: boolean
@@ -40,7 +40,6 @@ export function ChoiceGrid<T extends number | string>({
           <Button
             key={item.value}
             name={name}
-            type="button"
             role="radio"
             disabled={item.disabled}
             aria-checked={selected}

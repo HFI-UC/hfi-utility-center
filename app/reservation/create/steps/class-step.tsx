@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useController, useFormContext } from "react-hook-form"
 import { Input } from "@/components/ui/input"
@@ -23,14 +23,10 @@ export function ClassStep({ catalog }: { catalog: CatalogData }) {
     selectedClass?.campus ?? catalog.campuses[0]?.id ?? 0
   )
   const campus = catalog.campuses.find((item) => item.id === campusId)
-  const classes = useMemo(
-    () =>
-      catalog.classes.filter(
-        (item) =>
-          item.campus === campusId &&
-          item.name.toLowerCase().includes(query.toLowerCase())
-      ),
-    [catalog, campusId, query]
+  const classes = catalog.classes.filter(
+    (item) =>
+      item.campus === campusId &&
+      item.name.toLowerCase().includes(query.toLowerCase())
   )
 
   function selectCampus(nextCampusId: number) {
@@ -63,7 +59,6 @@ export function ClassStep({ catalog }: { catalog: CatalogData }) {
               return (
                 <Button
                   key={item.id}
-                  type="button"
                   variant={selected ? "default" : "outline"}
                   aria-pressed={selected}
                   onClick={() => selectCampus(item.id)}

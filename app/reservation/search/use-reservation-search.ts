@@ -16,16 +16,14 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
   const [catalog, setCatalog] = useState<CatalogData>()
   const [result, setResult] = useState<ReservationPage>(emptyResult)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<unknown>()
 
   useEffect(() => {
     let active = true
 
-    async function loadCatalog() {
-      const nextCatalog = await getCatalog()
+    getCatalog().then((nextCatalog) => {
       if (active) setCatalog(nextCatalog)
-    }
-
-    void loadCatalog()
+    })
     return () => {
       active = false
     }
@@ -36,13 +34,19 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
 
     async function loadReservations() {
       setLoading(true)
+      setError(undefined)
 
-      const nextResult = await getReservations(
-        reservationSearchRequest(filters)
-      )
-      if (requestId.current !== currentRequest) return
-      setResult(nextResult)
-      setLoading(false)
+      try {
+        const nextResult = await getReservations(
+          reservationSearchRequest(filters)
+        )
+        if (requestId.current !== currentRequest) return
+        setResult(nextResult)
+      } catch (error) {
+        if (requestId.current === currentRequest) setError(error)
+      } finally {
+        if (requestId.current === currentRequest) setLoading(false)
+      }
     }
 
     void loadReservations()
@@ -52,5 +56,5 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
     }
   }, [filters])
 
-  return { catalog, result, loading }
+  return { catalog, result, loading, error }
 }

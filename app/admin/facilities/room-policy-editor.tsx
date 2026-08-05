@@ -54,21 +54,16 @@ export function PolicyEditor({
   const { errors } = form.formState
 
   async function createRoomPolicy({ room, day, start, end }: PolicyForm) {
-    const startMinutes = timeInMinutes(start)
-    const endMinutes = timeInMinutes(end)
-    if (endMinutes <= startMinutes) {
+    const startTime = parseTime(start)
+    const endTime = parseTime(end)
+    if (toMinutes(endTime) <= toMinutes(startTime)) {
       form.setError("end", { message: t("policyEndAfterStart") })
       return
     }
     form.clearErrors("end")
 
     const created = await mutate(() =>
-      createPolicy(
-        Number(room),
-        [Number(day)],
-        parseTime(start),
-        parseTime(end)
-      )
+      createPolicy(Number(room), [Number(day)], startTime, endTime)
     )
     if (created) form.reset()
   }
@@ -241,11 +236,10 @@ function parseTime(value: string): [number, number] {
   return [hours, minutes]
 }
 
-function timeInMinutes(value: string) {
-  const [hours, minutes] = parseTime(value)
+function toMinutes([hours, minutes]: [number, number]) {
   return hours * 60 + minutes
 }
 
-function formatTime([hour, minute]: number[]) {
+function formatTime([hour, minute]: [number, number]) {
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
 }

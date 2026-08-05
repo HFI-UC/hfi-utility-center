@@ -146,7 +146,7 @@ export function ReservationSearchFilterForm({
         render={({ field }) => (
           <Popover>
             <PopoverTrigger asChild>
-              <Button type="button" variant="outline" className="justify-start">
+              <Button variant="outline" className="justify-start">
                 <CalendarDays />
                 <DateRangeLabel
                   range={field.value}

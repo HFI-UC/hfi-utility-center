@@ -1,7 +1,7 @@
-import { api } from "@/lib/api/client"
+import { api, apiData } from "@/lib/api/client"
 import { getRooms } from "@/lib/api/catalog"
 import { inputValueToTimestamp } from "@/lib/date-time"
-import { buildLegacyAvailability } from "@/lib/reservations/availability"
+import { buildRoomAvailability } from "@/lib/reservations/availability"
 import type {
   ApiResponse,
   Reservation,
@@ -31,29 +31,38 @@ export async function getAvailability(
   if (startTime === undefined || endTime === undefined) {
     throw new Error("Invalid availability date")
   }
-  const [rooms, firstPage] = await Promise.all([
-    knownRoom ? Promise.resolve([knownRoom]) : getRooms(),
+  const [room, firstPage] = await Promise.all([
+    knownRoom
+      ? Promise.resolve(knownRoom)
+      : getRooms().then((rooms) => rooms.find((item) => item.id === roomId)),
     getReservations({ roomId, startTime, endTime, page: 0 }),
   ])
-  const room = rooms.find((item) => item.id === roomId && item.enabled)
-  if (!room) throw new Error("Room is unavailable")
-  const reservations = [...firstPage.reservations]
+  if (!room?.enabled) throw new Error("Room is unavailable")
+
   const pageCount = Math.ceil(firstPage.total / 20)
   const additionalPages = await Promise.all(
     Array.from({ length: Math.max(0, pageCount - 1) }, (_, index) =>
       getReservations({ roomId, startTime, endTime, page: index + 1 })
     )
   )
-  reservations.push(...additionalPages.flatMap((page) => page.reservations))
-  return buildLegacyAvailability(room, date, reservations)
+  return buildRoomAvailability(room, date, [
+    ...firstPage.reservations,
+    ...additionalPages.flatMap((page) => page.reservations),
+  ])
 }
 
 export async function createReservation(input: CreateReservationInput) {
-  const { data } = await api.post<ApiResponse<{ reservationId: number }>>(
-    "/reservation/create",
-    input
+  const result = apiData(
+    await api.post<ApiResponse<{ reservationId: number }>>(
+      "/reservation/create",
+      input
+    )
   )
-  return data.data!
+  if (!Number.isSafeInteger(result.reservationId)) {
+    throw new Error("The backend returned an invalid reservation ID.")
+  }
+
+  return result.reservationId
 }
 
 export async function getReservations(params: {
@@ -64,18 +73,17 @@ export async function getReservations(params: {
   startTime?: number
   endTime?: number
 }) {
-  const { data } = await api.get<ApiResponse<ReservationPage>>(
-    "/reservation/get",
-    { params: { ...params, page: params.page ?? 0 } }
+  return apiData(
+    await api.get<ApiResponse<ReservationPage>>("/reservation/get", {
+      params: { ...params, page: params.page ?? 0 },
+    })
   )
-  return data.data!
 }
 
 export async function getFutureReservations() {
-  const response = await api.get<ApiResponse<Reservation[]>>(
-    "/reservation/future"
+  return apiData(
+    await api.get<ApiResponse<Reservation[]>>("/reservation/future")
   )
-  return response.data.data!
 }
 
 export const updateReservationApproval = (

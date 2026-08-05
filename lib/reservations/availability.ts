@@ -63,7 +63,7 @@ function getSlotStatus(
   return "available"
 }
 
-export function buildLegacyAvailability(
+export function buildRoomAvailability(
   room: Room,
   date: string,
   reservations: Reservation[],
@@ -95,19 +95,18 @@ export function buildLegacyAvailability(
   }
 }
 
-export function rangeIsAvailable(
-  slots: AvailabilitySlot[],
+export function isRangeAvailable(
+  availability: AvailabilityData,
   startTime: number,
-  endTime: number,
-  maxMinutes = 120
+  endTime: number
 ) {
   if (!startTime || endTime <= startTime) return false
-  if (endTime - startTime > maxMinutes * 60) return false
+  if (endTime - startTime > availability.maxDurationMinutes * 60) return false
 
-  const selectedSlots = slots.filter(
+  const selectedSlots = availability.slots.filter(
     (slot) => slot.startTime >= startTime && slot.endTime <= endTime
   )
-  const slotSeconds = SLOT_MINUTES * 60
+  const slotSeconds = availability.slotMinutes * 60
   const expectedSlotCount = (endTime - startTime) / slotSeconds
 
   return (

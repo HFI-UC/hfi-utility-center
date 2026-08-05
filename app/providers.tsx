@@ -7,14 +7,13 @@ import { ThemeProvider } from "next-themes"
 import enMessages from "@/messages/en-US.json"
 import zhMessages from "@/messages/zh-CN.json"
 
-type AppLocale = "zh-CN" | "en-US"
-type LocaleMessages = Record<AppLocale, Record<string, unknown>>
-const defaultLocale: AppLocale = "zh-CN"
-
 const messages = {
   "zh-CN": zhMessages,
   "en-US": enMessages,
-} satisfies LocaleMessages
+}
+
+type AppLocale = keyof typeof messages
+const defaultLocale: AppLocale = "zh-CN"
 
 function subscribeToLocale(onLocaleChange: () => void) {
   window.addEventListener("hfiuc-locale-change", onLocaleChange)

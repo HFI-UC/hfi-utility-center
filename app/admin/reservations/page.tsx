@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { Check, Download, RefreshCw, Search, X } from "lucide-react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
@@ -15,7 +15,7 @@ import {
   updateReservationApproval,
 } from "@/lib/api/reservations"
 import type { Reservation } from "@/lib/api/types"
-import { backendHref } from "@/lib/api/client"
+import { backendHref, getErrorMessage } from "@/lib/api/client"
 
 export default function AdminReservationsPage() {
   const t = useTranslations("admin")
@@ -26,44 +26,41 @@ export default function AdminReservationsPage() {
   const [rejectingId, setRejectingId] = useState<number>()
   const [reason, setReason] = useState("")
   const [error, setError] = useState<string>()
-  const reservationResource = useAdminResource<Reservation[]>({
-    loadResource: getFutureReservations,
-    initialData: [],
-  })
-  const { mutate, working } = useAdminMutation({
-    reload: reservationResource.reload,
-  })
-  const dateTimeFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(locale, {
-        month: "numeric",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        weekday: "short",
-      }),
-    [locale]
+  const reservationResource = useAdminResource<Reservation[]>(
+    getFutureReservations,
+    []
   )
+  const {
+    mutate,
+    working,
+    error: mutationError,
+  } = useAdminMutation(reservationResource.reload)
+  const dateTimeFormatter = new Intl.DateTimeFormat(locale, {
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    weekday: "short",
+  })
 
   function formatDateTime(value: string) {
     return dateTimeFormatter.format(new Date(value))
   }
 
-  const filtered = useMemo(() => {
-    const keyword = query.trim().toLowerCase()
-    if (!keyword) return reservationResource.data
-    return reservationResource.data.filter((item) =>
-      [
-        item.studentName,
-        item.email,
-        item.studentId,
-        item.roomName,
-        item.className,
-        item.reason,
-        String(item.id),
-      ].some((value) => value?.toLowerCase().includes(keyword))
-    )
-  }, [query, reservationResource.data])
+  const keyword = query.trim().toLowerCase()
+  const filtered = keyword
+    ? reservationResource.data.filter((item) =>
+        [
+          item.studentName,
+          item.email,
+          item.studentId,
+          item.roomName,
+          item.className,
+          item.reason,
+          String(item.id),
+        ].some((value) => value?.toLowerCase().includes(keyword))
+      )
+    : reservationResource.data
 
   async function submitDecision(
     id: number,
@@ -120,7 +117,7 @@ export default function AdminReservationsPage() {
               {common("refresh")}
             </Button>
             <Link href={backendHref("/reservation/export")}>
-              <Button type="button" variant="outline">
+              <Button variant="outline">
                 <Download />
                 {t("exportReservations")}
               </Button>
@@ -139,6 +136,14 @@ export default function AdminReservationsPage() {
       </div>
       {error ? (
         <p className="border-y py-3 text-sm text-destructive">{error}</p>
+      ) : null}
+      {mutationError || reservationResource.error ? (
+        <p className="border-y py-3 text-sm text-destructive">
+          {getErrorMessage(
+            mutationError ?? reservationResource.error,
+            t("reservationsEmptyDescription")
+          )}
+        </p>
       ) : null}
       {reservationResource.loading ? (
         <p className="py-12 text-sm text-muted-foreground">

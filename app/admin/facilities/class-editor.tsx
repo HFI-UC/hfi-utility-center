@@ -2,7 +2,7 @@
 
 import { Pencil, Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, type Control } from "react-hook-form"
 
 import { TextActionDialog } from "@/app/admin/text-action-dialog"
 import { Button } from "@/components/ui/button"
@@ -124,7 +124,7 @@ function CampusField({
   control,
   campuses,
 }: {
-  control: ReturnType<typeof useForm<ClassForm>>["control"]
+  control: Control<ClassForm>
   campuses: Campus[]
 }) {
   const t = useTranslations("admin")

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl"
 
+import { getErrorMessage } from "@/lib/api/client"
 import type { Reservation } from "@/lib/api/types"
 
 import { ReservationResults } from "./reservation-results"
@@ -19,7 +20,7 @@ export function ReservationSearch({
   filters: ReservationSearchFilters
 }) {
   const t = useTranslations("searchPage")
-  const { catalog, result, loading } = useReservationSearch(filters)
+  const { catalog, result, loading, error } = useReservationSearch(filters)
 
   return (
     <main className="mx-auto max-w-[96rem] px-4 py-8 sm:px-8 sm:py-10">
@@ -36,7 +37,11 @@ export function ReservationSearch({
         filters={filters}
       />
 
-      <SearchContent loading={loading} reservations={result.reservations} />
+      <SearchContent
+        loading={loading}
+        error={error ? getErrorMessage(error, t("loadError")) : undefined}
+        reservations={result.reservations}
+      />
 
       {!loading ? (
         <ReservationSearchPagination
@@ -52,9 +57,11 @@ export function ReservationSearch({
 
 function SearchContent({
   loading,
+  error,
   reservations,
 }: {
   loading: boolean
+  error?: string
   reservations: Reservation[]
 }) {
   const t = useTranslations("searchPage")
@@ -67,6 +74,13 @@ function SearchContent({
       >
         {t("loading")}
       </p>
+    )
+  }
+  if (error) {
+    return (
+      <section className="border-b py-16">
+        <p className="font-medium text-destructive">{error}</p>
+      </section>
     )
   }
   if (reservations.length) {

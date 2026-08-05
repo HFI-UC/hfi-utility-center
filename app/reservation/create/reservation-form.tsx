@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import { useEffect, useState, type FormEvent } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -15,7 +15,10 @@ import {
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
 import { createReservation, getAvailability } from "@/lib/api/reservations"
-import { rangeIsAvailable } from "@/lib/reservations/availability"
+import { getCatalog } from "@/lib/api/catalog"
+import { getErrorMessage } from "@/lib/api/client"
+import type { CatalogData } from "@/lib/api/types"
+import { isRangeAvailable } from "@/lib/reservations/availability"
 
 import {
   bookingSteps,
@@ -30,11 +33,6 @@ import { LocationStep } from "./steps/location-step"
 import { ProfileStep } from "./steps/profile-step"
 import { ReviewStep } from "./steps/review-step"
 import { SuccessStep } from "./steps/success-step"
-import { useReservationCatalog } from "./use-reservation-catalog"
-
-type ReservationResult = {
-  reservationId?: number
-}
 
 export function ReservationForm() {
   const t = useTranslations("booking")
@@ -50,12 +48,31 @@ export function ReservationForm() {
   const [currentStepId, setCurrentStepId] = useState<BookingStepId>("class")
   const [flowError, setFlowError] = useState<string>()
   const [isWorking, setIsWorking] = useState(false)
-  const [result, setResult] = useState<ReservationResult>()
-  const { catalog, loading: catalogLoading } = useReservationCatalog()
+  const [reservationId, setReservationId] = useState<number>()
+  const [catalog, setCatalog] = useState<CatalogData>()
+  const [catalogError, setCatalogError] = useState<string>()
+  const [catalogRequest, setCatalogRequest] = useState(0)
   const currentStepIndex = bookingSteps.findIndex(
     (step) => step.id === currentStepId
   )
   const currentStep = bookingSteps[currentStepIndex]
+
+  useEffect(() => {
+    let active = true
+
+    getCatalog().then(
+      (nextCatalog) => {
+        if (active) setCatalog(nextCatalog)
+      },
+      (error: unknown) => {
+        if (active) setCatalogError(getErrorMessage(error, t("loadError")))
+      }
+    )
+
+    return () => {
+      active = false
+    }
+  }, [catalogRequest, t])
 
   async function selectedTimeIsStillAvailable(values: ReservationFormValues) {
     const room = catalog?.rooms.find(
@@ -67,9 +84,7 @@ export function ReservationForm() {
     }
 
     const availability = await getAvailability(values.room, values.date, room)
-    if (
-      rangeIsAvailable(availability.slots, values.startTime, values.endTime)
-    ) {
+    if (isRangeAvailable(availability, values.startTime, values.endTime)) {
       return true
     }
 
@@ -110,19 +125,18 @@ export function ReservationForm() {
         return
       }
 
-      const response = await createReservation({
-        classId: values.classId,
-        room: values.room,
-        studentName: values.studentName.trim(),
-        studentId: values.studentId.trim().toUpperCase(),
-        email: values.email.trim(),
-        reason: values.reason.trim(),
-        startTime: values.startTime,
-        endTime: values.endTime,
-      })
-      setResult({
-        reservationId: response?.reservationId,
-      })
+      setReservationId(
+        await createReservation({
+          classId: values.classId,
+          room: values.room,
+          studentName: values.studentName.trim(),
+          studentId: values.studentId.trim().toUpperCase(),
+          email: values.email.trim(),
+          reason: values.reason.trim(),
+          startTime: values.startTime,
+          endTime: values.endTime,
+        })
+      )
     } finally {
       setIsWorking(false)
     }
@@ -148,14 +162,14 @@ export function ReservationForm() {
   function resetReservation() {
     form.reset(reservationDefaults)
     setCurrentStepId("class")
-    setResult(undefined)
+    setReservationId(undefined)
     setFlowError(undefined)
   }
 
-  if (result) {
+  if (reservationId !== undefined) {
     return (
       <main className="px-4 py-8 sm:px-6">
-        <SuccessStep {...result} onReset={resetReservation} />
+        <SuccessStep reservationId={reservationId} onReset={resetReservation} />
       </main>
     )
   }
@@ -163,11 +177,25 @@ export function ReservationForm() {
   if (!catalog) {
     return (
       <main className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-3xl flex-col justify-center px-4 sm:px-6">
-        {catalogLoading ? <Spinner className="mb-4 size-6" /> : null}
-        <h1 className="text-2xl font-semibold">{t("loadingTitle")}</h1>
+        {!catalogError ? <Spinner className="mb-4 size-6" /> : null}
+        <h1 className="text-2xl font-semibold">
+          {catalogError ? t("loadError") : t("loadingTitle")}
+        </h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          {t("loadingDescription")}
+          {catalogError ?? t("loadingDescription")}
         </p>
+        {catalogError ? (
+          <Button
+            variant="outline"
+            className="mt-6 w-fit"
+            onClick={() => {
+              setCatalogError(undefined)
+              setCatalogRequest((request) => request + 1)
+            }}
+          >
+            {common("retry")}
+          </Button>
+        ) : null}
       </main>
     )
   }
@@ -208,7 +236,6 @@ export function ReservationForm() {
               <PaginationContent>
                 <PaginationItem>
                   <Button
-                    type="button"
                     variant="ghost"
                     disabled={currentStepIndex === 0 || isWorking}
                     onClick={returnToPreviousStep}

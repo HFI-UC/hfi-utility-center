@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import { getAdmins } from "@/lib/api/admins"
 import { getCampuses, getClasses, getRooms } from "@/lib/api/catalog"
+import { getErrorMessage } from "@/lib/api/client"
 import type { Admin, Campus, Room, SchoolClass } from "@/lib/api/types"
 
 import { ApproverEditor } from "./approver-editor"
@@ -43,13 +44,12 @@ async function loadFacilityData(): Promise<FacilityData> {
 export default function AdminFacilitiesPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
-  const facilityResource = useAdminResource({
-    loadResource: loadFacilityData,
-    initialData: emptyFacilityData,
-  })
-  const { mutate, working } = useAdminMutation({
-    reload: facilityResource.reload,
-  })
+  const facilityResource = useAdminResource(loadFacilityData, emptyFacilityData)
+  const {
+    mutate,
+    working,
+    error: mutationError,
+  } = useAdminMutation(facilityResource.reload)
   const { campuses, classes, rooms, admins } = facilityResource.data
   const editorActions = { mutate, working }
 
@@ -86,6 +86,14 @@ export default function AdminFacilitiesPage() {
           <ApproverEditor rooms={rooms} admins={admins} {...editorActions} />
         </div>
       )}
+      {mutationError || facilityResource.error ? (
+        <p className="mt-7 border-y py-3 text-sm text-destructive">
+          {getErrorMessage(
+            mutationError ?? facilityResource.error,
+            t("facilitiesLoadError")
+          )}
+        </p>
+      ) : null}
     </main>
   )
 }

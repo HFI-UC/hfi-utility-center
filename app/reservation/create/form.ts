@@ -34,9 +34,19 @@ export function useReservationSchema() {
   )
 }
 
-export type ReservationFormValues = z.infer<
-  ReturnType<typeof useReservationSchema>
->
+export type ReservationFormValues = {
+  classId: number
+  bookingCampusId: number
+  room: number
+  date: string
+  startTime: number
+  endTime: number
+  studentName: string
+  studentId: string
+  email: string
+  reason: string
+  isAgreed: boolean
+}
 
 export const reservationDefaults: ReservationFormValues = {
   classId: 0,

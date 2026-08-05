@@ -29,7 +29,6 @@ export function Navbar({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex min-h-16 max-w-[96rem] items-center justify-between gap-4 px-4 py-2 sm:px-8">
           <Link href="/">
             <Button
-              type="button"
               variant="ghost"
               size="sm"
               className="shrink-0 px-2 font-semibold"
@@ -53,7 +52,6 @@ export function Navbar({ children }: { children: React.ReactNode }) {
                   className={item.className}
                 >
                   <Button
-                    type="button"
                     variant={active ? "secondary" : "ghost"}
                     size="sm"
                     className={

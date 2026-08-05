@@ -28,10 +28,19 @@ export function useRoomAvailability({
     setLoading(true)
     setError(undefined)
 
-    const nextAvailability = await getAvailability(room.id, date, room)
-    if (requestId.current !== currentRequest) return
-    setAvailability(nextAvailability)
-    setLoading(false)
+    try {
+      const nextAvailability = await getAvailability(room.id, date, room)
+      if (requestId.current !== currentRequest) return
+      setAvailability(nextAvailability)
+    } catch (error) {
+      if (requestId.current === currentRequest) {
+        setError(
+          error instanceof Error ? error.message : "Unable to load availability"
+        )
+      }
+    } finally {
+      if (requestId.current === currentRequest) setLoading(false)
+    }
   }, [date, room])
 
   useEffect(() => {
@@ -50,7 +59,5 @@ export function useRoomAvailability({
     error,
     loading,
     refresh: loadAvailability,
-    clearError: () => setError(undefined),
-    reportError: setError,
   }
 }

@@ -16,13 +16,13 @@ export default function Page() {
         </h1>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           <Link href="/reservation/create">
-            <Button type="button" size="lg">
+            <Button size="lg">
               <CalendarPlus />
               {nav("book")}
             </Button>
           </Link>
           <Link href="/reservation/search">
-            <Button type="button" size="lg" variant="outline">
+            <Button size="lg" variant="outline">
               <Search />
               {nav("reservations")}
             </Button>

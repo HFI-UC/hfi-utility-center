@@ -138,6 +138,7 @@
     "endDate": "End date",
     "dateRange": "Select date range",
     "loading": "Loading reservations…",
+    "loadError": "Unable to load reservations.",
     "emptyTitle": "No reservations found",
     "emptyDescription": "Adjust the search or filters and try again.",
     "id": "ID",

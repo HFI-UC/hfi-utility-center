@@ -80,9 +80,7 @@ export function TextActionDialog({
           </Field>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline">
-                {cancelLabel}
-              </Button>
+              <Button variant="outline">{cancelLabel}</Button>
             </DialogClose>
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {saveLabel}

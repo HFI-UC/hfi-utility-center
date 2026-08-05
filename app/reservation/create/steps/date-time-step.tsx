@@ -1,4 +1,5 @@
-import { useEffect, useMemo } from "react"
+import { addDays, startOfToday } from "date-fns"
+import { useMemo, useState } from "react"
 import { enUS, zhCN } from "date-fns/locale"
 import { RefreshCw } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
@@ -9,38 +10,31 @@ import { Calendar } from "@/components/ui/calendar"
 import { Spinner } from "@/components/ui/spinner"
 import { dateToInputValue, inputValueToDate } from "@/lib/date-time"
 import type { Room } from "@/lib/api/types"
-import { rangeIsAvailable } from "@/lib/reservations/availability"
+import { isRangeAvailable } from "@/lib/reservations/availability"
 
 import type { ReservationFormValues } from "../form"
 import { StepLayout } from "../step-layout"
-import {
-  buildTimeOptions,
-  timeCanBeSelected,
-  timeIsSelected,
-  type TimeOption,
-} from "./time-options"
 import { useRoomAvailability } from "./use-room-availability"
 
 export function DateTimeStep({ rooms }: { rooms: Room[] }) {
   const t = useTranslations("booking")
   const locale = useLocale()
-  const { clearErrors, control, getValues, setValue, formState } =
+  const { clearErrors, control, setValue, formState } =
     useFormContext<ReservationFormValues>()
   const [roomId, date, startTime, endTime] = useWatch({
     control,
     name: ["room", "date", "startTime", "endTime"],
   })
-  const room = useMemo(
-    () => rooms.find((candidate) => candidate.id === roomId),
-    [roomId, rooms]
-  )
-  const { availability, error, loading, refresh, clearError, reportError } =
-    useRoomAvailability({
-      room,
-      date,
-    })
-  const today = useMemo(() => startOfToday(), [])
-  const maximumDate = useMemo(() => addDays(today, 30), [today])
+  const room = rooms.find((candidate) => candidate.id === roomId)
+  const {
+    availability,
+    error: availabilityError,
+    loading,
+    refresh,
+  } = useRoomAvailability({ room, date })
+  const [selectionError, setSelectionError] = useState<string>()
+  const today = startOfToday()
+  const maximumDate = addDays(today, 30)
   const timeFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(locale, {
@@ -50,34 +44,30 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
       }),
     [locale]
   )
-  const timeOptions = useMemo(
-    () => buildTimeOptions(availability?.slots ?? []),
-    [availability]
-  )
+  const timeOptions = availability
+    ? [
+        ...availability.slots.map((slot) => ({
+          timestamp: slot.startTime,
+          canStartRange: slot.status === "available",
+        })),
+        {
+          timestamp: availability.slots.at(-1)?.endTime ?? 0,
+          canStartRange: false,
+        },
+      ].filter((option) => option.timestamp)
+    : []
 
-  useEffect(() => {
-    if (!availability) return
-    const selectedRange = getValues()
-    if (!selectedRange.startTime || !selectedRange.endTime) return
-    if (
-      rangeIsAvailable(
-        availability.slots,
-        selectedRange.startTime,
-        selectedRange.endTime
-      )
-    ) {
-      return
-    }
-
-    setValue("startTime", 0)
-    setValue("endTime", 0)
-    reportError(t("timeConflict"))
-  }, [availability, getValues, reportError, setValue, t])
+  const selectedRangeUnavailable =
+    availability &&
+    startTime &&
+    endTime &&
+    !isRangeAvailable(availability, startTime, endTime)
 
   function clearSelectedRange() {
     setValue("startTime", 0)
     setValue("endTime", 0)
     clearErrors(["startTime", "endTime"])
+    setSelectionError(undefined)
   }
 
   function selectRangeStart(timestamp: number) {
@@ -91,34 +81,29 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
   }
 
   function selectRangeEnd(timestamp: number) {
-    if (
-      availability &&
-      rangeIsAvailable(availability.slots, startTime, timestamp)
-    ) {
+    if (availability && isRangeAvailable(availability, startTime, timestamp)) {
       setValue("endTime", timestamp, {
         shouldDirty: true,
         shouldTouch: true,
         shouldValidate: true,
       })
       clearErrors("endTime")
-      clearError()
+      setSelectionError(undefined)
       return
     }
 
-    reportError(t("rangeUnavailable"))
+    setSelectionError(t("rangeUnavailable"))
   }
 
-  function selectTime(option: TimeOption) {
-    if (timeIsSelected(option.timestamp, startTime, endTime)) {
+  function selectTime(timestamp: number) {
+    if (isTimeSelected(timestamp, startTime, endTime)) {
       clearSelectedRange()
-      clearError()
       return
     }
 
-    const startsNewRange =
-      !startTime || Boolean(endTime) || option.timestamp < startTime
-    if (startsNewRange) selectRangeStart(option.timestamp)
-    else selectRangeEnd(option.timestamp)
+    if (!startTime || endTime || timestamp < startTime)
+      selectRangeStart(timestamp)
+    else selectRangeEnd(timestamp)
   }
 
   function selectDate(
@@ -126,7 +111,7 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
     onChange: (date: string) => void
   ) {
     if (!selected) return
-    clearError()
+    setSelectionError(undefined)
     clearSelectedRange()
     onChange(dateToInputValue(selected))
   }
@@ -154,7 +139,12 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
     <StepLayout
       step={3}
       title={`${t("dateTitle")} · ${t("timeTitle")}`}
-      error={error ?? fieldError}
+      error={
+        selectionError ??
+        (selectedRangeUnavailable ? t("timeConflict") : undefined) ??
+        availabilityError ??
+        fieldError
+      }
     >
       <div className="grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
         <Controller
@@ -190,7 +180,6 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
                 </p>
               </div>
               <Button
-                type="button"
                 variant="ghost"
                 size="icon"
                 onClick={() => void refresh()}
@@ -214,25 +203,26 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
                 aria-label={t("timeTitle")}
               >
                 {timeOptions.map((option) => {
-                  const selected = timeIsSelected(
+                  const selected = isTimeSelected(
                     option.timestamp,
                     startTime,
                     endTime
                   )
-                  const selectable = timeCanBeSelected({
-                    option,
-                    slots: availability.slots,
-                    startTime,
-                    endTime,
-                  })
+                  const selectable =
+                    !startTime || endTime || option.timestamp <= startTime
+                      ? option.canStartRange
+                      : isRangeAvailable(
+                          availability,
+                          startTime,
+                          option.timestamp
+                        )
                   return (
                     <Button
-                      type="button"
                       key={option.timestamp}
                       disabled={!selectable && !selected}
                       aria-pressed={selected}
                       variant={selected ? "default" : "outline"}
-                      onClick={() => selectTime(option)}
+                      onClick={() => selectTime(option.timestamp)}
                     >
                       {formatTime(option.timestamp)}
                     </Button>
@@ -247,14 +237,9 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
   )
 }
 
-function startOfToday() {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  return today
-}
-
-function addDays(date: Date, days: number) {
-  const result = new Date(date)
-  result.setDate(result.getDate() + days)
-  return result
+function isTimeSelected(timestamp: number, startTime: number, endTime: number) {
+  return (
+    timestamp === startTime ||
+    (Boolean(endTime) && timestamp > startTime && timestamp <= endTime)
+  )
 }

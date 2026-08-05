@@ -71,7 +71,6 @@ function AuthenticatedAdminShell({
                 className="w-full"
               >
                 <Button
-                  type="button"
                   variant={active ? "secondary" : "ghost"}
                   className="w-full justify-start"
                 >
