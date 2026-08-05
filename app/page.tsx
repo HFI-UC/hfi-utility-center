@@ -1,28 +1,34 @@
-import { PenSquare, Search } from "lucide-react"
+"use client"
+
+import { CalendarPlus, Search } from "lucide-react"
 import Link from "next/link"
+import { useTranslations } from "next-intl"
+
+import { Button } from "@/components/ui/button"
 
 export default function Page() {
+  const nav = useTranslations("nav")
   return (
-    <div className="flex w-full flex-col items-center px-8 py-16 sm:px-10 md:px-16">
-      <div className="w-full max-w-2xl">
-        <h1 className="mb-12 text-4xl font-semibold tracking-tight sm:font-medium sm:text-6xl transition-all duration-300">HFI Utility Center</h1>
-        <div className="flex flex-col items-end">
-          <Link
-            href="/reservation/create"
-            className="group flex w-full items-baseline justify-between gap-10 border-b border-border py-3 text-2xl font-medium tracking-tight transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
-          >
-            <span>Book a room</span>
-            <PenSquare className="size-5 shrink-0 translate-y-0.5" />
+    <main className="flex min-h-[calc(100svh-4rem)] items-center justify-center px-4 py-12 sm:px-8">
+      <section className="w-full max-w-4xl text-center">
+        <h1 className="text-4xl font-semibold sm:text-6xl">
+          HFI Utility Center
+        </h1>
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <Link href="/reservation/create">
+            <Button type="button" size="lg">
+              <CalendarPlus />
+              {nav("book")}
+            </Button>
           </Link>
-          <Link
-            href="#"
-            className="group flex w-full items-baseline justify-between gap-10 border-b border-border py-3 text-2xl font-medium tracking-tight transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
-          >
-            <span>Search reservation</span>
-            <Search className="size-5 shrink-0 translate-y-0.5" />
+          <Link href="/reservation/search">
+            <Button type="button" size="lg" variant="outline">
+              <Search />
+              {nav("reservations")}
+            </Button>
           </Link>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   )
 }

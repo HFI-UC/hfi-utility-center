@@ -1,21 +1,48 @@
-# Next.js template
+# HFI Utility Center
 
-This is a Next.js template with shadcn/ui.
+HFI Utility Center is a bilingual campus facility reservation and administration
+application. It uses Next.js App Router, React, TypeScript, shadcn/ui, Tailwind
+CSS, next-intl, React Hook Form, and Zod.
 
-## Adding components
-
-To add components to your app, run the following command:
+## Development
 
 ```bash
-npx shadcn@latest add button
+npm install
+npm run dev
 ```
 
-This will place the ui components in the `components` directory.
+The development server uses `http://localhost:3000` by default.
 
-## Using components
+Environment variables:
 
-To use the components in your app, import them as follows:
+- `NEXT_PUBLIC_BACKEND_URL` selects the backend used by the browser.
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` enables the real Cloudflare Turnstile
+  widget. Password login on localhost requires that site key to allow the
+  `localhost` hostname; there is no development verification bypass.
 
-```tsx
-import { Button } from "@/components/ui/button";
+Copy `.env.example` to `.env.local` and replace the example values when a real
+backend or Turnstile widget is required.
+
+## Architecture
+
+- `app/` contains routes and feature-specific UI. Route pages coordinate data;
+  large interactive views are split into named feature components.
+- `lib/api/` contains the backend transport, endpoint functions, API types, and
+  focused administrator resource/mutation hooks.
+- `lib/reservations/` contains pure reservation availability rules.
+- `components/ui/` contains shadcn primitives and should remain domain-agnostic.
+- `messages/` contains the English and Simplified Chinese translation catalogs.
+
+The browser calls the configured backend directly. The API client preserves the
+legacy response and payload contracts.
+
+## Quality Checks
+
+```bash
+npm run format:check
+npm run typecheck
+npm run lint
+npm run build
 ```
+
+Use `npm run format` to format TypeScript and JavaScript configuration files.
