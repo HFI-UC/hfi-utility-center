@@ -4,6 +4,7 @@ import { Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useForm } from "react-hook-form"
 
+import { AdminSection } from "@/app/admin/admin-shell"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -38,10 +39,9 @@ export function CreateAdminForm({
   }
 
   return (
-    <section className="border-b py-7">
-      <h2 className="text-lg font-semibold">{t("addAdmin")}</h2>
+    <AdminSection title={t("addAdmin")}>
       <form
-        className="mt-4 grid gap-3 md:grid-cols-4"
+        className="grid gap-3 md:grid-cols-2 xl:grid-cols-4"
         onSubmit={form.handleSubmit(createAccount)}
       >
         <Field data-invalid={Boolean(errors.name)}>
@@ -83,6 +83,6 @@ export function CreateAdminForm({
           {t("addAccount")}
         </Button>
       </form>
-    </section>
+    </AdminSection>
   )
 }

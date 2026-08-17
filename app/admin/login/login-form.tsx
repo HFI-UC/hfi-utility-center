@@ -106,7 +106,7 @@ export function AdminLoginForm({
               <FieldError errors={[errors.password]} />
             </Field>
             <Turnstile onToken={handleToken} />
-            {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            <p className="min-h-5 text-sm text-destructive">{error}</p>
             <Button
               className="w-full"
               disabled={form.formState.isSubmitting || !turnstileToken}

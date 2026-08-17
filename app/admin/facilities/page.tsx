@@ -3,8 +3,9 @@
 import { RefreshCw } from "lucide-react"
 import { useTranslations } from "next-intl"
 
-import { AdminPageHeader } from "@/app/admin/admin-shell"
+import { AdminPageHeader, AdminSection } from "@/app/admin/admin-shell"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import { getAdmins } from "@/lib/api/admins"
 import { getCampuses, getClasses, getRooms } from "@/lib/api/catalog"
@@ -52,9 +53,16 @@ export default function AdminFacilitiesPage() {
   })
   const { campuses, classes, rooms, admins } = facilityResource.data
   const editorActions = { mutate, working }
+  const loadingSections = [
+    t("campuses"),
+    t("classes"),
+    t("rooms"),
+    t("approvers"),
+    t("roomPolicies"),
+  ]
 
   return (
-    <main>
+    <main className="space-y-6">
       <AdminPageHeader
         title={t("facilitiesTitle")}
         description={t("facilitiesDescription")}
@@ -69,23 +77,38 @@ export default function AdminFacilitiesPage() {
           </Button>
         }
       />
-      {facilityResource.loading && !rooms.length ? (
-        <p className="py-12 text-sm text-muted-foreground">
-          {t("facilitiesLoading")}
-        </p>
-      ) : (
-        <div className="mt-7 grid gap-x-8 gap-y-10 xl:grid-cols-2">
-          <CampusEditor campuses={campuses} {...editorActions} />
-          <ClassEditor
-            classes={classes}
-            campuses={campuses}
-            {...editorActions}
-          />
-          <RoomEditor rooms={rooms} campuses={campuses} {...editorActions} />
-          <PolicyEditor rooms={rooms} {...editorActions} />
-          <ApproverEditor rooms={rooms} admins={admins} {...editorActions} />
-        </div>
-      )}
+      <div className="grid gap-4 xl:grid-cols-2">
+        {facilityResource.loading && !rooms.length ? (
+          loadingSections.map((title, index) => (
+            <AdminSection
+              key={title}
+              title={title}
+              className={
+                index === loadingSections.length - 1
+                  ? "xl:col-span-2"
+                  : undefined
+              }
+            >
+              <div className="flex min-h-32 items-center gap-2 text-sm text-muted-foreground">
+                <Spinner />
+                {t("facilitiesLoading")}
+              </div>
+            </AdminSection>
+          ))
+        ) : (
+          <>
+            <CampusEditor campuses={campuses} {...editorActions} />
+            <ClassEditor
+              classes={classes}
+              campuses={campuses}
+              {...editorActions}
+            />
+            <RoomEditor rooms={rooms} campuses={campuses} {...editorActions} />
+            <ApproverEditor rooms={rooms} admins={admins} {...editorActions} />
+            <PolicyEditor rooms={rooms} {...editorActions} />
+          </>
+        )}
+      </div>
     </main>
   )
 }

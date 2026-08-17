@@ -4,6 +4,7 @@ import { Bell, BellOff, Plus, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm } from "react-hook-form"
 
+import { AdminSection } from "@/app/admin/admin-shell"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,10 +61,9 @@ export function ApproverEditor({
   }
 
   return (
-    <section>
-      <h2 className="border-b pb-3 text-lg font-semibold">{t("approvers")}</h2>
+    <AdminSection title={t("approvers")}>
       <form
-        className="grid gap-2 py-4 sm:grid-cols-[1fr_1fr_auto]"
+        className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]"
         onSubmit={form.handleSubmit(addApprover)}
       >
         <Controller
@@ -203,6 +203,6 @@ export function ApproverEditor({
           })
         )}
       </div>
-    </section>
+    </AdminSection>
   )
 }

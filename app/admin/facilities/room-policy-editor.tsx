@@ -4,6 +4,7 @@ import { Plus, Power, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm } from "react-hook-form"
 
+import { AdminSection } from "@/app/admin/admin-shell"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -74,12 +75,9 @@ export function PolicyEditor({
   }
 
   return (
-    <section>
-      <h2 className="border-b pb-3 text-lg font-semibold">
-        {t("roomPolicies")}
-      </h2>
+    <AdminSection title={t("roomPolicies")} className="xl:col-span-2">
       <form
-        className="grid gap-2 py-4 sm:grid-cols-2 xl:grid-cols-[1fr_7rem_8rem_8rem_auto]"
+        className="grid gap-2 sm:grid-cols-2 xl:grid-cols-[1fr_7rem_8rem_8rem_auto]"
         onSubmit={form.handleSubmit(createRoomPolicy)}
       >
         <Controller
@@ -228,7 +226,7 @@ export function PolicyEditor({
           ))
         )}
       </div>
-    </section>
+    </AdminSection>
   )
 }
 

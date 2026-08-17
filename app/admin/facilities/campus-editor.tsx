@@ -4,6 +4,7 @@ import { Pencil, Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useForm } from "react-hook-form"
 
+import { AdminSection } from "@/app/admin/admin-shell"
 import { TextActionDialog } from "@/app/admin/text-action-dialog"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError } from "@/components/ui/field"
@@ -32,10 +33,9 @@ export function CampusEditor({
   }
 
   return (
-    <section>
-      <h2 className="border-b pb-3 text-lg font-semibold">{t("campuses")}</h2>
+    <AdminSection title={t("campuses")}>
       <form
-        className="flex gap-2 py-4"
+        className="flex gap-2"
         onSubmit={form.handleSubmit(createNewCampus)}
       >
         <Field className="flex-1" data-invalid={Boolean(nameError)}>
@@ -88,6 +88,6 @@ export function CampusEditor({
           </div>
         ))}
       </div>
-    </section>
+    </AdminSection>
   )
 }

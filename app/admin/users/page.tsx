@@ -3,8 +3,9 @@
 import { RefreshCw } from "lucide-react"
 import { useTranslations } from "next-intl"
 
-import { AdminPageHeader } from "@/app/admin/admin-shell"
+import { AdminPageHeader, AdminSection } from "@/app/admin/admin-shell"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import { getAdmins } from "@/lib/api/admins"
 import type { Admin } from "@/lib/api/types"
@@ -24,7 +25,7 @@ export default function AdminUsersPage() {
   })
 
   return (
-    <main>
+    <main className="space-y-6">
       <AdminPageHeader
         title={t("usersTitle")}
         description={t("usersDescription")}
@@ -40,14 +41,21 @@ export default function AdminUsersPage() {
         }
       />
       <CreateAdminForm mutate={mutate} working={working} />
-      {notice ? (
-        <p className="border-b py-3 text-sm text-foreground">{notice}</p>
-      ) : null}
-      <AdminList
-        admins={adminResource.data}
-        mutate={mutate}
-        working={working}
-      />
+      <AdminSection title={t("users")}>
+        {notice ? <p className="text-sm text-foreground">{notice}</p> : null}
+        {adminResource.loading ? (
+          <div className="flex min-h-32 items-center gap-2 text-sm text-muted-foreground">
+            <Spinner />
+            {t("usersLoading")}
+          </div>
+        ) : (
+          <AdminList
+            admins={adminResource.data}
+            mutate={mutate}
+            working={working}
+          />
+        )}
+      </AdminSection>
     </main>
   )
 }

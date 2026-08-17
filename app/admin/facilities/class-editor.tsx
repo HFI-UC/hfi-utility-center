@@ -4,6 +4,7 @@ import { Pencil, Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm } from "react-hook-form"
 
+import { AdminSection } from "@/app/admin/admin-shell"
 import { TextActionDialog } from "@/app/admin/text-action-dialog"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError } from "@/components/ui/field"
@@ -50,10 +51,9 @@ export function ClassEditor({
   }
 
   return (
-    <section>
-      <h2 className="border-b pb-3 text-lg font-semibold">{t("classes")}</h2>
+    <AdminSection title={t("classes")}>
       <form
-        className="grid gap-2 py-4 sm:grid-cols-[1fr_10rem_auto]"
+        className="grid gap-2 sm:grid-cols-[1fr_10rem_auto]"
         onSubmit={form.handleSubmit(createNewClass)}
       >
         <Field data-invalid={Boolean(nameError)}>
@@ -116,7 +116,7 @@ export function ClassEditor({
           </div>
         ))}
       </div>
-    </section>
+    </AdminSection>
   )
 }
 

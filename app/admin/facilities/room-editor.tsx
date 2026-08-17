@@ -4,6 +4,7 @@ import { Pencil, Plus, Power } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm, type Control } from "react-hook-form"
 
+import { AdminSection } from "@/app/admin/admin-shell"
 import { TextActionDialog } from "@/app/admin/text-action-dialog"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError } from "@/components/ui/field"
@@ -45,10 +46,9 @@ export function RoomEditor({
   }
 
   return (
-    <section>
-      <h2 className="border-b pb-3 text-lg font-semibold">{t("rooms")}</h2>
+    <AdminSection title={t("rooms")}>
       <form
-        className="grid gap-2 py-4 sm:grid-cols-[1fr_10rem_auto]"
+        className="grid gap-2 sm:grid-cols-[1fr_10rem_auto]"
         onSubmit={form.handleSubmit(createNewRoom)}
       >
         <Field data-invalid={Boolean(nameError)}>
@@ -125,7 +125,7 @@ export function RoomEditor({
           </div>
         ))}
       </div>
-    </section>
+    </AdminSection>
   )
 }
 
