@@ -133,15 +133,14 @@ function CampusField({
       control={control}
       name="campus"
       rules={{ required: t("fieldRequired") }}
-      render={({ field, fieldState }) => (
+      render={({ field: { onBlur, onChange, ref, ...field }, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
           <Select
-            name={field.name}
-            value={field.value}
-            onValueChange={field.onChange}
-            onOpenChange={(open) => !open && field.onBlur()}
+            {...field}
+            onValueChange={onChange}
+            onOpenChange={(open) => !open && onBlur()}
           >
-            <SelectTrigger ref={field.ref} aria-invalid={fieldState.invalid}>
+            <SelectTrigger ref={ref} aria-invalid={fieldState.invalid}>
               <SelectValue placeholder={t("selectCampus")} />
             </SelectTrigger>
             <SelectContent>

@@ -21,24 +21,18 @@ export function ReservationTermsDialog() {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          type="button"
-          variant="link"
-          className="h-auto p-0 align-baseline"
-        >
-          {t("terms.link")}
-        </Button>
+      <DialogTrigger className="cursor-pointer leading-snug font-medium underline underline-offset-4">
+        {t("terms.link")}
       </DialogTrigger>
-      <DialogContent className="max-h-[calc(100svh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 rounded-lg border bg-popover shadow-2xl sm:max-w-3xl">
-        <DialogHeader className="border-b pr-8 pb-5">
-          <DialogTitle className="text-xl">{t("terms.title")}</DialogTitle>
+      <DialogContent className="max-h-[calc(100svh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto] sm:max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>{t("terms.title")}</DialogTitle>
           <DialogDescription className="sr-only">
             {t("terms.description")}
           </DialogDescription>
         </DialogHeader>
-        <div className="overflow-y-auto py-5 pr-3">
-          <ol className="space-y-4 pr-2 leading-7 text-muted-foreground">
+        <div className="overflow-y-auto pr-3">
+          <ol className="space-y-4 pr-2 leading-7 text-foreground">
             {terms.map((term, index) => (
               <li key={term} className="grid grid-cols-[2rem_minmax(0,1fr)]">
                 <span aria-hidden="true" className="tabular-nums">
@@ -49,11 +43,9 @@ export function ReservationTermsDialog() {
             ))}
           </ol>
         </div>
-        <DialogFooter className="border-t pt-5">
+        <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">
-              {t("terms.close")}
-            </Button>
+            <Button variant="outline">{t("terms.close")}</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

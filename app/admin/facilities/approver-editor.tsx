@@ -70,18 +70,17 @@ export function ApproverEditor({
           control={form.control}
           name="room"
           rules={{ required: t("fieldRequired") }}
-          render={({ field, fieldState }) => (
+          render={({
+            field: { onBlur, onChange, ref, ...field },
+            fieldState,
+          }) => (
             <Field data-invalid={fieldState.invalid}>
               <Select
-                name={field.name}
-                value={field.value}
-                onValueChange={field.onChange}
-                onOpenChange={(open) => !open && field.onBlur()}
+                {...field}
+                onValueChange={onChange}
+                onOpenChange={(open) => !open && onBlur()}
               >
-                <SelectTrigger
-                  ref={field.ref}
-                  aria-invalid={fieldState.invalid}
-                >
+                <SelectTrigger ref={ref} aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder={t("selectRoom")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -100,18 +99,17 @@ export function ApproverEditor({
           control={form.control}
           name="admin"
           rules={{ required: t("fieldRequired") }}
-          render={({ field, fieldState }) => (
+          render={({
+            field: { onBlur, onChange, ref, ...field },
+            fieldState,
+          }) => (
             <Field data-invalid={fieldState.invalid}>
               <Select
-                name={field.name}
-                value={field.value}
-                onValueChange={field.onChange}
-                onOpenChange={(open) => !open && field.onBlur()}
+                {...field}
+                onValueChange={onChange}
+                onOpenChange={(open) => !open && onBlur()}
               >
-                <SelectTrigger
-                  ref={field.ref}
-                  aria-invalid={fieldState.invalid}
-                >
+                <SelectTrigger ref={ref} aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder={t("selectAdmin")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -159,9 +157,7 @@ export function ApproverEditor({
                     title={t("toggleNotifications")}
                     disabled={working}
                     onClick={() =>
-                      void mutate(() =>
-                        toggleApproverNotifications(approver.id)
-                      )
+                      mutate(() => toggleApproverNotifications(approver.id))
                     }
                   >
                     {approver.notificationsEnabled ? <Bell /> : <BellOff />}
@@ -193,7 +189,7 @@ export function ApproverEditor({
                         <AlertDialogAction
                           variant="destructive"
                           onClick={() =>
-                            void mutate(() => deleteApprover(approver.id))
+                            mutate(() => deleteApprover(approver.id))
                           }
                         >
                           {common("delete")}

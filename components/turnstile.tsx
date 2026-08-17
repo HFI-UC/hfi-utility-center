@@ -89,7 +89,7 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
       })
     }
 
-    void renderWidget()
+    renderWidget()
     return () => {
       active = false
       if (widgetId && window.turnstile) window.turnstile.remove(widgetId)
@@ -111,7 +111,7 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
     return (
       <div className="flex items-center justify-between gap-3 border-y py-3">
         <p className="text-sm text-destructive">{t("turnstileLoadFailed")}</p>
-        <Button type="button" size="sm" variant="outline" onClick={retry}>
+        <Button  size="sm" variant="outline" onClick={retry}>
           <RefreshCw />
           {t("retryVerification")}
         </Button>

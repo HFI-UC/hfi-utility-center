@@ -1,16 +1,21 @@
 "use client"
 
+import type { ReactNode } from "react"
 import { format } from "date-fns"
 import { enUS, zhCN } from "date-fns/locale"
 import { CalendarDays, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, type SubmitHandler } from "react-hook-form"
 import type { DateRange } from "react-day-picker"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import {
   Popover,
   PopoverContent,
@@ -50,7 +55,7 @@ export function ReservationSearchFilterForm({
   const common = useTranslations("common")
   const statusT = useTranslations("status")
   const dateLocale = useLocale() === "zh-CN" ? zhCN : enUS
-  const form = useForm<SearchFormValues>({
+  const { control, handleSubmit, register } = useForm<SearchFormValues>({
     defaultValues: {
       keyword: filters.keyword,
       room: filters.roomId ? String(filters.roomId) : "all",
@@ -62,7 +67,7 @@ export function ReservationSearchFilterForm({
     },
   })
 
-  function search(values: SearchFormValues) {
+  const onSubmit: SubmitHandler<SearchFormValues> = (values) => {
     const startDate = values.dateRange?.from
       ? format(values.dateRange.from, "yyyy-MM-dd")
       : ""
@@ -87,69 +92,64 @@ export function ReservationSearchFilterForm({
 
   return (
     <form
-      className="grid gap-3 border-b py-5 sm:grid-cols-2 xl:grid-cols-[minmax(16rem,2fr)_1fr_1fr_1.5fr_auto]"
-      onSubmit={form.handleSubmit(search)}
+      className="grid gap-3 py-4 sm:grid-cols-2 xl:grid-cols-[minmax(16rem,2fr)_1fr_1fr_1.5fr_auto]"
+      onSubmit={handleSubmit(onSubmit)}
     >
-      <label className="relative">
+      <label>
         <span className="sr-only">{t("keyword")}</span>
-        <Search className="absolute top-2.5 left-3 size-4 text-muted-foreground" />
-        <Input
-          {...form.register("keyword")}
-          className="pl-9"
-          placeholder={t("keyword")}
-        />
+        <InputGroup>
+          <InputGroupInput
+            {...register("keyword")}
+            placeholder={t("keyword")}
+          />
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+        </InputGroup>
       </label>
 
       <Controller
-        control={form.control}
+        control={control}
         name="room"
         render={({ field }) => (
-          <Select value={field.value} onValueChange={field.onChange}>
-            <SelectTrigger ref={field.ref} className="w-full">
-              <SelectValue placeholder={t("allRooms")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("allRooms")}</SelectItem>
-              {catalog?.rooms.map((room) => (
-                <SelectItem key={room.id} value={String(room.id)}>
-                  {room.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FilterSelect {...field} allLabel={t("allRooms")}>
+            {catalog?.rooms.map((room) => (
+              <SelectItem key={room.id} value={String(room.id)}>
+                {room.name}
+              </SelectItem>
+            ))}
+          </FilterSelect>
         )}
       />
 
       <Controller
-        control={form.control}
+        control={control}
         name="status"
         render={({ field }) => (
-          <Select value={field.value} onValueChange={field.onChange}>
-            <SelectTrigger ref={field.ref} className="w-full">
-              <SelectValue placeholder={t("allStatuses")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("allStatuses")}</SelectItem>
-              {(["pending", "approved", "rejected"] as const).map((status) => (
-                <SelectItem key={status} value={status}>
-                  {statusT(status)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FilterSelect {...field} allLabel={t("allStatuses")}>
+            {(["pending", "approved", "rejected"] as const).map((status) => (
+              <SelectItem key={status} value={status}>
+                {statusT(status)}
+              </SelectItem>
+            ))}
+          </FilterSelect>
         )}
       />
 
       <Controller
-        control={form.control}
+        control={control}
         name="dateRange"
-        render={({ field }) => (
+        render={({ field: { value, onChange, ...field } }) => (
           <Popover>
             <PopoverTrigger asChild>
-              <Button type="button" variant="outline" className="justify-start">
+              <Button
+                {...field}
+                variant="outline"
+                className="justify-start text-left font-normal"
+              >
                 <CalendarDays />
                 <DateRangeLabel
-                  range={field.value}
+                  range={value}
                   locale={dateLocale}
                   placeholder={t("dateRange")}
                 />
@@ -159,8 +159,8 @@ export function ReservationSearchFilterForm({
               <Calendar
                 mode="range"
                 numberOfMonths={2}
-                selected={field.value}
-                onSelect={field.onChange}
+                selected={value}
+                onSelect={onChange}
                 locale={dateLocale}
               />
             </PopoverContent>
@@ -176,6 +176,32 @@ export function ReservationSearchFilterForm({
   )
 }
 
+function FilterSelect({
+  name,
+  value,
+  onChange,
+  allLabel,
+  children,
+}: {
+  name: string
+  value: string
+  onChange: (value: string) => void
+  allLabel: string
+  children: ReactNode
+}) {
+  return (
+    <Select name={name} value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">{allLabel}</SelectItem>
+        {children}
+      </SelectContent>
+    </Select>
+  )
+}
+
 function DateRangeLabel({
   range,
   locale,
@@ -185,7 +211,9 @@ function DateRangeLabel({
   locale: typeof enUS
   placeholder: string
 }) {
-  if (!range?.from) return placeholder
+  if (!range?.from) {
+    return <span className="text-muted-foreground">{placeholder}</span>
+  }
   const start = format(range.from, "PP", { locale })
   if (!range.to) return start
   return `${start} - ${format(range.to, "PP", { locale })}`

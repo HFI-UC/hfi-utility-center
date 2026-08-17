@@ -86,18 +86,17 @@ export function PolicyEditor({
           control={form.control}
           name="room"
           rules={{ required: t("fieldRequired") }}
-          render={({ field, fieldState }) => (
+          render={({
+            field: { onBlur, onChange, ref, ...field },
+            fieldState,
+          }) => (
             <Field data-invalid={fieldState.invalid}>
               <Select
-                name={field.name}
-                value={field.value}
-                onValueChange={field.onChange}
-                onOpenChange={(open) => !open && field.onBlur()}
+                {...field}
+                onValueChange={onChange}
+                onOpenChange={(open) => !open && onBlur()}
               >
-                <SelectTrigger
-                  ref={field.ref}
-                  aria-invalid={fieldState.invalid}
-                >
+                <SelectTrigger ref={ref} aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder={t("selectRoom")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -116,18 +115,17 @@ export function PolicyEditor({
           control={form.control}
           name="day"
           rules={{ required: t("fieldRequired") }}
-          render={({ field, fieldState }) => (
+          render={({
+            field: { onBlur, onChange, ref, ...field },
+            fieldState,
+          }) => (
             <Field data-invalid={fieldState.invalid}>
               <Select
-                name={field.name}
-                value={field.value}
-                onValueChange={field.onChange}
-                onOpenChange={(open) => !open && field.onBlur()}
+                {...field}
+                onValueChange={onChange}
+                onOpenChange={(open) => !open && onBlur()}
               >
-                <SelectTrigger
-                  ref={field.ref}
-                  aria-invalid={fieldState.invalid}
-                >
+                <SelectTrigger ref={ref} aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder={t("selectDay")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -192,7 +190,7 @@ export function PolicyEditor({
                   variant="ghost"
                   title={t("togglePolicy")}
                   disabled={working}
-                  onClick={() => void mutate(() => togglePolicy(policy.id))}
+                  onClick={() => mutate(() => togglePolicy(policy.id))}
                 >
                   <Power />
                 </Button>
@@ -218,9 +216,7 @@ export function PolicyEditor({
                       <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
                       <AlertDialogAction
                         variant="destructive"
-                        onClick={() =>
-                          void mutate(() => deletePolicy(policy.id))
-                        }
+                        onClick={() => mutate(() => deletePolicy(policy.id))}
                       >
                         {common("delete")}
                       </AlertDialogAction>

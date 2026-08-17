@@ -108,9 +108,9 @@ function MobileReservationList({
           </header>
           <dl className="mt-3 grid grid-cols-[5rem_minmax(0,1fr)] gap-x-3 gap-y-2 text-sm">
             <dt className="text-muted-foreground">{t("class")}</dt>
-            <dd className="break-words">{reservation.className}</dd>
+            <dd className="wrap-break-word">{reservation.className}</dd>
             <dt className="text-muted-foreground">{t("room")}</dt>
-            <dd className="break-words">{reservation.roomName}</dd>
+            <dd className="wrap-break-word">{reservation.roomName}</dd>
             <dt className="text-muted-foreground">{t("start")}</dt>
             <dd>{formatDateTime(reservation.startTime)}</dd>
             <dt className="text-muted-foreground">{t("end")}</dt>
@@ -122,7 +122,7 @@ function MobileReservationList({
               <span className="text-muted-foreground">{reservation.email}</span>
             </dd>
             <dt className="text-muted-foreground">{t("reason")}</dt>
-            <dd className="break-words">{reservation.reason}</dd>
+            <dd className="wrap-break-word">{reservation.reason}</dd>
           </dl>
         </article>
       ))}

@@ -25,7 +25,7 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
       if (active) setCatalog(nextCatalog)
     }
 
-    void loadCatalog()
+    loadCatalog()
     return () => {
       active = false
     }
@@ -37,15 +37,17 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
     async function loadReservations() {
       setLoading(true)
 
-      const nextResult = await getReservations(
-        reservationSearchRequest(filters)
-      )
-      if (requestId.current !== currentRequest) return
-      setResult(nextResult)
-      setLoading(false)
+      try {
+        const nextResult = await getReservations(
+          reservationSearchRequest(filters)
+        )
+        if (requestId.current === currentRequest) setResult(nextResult)
+      } finally {
+        if (requestId.current === currentRequest) setLoading(false)
+      }
     }
 
-    void loadReservations()
+    loadReservations()
 
     return () => {
       requestId.current += 1

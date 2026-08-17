@@ -4,6 +4,8 @@
     "book": "Book",
     "reservations": "Reservations",
     "admin": "Admin",
+    "menu": "Menu",
+    "menuDescription": "Navigate the utility center and change your preferences.",
     "theme": "Toggle theme",
     "language": "Language",
     "switchLanguage": "Switch to Chinese",
@@ -42,6 +44,7 @@
     "rejected": "Rejected"
   },
   "booking": {
+    "createTitle": "Create Reservation",
     "progress": "Booking progress",
     "step": "Step {current} of {total}",
     "loadingTitle": "Preparing booking data",
@@ -57,6 +60,7 @@
     "disabled": "Unavailable",
     "rules": "{count} policies",
     "roomEmpty": "No rooms at this campus",
+    "dateTimeTitle": "Date & time",
     "dateTitle": "Choose a date",
     "dateDescription": "Bookings are available from today through the next 30 days.",
     "timeTitle": "Choose a time",
@@ -77,9 +81,13 @@
     "timeConflict": "That time is occupied or restricted by room policy. Choose again.",
     "profileTitle": "Enter reservation details",
     "name": "Name",
+    "nameDescription": "Enter your full name.",
     "studentId": "Student ID",
+    "studentIdDescription": "Use the student ID shown on your campus card.",
     "email": "Email",
+    "emailDescription": "Reservation updates will be sent to this address.",
     "reason": "Reason",
+    "reasonDescription": "Briefly describe what you need the room for.",
     "agree": "I have read and agree to the booking rules.",
     "agreementPrefix": "I have read and agree to the",
     "terms": {

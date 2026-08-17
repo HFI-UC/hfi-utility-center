@@ -31,7 +31,7 @@ export default function AdminUsersPage() {
         actions={
           <Button
             variant="outline"
-            onClick={() => void adminResource.reload()}
+            onClick={adminResource.reload}
             disabled={adminResource.loading}
           >
             <RefreshCw />

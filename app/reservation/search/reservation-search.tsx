@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl"
 
+import { Spinner } from "@/components/ui/spinner"
 import type { Reservation } from "@/lib/api/types"
 
 import { ReservationResults } from "./reservation-results"
@@ -22,12 +23,9 @@ export function ReservationSearch({
   const { catalog, result, loading } = useReservationSearch(filters)
 
   return (
-    <main className="mx-auto max-w-[96rem] px-4 py-8 sm:px-8 sm:py-10">
-      <header className="border-b pb-6">
+    <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-8 sm:px-8 sm:py-10">
+      <header className="pb-2">
         <h1 className="text-3xl font-semibold">{t("title")}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t("total", { count: result.total })}
-        </p>
       </header>
 
       <ReservationSearchFilterForm
@@ -62,9 +60,10 @@ function SearchContent({
   if (loading) {
     return (
       <p
-        className="border-b py-16 text-sm text-muted-foreground"
+        className="flex items-center gap-2 py-5 text-sm text-muted-foreground"
         aria-live="polite"
       >
+        <Spinner />
         {t("loading")}
       </p>
     )
@@ -74,7 +73,7 @@ function SearchContent({
   }
 
   return (
-    <section className="border-b py-16">
+    <section className="py-16">
       <p className="font-medium">{t("emptyTitle")}</p>
       <p className="mt-2 text-sm text-muted-foreground">
         {t("emptyDescription")}

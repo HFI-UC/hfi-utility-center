@@ -19,30 +19,30 @@ export function useAdminResource<T>({
   loadResource: () => Promise<T>
   initialData: T
 }) {
-  const requestId = useRef(0)
   const [data, setData] = useState(initialData)
   const [loading, setLoading] = useState(true)
 
   const reload = useCallback(async () => {
-    const currentRequest = ++requestId.current
     setLoading(true)
 
-    const nextData = await loadResource()
-    if (requestId.current !== currentRequest) return
-    setData(nextData)
-    setLoading(false)
+    try {
+      setData(await loadResource())
+    } finally {
+      setLoading(false)
+    }
   }, [loadResource])
 
   useEffect(() => {
-    async function loadInitialResource() {
-      await reload()
+    async function loadInitialData() {
+      try {
+        setData(await loadResource())
+      } finally {
+        setLoading(false)
+      }
     }
 
-    void loadInitialResource()
-    return () => {
-      requestId.current += 1
-    }
-  }, [reload])
+    loadInitialData()
+  }, [loadResource])
 
   return {
     data,
@@ -64,12 +64,15 @@ export function useAdminMutation({ reload }: { reload: () => Promise<void> }) {
       setWorking(true)
       setNotice(undefined)
 
-      await action()
-      setNotice(successMessage)
-      await reload()
-      mutationInProgress.current = false
-      setWorking(false)
-      return true
+      try {
+        await action()
+        setNotice(successMessage)
+        await reload()
+        return true
+      } finally {
+        mutationInProgress.current = false
+        setWorking(false)
+      }
     },
     [reload]
   )
@@ -84,18 +87,20 @@ export function useAdminSession(initialPath: string) {
   useEffect(() => {
     let active = true
 
-    checkLogin()
-      .then(() => {
-        if (active) setStatus("authenticated")
-      })
-      .catch(() => {
-        if (active) {
-          setStatus("unauthenticated")
-          router.replace(
-            `/admin/login?redirect=${encodeURIComponent(initialPath)}`
-          )
-        }
-      })
+    async function loadSession() {
+      const authenticated = await checkLogin()
+      if (!active) return
+
+      if (authenticated) {
+        setStatus("authenticated")
+        return
+      }
+
+      setStatus("unauthenticated")
+      router.replace(`/admin/login?redirect=${encodeURIComponent(initialPath)}`)
+    }
+
+    loadSession()
 
     return () => {
       active = false

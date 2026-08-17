@@ -34,19 +34,15 @@ export function ReviewStep({ catalog }: { catalog: CatalogData }) {
     { label: t("reason"), value: values.reason },
   ]
   return (
-    <StepLayout
-      step={5}
-      title={t("reviewTitle")}
-      description={t("reviewDescription")}
-    >
+    <StepLayout title={t("reviewTitle")} description={t("reviewDescription")}>
       <dl className="border-t">
         {rows.map(({ label, value }) => (
           <div
             key={label}
-            className="grid gap-2 border-b py-4 sm:grid-cols-[10rem_1fr]"
+            className="grid items-baseline gap-2 border-b py-4 text-sm font-normal sm:grid-cols-[10rem_1fr]"
           >
-            <dt className="text-sm text-muted-foreground">{label}</dt>
-            <dd className="font-medium break-words">{value}</dd>
+            <dt className="text-muted-foreground">{label}</dt>
+            <dd className="wrap-break-word">{value}</dd>
           </div>
         ))}
       </dl>

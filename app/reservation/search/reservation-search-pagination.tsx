@@ -1,12 +1,15 @@
+import type { ComponentProps } from "react"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import Link from "next/link"
+
+import { buttonVariants } from "@/components/ui/button"
 import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination"
+import { cn } from "@/lib/utils"
 
 import {
   reservationSearchHref,
@@ -33,17 +36,20 @@ export function ReservationSearchPagination({
   const atLastPage = filters.page >= totalPages - 1
 
   return (
-    <Pagination className="border-t pt-5">
+    <Pagination className="pt-6">
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious
+          <PaginationRouteLink
             href={reservationSearchHref(filters, Math.max(0, filters.page - 1))}
-            text={previousLabel}
+            size="default"
             aria-disabled={atFirstPage}
             className={
               atFirstPage ? "pointer-events-none opacity-50" : undefined
             }
-          />
+          >
+            <ChevronLeftIcon />
+            <span className="hidden sm:block">{previousLabel}</span>
+          </PaginationRouteLink>
         </PaginationItem>
         {pages.map((page, index) => (
           <span key={page} className="contents">
@@ -53,29 +59,53 @@ export function ReservationSearchPagination({
               </PaginationItem>
             ) : null}
             <PaginationItem>
-              <PaginationLink
+              <PaginationRouteLink
                 href={reservationSearchHref(filters, page)}
-                isActive={page === filters.page}
+                active={page === filters.page}
               >
                 {page + 1}
-              </PaginationLink>
+              </PaginationRouteLink>
             </PaginationItem>
           </span>
         ))}
         <PaginationItem>
-          <PaginationNext
+          <PaginationRouteLink
             href={reservationSearchHref(
               filters,
               Math.min(totalPages - 1, filters.page + 1)
             )}
-            text={nextLabel}
+            size="default"
             aria-disabled={atLastPage}
             className={
               atLastPage ? "pointer-events-none opacity-50" : undefined
             }
-          />
+          >
+            <span className="hidden sm:block">{nextLabel}</span>
+            <ChevronRightIcon />
+          </PaginationRouteLink>
         </PaginationItem>
       </PaginationContent>
     </Pagination>
+  )
+}
+
+function PaginationRouteLink({
+  active,
+  size = "icon",
+  className,
+  ...props
+}: ComponentProps<typeof Link> & {
+  active?: boolean
+  size?: "default" | "icon"
+}) {
+  return (
+    <Link
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        buttonVariants({ variant: active ? "outline" : "ghost", size }),
+        className
+      )}
+      {...props}
+    />
   )
 }

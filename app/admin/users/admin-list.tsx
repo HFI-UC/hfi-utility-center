@@ -84,7 +84,7 @@ export function AdminList({
                   <AlertDialogAction
                     variant="destructive"
                     onClick={() =>
-                      void mutate(
+                      mutate(
                         () => deleteAdmin(admin.id),
                         t("adminDeleted")
                       )

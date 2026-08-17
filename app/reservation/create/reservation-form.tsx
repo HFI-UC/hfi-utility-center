@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -15,6 +15,7 @@ import {
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
 import { createReservation, getAvailability } from "@/lib/api/reservations"
+import type { CatalogData } from "@/lib/api/types"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
 
 import {
@@ -30,13 +31,12 @@ import { LocationStep } from "./steps/location-step"
 import { ProfileStep } from "./steps/profile-step"
 import { ReviewStep } from "./steps/review-step"
 import { SuccessStep } from "./steps/success-step"
-import { useReservationCatalog } from "./use-reservation-catalog"
 
 type ReservationResult = {
   reservationId?: number
 }
 
-export function ReservationForm() {
+export function ReservationForm({ catalog }: { catalog: CatalogData }) {
   const t = useTranslations("booking")
   const common = useTranslations("common")
   const schema = useReservationSchema()
@@ -44,23 +44,18 @@ export function ReservationForm() {
     resolver: zodResolver(schema),
     defaultValues: reservationDefaults,
     mode: "onTouched",
-    reValidateMode: "onChange",
-    shouldUnregister: false,
   })
   const [currentStepId, setCurrentStepId] = useState<BookingStepId>("class")
   const [flowError, setFlowError] = useState<string>()
   const [isWorking, setIsWorking] = useState(false)
   const [result, setResult] = useState<ReservationResult>()
-  const { catalog, loading: catalogLoading } = useReservationCatalog()
   const currentStepIndex = bookingSteps.findIndex(
     (step) => step.id === currentStepId
   )
   const currentStep = bookingSteps[currentStepIndex]
 
   async function selectedTimeIsStillAvailable(values: ReservationFormValues) {
-    const room = catalog?.rooms.find(
-      (candidate) => candidate.id === values.room
-    )
+    const room = catalog.rooms.find((candidate) => candidate.id === values.room)
     if (!room) {
       setFlowError(t("availabilityError"))
       return false
@@ -120,22 +115,10 @@ export function ReservationForm() {
         startTime: values.startTime,
         endTime: values.endTime,
       })
-      setResult({
-        reservationId: response?.reservationId,
-      })
+      setResult({ reservationId: response.reservationId })
     } finally {
       setIsWorking(false)
     }
-  }
-
-  async function handleStepSubmit(event: FormEvent<HTMLFormElement>) {
-    if (currentStep.id === "review") {
-      await form.handleSubmit(confirmReservation)(event)
-      return
-    }
-
-    event.preventDefault()
-    await continueToNextStep()
   }
 
   function returnToPreviousStep() {
@@ -146,7 +129,7 @@ export function ReservationForm() {
   }
 
   function resetReservation() {
-    form.reset(reservationDefaults)
+    form.reset()
     setCurrentStepId("class")
     setResult(undefined)
     setFlowError(undefined)
@@ -154,20 +137,11 @@ export function ReservationForm() {
 
   if (result) {
     return (
-      <main className="px-4 py-8 sm:px-6">
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-5 py-8 sm:px-8">
+        <h1 className="text-2xl font-semibold sm:text-3xl">
+          {t("createTitle")}
+        </h1>
         <SuccessStep {...result} onReset={resetReservation} />
-      </main>
-    )
-  }
-
-  if (!catalog) {
-    return (
-      <main className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-3xl flex-col justify-center px-4 sm:px-6">
-        {catalogLoading ? <Spinner className="mb-4 size-6" /> : null}
-        <h1 className="text-2xl font-semibold">{t("loadingTitle")}</h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          {t("loadingDescription")}
-        </p>
       </main>
     )
   }
@@ -184,19 +158,34 @@ export function ReservationForm() {
     <FormProvider {...form}>
       <form
         noValidate
-        onSubmit={(event) => void handleStepSubmit(event)}
-        className="min-h-[calc(100svh-4rem)]"
+        onSubmit={form.handleSubmit(confirmReservation)}
+        className="flex flex-1 flex-col"
       >
-        <Progress
-          className="mx-auto mt-8 max-w-7xl"
-          value={((currentStepIndex + 1) / bookingSteps.length) * 100}
-          aria-label={t("progress")}
-        />
-        <div className="px-4 py-10 sm:px-8 sm:py-14">
+        <div className="px-5 pt-8 sm:px-8 sm:pt-10">
+          <header className="mx-auto max-w-5xl">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+              <h1 className="text-2xl font-semibold sm:text-3xl">
+                {t("createTitle")}
+              </h1>
+              <p className="text-sm font-medium text-muted-foreground">
+                {t("step", {
+                  current: currentStepIndex + 1,
+                  total: bookingSteps.length,
+                })}
+              </p>
+            </div>
+            <Progress
+              className="mt-4"
+              value={((currentStepIndex + 1) / bookingSteps.length) * 100}
+              aria-label={t("progress")}
+            />
+          </header>
+        </div>
+        <div className="flex-1 px-5 py-6 sm:px-8 sm:py-8">
           {stepContent[currentStep.id]}
         </div>
-        <div className="sticky bottom-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-8">
+        <div className="sticky bottom-0 z-20 border-t bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/80 sm:px-8">
+          <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 py-3">
             <div className="flex items-center gap-3">
               {flowError ? (
                 <p className="hidden max-w-md text-right text-xs text-destructive sm:block">
@@ -217,20 +206,31 @@ export function ReservationForm() {
                     {common("back")}
                   </Button>
                 </PaginationItem>
-                <PaginationItem>
-                  <Button type="submit" disabled={isWorking}>
-                    {isWorking ? <Spinner /> : null}
-                    {currentStep.id === "review"
-                      ? t("confirmReservation")
-                      : common("next")}
-                    {currentStep.id !== "review" ? <ArrowRight /> : null}
-                  </Button>
-                </PaginationItem>
+                {currentStep.id === "review" ? (
+                  <PaginationItem key="confirm">
+                    <Button type="submit" disabled={isWorking}>
+                      {isWorking ? <Spinner /> : null}
+                      {t("confirmReservation")}
+                    </Button>
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key="next">
+                    <Button
+                      type="button"
+                      disabled={isWorking}
+                      onClick={continueToNextStep}
+                    >
+                      {isWorking ? <Spinner /> : null}
+                      {common("next")}
+                      <ArrowRight />
+                    </Button>
+                  </PaginationItem>
+                )}
               </PaginationContent>
             </Pagination>
           </div>
           {flowError ? (
-            <p className="px-4 pb-3 text-xs text-destructive sm:hidden">
+            <p className="pb-3 text-xs text-destructive sm:hidden">
               {flowError}
             </p>
           ) : null}

@@ -61,7 +61,7 @@ export default function AdminFacilitiesPage() {
         actions={
           <Button
             variant="outline"
-            onClick={() => void facilityResource.reload()}
+            onClick={facilityResource.reload}
             disabled={facilityResource.loading}
           >
             <RefreshCw />

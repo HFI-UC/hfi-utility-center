@@ -41,13 +41,16 @@ function AuthenticatedAdminShell({
   ]
 
   async function signOut() {
-    await logout().catch(() => undefined)
-    router.replace("/admin/login")
+    try {
+      await logout()
+    } finally {
+      router.replace("/admin/login")
+    }
   }
 
   if (session.checking) {
     return (
-      <main className="mx-auto max-w-7xl px-4 py-12 text-sm text-muted-foreground sm:px-6">
+      <main className="mx-auto max-w-7xl px-5 py-12 text-sm text-muted-foreground sm:px-6">
         {t("checking")}
       </main>
     )
@@ -55,7 +58,7 @@ function AuthenticatedAdminShell({
   if (!session.authenticated) return null
 
   return (
-    <div className="mx-auto grid max-w-[96rem] px-4 py-8 sm:px-8 lg:grid-cols-[15rem_1fr]">
+    <div className="mx-auto grid max-w-7xl px-5 py-8 sm:px-8 lg:grid-cols-[15rem_1fr]">
       <aside className="border-b pb-5 lg:min-h-[calc(100svh-8rem)] lg:border-r lg:border-b-0 lg:pr-6">
         <p className="mb-5 text-[0.6875rem] font-semibold text-muted-foreground uppercase">
           {t("workspace")}
@@ -71,7 +74,6 @@ function AuthenticatedAdminShell({
                 className="w-full"
               >
                 <Button
-                  type="button"
                   variant={active ? "secondary" : "ghost"}
                   className="w-full justify-start"
                 >
@@ -82,7 +84,7 @@ function AuthenticatedAdminShell({
             )
           })}
         </nav>
-        <Button variant="ghost" className="mt-4" onClick={() => void signOut()}>
+        <Button variant="ghost" className="mt-4" onClick={signOut}>
           <LogOut />
           {t("logout")}
         </Button>

@@ -7,7 +7,11 @@ import { useLocale, useTranslations } from "next-intl"
 import { AdminPageHeader } from "@/app/admin/admin-shell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import { Textarea } from "@/components/ui/textarea"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import {
@@ -111,16 +115,14 @@ export default function AdminReservationsPage() {
           <>
             <Button
               variant="outline"
-              onClick={() => {
-                void reservationResource.reload()
-              }}
+              onClick={reservationResource.reload}
               disabled={reservationResource.loading}
             >
               <RefreshCw />
               {common("refresh")}
             </Button>
             <Link href={backendHref("/reservation/export")}>
-              <Button type="button" variant="outline">
+              <Button variant="outline">
                 <Download />
                 {t("exportReservations")}
               </Button>
@@ -128,15 +130,16 @@ export default function AdminReservationsPage() {
           </>
         }
       />
-      <div className="relative my-5 max-w-lg">
-        <Search className="absolute top-3 left-3 size-4 text-muted-foreground" />
-        <Input
-          className="pl-9"
+      <InputGroup className="my-5 max-w-lg">
+        <InputGroupInput
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder={t("reservationSearch")}
         />
-      </div>
+        <InputGroupAddon>
+          <Search />
+        </InputGroupAddon>
+      </InputGroup>
       {error ? (
         <p className="border-y py-3 text-sm text-destructive">{error}</p>
       ) : null}
@@ -193,7 +196,7 @@ export default function AdminReservationsPage() {
                   <Button
                     size="sm"
                     disabled={working}
-                    onClick={() => void submitDecision(item.id, "approved")}
+                    onClick={() => submitDecision(item.id, "approved")}
                   >
                     <Check />
                     {t("approve")}
@@ -221,7 +224,7 @@ export default function AdminReservationsPage() {
                   <Button
                     variant="destructive"
                     disabled={working}
-                    onClick={() => void submitDecision(item.id, "rejected")}
+                    onClick={() => submitDecision(item.id, "rejected")}
                   >
                     {t("confirmReject")}
                   </Button>

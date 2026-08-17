@@ -1,55 +1,64 @@
 "use client"
 
-import { useEffect, useSyncExternalStore } from "react"
+import {
+  createContext,
+  useContext,
+  useState,
+  useSyncExternalStore,
+} from "react"
 import { NextIntlClientProvider } from "next-intl"
 import { ThemeProvider } from "next-themes"
 
+import { Toaster } from "@/components/ui/sonner"
 import enMessages from "@/messages/en-US.json"
 import zhMessages from "@/messages/zh-CN.json"
 
 type AppLocale = "zh-CN" | "en-US"
-type LocaleMessages = Record<AppLocale, Record<string, unknown>>
+
 const defaultLocale: AppLocale = "zh-CN"
+const LocaleContext = createContext<{
+  locale: AppLocale
+  setLocale: (locale: AppLocale) => void
+}>(null!)
+const subscribe = () => () => {}
 
 const messages = {
   "zh-CN": zhMessages,
   "en-US": enMessages,
-} satisfies LocaleMessages
-
-function subscribeToLocale(onLocaleChange: () => void) {
-  window.addEventListener("hfiuc-locale-change", onLocaleChange)
-  return () => window.removeEventListener("hfiuc-locale-change", onLocaleChange)
 }
 
 function storedLocale(): AppLocale {
-  const saved = window.localStorage.getItem("hfiuc-locale")
-  if (saved === "zh-CN" || saved === "en-US") return saved
-  return window.navigator.language.toLowerCase().startsWith("zh")
-    ? "zh-CN"
-    : "en-US"
+  return localStorage.getItem("locale") === "en-US" ? "en-US" : "zh-CN"
 }
 
+export const useAppLocale = () => useContext(LocaleContext)
+
 export function Providers({ children }: { children: React.ReactNode }) {
-  const locale = useSyncExternalStore(
-    subscribeToLocale,
+  const savedLocale = useSyncExternalStore(
+    subscribe,
     storedLocale,
     () => defaultLocale
   )
+  const [selectedLocale, setSelectedLocale] = useState<AppLocale>()
+  const locale = selectedLocale ?? savedLocale
 
-  useEffect(() => {
-    document.documentElement.lang = locale
-  }, [locale])
+  function setLocale(nextLocale: AppLocale) {
+    localStorage.setItem("locale", nextLocale)
+    setSelectedLocale(nextLocale)
+  }
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages[locale]}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
+    <LocaleContext.Provider value={{ locale, setLocale }}>
+      <NextIntlClientProvider
+        locale={locale}
+        messages={messages[locale]}
+        timeZone="Asia/Hong_Kong"
       >
-        {children}
-      </ThemeProvider>
-    </NextIntlClientProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+          <Toaster />
+        </ThemeProvider>
+      </NextIntlClientProvider>
+    </LocaleContext.Provider>
   )
 }

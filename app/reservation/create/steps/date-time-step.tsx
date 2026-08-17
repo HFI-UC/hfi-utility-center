@@ -2,10 +2,21 @@ import { useEffect, useMemo } from "react"
 import { enUS, zhCN } from "date-fns/locale"
 import { RefreshCw } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { Controller, useFormContext, useWatch } from "react-hook-form"
+import {
+  Controller,
+  useController,
+  useFormContext,
+  useWatch,
+} from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
+import {
+  FieldDescription,
+  FieldError,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
 import { dateToInputValue, inputValueToDate } from "@/lib/date-time"
 import type { Room } from "@/lib/api/types"
@@ -24,12 +35,20 @@ import { useRoomAvailability } from "./use-room-availability"
 export function DateTimeStep({ rooms }: { rooms: Room[] }) {
   const t = useTranslations("booking")
   const locale = useLocale()
-  const { clearErrors, control, getValues, setValue, formState } =
+  const { clearErrors, control, getValues, setValue } =
     useFormContext<ReservationFormValues>()
-  const [roomId, date, startTime, endTime] = useWatch({
+  const [roomId, date] = useWatch({
     control,
-    name: ["room", "date", "startTime", "endTime"],
+    name: ["room", "date"],
   })
+  const {
+    field: { value: startTime, onChange: changeStartTime },
+    fieldState: startTimeState,
+  } = useController({ control, name: "startTime" })
+  const {
+    field: { value: endTime, onChange: changeEndTime },
+    fieldState: endTimeState,
+  } = useController({ control, name: "endTime" })
   const room = useMemo(
     () => rooms.find((candidate) => candidate.id === roomId),
     [roomId, rooms]
@@ -75,18 +94,14 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
   }, [availability, getValues, reportError, setValue, t])
 
   function clearSelectedRange() {
-    setValue("startTime", 0)
-    setValue("endTime", 0)
+    changeStartTime(0)
+    changeEndTime(0)
     clearErrors(["startTime", "endTime"])
   }
 
   function selectRangeStart(timestamp: number) {
-    setValue("startTime", timestamp, {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true,
-    })
-    setValue("endTime", 0, { shouldDirty: true, shouldValidate: false })
+    changeStartTime(timestamp)
+    changeEndTime(0)
     clearErrors("endTime")
   }
 
@@ -95,11 +110,7 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
       availability &&
       rangeIsAvailable(availability.slots, startTime, timestamp)
     ) {
-      setValue("endTime", timestamp, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      })
+      changeEndTime(timestamp)
       clearErrors("endTime")
       clearError()
       return
@@ -145,74 +156,68 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
     return startTime ? t("selectEndHint") : t("selectStartHint")
   }
 
-  const fieldError =
-    formState.errors.date?.message ??
-    formState.errors.startTime?.message ??
-    formState.errors.endTime?.message
-
   return (
-    <StepLayout
-      step={3}
-      title={`${t("dateTitle")} · ${t("timeTitle")}`}
-      error={error ?? fieldError}
-    >
-      <div className="grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
+    <StepLayout title={t("dateTimeTitle")} error={error}>
+      <div className="grid gap-6 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
         <Controller
           control={control}
           name="date"
-          render={({ field, fieldState }) => (
-            <Calendar
-              mode="single"
-              locale={locale === "zh-CN" ? zhCN : enUS}
-              selected={inputValueToDate(field.value)}
-              defaultMonth={inputValueToDate(field.value) ?? today}
-              startMonth={today}
-              endMonth={maximumDate}
-              disabled={{ before: today, after: maximumDate }}
-              aria-invalid={fieldState.invalid}
-              onSelect={(selected) => selectDate(selected, field.onChange)}
-            />
+          render={({ field: { value, onChange }, fieldState }) => (
+            <FieldSet
+              className="items-center gap-3 lg:items-start"
+              data-invalid={fieldState.invalid}
+            >
+              <FieldLegend variant="label">{t("dateTitle")}</FieldLegend>
+              <FieldDescription>{t("dateDescription")}</FieldDescription>
+              <Calendar
+                className="mx-auto max-w-80 p-0 lg:mx-0 lg:w-fit! lg:max-w-none lg:p-3"
+                mode="single"
+                locale={locale === "zh-CN" ? zhCN : enUS}
+                selected={inputValueToDate(value)}
+                defaultMonth={inputValueToDate(value) ?? today}
+                startMonth={today}
+                endMonth={maximumDate}
+                disabled={{ before: today, after: maximumDate }}
+                aria-invalid={fieldState.invalid}
+                onSelect={(selected) => selectDate(selected, onChange)}
+              />
+              <FieldError errors={[fieldState.error]} />
+            </FieldSet>
           )}
         />
 
         {date ? (
-          <section
-            className="border-t pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8"
-            aria-labelledby="time-heading"
+          <FieldSet
+            className="lg:pl-8"
+            data-invalid={startTimeState.invalid || endTimeState.invalid}
           >
-            <div className="mb-4 flex items-center justify-between gap-4">
-              <div>
-                <h2 id="time-heading" className="text-sm font-semibold">
-                  {t("timeRange")}
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {selectedRangeLabel()}
-                </p>
-              </div>
+            <FieldLegend
+              variant="label"
+              className="flex w-full items-center justify-between"
+            >
+              {t("timeRange")}
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                onClick={() => void refresh()}
+                onClick={refresh}
                 title={t("refresh")}
                 disabled={loading}
               >
                 {loading ? <Spinner /> : <RefreshCw />}
               </Button>
-            </div>
+            </FieldLegend>
+            <FieldDescription>{selectedRangeLabel()}</FieldDescription>
 
-            {loading && !availability ? (
-              <div className="flex items-center gap-2 py-10 text-sm text-muted-foreground">
+            {loading ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Spinner />
                 {t("checking")}
               </div>
             ) : null}
 
-            {availability ? (
-              <div
-                className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-8"
-                aria-label={t("timeTitle")}
-              >
+            {availability && !loading ? (
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-8">
                 {timeOptions.map((option) => {
                   const selected = timeIsSelected(
                     option.timestamp,
@@ -240,7 +245,8 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
                 })}
               </div>
             ) : null}
-          </section>
+            <FieldError errors={[startTimeState.error, endTimeState.error]} />
+          </FieldSet>
         ) : null}
       </div>
     </StepLayout>

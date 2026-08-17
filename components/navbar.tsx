@@ -1,117 +1,177 @@
 "use client"
 
-import { CalendarPlus, Languages, List, Moon, Sun } from "lucide-react"
+import {
+  CalendarPlus,
+  House,
+  Languages,
+  List,
+  Menu,
+  Moon,
+  Shield,
+  Sun,
+} from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { useTheme } from "next-themes"
 
+import { useAppLocale } from "@/app/providers"
 import { Button } from "@/components/ui/button"
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 
 export function Navbar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const t = useTranslations("nav")
   const { resolvedTheme, setTheme } = useTheme()
   const navigationLinks = [
-    { href: "/", label: t("home"), className: "hidden lg:inline-flex" },
+    { href: "/", label: t("home"), icon: House },
     { href: "/reservation/create", label: t("book"), icon: CalendarPlus },
     { href: "/reservation/search", label: t("reservations"), icon: List },
-    {
-      href: "/admin/login",
-      label: t("admin"),
-      className: "hidden md:inline-flex",
-    },
+    { href: "/admin/login", label: t("admin"), icon: Shield },
   ]
 
+  function linkIsActive(href: string) {
+    if (href === "/") return pathname === href
+    if (href === "/admin/login") return pathname.startsWith("/admin")
+    return pathname.startsWith(href)
+  }
+
+  function toggleTheme() {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark")
+  }
+
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="mx-auto flex min-h-16 max-w-[96rem] items-center justify-between gap-4 px-4 py-2 sm:px-8">
-          <Link href="/">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="shrink-0 px-2 font-semibold"
-            >
-              <span className="sm:hidden">HFI UC</span>
-              <span className="hidden sm:inline">HFI Utility Center</span>
-            </Button>
-          </Link>
-          <nav className="flex min-w-0 items-center gap-1">
+    <div className="flex min-h-svh flex-col">
+      <header className="sticky top-0 z-30 h-16 shrink-0 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
+        <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-4 py-2 sm:px-8">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="shrink-0 font-bold"
+          >
+            <Link href="/">HFI Utility Center</Link>
+          </Button>
+
+          <nav className="hidden min-w-0 items-center gap-1 md:flex">
             {navigationLinks.map((item) => {
-              const active =
-                item.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(item.href)
+              const active = linkIsActive(item.href)
               return (
-                <Link
+                <Button
                   key={item.href}
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  title={item.label}
-                  className={item.className}
+                  asChild
+                  variant={active ? "secondary" : "ghost"}
+                  size="sm"
                 >
-                  <Button
-                    type="button"
-                    variant={active ? "secondary" : "ghost"}
-                    size="sm"
-                    className={
-                      item.icon ? "w-8 px-0 sm:w-auto sm:px-2.5" : undefined
-                    }
+                  <Link
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
                   >
-                    {item.icon ? <item.icon className="sm:hidden" /> : null}
-                    <span
-                      className={item.icon ? "hidden sm:inline" : undefined}
-                    >
-                      {item.label}
-                    </span>
-                  </Button>
-                </Link>
+                    <item.icon />
+                    {item.label}
+                  </Link>
+                </Button>
               )
             })}
-            <span className="mx-1 hidden h-5 border-l sm:block" aria-hidden />
+            <span className="mx-1 h-5 border-l" aria-hidden />
             <LanguageSwitcher />
             <Button
               variant="ghost"
               size="icon-sm"
               title={t("theme")}
-              onClick={() =>
-                setTheme(resolvedTheme === "dark" ? "light" : "dark")
-              }
+              onClick={toggleTheme}
             >
               <Sun className="hidden dark:block" />
               <Moon className="dark:hidden" />
             </Button>
           </nav>
+
+          <Drawer>
+            <DrawerTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="md:hidden"
+                title={t("menu")}
+              >
+                <Menu />
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>{t("menu")}</DrawerTitle>
+                <DrawerDescription>{t("menuDescription")}</DrawerDescription>
+              </DrawerHeader>
+              <nav className="grid gap-1 px-4">
+                {navigationLinks.map((item) => {
+                  const active = linkIsActive(item.href)
+                  return (
+                    <DrawerClose key={item.href} asChild>
+                      <Button
+                        asChild
+                        variant={active ? "secondary" : "ghost"}
+                        size="lg"
+                        className="w-full justify-start"
+                      >
+                        <Link
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                        >
+                          <item.icon />
+                          {item.label}
+                        </Link>
+                      </Button>
+                    </DrawerClose>
+                  )
+                })}
+              </nav>
+              <DrawerFooter>
+                <div className="grid grid-cols-2 gap-2">
+                  <LanguageSwitcher drawer />
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={toggleTheme}
+                  >
+                    <Sun className="hidden dark:block" />
+                    <Moon className="dark:hidden" />
+                    {t("theme")}
+                  </Button>
+                </div>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
         </div>
       </header>
-      {children}
+      <div className="flex flex-1 flex-col">{children}</div>
     </div>
   )
 }
 
-function LanguageSwitcher() {
-  const locale = useLocale()
+function LanguageSwitcher({ drawer = false }: { drawer?: boolean }) {
+  const { locale, setLocale } = useAppLocale()
   const t = useTranslations("nav")
   const nextLocale = locale === "zh-CN" ? "en-US" : "zh-CN"
 
-  function switchLanguage() {
-    window.localStorage.setItem("hfiuc-locale", nextLocale)
-    window.dispatchEvent(
-      new CustomEvent("hfiuc-locale-change", { detail: nextLocale })
-    )
-  }
-
   return (
     <Button
-      variant="ghost"
-      size="sm"
-      onClick={switchLanguage}
+      variant={drawer ? "outline" : "ghost"}
+      size={drawer ? "default" : "sm"}
+      className={drawer ? "w-full" : undefined}
+      onClick={() => setLocale(nextLocale)}
       title={t("switchLanguage")}
     >
       <Languages />
-      <span className="hidden sm:inline">{t("languageShort")}</span>
+      {t("languageShort")}
     </Button>
   )
 }

@@ -80,7 +80,7 @@ export function TextActionDialog({
           </Field>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline">
+              <Button  variant="outline">
                 {cancelLabel}
               </Button>
             </DialogClose>

@@ -36,7 +36,6 @@ export function ConfirmFacilityDelete({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          type="button"
           size="icon-sm"
           variant="ghost"
           title={`${common("delete")} ${label}`}
@@ -56,7 +55,7 @@ export function ConfirmFacilityDelete({
           <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            onClick={() => void mutate(action)}
+            onClick={() => mutate(action)}
           >
             {common("delete")}
           </AlertDialogAction>

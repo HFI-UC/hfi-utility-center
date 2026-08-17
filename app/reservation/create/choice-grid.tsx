@@ -1,3 +1,4 @@
+import type { Ref } from "react"
 import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -10,6 +11,7 @@ export function ChoiceGrid<T extends number | string>({
   invalid,
   label,
   emptyText,
+  ref,
 }: {
   items: { value: T; label: string; disabled?: boolean }[]
   value?: T
@@ -19,6 +21,7 @@ export function ChoiceGrid<T extends number | string>({
   invalid?: boolean
   label?: string
   emptyText: string
+  ref?: Ref<HTMLDivElement>
 }) {
   if (!items.length)
     return (
@@ -26,6 +29,7 @@ export function ChoiceGrid<T extends number | string>({
     )
   return (
     <div
+      ref={ref}
       className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4"
       role="radiogroup"
       aria-label={label}
@@ -46,7 +50,6 @@ export function ChoiceGrid<T extends number | string>({
             aria-checked={selected}
             onClick={() => onChange(item.value)}
             variant={selected ? "default" : "outline"}
-            size="lg"
             className="w-full justify-start"
           >
             {item.label}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 import { getAvailability } from "@/lib/api/reservations"
 import type { AvailabilityData, Room } from "@/lib/api/types"
@@ -10,46 +10,53 @@ export function useRoomAvailability({
   room?: Room
   date: string
 }) {
-  const requestId = useRef(0)
   const [availability, setAvailability] = useState<AvailabilityData>()
   const [error, setError] = useState<string>()
-  const [loading, setLoading] = useState(false)
-
-  const loadAvailability = useCallback(async () => {
-    if (!date || !room) {
-      setAvailability(undefined)
-      setError(undefined)
-      setLoading(false)
-      return
-    }
-
-    const currentRequest = ++requestId.current
-    setAvailability(undefined)
-    setLoading(true)
-    setError(undefined)
-
-    const nextAvailability = await getAvailability(room.id, date, room)
-    if (requestId.current !== currentRequest) return
-    setAvailability(nextAvailability)
-    setLoading(false)
-  }, [date, room])
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
-    async function loadCurrentAvailability() {
-      await loadAvailability()
+    if (!date || !room) return
+    let active = true
+    const selectedRoom = room
+
+    async function loadAvailability() {
+      const nextAvailability = await getAvailability(
+        selectedRoom.id,
+        date,
+        selectedRoom
+      )
+      if (active) setAvailability(nextAvailability)
     }
 
-    void loadCurrentAvailability()
+    loadAvailability()
     return () => {
-      requestId.current += 1
+      active = false
     }
-  }, [loadAvailability])
+  }, [date, room])
+
+  async function refresh() {
+    if (!date || !room) return
+    setRefreshing(true)
+    setError(undefined)
+    try {
+      setAvailability(await getAvailability(room.id, date, room))
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
+  const currentAvailability =
+    availability &&
+    availability.roomId === room?.id &&
+    availability.date === date
+      ? availability
+      : undefined
 
   return {
-    availability,
+    availability: currentAvailability,
     error,
-    loading,
-    refresh: loadAvailability,
+    loading: refreshing || Boolean(room && date && !currentAvailability),
+    refresh,
     clearError: () => setError(undefined),
     reportError: setError,
   }
