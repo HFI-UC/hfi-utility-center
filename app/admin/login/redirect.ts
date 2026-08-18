@@ -1,9 +1,9 @@
-const DEFAULT_REDIRECT = "/admin/reservations"
+const DEFAULT_REDIRECT = "/admin/reservation"
 const ADMIN_ROUTES = new Set([
   "/admin",
-  "/admin/reservations",
-  "/admin/facilities",
-  "/admin/users",
+  "/admin/reservation",
+  "/admin/facility",
+  "/admin/user",
 ])
 
 export function safeAdminRedirect(value?: string) {

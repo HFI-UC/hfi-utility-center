@@ -59,11 +59,8 @@ export default function AdminReservationsPage() {
   const dateTimeFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(locale, {
-        month: "numeric",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        weekday: "short",
+        dateStyle: "short",
+        timeStyle: "short",
       }),
     [locale]
   )
@@ -193,7 +190,7 @@ export default function AdminReservationsPage() {
                   </Badge>
                 </CardAction>
               </CardHeader>
-              <CardContent className="flex-1 gap-5">
+              <CardContent className="flex-1 gap-6">
                 <ReservationGroup title={t("studentInformation")}>
                   <ReservationField label={t("name")}>
                     {item.studentName}
@@ -216,7 +213,10 @@ export default function AdminReservationsPage() {
                     {item.campusName || "—"}
                   </ReservationField>
                 </ReservationGroup>
-                <ReservationGroup title={t("reservationDetails")}>
+                <ReservationGroup
+                  title={t("reservationDetails")}
+                  className="border-t pt-5"
+                >
                   <ReservationField label={t("room")}>
                     {item.roomName || "—"}
                   </ReservationField>
@@ -231,8 +231,8 @@ export default function AdminReservationsPage() {
                   </ReservationField>
                 </ReservationGroup>
               </CardContent>
-              {item.status === "pending" ? (
-                <CardFooter className="gap-2 border-t">
+              <CardFooter className="gap-2 border-t">
+                {item.status !== "approved" ? (
                   <Button
                     className="flex-1"
                     size="sm"
@@ -242,6 +242,8 @@ export default function AdminReservationsPage() {
                     <Check />
                     {t("approve")}
                   </Button>
+                ) : null}
+                {item.status !== "rejected" ? (
                   <Button
                     className="flex-1"
                     size="sm"
@@ -252,8 +254,8 @@ export default function AdminReservationsPage() {
                     <X />
                     {t("reject")}
                   </Button>
-                </CardFooter>
-              ) : null}
+                ) : null}
+              </CardFooter>
             </Card>
           ))}
         </div>
@@ -309,13 +311,15 @@ export default function AdminReservationsPage() {
 function ReservationGroup({
   title,
   children,
+  className,
 }: {
   title: string
   children: React.ReactNode
+  className?: string
 }) {
   return (
-    <section>
-      <h3 className="mb-3 font-medium">{title}</h3>
+    <section className={className}>
+      <h3 className="mb-4 text-sm font-semibold">{title}</h3>
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3">{children}</dl>
     </section>
   )

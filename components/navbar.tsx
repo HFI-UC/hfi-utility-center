@@ -36,12 +36,12 @@ export function Navbar({ children }: { children: React.ReactNode }) {
     { href: "/", label: t("home"), icon: House },
     { href: "/reservation/create", label: t("book"), icon: CalendarPlus },
     { href: "/reservation/search", label: t("reservations"), icon: List },
-    { href: "/admin/reservations", label: t("admin"), icon: Shield },
+    { href: "/admin/reservation", label: t("admin"), icon: Shield },
   ]
 
   function linkIsActive(href: string) {
     if (href === "/") return pathname === href
-    if (href === "/admin/reservations") return pathname.startsWith("/admin")
+    if (href === "/admin/reservation") return pathname.startsWith("/admin")
     return pathname.startsWith(href)
   }
 

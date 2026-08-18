@@ -44,12 +44,12 @@ function AuthenticatedAdminShell({
   const session = useAdminSession(pathname)
   const navigationItems = [
     {
-      href: "/admin/reservations",
+      href: "/admin/reservation",
       label: t("reservations"),
       icon: CalendarClock,
     },
-    { href: "/admin/facilities", label: t("facilities"), icon: Building2 },
-    { href: "/admin/users", label: t("users"), icon: Users },
+    { href: "/admin/facility", label: t("facilities"), icon: Building2 },
+    { href: "/admin/user", label: t("users"), icon: Users },
   ]
 
   async function signOut() {
