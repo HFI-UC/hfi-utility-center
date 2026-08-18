@@ -1,13 +1,25 @@
 "use client"
 
+import { useState } from "react"
 import { Pencil, Plus, Power } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { Controller, useForm, type Control } from "react-hook-form"
 
 import { AdminSection } from "@/app/admin/admin-shell"
 import { TextActionDialog } from "@/app/admin/text-action-dialog"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Field, FieldError } from "@/components/ui/field"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -16,115 +28,215 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { createRoom, deleteRoom, editRoom } from "@/lib/api/catalog"
-import type { Campus, Room } from "@/lib/api/types"
+import type { Admin, Campus, Room } from "@/lib/api/types"
 
+import { ApproverEditor } from "./approver-editor"
 import {
   ConfirmFacilityDelete,
   type FacilityEditorActions,
 } from "./facility-editor-actions"
+import { PolicyEditor } from "./room-policy-editor"
 
 type RoomForm = { name: string; campus: string }
 
 export function RoomEditor({
   rooms,
   campuses,
+  admins,
   mutate,
   working,
-}: FacilityEditorActions & { rooms: Room[]; campuses: Campus[] }) {
+}: FacilityEditorActions & {
+  rooms: Room[]
+  campuses: Campus[]
+  admins: Admin[]
+}) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
+  const [open, setOpen] = useState(false)
   const form = useForm<RoomForm>({ defaultValues: { name: "", campus: "" } })
   const nameError = form.formState.errors.name
   const campusNames = new Map(
     campuses.map((campus) => [campus.id, campus.name])
   )
+  const dateFormatter = new Intl.DateTimeFormat(useLocale(), {
+    dateStyle: "medium",
+  })
 
   async function createNewRoom({ name, campus }: RoomForm) {
     const created = await mutate(() => createRoom(name.trim(), Number(campus)))
-    if (created) form.reset()
+    if (created) {
+      form.reset()
+      setOpen(false)
+    }
   }
 
   return (
-    <AdminSection title={t("rooms")}>
-      <form
-        className="grid gap-2 sm:grid-cols-[1fr_10rem_auto]"
-        onSubmit={form.handleSubmit(createNewRoom)}
-      >
-        <Field data-invalid={Boolean(nameError)}>
-          <Input
-            {...form.register("name", {
-              validate: (name) => Boolean(name.trim()) || t("fieldRequired"),
-            })}
-            placeholder={t("newRoom")}
-            aria-invalid={Boolean(nameError)}
-          />
-          <FieldError errors={[nameError]} />
-        </Field>
-        <RoomCampusField control={form.control} campuses={campuses} />
-        <Button disabled={working}>
-          <Plus />
-          {common("add")}
-        </Button>
-      </form>
-      <div className="divide-y border-t">
-        {rooms.map((room) => (
-          <div
-            key={room.id}
-            className="flex items-center justify-between gap-3 py-3"
-          >
-            <div>
-              <p className="text-sm font-medium">{room.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {campusNames.get(room.campus)} ·{" "}
-                {room.enabled ? t("roomOpen") : t("roomClosed")}
-              </p>
-            </div>
-            <div className="flex">
-              <Button
-                size="icon-sm"
-                variant="ghost"
-                title={room.enabled ? t("roomClosed") : t("restoreBooking")}
-                disabled={working}
-                onClick={() =>
-                  mutate(() =>
-                    editRoom(room.id, room.name, room.campus, !room.enabled)
-                  )
-                }
-              >
-                <Power />
-              </Button>
-              <TextActionDialog
-                title={t("renameRoom")}
-                label={t("roomName")}
-                initialValue={room.name}
-                cancelLabel={common("cancel")}
-                saveLabel={common("save")}
-                onSave={(name) =>
-                  mutate(() =>
-                    editRoom(room.id, name, room.campus, room.enabled)
-                  )
-                }
-              >
-                <Button
-                  size="icon-sm"
-                  variant="ghost"
-                  title={t("renameRoom")}
-                  disabled={working}
-                >
-                  <Pencil />
-                </Button>
-              </TextActionDialog>
-              <ConfirmFacilityDelete
-                label={room.name}
-                action={() => deleteRoom(room.id)}
-                mutate={mutate}
-                working={working}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+    <AdminSection
+      title={t("rooms")}
+      className="xl:col-span-2"
+      action={
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button size="icon-sm" disabled={working}>
+              <Plus />
+              <span className="sr-only">{common("add")}</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t("newRoom")}</DialogTitle>
+              <DialogDescription>{t("roomName")}</DialogDescription>
+            </DialogHeader>
+            <form
+              className="grid gap-4"
+              onSubmit={form.handleSubmit(createNewRoom)}
+            >
+              <Field data-invalid={Boolean(nameError)}>
+                <FieldLabel htmlFor="new-room-name">{t("roomName")}</FieldLabel>
+                <Input
+                  {...form.register("name", {
+                    validate: (name) =>
+                      Boolean(name.trim()) || t("fieldRequired"),
+                  })}
+                  id="new-room-name"
+                  aria-invalid={Boolean(nameError)}
+                />
+                <FieldError errors={[nameError]} />
+              </Field>
+              <RoomCampusField control={form.control} campuses={campuses} />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">{common("cancel")}</Button>
+                </DialogClose>
+                <Button disabled={working}>{common("add")}</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      }
+    >
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="hidden sm:table-cell">{t("id")}</TableHead>
+            <TableHead>{t("name")}</TableHead>
+            <TableHead>{t("status")}</TableHead>
+            <TableHead>{t("campus")}</TableHead>
+            <TableHead>{t("roomPolicies")}</TableHead>
+            <TableHead>{t("approvers")}</TableHead>
+            <TableHead className="hidden xl:table-cell">
+              {t("createdAt")}
+            </TableHead>
+            <TableHead className="text-right">{t("actions")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rooms.length ? (
+            rooms.map((room) => (
+              <TableRow key={room.id}>
+                <TableCell className="hidden sm:table-cell">
+                  #{room.id}
+                </TableCell>
+                <TableCell className="font-medium">{room.name}</TableCell>
+                <TableCell>
+                  <Badge
+                    className={
+                      room.enabled
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
+                    }
+                  >
+                    {room.enabled ? common("enabled") : common("disabled")}
+                  </Badge>
+                </TableCell>
+                <TableCell>{campusNames.get(room.campus)}</TableCell>
+                <TableCell>
+                  <PolicyEditor room={room} mutate={mutate} working={working} />
+                </TableCell>
+                <TableCell>
+                  <ApproverEditor
+                    room={room}
+                    admins={admins}
+                    mutate={mutate}
+                    working={working}
+                  />
+                </TableCell>
+                <TableCell className="hidden xl:table-cell">
+                  {room.createdAt
+                    ? dateFormatter.format(new Date(room.createdAt))
+                    : "—"}
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-end">
+                    <Button
+                      size="icon-sm"
+                      variant="ghost"
+                      title={
+                        room.enabled ? t("roomClosed") : t("restoreBooking")
+                      }
+                      disabled={working}
+                      onClick={() =>
+                        mutate(() =>
+                          editRoom(
+                            room.id,
+                            room.name,
+                            room.campus,
+                            !room.enabled
+                          )
+                        )
+                      }
+                    >
+                      <Power />
+                    </Button>
+                    <TextActionDialog
+                      title={t("renameRoom")}
+                      label={t("roomName")}
+                      initialValue={room.name}
+                      cancelLabel={common("cancel")}
+                      saveLabel={common("save")}
+                      onSave={(name) =>
+                        mutate(() =>
+                          editRoom(room.id, name, room.campus, room.enabled)
+                        )
+                      }
+                    >
+                      <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        title={t("renameRoom")}
+                        disabled={working}
+                      >
+                        <Pencil />
+                      </Button>
+                    </TextActionDialog>
+                    <ConfirmFacilityDelete
+                      label={room.name}
+                      action={() => deleteRoom(room.id)}
+                      mutate={mutate}
+                      working={working}
+                    />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={8} className="h-24 text-center">
+                {t("roomsEmpty")}
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </AdminSection>
   )
 }
@@ -144,12 +256,17 @@ function RoomCampusField({
       rules={{ required: t("fieldRequired") }}
       render={({ field: { onBlur, onChange, ref, ...field }, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
+          <FieldLabel htmlFor="new-room-campus">{t("selectCampus")}</FieldLabel>
           <Select
             {...field}
             onValueChange={onChange}
             onOpenChange={(open) => !open && onBlur()}
           >
-            <SelectTrigger ref={ref} aria-invalid={fieldState.invalid}>
+            <SelectTrigger
+              id="new-room-campus"
+              ref={ref}
+              aria-invalid={fieldState.invalid}
+            >
               <SelectValue placeholder={t("selectCampus")} />
             </SelectTrigger>
             <SelectContent>

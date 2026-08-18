@@ -1,10 +1,9 @@
 "use client"
 
-import { Plus, Power, Trash2 } from "lucide-react"
+import { CalendarClock, Plus, Power, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm } from "react-hook-form"
 
-import { AdminSection } from "@/app/admin/admin-shell"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +15,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
@@ -26,23 +34,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import type { AdminMutation } from "@/lib/api/admin-hooks"
 import { createPolicy, deletePolicy, togglePolicy } from "@/lib/api/catalog"
 import type { Room } from "@/lib/api/types"
 
-type PolicyForm = {
-  room: string
-  day: string
-  start: string
-  end: string
-}
+type PolicyForm = { day: string; start: string; end: string }
 
 export function PolicyEditor({
-  rooms,
+  room,
   mutate,
   working,
 }: {
-  rooms: Room[]
+  room: Room
   mutate: AdminMutation
   working: boolean
 }) {
@@ -50,183 +61,203 @@ export function PolicyEditor({
   const common = useTranslations("common")
   const weekdays = t("policyWeekdays").split(",")
   const form = useForm<PolicyForm>({
-    defaultValues: { room: "", day: "1", start: "08:00", end: "18:00" },
+    defaultValues: { day: "1", start: "08:00", end: "18:00" },
   })
   const { errors } = form.formState
 
-  async function createRoomPolicy({ room, day, start, end }: PolicyForm) {
-    const startMinutes = timeInMinutes(start)
-    const endMinutes = timeInMinutes(end)
-    if (endMinutes <= startMinutes) {
+  async function createRoomPolicy({ day, start, end }: PolicyForm) {
+    if (timeInMinutes(end) <= timeInMinutes(start)) {
       form.setError("end", { message: t("policyEndAfterStart") })
       return
     }
-    form.clearErrors("end")
 
     const created = await mutate(() =>
-      createPolicy(
-        Number(room),
-        [Number(day)],
-        parseTime(start),
-        parseTime(end)
-      )
+      createPolicy(room.id, [Number(day)], parseTime(start), parseTime(end))
     )
     if (created) form.reset()
   }
 
   return (
-    <AdminSection title={t("roomPolicies")} className="xl:col-span-2">
-      <form
-        className="grid gap-2 sm:grid-cols-2 xl:grid-cols-[1fr_7rem_8rem_8rem_auto]"
-        onSubmit={form.handleSubmit(createRoomPolicy)}
-      >
-        <Controller
-          control={form.control}
-          name="room"
-          rules={{ required: t("fieldRequired") }}
-          render={({
-            field: { onBlur, onChange, ref, ...field },
-            fieldState,
-          }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <Select
-                {...field}
-                onValueChange={onChange}
-                onOpenChange={(open) => !open && onBlur()}
-              >
-                <SelectTrigger ref={ref} aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder={t("selectRoom")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {rooms.map((room) => (
-                    <SelectItem key={room.id} value={String(room.id)}>
-                      {room.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FieldError errors={[fieldState.error]} />
-            </Field>
-          )}
-        />
-        <Controller
-          control={form.control}
-          name="day"
-          rules={{ required: t("fieldRequired") }}
-          render={({
-            field: { onBlur, onChange, ref, ...field },
-            fieldState,
-          }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <Select
-                {...field}
-                onValueChange={onChange}
-                onOpenChange={(open) => !open && onBlur()}
-              >
-                <SelectTrigger ref={ref} aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder={t("selectDay")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {weekdays.map((weekday, index) => (
-                    <SelectItem key={weekday} value={String(index)}>
-                      {weekday}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FieldError errors={[fieldState.error]} />
-            </Field>
-          )}
-        />
-        <Field data-invalid={Boolean(errors.start)}>
-          <FieldLabel className="sr-only" htmlFor="policy-start">
-            {t("policyStart")}
-          </FieldLabel>
-          <Input
-            {...form.register("start", { required: t("fieldRequired") })}
-            id="policy-start"
-            type="time"
-            aria-invalid={Boolean(errors.start)}
-          />
-          <FieldError errors={[errors.start]} />
-        </Field>
-        <Field data-invalid={Boolean(errors.end)}>
-          <FieldLabel className="sr-only" htmlFor="policy-end">
-            {t("policyEnd")}
-          </FieldLabel>
-          <Input
-            {...form.register("end", { required: t("fieldRequired") })}
-            id="policy-end"
-            type="time"
-            aria-invalid={Boolean(errors.end)}
-          />
-          <FieldError errors={[errors.end]} />
-        </Field>
-        <Button disabled={working}>
-          <Plus />
-          {common("add")}
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <CalendarClock />
+          {room.policies.length}
         </Button>
-      </form>
-      <div className="divide-y border-t">
-        {rooms.flatMap((room) =>
-          room.policies.map((policy) => (
-            <div
-              key={policy.id}
-              className="flex items-center justify-between gap-4 py-3"
-            >
-              <div>
-                <p className="text-sm font-medium">{room.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {policy.days.map((day) => weekdays[day]).join("、")} ·{" "}
-                  {formatTime(policy.startTime)}–{formatTime(policy.endTime)} ·{" "}
-                  {policy.enabled ? common("enabled") : common("disabled")}
-                </p>
-              </div>
-              <div className="flex">
-                <Button
-                  size="icon-sm"
-                  variant="ghost"
-                  title={t("togglePolicy")}
-                  disabled={working}
-                  onClick={() => mutate(() => togglePolicy(policy.id))}
+      </DialogTrigger>
+      <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>
+            {room.name} · {t("roomPolicies")}
+          </DialogTitle>
+          <DialogDescription>{t("policyDialogDescription")}</DialogDescription>
+        </DialogHeader>
+
+        <form
+          className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto]"
+          onSubmit={form.handleSubmit(createRoomPolicy)}
+        >
+          <Controller
+            control={form.control}
+            name="day"
+            rules={{ required: t("fieldRequired") }}
+            render={({
+              field: { onBlur, onChange, ref, ...field },
+              fieldState,
+            }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`policy-day-${room.id}`}>
+                  {t("selectDay")}
+                </FieldLabel>
+                <Select
+                  {...field}
+                  onValueChange={onChange}
+                  onOpenChange={(open) => !open && onBlur()}
                 >
-                  <Power />
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      size="icon-sm"
-                      variant="ghost"
-                      title={t("deletePolicy")}
-                      disabled={working}
+                  <SelectTrigger
+                    id={`policy-day-${room.id}`}
+                    ref={ref}
+                    aria-invalid={fieldState.invalid}
+                  >
+                    <SelectValue placeholder={t("selectDay")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {weekdays.map((weekday, index) => (
+                      <SelectItem key={weekday} value={String(index)}>
+                        {weekday}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
+          <Field data-invalid={Boolean(errors.start)}>
+            <FieldLabel htmlFor={`policy-start-${room.id}`}>
+              {t("policyStart")}
+            </FieldLabel>
+            <Input
+              {...form.register("start", { required: t("fieldRequired") })}
+              id={`policy-start-${room.id}`}
+              type="time"
+              aria-invalid={Boolean(errors.start)}
+            />
+            <FieldError errors={[errors.start]} />
+          </Field>
+          <Field data-invalid={Boolean(errors.end)}>
+            <FieldLabel htmlFor={`policy-end-${room.id}`}>
+              {t("policyEnd")}
+            </FieldLabel>
+            <Input
+              {...form.register("end", { required: t("fieldRequired") })}
+              id={`policy-end-${room.id}`}
+              type="time"
+              aria-invalid={Boolean(errors.end)}
+            />
+            <FieldError errors={[errors.end]} />
+          </Field>
+          <Button className="self-end" disabled={working}>
+            <Plus />
+            {common("add")}
+          </Button>
+        </form>
+
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t("id")}</TableHead>
+              <TableHead>{t("selectDay")}</TableHead>
+              <TableHead>{t("time")}</TableHead>
+              <TableHead>{t("status")}</TableHead>
+              <TableHead className="text-right">{t("actions")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {room.policies.length ? (
+              room.policies.map((policy) => (
+                <TableRow key={policy.id}>
+                  <TableCell>#{policy.id}</TableCell>
+                  <TableCell>
+                    {policy.days.map((day) => weekdays[day]).join("、")}
+                  </TableCell>
+                  <TableCell>
+                    {formatTime(policy.startTime)}–{formatTime(policy.endTime)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      className={
+                        policy.enabled
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }
                     >
-                      <Trash2 />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{t("deletePolicy")}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {t("confirmDelete", { name: t("roomPolicies") })}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
-                      <AlertDialogAction
-                        variant="destructive"
-                        onClick={() => mutate(() => deletePolicy(policy.id))}
+                      {policy.enabled ? common("enabled") : common("disabled")}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end">
+                      <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        title={t("togglePolicy")}
+                        disabled={working}
+                        onClick={() => mutate(() => togglePolicy(policy.id))}
                       >
-                        {common("delete")}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </AdminSection>
+                        <Power />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            size="icon-sm"
+                            variant="ghost"
+                            title={t("deletePolicy")}
+                            disabled={working}
+                          >
+                            <Trash2 />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              {t("deletePolicy")}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t("confirmDelete", {
+                                name: t("roomPolicies"),
+                              })}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>
+                              {common("cancel")}
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              variant="destructive"
+                              onClick={() =>
+                                mutate(() => deletePolicy(policy.id))
+                              }
+                            >
+                              {common("delete")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  {t("policiesEmpty")}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </DialogContent>
+    </Dialog>
   )
 }
 

@@ -6,7 +6,13 @@ import { usePathname, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { useAdminSession } from "@/lib/api/admin-hooks"
 import { logout } from "@/lib/api/auth"
@@ -122,15 +128,18 @@ export function AdminSection({
   title,
   children,
   className,
+  action,
 }: {
   title: string
   children: React.ReactNode
   className?: string
+  action?: React.ReactNode
 }) {
   return (
     <Card className={cn("h-full", className)}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
+        {action ? <CardAction>{action}</CardAction> : null}
       </CardHeader>
       <CardContent className="flex-1">{children}</CardContent>
     </Card>

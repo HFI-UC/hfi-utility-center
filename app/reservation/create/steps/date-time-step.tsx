@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar"
 import {
   FieldDescription,
   FieldError,
+  FieldGroup,
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field"
@@ -158,29 +159,28 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
 
   return (
     <StepLayout title={t("dateTimeTitle")} error={error}>
-      <div className="grid gap-6 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
+      <div className="grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
         <Controller
           control={control}
           name="date"
           render={({ field: { value, onChange }, fieldState }) => (
-            <FieldSet
-              className="items-center gap-3 lg:items-start"
-              data-invalid={fieldState.invalid}
-            >
+            <FieldSet className="gap-4" data-invalid={fieldState.invalid}>
               <FieldLegend variant="label">{t("dateTitle")}</FieldLegend>
               <FieldDescription>{t("dateDescription")}</FieldDescription>
-              <Calendar
-                className="mx-auto max-w-80 p-0 lg:mx-0 lg:w-fit! lg:max-w-none lg:p-3"
-                mode="single"
-                locale={locale === "zh-CN" ? zhCN : enUS}
-                selected={inputValueToDate(value)}
-                defaultMonth={inputValueToDate(value) ?? today}
-                startMonth={today}
-                endMonth={maximumDate}
-                disabled={{ before: today, after: maximumDate }}
-                aria-invalid={fieldState.invalid}
-                onSelect={(selected) => selectDate(selected, onChange)}
-              />
+              <FieldGroup>
+                <Calendar
+                  className="mx-auto max-w-80 p-0 lg:mx-0 lg:w-fit! lg:max-w-none lg:p-3"
+                  mode="single"
+                  locale={locale === "zh-CN" ? zhCN : enUS}
+                  selected={inputValueToDate(value)}
+                  defaultMonth={inputValueToDate(value) ?? today}
+                  startMonth={today}
+                  endMonth={maximumDate}
+                  disabled={{ before: today, after: maximumDate }}
+                  aria-invalid={fieldState.invalid}
+                  onSelect={(selected) => selectDate(selected, onChange)}
+                />
+              </FieldGroup>
               <FieldError errors={[fieldState.error]} />
             </FieldSet>
           )}
@@ -188,63 +188,61 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
 
         {date ? (
           <FieldSet
-            className="lg:pl-8"
+            className="relative gap-4"
             data-invalid={startTimeState.invalid || endTimeState.invalid}
           >
-            <FieldLegend
-              variant="label"
-              className="flex w-full items-center justify-between"
+            <FieldLegend variant="label">{t("timeRange")}</FieldLegend>
+            <Button
+              className="absolute -top-2 right-0"
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={refresh}
+              title={t("refresh")}
+              disabled={loading}
             >
-              {t("timeRange")}
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={refresh}
-                title={t("refresh")}
-                disabled={loading}
-              >
-                {loading ? <Spinner /> : <RefreshCw />}
-              </Button>
-            </FieldLegend>
+              {loading ? <Spinner /> : <RefreshCw />}
+            </Button>
             <FieldDescription>{selectedRangeLabel()}</FieldDescription>
 
-            {loading ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Spinner />
-                {t("checking")}
-              </div>
-            ) : null}
+            <FieldGroup>
+              {loading ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Spinner />
+                  {t("checking")}
+                </div>
+              ) : null}
 
-            {availability && !loading ? (
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-8">
-                {timeOptions.map((option) => {
-                  const selected = timeIsSelected(
-                    option.timestamp,
-                    startTime,
-                    endTime
-                  )
-                  const selectable = timeCanBeSelected({
-                    option,
-                    slots: availability.slots,
-                    startTime,
-                    endTime,
-                  })
-                  return (
-                    <Button
-                      type="button"
-                      key={option.timestamp}
-                      disabled={!selectable && !selected}
-                      aria-pressed={selected}
-                      variant={selected ? "default" : "outline"}
-                      onClick={() => selectTime(option)}
-                    >
-                      {formatTime(option.timestamp)}
-                    </Button>
-                  )
-                })}
-              </div>
-            ) : null}
+              {availability && !loading ? (
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-8">
+                  {timeOptions.map((option) => {
+                    const selected = timeIsSelected(
+                      option.timestamp,
+                      startTime,
+                      endTime
+                    )
+                    const selectable = timeCanBeSelected({
+                      option,
+                      slots: availability.slots,
+                      startTime,
+                      endTime,
+                    })
+                    return (
+                      <Button
+                        type="button"
+                        key={option.timestamp}
+                        disabled={!selectable && !selected}
+                        aria-pressed={selected}
+                        variant={selected ? "default" : "outline"}
+                        onClick={() => selectTime(option)}
+                      >
+                        {formatTime(option.timestamp)}
+                      </Button>
+                    )
+                  })}
+                </div>
+              ) : null}
+            </FieldGroup>
             <FieldError errors={[startTimeState.error, endTimeState.error]} />
           </FieldSet>
         ) : null}

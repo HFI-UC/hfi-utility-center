@@ -1,14 +1,19 @@
 "use client"
 
 import { Pencil, Plus } from "lucide-react"
-import { useTranslations } from "next-intl"
-import { useForm } from "react-hook-form"
+import { useLocale, useTranslations } from "next-intl"
 
 import { AdminSection } from "@/app/admin/admin-shell"
 import { TextActionDialog } from "@/app/admin/text-action-dialog"
 import { Button } from "@/components/ui/button"
-import { Field, FieldError } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import type { Campus } from "@/lib/api/types"
 import { createCampus, deleteCampus, editCampus } from "@/lib/api/catalog"
 
@@ -24,70 +29,92 @@ export function CampusEditor({
 }: FacilityEditorActions & { campuses: Campus[] }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
-  const form = useForm<{ name: string }>({ defaultValues: { name: "" } })
-  const nameError = form.formState.errors.name
-
-  async function createNewCampus({ name }: { name: string }) {
-    const created = await mutate(() => createCampus(name.trim()))
-    if (created) form.reset()
-  }
+  const dateFormatter = new Intl.DateTimeFormat(useLocale(), {
+    dateStyle: "medium",
+  })
 
   return (
-    <AdminSection title={t("campuses")}>
-      <form
-        className="flex gap-2"
-        onSubmit={form.handleSubmit(createNewCampus)}
-      >
-        <Field className="flex-1" data-invalid={Boolean(nameError)}>
-          <Input
-            {...form.register("name", {
-              validate: (name) => Boolean(name.trim()) || t("fieldRequired"),
-            })}
-            placeholder={t("newCampus")}
-            aria-invalid={Boolean(nameError)}
-          />
-          <FieldError errors={[nameError]} />
-        </Field>
-        <Button disabled={working}>
-          <Plus />
-          {common("add")}
-        </Button>
-      </form>
-      <div className="divide-y border-t">
-        {campuses.map((campus) => (
-          <div
-            key={campus.id}
-            className="flex items-center justify-between gap-3 py-3"
-          >
-            <span className="text-sm font-medium">{campus.name}</span>
-            <div className="flex">
-              <TextActionDialog
-                title={t("renameCampus")}
-                label={t("campusName")}
-                initialValue={campus.name}
-                cancelLabel={common("cancel")}
-                saveLabel={common("save")}
-                onSave={(name) => mutate(() => editCampus(campus.id, name))}
-              >
-                <Button
-                  size="icon-sm"
-                  variant="ghost"
-                  title={t("renameCampus")}
-                  disabled={working}
-                >
-                  <Pencil />
-                </Button>
-              </TextActionDialog>
-              <ConfirmFacilityDelete
-                label={campus.name}
-                action={() => deleteCampus(campus.id)}
-                mutate={mutate}
-                working={working}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+    <AdminSection
+      title={t("campuses")}
+      action={
+        <TextActionDialog
+          title={t("newCampus")}
+          label={t("campusName")}
+          cancelLabel={common("cancel")}
+          saveLabel={common("add")}
+          onSave={(name) => mutate(() => createCampus(name.trim()))}
+        >
+          <Button size="icon-sm" disabled={working}>
+            <Plus />
+            <span className="sr-only">{common("add")}</span>
+          </Button>
+        </TextActionDialog>
+      }
+    >
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="hidden sm:table-cell">{t("id")}</TableHead>
+            <TableHead>{t("name")}</TableHead>
+            <TableHead className="hidden md:table-cell">
+              {t("createdAt")}
+            </TableHead>
+            <TableHead className="text-right">{t("actions")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {campuses.length ? (
+            campuses.map((campus) => (
+              <TableRow key={campus.id}>
+                <TableCell className="hidden sm:table-cell">
+                  #{campus.id}
+                </TableCell>
+                <TableCell className="font-medium">{campus.name}</TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {campus.createdAt
+                    ? dateFormatter.format(new Date(campus.createdAt))
+                    : "—"}
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-end">
+                    <TextActionDialog
+                      title={t("renameCampus")}
+                      label={t("campusName")}
+                      initialValue={campus.name}
+                      cancelLabel={common("cancel")}
+                      saveLabel={common("save")}
+                      onSave={(name) =>
+                        mutate(() => editCampus(campus.id, name))
+                      }
+                    >
+                      <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        title={t("renameCampus")}
+                        disabled={working}
+                      >
+                        <Pencil />
+                      </Button>
+                    </TextActionDialog>
+                    <ConfirmFacilityDelete
+                      label={campus.name}
+                      action={() => deleteCampus(campus.id)}
+                      mutate={mutate}
+                      working={working}
+                    />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={4} className="h-24 text-center">
+                {t("campusesEmpty")}
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </AdminSection>
   )
 }

@@ -11,10 +11,8 @@ import { getAdmins } from "@/lib/api/admins"
 import { getCampuses, getClasses, getRooms } from "@/lib/api/catalog"
 import type { Admin, Campus, Room, SchoolClass } from "@/lib/api/types"
 
-import { ApproverEditor } from "./approver-editor"
 import { CampusEditor } from "./campus-editor"
 import { ClassEditor } from "./class-editor"
-import { PolicyEditor } from "./room-policy-editor"
 import { RoomEditor } from "./room-editor"
 
 type FacilityData = {
@@ -53,13 +51,7 @@ export default function AdminFacilitiesPage() {
   })
   const { campuses, classes, rooms, admins } = facilityResource.data
   const editorActions = { mutate, working }
-  const loadingSections = [
-    t("campuses"),
-    t("classes"),
-    t("rooms"),
-    t("approvers"),
-    t("roomPolicies"),
-  ]
+  const loadingSections = [t("rooms"), t("campuses"), t("classes")]
 
   return (
     <main className="space-y-6">
@@ -83,11 +75,7 @@ export default function AdminFacilitiesPage() {
             <AdminSection
               key={title}
               title={title}
-              className={
-                index === loadingSections.length - 1
-                  ? "xl:col-span-2"
-                  : undefined
-              }
+              className={index === 0 ? "xl:col-span-2" : undefined}
             >
               <div className="flex min-h-32 items-center gap-2 text-sm text-muted-foreground">
                 <Spinner />
@@ -97,15 +85,18 @@ export default function AdminFacilitiesPage() {
           ))
         ) : (
           <>
+            <RoomEditor
+              rooms={rooms}
+              campuses={campuses}
+              admins={admins}
+              {...editorActions}
+            />
             <CampusEditor campuses={campuses} {...editorActions} />
             <ClassEditor
               classes={classes}
               campuses={campuses}
               {...editorActions}
             />
-            <RoomEditor rooms={rooms} campuses={campuses} {...editorActions} />
-            <ApproverEditor rooms={rooms} admins={admins} {...editorActions} />
-            <PolicyEditor rooms={rooms} {...editorActions} />
           </>
         )}
       </div>
