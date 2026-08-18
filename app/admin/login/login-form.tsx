@@ -49,11 +49,7 @@ export function AdminLoginForm({
         try {
           await loginWithToken(token)
         } catch {
-          if (!ignore) {
-            router.replace(
-              `/admin/login?redirect=${encodeURIComponent(redirectTo)}`
-            )
-          }
+          if (!ignore) setCheckingSession(false)
           return
         }
       } else if (!(await checkLogin())) {
