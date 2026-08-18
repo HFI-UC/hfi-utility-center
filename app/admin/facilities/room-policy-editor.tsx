@@ -70,8 +70,10 @@ export function PolicyEditor({
       return
     }
 
-    const created = await mutate(() =>
-      createPolicy(room.id, [Number(day)], parseTime(start), parseTime(end))
+    const created = await mutate(
+      () =>
+        createPolicy(room.id, [Number(day)], parseTime(start), parseTime(end)),
+      t("policyCreated")
     )
     if (created) form.reset()
   }
@@ -211,7 +213,12 @@ export function PolicyEditor({
                         variant="ghost"
                         title={t("togglePolicy")}
                         disabled={working}
-                        onClick={() => mutate(() => togglePolicy(policy.id))}
+                        onClick={() =>
+                          mutate(
+                            () => togglePolicy(policy.id),
+                            t("policyUpdated")
+                          )
+                        }
                       >
                         <Power />
                       </Button>
@@ -244,7 +251,10 @@ export function PolicyEditor({
                             <AlertDialogAction
                               variant="destructive"
                               onClick={() =>
-                                mutate(() => deletePolicy(policy.id))
+                                mutate(
+                                  () => deletePolicy(policy.id),
+                                  t("policyDeleted")
+                                )
                               }
                             >
                               {common("delete")}

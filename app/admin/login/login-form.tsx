@@ -35,6 +35,7 @@ export function AdminLoginForm({
   })
   const [turnstileToken, setTurnstileToken] = useState("")
   const [error, setError] = useState<string>()
+  const [checkingSession, setCheckingSession] = useState(true)
   const handleToken = useCallback(
     (value: string) => setTurnstileToken(value),
     []
@@ -44,9 +45,26 @@ export function AdminLoginForm({
     let ignore = false
 
     async function restoreSession() {
-      if (token) await loginWithToken(token)
-      else if (!(await checkLogin())) return
-      if (!ignore) router.replace(redirectTo)
+      if (token) {
+        try {
+          await loginWithToken(token)
+        } catch {
+          if (!ignore) {
+            router.replace(
+              `/admin/login?redirect=${encodeURIComponent(redirectTo)}`
+            )
+          }
+          return
+        }
+      } else if (!(await checkLogin())) {
+        if (!ignore) setCheckingSession(false)
+        return
+      }
+
+      if (!ignore) {
+        router.replace(redirectTo)
+        router.refresh()
+      }
     }
 
     restoreSession()
@@ -63,6 +81,15 @@ export function AdminLoginForm({
     setError(undefined)
     await loginWithPassword(email, password, turnstileToken)
     router.replace(redirectTo)
+    router.refresh()
+  }
+
+  if (checkingSession) {
+    return (
+      <main className="flex flex-1 items-center justify-center">
+        <Spinner className="size-8" />
+      </main>
+    )
   }
 
   return (

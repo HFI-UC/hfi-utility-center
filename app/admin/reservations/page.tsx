@@ -100,12 +100,14 @@ export default function AdminReservationsPage() {
     }
 
     setError(undefined)
-    const saved = await mutate(() =>
-      updateReservationApproval(
-        id,
-        approved,
-        approved ? undefined : rejectionReason
-      )
+    const saved = await mutate(
+      () =>
+        updateReservationApproval(
+          id,
+          approved,
+          approved ? undefined : rejectionReason
+        ),
+      t(approved ? "reservationApproved" : "reservationRejected")
     )
     if (saved) {
       setRejectingId(undefined)

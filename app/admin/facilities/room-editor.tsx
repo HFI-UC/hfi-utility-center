@@ -71,7 +71,10 @@ export function RoomEditor({
   })
 
   async function createNewRoom({ name, campus }: RoomForm) {
-    const created = await mutate(() => createRoom(name.trim(), Number(campus)))
+    const created = await mutate(
+      () => createRoom(name.trim(), Number(campus)),
+      t("roomCreated")
+    )
     if (created) {
       form.reset()
       setOpen(false)
@@ -193,13 +196,15 @@ export function RoomEditor({
                       }
                       disabled={working}
                       onClick={() =>
-                        mutate(() =>
-                          editRoom(
-                            room.id,
-                            room.name,
-                            room.campus,
-                            !room.enabled
-                          )
+                        mutate(
+                          () =>
+                            editRoom(
+                              room.id,
+                              room.name,
+                              room.campus,
+                              !room.enabled
+                            ),
+                          t("roomStatusUpdated")
                         )
                       }
                     >
@@ -212,8 +217,15 @@ export function RoomEditor({
                       cancelLabel={common("cancel")}
                       saveLabel={common("save")}
                       onSave={(name) =>
-                        mutate(() =>
-                          editRoom(room.id, name, room.campus, room.enabled)
+                        mutate(
+                          () =>
+                            editRoom(
+                              room.id,
+                              name,
+                              room.campus,
+                              room.enabled
+                            ),
+                          t("roomUpdated")
                         )
                       }
                     >

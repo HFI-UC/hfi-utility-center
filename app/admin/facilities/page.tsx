@@ -77,7 +77,7 @@ export default function AdminFacilitiesPage() {
               title={title}
               className={index === 0 ? "xl:col-span-2" : undefined}
             >
-              <div className="flex min-h-32 items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Spinner />
                 {t("facilitiesLoading")}
               </div>

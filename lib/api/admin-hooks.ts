@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 import { checkLogin } from "@/lib/api/auth"
 
@@ -54,7 +55,6 @@ export function useAdminResource<T>({
 export function useAdminMutation({ reload }: { reload: () => Promise<void> }) {
   const mutationInProgress = useRef(false)
   const [working, setWorking] = useState(false)
-  const [notice, setNotice] = useState<string>()
 
   const mutate: AdminMutation = useCallback(
     async (action, successMessage) => {
@@ -62,11 +62,10 @@ export function useAdminMutation({ reload }: { reload: () => Promise<void> }) {
 
       mutationInProgress.current = true
       setWorking(true)
-      setNotice(undefined)
 
       try {
         await action()
-        setNotice(successMessage)
+        if (successMessage) toast.success(successMessage)
         await reload()
         return true
       } finally {
@@ -77,7 +76,7 @@ export function useAdminMutation({ reload }: { reload: () => Promise<void> }) {
     [reload]
   )
 
-  return { mutate, working, notice }
+  return { mutate, working }
 }
 
 export function useAdminSession(initialPath: string) {

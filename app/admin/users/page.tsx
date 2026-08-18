@@ -20,7 +20,7 @@ export default function AdminUsersPage() {
     loadResource: getAdmins,
     initialData: [],
   })
-  const { mutate, working, notice } = useAdminMutation({
+  const { mutate, working } = useAdminMutation({
     reload: adminResource.reload,
   })
 
@@ -42,7 +42,6 @@ export default function AdminUsersPage() {
       />
       <CreateAdminForm mutate={mutate} working={working} />
       <AdminSection title={t("users")}>
-        {notice ? <p className="text-sm text-foreground">{notice}</p> : null}
         {adminResource.loading ? (
           <div className="flex min-h-32 items-center gap-2 text-sm text-muted-foreground">
             <Spinner />

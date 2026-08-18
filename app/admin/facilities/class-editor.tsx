@@ -68,7 +68,10 @@ export function ClassEditor({
   })
 
   async function createNewClass({ name, campus }: ClassForm) {
-    const created = await mutate(() => createClass(name.trim(), Number(campus)))
+    const created = await mutate(
+      () => createClass(name.trim(), Number(campus)),
+      t("classCreated")
+    )
     if (created) {
       form.reset()
       setOpen(false)
@@ -165,8 +168,14 @@ export function ClassEditor({
                       cancelLabel={common("cancel")}
                       saveLabel={common("save")}
                       onSave={(name) =>
-                        mutate(() =>
-                          editClass(schoolClass.id, name, schoolClass.campus)
+                        mutate(
+                          () =>
+                            editClass(
+                              schoolClass.id,
+                              name,
+                              schoolClass.campus
+                            ),
+                          t("classUpdated")
                         )
                       }
                     >

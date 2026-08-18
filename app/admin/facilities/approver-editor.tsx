@@ -73,7 +73,10 @@ export function ApproverEditor({
   )
 
   async function addApprover({ admin }: ApproverForm) {
-    const created = await mutate(() => createApprover(room.id, Number(admin)))
+    const created = await mutate(
+      () => createApprover(room.id, Number(admin)),
+      t("approverAdded")
+    )
     if (created) form.reset()
   }
 
@@ -172,8 +175,10 @@ export function ApproverEditor({
                           title={t("toggleNotifications")}
                           disabled={working}
                           onClick={() =>
-                            mutate(() =>
-                              toggleApproverNotifications(approver.id)
+                            mutate(
+                              () =>
+                                toggleApproverNotifications(approver.id),
+                              t("approverUpdated")
                             )
                           }
                         >
@@ -210,7 +215,10 @@ export function ApproverEditor({
                               <AlertDialogAction
                                 variant="destructive"
                                 onClick={() =>
-                                  mutate(() => deleteApprover(approver.id))
+                                  mutate(
+                                    () => deleteApprover(approver.id),
+                                    t("approverRemoved")
+                                  )
                                 }
                               >
                                 {common("delete")}

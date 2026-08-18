@@ -69,7 +69,7 @@ export function ClassStep({ catalog }: { catalog: CatalogData }) {
           aria-label={t("classSearch")}
         />
       </InputGroup>
-      <div className="grid gap-5 xl:grid-cols-[13rem_1fr]">
+      <div className="grid gap-5 md:grid-cols-[13rem_1fr]">
         <FieldSet className="gap-3">
           <FieldLegend variant="label">{t("campus")}</FieldLegend>
           <FieldGroup className="gap-2">

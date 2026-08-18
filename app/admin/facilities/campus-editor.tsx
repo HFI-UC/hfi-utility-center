@@ -42,7 +42,9 @@ export function CampusEditor({
           label={t("campusName")}
           cancelLabel={common("cancel")}
           saveLabel={common("add")}
-          onSave={(name) => mutate(() => createCampus(name.trim()))}
+          onSave={(name) =>
+            mutate(() => createCampus(name.trim()), t("campusCreated"))
+          }
         >
           <Button size="icon-sm" disabled={working}>
             <Plus />
@@ -84,7 +86,10 @@ export function CampusEditor({
                       cancelLabel={common("cancel")}
                       saveLabel={common("save")}
                       onSave={(name) =>
-                        mutate(() => editCampus(campus.id, name))
+                        mutate(
+                          () => editCampus(campus.id, name),
+                          t("campusUpdated")
+                        )
                       }
                     >
                       <Button

@@ -55,7 +55,7 @@ export function ConfirmFacilityDelete({
           <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            onClick={() => mutate(action)}
+            onClick={() => mutate(action, t("facilityDeleted"))}
           >
             {common("delete")}
           </AlertDialogAction>

@@ -161,7 +161,7 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
 
   return (
     <StepLayout title={t("dateTimeTitle")} error={error}>
-      <div className="grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
+      <div className="grid gap-8 lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-start">
         <Controller
           control={control}
           name="date"
@@ -171,7 +171,7 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
               <FieldDescription>{t("dateDescription")}</FieldDescription>
               <FieldGroup>
                 <Calendar
-                  className="mx-auto max-w-80 p-0 lg:mx-0 lg:w-fit! lg:max-w-none lg:p-3"
+                  className="mx-auto max-w-full p-0 lg:mx-0 lg:p-3"
                   mode="single"
                   locale={locale === "zh-CN" ? zhCN : enUS}
                   selected={inputValueToDate(field.value)}
@@ -190,7 +190,7 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
 
         {date ? (
           <FieldSet
-            className="relative gap-4"
+            className="relative min-w-0 gap-4"
             data-invalid={startTimeState.invalid || endTimeState.invalid}
           >
             <FieldLegend variant="label">{t("timeRange")}</FieldLegend>
