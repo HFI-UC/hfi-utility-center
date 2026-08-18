@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/pagination"
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
+import { getCatalog } from "@/lib/api/catalog"
 import { createReservation, getAvailability } from "@/lib/api/reservations"
 import type { CatalogData } from "@/lib/api/types"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
@@ -36,7 +37,7 @@ type ReservationResult = {
   reservationId?: number
 }
 
-export function ReservationForm({ catalog }: { catalog: CatalogData }) {
+export function ReservationForm() {
   const t = useTranslations("booking")
   const common = useTranslations("common")
   const schema = useReservationSchema()
@@ -49,12 +50,34 @@ export function ReservationForm({ catalog }: { catalog: CatalogData }) {
   const [flowError, setFlowError] = useState<string>()
   const [isWorking, setIsWorking] = useState(false)
   const [result, setResult] = useState<ReservationResult>()
+  const [catalog, setCatalog] = useState<CatalogData>()
+  const [catalogLoading, setCatalogLoading] = useState(true)
   const currentStepIndex = bookingSteps.findIndex(
     (step) => step.id === currentStepId
   )
   const currentStep = bookingSteps[currentStepIndex]
 
+  useEffect(() => {
+    let active = true
+
+    async function loadCatalog() {
+      try {
+        const data = await getCatalog()
+        if (active) setCatalog(data)
+      } finally {
+        if (active) setCatalogLoading(false)
+      }
+    }
+
+    loadCatalog()
+    return () => {
+      active = false
+    }
+  }, [])
+
   async function selectedTimeIsStillAvailable(values: ReservationFormValues) {
+    if (!catalog) return false
+
     const room = catalog.rooms.find((candidate) => candidate.id === values.room)
     if (!room) {
       setFlowError(t("availabilityError"))
@@ -133,6 +156,14 @@ export function ReservationForm({ catalog }: { catalog: CatalogData }) {
     setCurrentStepId("class")
     setResult(undefined)
     setFlowError(undefined)
+  }
+
+  if (catalogLoading || !catalog) {
+    return (
+      <main className="flex flex-1 items-start justify-center px-5 py-16 sm:px-8">
+        <Spinner className="size-8" />
+      </main>
+    )
   }
 
   if (result) {
