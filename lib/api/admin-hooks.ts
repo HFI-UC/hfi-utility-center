@@ -96,7 +96,8 @@ export function useAdminSession(initialPath: string) {
       }
 
       setStatus("unauthenticated")
-      router.replace(`/admin/login?redirect=${encodeURIComponent(initialPath)}`)
+      const redirectTo = `${initialPath}${window.location.search}`
+      router.replace(`/admin/login?redirect=${encodeURIComponent(redirectTo)}`)
     }
 
     loadSession()
