@@ -89,7 +89,7 @@ export function ClassEditor({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{t("newClass")}</DialogTitle>
-              <DialogDescription>{t("className")}</DialogDescription>
+              <DialogDescription>{t("newClassDescription")}</DialogDescription>
             </DialogHeader>
             <form
               className="grid gap-4"
