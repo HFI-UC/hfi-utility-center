@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 
 import { Turnstile } from "@/components/turnstile"
 import { Button } from "@/components/ui/button"
@@ -33,7 +33,6 @@ export function AdminLoginForm({
   const form = useForm<LoginFields>({
     defaultValues: { email: "", password: "" },
   })
-  const { errors } = form.formState
   const [turnstileToken, setTurnstileToken] = useState("")
   const [error, setError] = useState<string>()
   const handleToken = useCallback(
@@ -81,30 +80,42 @@ export function AdminLoginForm({
             onSubmit={form.handleSubmit(submit)}
             className="space-y-4"
           >
-            <Field data-invalid={Boolean(errors.email)}>
-              <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
-              <Input
-                {...form.register("email", { required: t("emailRequired") })}
-                id="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={Boolean(errors.email)}
-              />
-              <FieldError errors={[errors.email]} />
-            </Field>
-            <Field data-invalid={Boolean(errors.password)}>
-              <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
-              <Input
-                {...form.register("password", {
-                  required: t("passwordRequired"),
-                })}
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                aria-invalid={Boolean(errors.password)}
-              />
-              <FieldError errors={[errors.password]} />
-            </Field>
+            <Controller
+              control={form.control}
+              name="email"
+              rules={{ required: t("emailRequired") }}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>{t("email")}</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="email"
+                    autoComplete="email"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  <FieldError errors={[fieldState.error]} />
+                </Field>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="password"
+              rules={{ required: t("passwordRequired") }}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>{t("password")}</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="password"
+                    autoComplete="current-password"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  <FieldError errors={[fieldState.error]} />
+                </Field>
+              )}
+            />
             <Turnstile onToken={handleToken} />
             <p className="min-h-5 text-sm text-destructive">{error}</p>
             <Button

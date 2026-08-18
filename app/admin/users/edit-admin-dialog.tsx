@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Pencil } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -38,7 +38,6 @@ export function EditAdminDialog({
   const form = useForm<EditAdminFields>({
     defaultValues: { name: admin.name, email: admin.email },
   })
-  const { errors } = form.formState
   const requiredText = {
     validate: (value: string) => Boolean(value.trim()) || t("fieldRequired"),
   }
@@ -69,34 +68,46 @@ export function EditAdminDialog({
           <DialogTitle>{common("edit")}</DialogTitle>
         </DialogHeader>
         <form className="space-y-4" onSubmit={form.handleSubmit(saveAdmin)}>
-          <Field data-invalid={Boolean(errors.name)}>
-            <FieldLabel htmlFor={`admin-name-${admin.id}`}>
-              {t("adminName")}
-            </FieldLabel>
-            <Input
-              {...form.register("name", requiredText)}
-              id={`admin-name-${admin.id}`}
-              aria-invalid={Boolean(errors.name)}
-            />
-            <FieldError errors={[errors.name]} />
-          </Field>
-          <Field data-invalid={Boolean(errors.email)}>
-            <FieldLabel htmlFor={`admin-email-${admin.id}`}>
-              {t("adminEmail")}
-            </FieldLabel>
-            <Input
-              {...form.register("email", requiredText)}
-              id={`admin-email-${admin.id}`}
-              type="email"
-              aria-invalid={Boolean(errors.email)}
-            />
-            <FieldError errors={[errors.email]} />
-          </Field>
+          <Controller
+            control={form.control}
+            name="name"
+            rules={requiredText}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`admin-name-${admin.id}`}>
+                  {t("adminName")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={`admin-name-${admin.id}`}
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
+          <Controller
+            control={form.control}
+            name="email"
+            rules={requiredText}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`admin-email-${admin.id}`}>
+                  {t("adminEmail")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={`admin-email-${admin.id}`}
+                  type="email"
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
           <DialogFooter>
             <DialogClose asChild>
-              <Button  variant="outline">
-                {common("cancel")}
-              </Button>
+              <Button variant="outline">{common("cancel")}</Button>
             </DialogClose>
             <Button
               type="submit"

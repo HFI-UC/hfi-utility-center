@@ -42,14 +42,16 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
     control,
     name: ["room", "date"],
   })
-  const {
-    field: { value: startTime, onChange: changeStartTime },
-    fieldState: startTimeState,
-  } = useController({ control, name: "startTime" })
-  const {
-    field: { value: endTime, onChange: changeEndTime },
-    fieldState: endTimeState,
-  } = useController({ control, name: "endTime" })
+  const { field: startTimeField, fieldState: startTimeState } = useController({
+    control,
+    name: "startTime",
+  })
+  const { field: endTimeField, fieldState: endTimeState } = useController({
+    control,
+    name: "endTime",
+  })
+  const startTime = startTimeField.value
+  const endTime = endTimeField.value
   const room = useMemo(
     () => rooms.find((candidate) => candidate.id === roomId),
     [roomId, rooms]
@@ -95,14 +97,14 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
   }, [availability, getValues, reportError, setValue, t])
 
   function clearSelectedRange() {
-    changeStartTime(0)
-    changeEndTime(0)
+    startTimeField.onChange(0)
+    endTimeField.onChange(0)
     clearErrors(["startTime", "endTime"])
   }
 
   function selectRangeStart(timestamp: number) {
-    changeStartTime(timestamp)
-    changeEndTime(0)
+    startTimeField.onChange(timestamp)
+    endTimeField.onChange(0)
     clearErrors("endTime")
   }
 
@@ -111,7 +113,7 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
       availability &&
       rangeIsAvailable(availability.slots, startTime, timestamp)
     ) {
-      changeEndTime(timestamp)
+      endTimeField.onChange(timestamp)
       clearErrors("endTime")
       clearError()
       return
@@ -163,7 +165,7 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
         <Controller
           control={control}
           name="date"
-          render={({ field: { value, onChange }, fieldState }) => (
+          render={({ field, fieldState }) => (
             <FieldSet className="gap-4" data-invalid={fieldState.invalid}>
               <FieldLegend variant="label">{t("dateTitle")}</FieldLegend>
               <FieldDescription>{t("dateDescription")}</FieldDescription>
@@ -172,13 +174,13 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
                   className="mx-auto max-w-80 p-0 lg:mx-0 lg:w-fit! lg:max-w-none lg:p-3"
                   mode="single"
                   locale={locale === "zh-CN" ? zhCN : enUS}
-                  selected={inputValueToDate(value)}
-                  defaultMonth={inputValueToDate(value) ?? today}
+                  selected={inputValueToDate(field.value)}
+                  defaultMonth={inputValueToDate(field.value) ?? today}
                   startMonth={today}
                   endMonth={maximumDate}
                   disabled={{ before: today, after: maximumDate }}
                   aria-invalid={fieldState.invalid}
-                  onSelect={(selected) => selectDate(selected, onChange)}
+                  onSelect={(selected) => selectDate(selected, field.onChange)}
                 />
               </FieldGroup>
               <FieldError errors={[fieldState.error]} />

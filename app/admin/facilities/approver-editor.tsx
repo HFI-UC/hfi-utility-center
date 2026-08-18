@@ -103,22 +103,18 @@ export function ApproverEditor({
             control={form.control}
             name="admin"
             rules={{ required: t("fieldRequired") }}
-            render={({
-              field: { onBlur, onChange, ref, ...field },
-              fieldState,
-            }) => (
+            render={({ field, fieldState }) => (
               <Field className="flex-1" data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={`approver-${room.id}`}>
                   {t("selectAdmin")}
                 </FieldLabel>
                 <Select
-                  {...field}
-                  onValueChange={onChange}
-                  onOpenChange={(open) => !open && onBlur()}
+                  name={field.name}
+                  value={field.value}
+                  onValueChange={field.onChange}
                 >
                   <SelectTrigger
                     id={`approver-${room.id}`}
-                    ref={ref}
                     aria-invalid={fieldState.invalid}
                   >
                     <SelectValue placeholder={t("selectAdmin")} />

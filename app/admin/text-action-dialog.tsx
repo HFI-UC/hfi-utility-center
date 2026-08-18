@@ -1,7 +1,7 @@
 "use client"
 
 import { useId, useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -39,7 +39,6 @@ export function TextActionDialog({
   const [open, setOpen] = useState(false)
   const inputId = useId()
   const form = useForm({ defaultValues: { value: initialValue } })
-  const valueError = form.formState.errors.value
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen)
@@ -61,28 +60,33 @@ export function TextActionDialog({
           <DialogDescription>{label}</DialogDescription>
         </DialogHeader>
         <form className="space-y-5" onSubmit={form.handleSubmit(saveValue)}>
-          <Field data-invalid={Boolean(valueError)}>
-            <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
-            <Input
-              {...form.register("value", {
-                validate: (value) => Boolean(value.trim()) || label,
-                minLength: {
-                  value: inputType === "password" ? 6 : 1,
-                  message: label,
-                },
-              })}
-              id={inputId}
-              type={inputType}
-              autoFocus
-              aria-invalid={Boolean(valueError)}
-            />
-            <FieldError errors={[valueError]} />
-          </Field>
+          <Controller
+            control={form.control}
+            name="value"
+            rules={{
+              validate: (value) => Boolean(value.trim()) || label,
+              minLength: {
+                value: inputType === "password" ? 6 : 1,
+                message: label,
+              },
+            }}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
+                <Input
+                  {...field}
+                  id={inputId}
+                  type={inputType}
+                  autoFocus
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
           <DialogFooter>
             <DialogClose asChild>
-              <Button  variant="outline">
-                {cancelLabel}
-              </Button>
+              <Button variant="outline">{cancelLabel}</Button>
             </DialogClose>
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {saveLabel}

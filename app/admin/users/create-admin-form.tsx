@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 
 import { AdminSection } from "@/app/admin/admin-shell"
 import { Button } from "@/components/ui/button"
@@ -24,7 +24,6 @@ export function CreateAdminForm({
   const form = useForm<CreateAdminFields>({
     defaultValues: { name: "", email: "", password: "" },
   })
-  const { errors } = form.formState
   const requiredText = {
     validate: (value: string) => Boolean(value.trim()) || t("fieldRequired"),
   }
@@ -44,40 +43,61 @@ export function CreateAdminForm({
         className="grid gap-3 md:grid-cols-2 xl:grid-cols-4"
         onSubmit={form.handleSubmit(createAccount)}
       >
-        <Field data-invalid={Boolean(errors.name)}>
-          <FieldLabel htmlFor="new-admin-name">{t("name")}</FieldLabel>
-          <Input
-            {...form.register("name", requiredText)}
-            id="new-admin-name"
-            aria-invalid={Boolean(errors.name)}
-          />
-          <FieldError errors={[errors.name]} />
-        </Field>
-        <Field data-invalid={Boolean(errors.email)}>
-          <FieldLabel htmlFor="new-admin-email">{t("email")}</FieldLabel>
-          <Input
-            {...form.register("email", requiredText)}
-            id="new-admin-email"
-            type="email"
-            aria-invalid={Boolean(errors.email)}
-          />
-          <FieldError errors={[errors.email]} />
-        </Field>
-        <Field data-invalid={Boolean(errors.password)}>
-          <FieldLabel htmlFor="new-admin-password">
-            {t("initialPassword")}
-          </FieldLabel>
-          <Input
-            {...form.register("password", {
-              ...requiredText,
-              minLength: { value: 6, message: t("newPassword") },
-            })}
-            id="new-admin-password"
-            type="password"
-            aria-invalid={Boolean(errors.password)}
-          />
-          <FieldError errors={[errors.password]} />
-        </Field>
+        <Controller
+          control={form.control}
+          name="name"
+          rules={requiredText}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="new-admin-name">{t("name")}</FieldLabel>
+              <Input
+                {...field}
+                id="new-admin-name"
+                aria-invalid={fieldState.invalid}
+              />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="email"
+          rules={requiredText}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="new-admin-email">{t("email")}</FieldLabel>
+              <Input
+                {...field}
+                id="new-admin-email"
+                type="email"
+                aria-invalid={fieldState.invalid}
+              />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
+        />
+        <Controller
+          control={form.control}
+          name="password"
+          rules={{
+            ...requiredText,
+            minLength: { value: 6, message: t("newPassword") },
+          }}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="new-admin-password">
+                {t("initialPassword")}
+              </FieldLabel>
+              <Input
+                {...field}
+                id="new-admin-password"
+                type="password"
+                aria-invalid={fieldState.invalid}
+              />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
+        />
         <Button className="self-end" disabled={working}>
           <Plus />
           {t("addAccount")}

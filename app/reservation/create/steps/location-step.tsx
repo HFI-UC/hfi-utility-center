@@ -24,7 +24,7 @@ export function LocationStep({ catalog }: { catalog: CatalogData }) {
       <Controller
         control={control}
         name="bookingCampusId"
-        render={({ field: { onChange, ...field }, fieldState }) => (
+        render={({ field, fieldState }) => (
           <FieldSet className="gap-3" data-invalid={fieldState.invalid}>
             <FieldLegend variant="label">{t("campus")}</FieldLegend>
             <ChoiceGrid
@@ -35,7 +35,7 @@ export function LocationStep({ catalog }: { catalog: CatalogData }) {
                 .filter((campus) => !campus.isPrivileged)
                 .map((campus) => ({ value: campus.id, label: campus.name }))}
               onChange={(nextCampusId) => {
-                onChange(nextCampusId)
+                field.onChange(nextCampusId)
                 setValue("room", 0)
                 clearSelectedTime()
               }}
@@ -50,7 +50,7 @@ export function LocationStep({ catalog }: { catalog: CatalogData }) {
         <Controller
           control={control}
           name="room"
-          render={({ field: { onChange, ...field }, fieldState }) => (
+          render={({ field, fieldState }) => (
             <FieldSet className="mt-6 gap-3" data-invalid={fieldState.invalid}>
               <FieldLegend variant="label">{t("rooms")}</FieldLegend>
               <ChoiceGrid
@@ -63,7 +63,7 @@ export function LocationStep({ catalog }: { catalog: CatalogData }) {
                   disabled: !room.enabled,
                 }))}
                 onChange={(nextRoomId) => {
-                  onChange(nextRoomId)
+                  field.onChange(nextRoomId)
                   clearSelectedTime()
                 }}
                 emptyText={t("roomEmpty")}

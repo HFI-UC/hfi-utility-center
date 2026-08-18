@@ -63,7 +63,6 @@ export function RoomEditor({
   const common = useTranslations("common")
   const [open, setOpen] = useState(false)
   const form = useForm<RoomForm>({ defaultValues: { name: "", campus: "" } })
-  const nameError = form.formState.errors.name
   const campusNames = new Map(
     campuses.map((campus) => [campus.id, campus.name])
   )
@@ -100,18 +99,27 @@ export function RoomEditor({
               className="grid gap-4"
               onSubmit={form.handleSubmit(createNewRoom)}
             >
-              <Field data-invalid={Boolean(nameError)}>
-                <FieldLabel htmlFor="new-room-name">{t("roomName")}</FieldLabel>
-                <Input
-                  {...form.register("name", {
-                    validate: (name) =>
-                      Boolean(name.trim()) || t("fieldRequired"),
-                  })}
-                  id="new-room-name"
-                  aria-invalid={Boolean(nameError)}
-                />
-                <FieldError errors={[nameError]} />
-              </Field>
+              <Controller
+                control={form.control}
+                name="name"
+                rules={{
+                  validate: (name) =>
+                    Boolean(name.trim()) || t("fieldRequired"),
+                }}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="new-room-name">
+                      {t("roomName")}
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="new-room-name"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
               <RoomCampusField control={form.control} campuses={campuses} />
               <DialogFooter>
                 <DialogClose asChild>
@@ -254,17 +262,16 @@ function RoomCampusField({
       control={control}
       name="campus"
       rules={{ required: t("fieldRequired") }}
-      render={({ field: { onBlur, onChange, ref, ...field }, fieldState }) => (
+      render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
           <FieldLabel htmlFor="new-room-campus">{t("selectCampus")}</FieldLabel>
           <Select
-            {...field}
-            onValueChange={onChange}
-            onOpenChange={(open) => !open && onBlur()}
+            name={field.name}
+            value={field.value}
+            onValueChange={field.onChange}
           >
             <SelectTrigger
               id="new-room-campus"
-              ref={ref}
               aria-invalid={fieldState.invalid}
             >
               <SelectValue placeholder={t("selectCampus")} />

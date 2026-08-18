@@ -102,17 +102,17 @@ export function ProfileStep() {
         <Controller
           control={control}
           name="isAgreed"
-          render={({ field: { value, onChange, ...field }, fieldState }) => (
+          render={({ field, fieldState }) => (
             <Field
               className="py-5 text-sm"
               orientation="horizontal"
               data-invalid={fieldState.invalid}
             >
               <Checkbox
-                {...field}
                 id={field.name}
-                checked={value}
-                onCheckedChange={onChange}
+                name={field.name}
+                checked={field.value}
+                onCheckedChange={field.onChange}
                 aria-invalid={fieldState.invalid}
               />
               <FieldContent>

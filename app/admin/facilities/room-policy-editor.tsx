@@ -63,7 +63,6 @@ export function PolicyEditor({
   const form = useForm<PolicyForm>({
     defaultValues: { day: "1", start: "08:00", end: "18:00" },
   })
-  const { errors } = form.formState
 
   async function createRoomPolicy({ day, start, end }: PolicyForm) {
     if (timeInMinutes(end) <= timeInMinutes(start)) {
@@ -101,22 +100,18 @@ export function PolicyEditor({
             control={form.control}
             name="day"
             rules={{ required: t("fieldRequired") }}
-            render={({
-              field: { onBlur, onChange, ref, ...field },
-              fieldState,
-            }) => (
+            render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={`policy-day-${room.id}`}>
                   {t("selectDay")}
                 </FieldLabel>
                 <Select
-                  {...field}
-                  onValueChange={onChange}
-                  onOpenChange={(open) => !open && onBlur()}
+                  name={field.name}
+                  value={field.value}
+                  onValueChange={field.onChange}
                 >
                   <SelectTrigger
                     id={`policy-day-${room.id}`}
-                    ref={ref}
                     aria-invalid={fieldState.invalid}
                   >
                     <SelectValue placeholder={t("selectDay")} />
@@ -133,30 +128,44 @@ export function PolicyEditor({
               </Field>
             )}
           />
-          <Field data-invalid={Boolean(errors.start)}>
-            <FieldLabel htmlFor={`policy-start-${room.id}`}>
-              {t("policyStart")}
-            </FieldLabel>
-            <Input
-              {...form.register("start", { required: t("fieldRequired") })}
-              id={`policy-start-${room.id}`}
-              type="time"
-              aria-invalid={Boolean(errors.start)}
-            />
-            <FieldError errors={[errors.start]} />
-          </Field>
-          <Field data-invalid={Boolean(errors.end)}>
-            <FieldLabel htmlFor={`policy-end-${room.id}`}>
-              {t("policyEnd")}
-            </FieldLabel>
-            <Input
-              {...form.register("end", { required: t("fieldRequired") })}
-              id={`policy-end-${room.id}`}
-              type="time"
-              aria-invalid={Boolean(errors.end)}
-            />
-            <FieldError errors={[errors.end]} />
-          </Field>
+          <Controller
+            control={form.control}
+            name="start"
+            rules={{ required: t("fieldRequired") }}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`policy-start-${room.id}`}>
+                  {t("policyStart")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={`policy-start-${room.id}`}
+                  type="time"
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
+          <Controller
+            control={form.control}
+            name="end"
+            rules={{ required: t("fieldRequired") }}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`policy-end-${room.id}`}>
+                  {t("policyEnd")}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={`policy-end-${room.id}`}
+                  type="time"
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
           <Button className="self-end" disabled={working}>
             <Plus />
             {common("add")}

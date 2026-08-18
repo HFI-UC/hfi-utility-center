@@ -11,6 +11,7 @@ import type { DateRange } from "react-day-picker"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
+import { Field, FieldLabel } from "@/components/ui/field"
 import {
   InputGroup,
   InputGroupAddon,
@@ -55,7 +56,7 @@ export function ReservationSearchFilterForm({
   const common = useTranslations("common")
   const statusT = useTranslations("status")
   const dateLocale = useLocale() === "zh-CN" ? zhCN : enUS
-  const { control, handleSubmit, register } = useForm<SearchFormValues>({
+  const { control, handleSubmit } = useForm<SearchFormValues>({
     defaultValues: {
       keyword: filters.keyword,
       room: filters.roomId ? String(filters.roomId) : "all",
@@ -95,76 +96,122 @@ export function ReservationSearchFilterForm({
       className="grid gap-3 py-4 sm:grid-cols-2 xl:grid-cols-[minmax(16rem,2fr)_1fr_1fr_1.5fr_auto]"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <label>
-        <span className="sr-only">{t("keyword")}</span>
-        <InputGroup>
-          <InputGroupInput
-            {...register("keyword")}
-            placeholder={t("keyword")}
-          />
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
-        </InputGroup>
-      </label>
+      <Controller
+        control={control}
+        name="keyword"
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel className="sr-only" htmlFor={field.name}>
+              {t("keyword")}
+            </FieldLabel>
+            <InputGroup>
+              <InputGroupInput
+                {...field}
+                id={field.name}
+                placeholder={t("keyword")}
+                aria-invalid={fieldState.invalid}
+              />
+              <InputGroupAddon>
+                <Search />
+              </InputGroupAddon>
+            </InputGroup>
+          </Field>
+        )}
+      />
 
       <Controller
         control={control}
         name="room"
-        render={({ field }) => (
-          <FilterSelect {...field} allLabel={t("allRooms")}>
-            {catalog?.rooms.map((room) => (
-              <SelectItem key={room.id} value={String(room.id)}>
-                {room.name}
-              </SelectItem>
-            ))}
-          </FilterSelect>
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel className="sr-only" htmlFor={field.name}>
+              {t("allRooms")}
+            </FieldLabel>
+            <FilterSelect
+              id={field.name}
+              name={field.name}
+              value={field.value}
+              onValueChange={field.onChange}
+              invalid={fieldState.invalid}
+              allLabel={t("allRooms")}
+            >
+              {catalog?.rooms.map((room) => (
+                <SelectItem key={room.id} value={String(room.id)}>
+                  {room.name}
+                </SelectItem>
+              ))}
+            </FilterSelect>
+          </Field>
         )}
       />
 
       <Controller
         control={control}
         name="status"
-        render={({ field }) => (
-          <FilterSelect {...field} allLabel={t("allStatuses")}>
-            {(["pending", "approved", "rejected"] as const).map((status) => (
-              <SelectItem key={status} value={status}>
-                {statusT(status)}
-              </SelectItem>
-            ))}
-          </FilterSelect>
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel className="sr-only" htmlFor={field.name}>
+              {t("allStatuses")}
+            </FieldLabel>
+            <FilterSelect
+              id={field.name}
+              name={field.name}
+              value={field.value}
+              onValueChange={field.onChange}
+              invalid={fieldState.invalid}
+              allLabel={t("allStatuses")}
+            >
+              {(["pending", "approved", "rejected"] as const).map((status) => (
+                <SelectItem key={status} value={status}>
+                  {statusT(status)}
+                </SelectItem>
+              ))}
+            </FilterSelect>
+          </Field>
         )}
       />
 
       <Controller
         control={control}
         name="dateRange"
-        render={({ field: { value, onChange, ...field } }) => (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                {...field}
-                variant="outline"
-                className="justify-start text-left font-normal"
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel className="sr-only" htmlFor={field.name}>
+              {t("dateRange")}
+            </FieldLabel>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id={field.name}
+                  name={field.name}
+                  ref={field.ref}
+                  variant="outline"
+                  className="justify-start text-left font-normal"
+                  onBlur={field.onBlur}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <CalendarDays />
+                  <DateRangeLabel
+                    range={field.value}
+                    locale={dateLocale}
+                    placeholder={t("dateRange")}
+                  />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-auto overflow-auto p-0"
+                align="start"
               >
-                <CalendarDays />
-                <DateRangeLabel
-                  range={value}
+                <Calendar
+                  mode="range"
+                  numberOfMonths={2}
+                  selected={field.value}
+                  onSelect={field.onChange}
                   locale={dateLocale}
-                  placeholder={t("dateRange")}
                 />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto overflow-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                numberOfMonths={2}
-                selected={value}
-                onSelect={onChange}
-                locale={dateLocale}
-              />
-            </PopoverContent>
-          </Popover>
+              </PopoverContent>
+            </Popover>
+          </Field>
         )}
       />
 
@@ -177,21 +224,25 @@ export function ReservationSearchFilterForm({
 }
 
 function FilterSelect({
+  id,
   name,
   value,
-  onChange,
+  onValueChange,
+  invalid,
   allLabel,
   children,
 }: {
+  id: string
   name: string
   value: string
-  onChange: (value: string) => void
+  onValueChange: (value: string) => void
+  invalid: boolean
   allLabel: string
   children: ReactNode
 }) {
   return (
-    <Select name={name} value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-full">
+    <Select name={name} value={value} onValueChange={onValueChange}>
+      <SelectTrigger id={id} className="w-full" aria-invalid={invalid}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

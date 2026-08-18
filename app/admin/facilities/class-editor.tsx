@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Pencil, Plus } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, type Control } from "react-hook-form"
 
 import { AdminSection } from "@/app/admin/admin-shell"
 import { TextActionDialog } from "@/app/admin/text-action-dialog"
@@ -60,7 +60,6 @@ export function ClassEditor({
   const form = useForm<ClassForm>({
     defaultValues: { name: "", campus: "" },
   })
-  const nameError = form.formState.errors.name
   const campusNames = new Map(
     campuses.map((campus) => [campus.id, campus.name])
   )
@@ -96,20 +95,27 @@ export function ClassEditor({
               className="grid gap-4"
               onSubmit={form.handleSubmit(createNewClass)}
             >
-              <Field data-invalid={Boolean(nameError)}>
-                <FieldLabel htmlFor="new-class-name">
-                  {t("className")}
-                </FieldLabel>
-                <Input
-                  {...form.register("name", {
-                    validate: (name) =>
-                      Boolean(name.trim()) || t("fieldRequired"),
-                  })}
-                  id="new-class-name"
-                  aria-invalid={Boolean(nameError)}
-                />
-                <FieldError errors={[nameError]} />
-              </Field>
+              <Controller
+                control={form.control}
+                name="name"
+                rules={{
+                  validate: (name) =>
+                    Boolean(name.trim()) || t("fieldRequired"),
+                }}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="new-class-name">
+                      {t("className")}
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="new-class-name"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
               <CampusField control={form.control} campuses={campuses} />
               <DialogFooter>
                 <DialogClose asChild>
@@ -200,7 +206,7 @@ function CampusField({
   control,
   campuses,
 }: {
-  control: ReturnType<typeof useForm<ClassForm>>["control"]
+  control: Control<ClassForm>
   campuses: Campus[]
 }) {
   const t = useTranslations("admin")
@@ -209,19 +215,18 @@ function CampusField({
       control={control}
       name="campus"
       rules={{ required: t("fieldRequired") }}
-      render={({ field: { onBlur, onChange, ref, ...field }, fieldState }) => (
+      render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
           <FieldLabel htmlFor="new-class-campus">
             {t("selectCampus")}
           </FieldLabel>
           <Select
-            {...field}
-            onValueChange={onChange}
-            onOpenChange={(open) => !open && onBlur()}
+            name={field.name}
+            value={field.value}
+            onValueChange={field.onChange}
           >
             <SelectTrigger
               id="new-class-campus"
-              ref={ref}
               aria-invalid={fieldState.invalid}
             >
               <SelectValue placeholder={t("selectCampus")} />
