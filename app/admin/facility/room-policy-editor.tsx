@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -27,13 +28,6 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -46,7 +40,7 @@ import type { AdminMutation } from "@/lib/api/admin-hooks"
 import { createPolicy, deletePolicy, togglePolicy } from "@/lib/api/catalog"
 import type { Room } from "@/lib/api/types"
 
-type PolicyForm = { day: string; start: string; end: string }
+type PolicyForm = { days: number[]; start: string; end: string }
 
 export function PolicyEditor({
   room,
@@ -61,10 +55,10 @@ export function PolicyEditor({
   const common = useTranslations("common")
   const weekdays = t("policyWeekdays").split(",")
   const form = useForm<PolicyForm>({
-    defaultValues: { day: "1", start: "08:00", end: "18:00" },
+    defaultValues: { days: [1], start: "08:00", end: "18:00" },
   })
 
-  async function createRoomPolicy({ day, start, end }: PolicyForm) {
+  async function createRoomPolicy({ days, start, end }: PolicyForm) {
     if (timeInMinutes(end) <= timeInMinutes(start)) {
       form.setError("end", { message: t("policyEndAfterStart") })
       return
@@ -72,7 +66,12 @@ export function PolicyEditor({
 
     const created = await mutate(
       () =>
-        createPolicy(room.id, [Number(day)], parseTime(start), parseTime(end)),
+        createPolicy(
+          room.id,
+          [...days].sort((a, b) => a - b),
+          parseTime(start),
+          parseTime(end)
+        ),
       t("policyCreated")
     )
     if (created) form.reset()
@@ -100,32 +99,41 @@ export function PolicyEditor({
         >
           <Controller
             control={form.control}
-            name="day"
-            rules={{ required: t("fieldRequired") }}
+            name="days"
+            rules={{
+              validate: (days) => days.length > 0 || t("fieldRequired"),
+            }}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={`policy-day-${room.id}`}>
-                  {t("selectDay")}
-                </FieldLabel>
-                <Select
-                  name={field.name}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                >
-                  <SelectTrigger
-                    id={`policy-day-${room.id}`}
-                    aria-invalid={fieldState.invalid}
-                  >
-                    <SelectValue placeholder={t("selectDay")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {weekdays.map((weekday, index) => (
-                      <SelectItem key={weekday} value={String(index)}>
+                <FieldLabel>{t("selectDay")}</FieldLabel>
+                <div className="flex flex-wrap gap-x-3 gap-y-2">
+                  {weekdays.map((weekday, index) => {
+                    const id = `policy-day-${room.id}-${index}`
+                    return (
+                      <label
+                        key={weekday}
+                        htmlFor={id}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <Checkbox
+                          id={id}
+                          name={field.name}
+                          checked={field.value.includes(index)}
+                          aria-invalid={fieldState.invalid}
+                          onBlur={field.onBlur}
+                          onCheckedChange={(checked) =>
+                            field.onChange(
+                              checked
+                                ? [...field.value, index]
+                                : field.value.filter((day) => day !== index)
+                            )
+                          }
+                        />
                         {weekday}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      </label>
+                    )
+                  })}
+                </div>
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )}
