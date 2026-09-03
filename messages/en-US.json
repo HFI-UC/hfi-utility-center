@@ -78,6 +78,7 @@
     "selectEndHint": "Now choose the end time, up to 2 hours later.",
     "selectedRange": "Selected {start} to {end}",
     "rangeUnavailable": "The range includes an occupied or restricted time. Choose again.",
+    "privilegedAvailability": "The privileged class has unlocked every future time slot, up to 2 hours.",
     "timeConflict": "That time is occupied or restricted by room policy. Choose again.",
     "profileTitle": "Enter reservation details",
     "name": "Name",
