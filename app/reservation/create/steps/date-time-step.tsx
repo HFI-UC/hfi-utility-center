@@ -33,7 +33,13 @@ import {
 } from "./time-options"
 import { useRoomAvailability } from "./use-room-availability"
 
-export function DateTimeStep({ rooms }: { rooms: Room[] }) {
+export function DateTimeStep({
+  rooms,
+  privileged = false,
+}: {
+  rooms: Room[]
+  privileged?: boolean
+}) {
   const t = useTranslations("booking")
   const locale = useLocale()
   const { clearErrors, control, getValues, setValue } =
@@ -60,6 +66,7 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
     useRoomAvailability({
       room,
       date,
+      privileged,
     })
   const today = useMemo(() => startOfToday(), [])
   const maximumDate = useMemo(() => addDays(today, 30), [today])
@@ -205,7 +212,9 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
             >
               {loading ? <Spinner /> : <RefreshCw />}
             </Button>
-            <FieldDescription>{selectedRangeLabel()}</FieldDescription>
+            <FieldDescription>
+              {privileged ? t("privilegedAvailability") : selectedRangeLabel()}
+            </FieldDescription>
 
             <FieldGroup>
               {loading ? (

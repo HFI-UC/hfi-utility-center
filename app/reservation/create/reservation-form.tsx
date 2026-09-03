@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { FormProvider, useForm } from "react-hook-form"
+import { FormProvider, useForm, useWatch } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -52,6 +52,17 @@ export function ReservationForm() {
   const [result, setResult] = useState<ReservationResult>()
   const [catalog, setCatalog] = useState<CatalogData>()
   const [catalogLoading, setCatalogLoading] = useState(true)
+  const selectedClassId = useWatch({
+    control: form.control,
+    name: "classId",
+  })
+  const selectedClass = catalog?.classes.find(
+    (schoolClass) => schoolClass.id === selectedClassId
+  )
+  const privileged = Boolean(
+    catalog?.campuses.find((campus) => campus.id === selectedClass?.campus)
+      ?.isPrivileged
+  )
   const currentStepIndex = bookingSteps.findIndex(
     (step) => step.id === currentStepId
   )
@@ -77,6 +88,14 @@ export function ReservationForm() {
 
   async function selectedTimeIsStillAvailable(values: ReservationFormValues) {
     if (!catalog) return false
+
+    const schoolClass = catalog.classes.find(
+      (candidate) => candidate.id === values.classId
+    )
+    const classCampus = catalog.campuses.find(
+      (candidate) => candidate.id === schoolClass?.campus
+    )
+    if (classCampus?.isPrivileged) return true
 
     const room = catalog.rooms.find((candidate) => candidate.id === values.room)
     if (!room) {
@@ -180,7 +199,7 @@ export function ReservationForm() {
   const stepContent = {
     class: <ClassStep catalog={catalog} />,
     location: <LocationStep catalog={catalog} />,
-    dateTime: <DateTimeStep rooms={catalog.rooms} />,
+    dateTime: <DateTimeStep rooms={catalog.rooms} privileged={privileged} />,
     profile: <ProfileStep />,
     review: <ReviewStep catalog={catalog} />,
   }

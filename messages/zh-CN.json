@@ -74,6 +74,7 @@
     "selectEndHint": "再选择结束时间，最长可预约 2 小时。",
     "selectedRange": "已选择 {start} 至 {end}",
     "rangeUnavailable": "所选区间包含已占用或受限时段，请重新选择。",
+    "privilegedAvailability": "特权班级已解锁全部未来时段，最长可预约 2 小时。",
     "timeConflict": "该时段已被占用或不符合房间政策，请重新选择。",
     "profileTitle": "填写预约信息",
     "name": "姓名",
