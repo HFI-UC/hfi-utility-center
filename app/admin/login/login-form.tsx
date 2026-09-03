@@ -17,7 +17,13 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
-import { checkLogin, loginWithPassword, loginWithToken } from "@/lib/api/auth"
+import {
+  checkLogin,
+  forgetAdminEmail,
+  loginWithPassword,
+  loginWithToken,
+  rememberAdminEmail,
+} from "@/lib/api/auth"
 
 type LoginFields = { email: string; password: string }
 
@@ -47,6 +53,7 @@ export function AdminLoginForm({
     async function restoreSession() {
       if (token) {
         try {
+          forgetAdminEmail()
           await loginWithToken(token)
         } catch {
           if (!ignore) setCheckingSession(false)
@@ -76,6 +83,7 @@ export function AdminLoginForm({
     }
     setError(undefined)
     await loginWithPassword(email, password, turnstileToken)
+    rememberAdminEmail(email)
     router.replace(redirectTo)
     router.refresh()
   }

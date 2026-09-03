@@ -1,6 +1,12 @@
 "use client"
 
-import { Building2, CalendarClock, LogOut, Users } from "lucide-react"
+import {
+  Building2,
+  CalendarClock,
+  CalendarPlus,
+  LogOut,
+  Users,
+} from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
@@ -48,6 +54,11 @@ function AuthenticatedAdminShell({
       label: t("reservations"),
       icon: CalendarClock,
     },
+    {
+      href: "/admin/force-reservation",
+      label: t("forceReservationTab"),
+      icon: CalendarPlus,
+    },
     { href: "/admin/facility", label: t("facilities"), icon: Building2 },
     { href: "/admin/user", label: t("users"), icon: Users },
   ]
@@ -87,7 +98,7 @@ function AuthenticatedAdminShell({
             <CardTitle>{t("workspace")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <nav className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-1">
+            <nav className="grid grid-cols-2 gap-1 sm:grid-cols-4 lg:grid-cols-1">
               {navigationItems.map((item) => {
                 const active = pathname === item.href
                 return (
