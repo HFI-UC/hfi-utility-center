@@ -24,12 +24,12 @@
       "campusTitle": "Reservations are now shared across both campuses",
       "campusDescription": "Students at the Shipai Campus may reserve classrooms at the Knowledge City Campus, and students at the Knowledge City Campus may reserve classrooms at the Shipai Campus.",
       "priorityTitle": "Conflicts and reservation priority",
-      "priorityDescription": "Classrooms reserved for personal reasons, such as online classes or birthday celebrations, may be reassigned when a higher-priority group activity needs the room. Priority from highest to lowest is:",
+      "priorityDescription": "Classrooms reserved for online classes or other activities may be reassigned when a higher-priority group activity needs the room. Priority from highest to lowest is:",
       "priority": {
         "teacher": "Teachers",
         "club": "Club activities",
         "presentation": "Individual presentations",
-        "personal": "Online classes, birthday celebrations, and other personal uses"
+        "personal": "Online classes and other activities"
       },
       "iosDescription": "You can also download the iOS app to reserve classrooms more conveniently from your phone.",
       "iosAction": "Download the iOS app",

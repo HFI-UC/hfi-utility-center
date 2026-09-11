@@ -24,12 +24,12 @@
       "campusTitle": "两校区预约现已互通",
       "campusDescription": "石牌校区的学生可以预约知识城校区的教室，知识城校区的学生也可以预约石牌校区的教室。",
       "priorityTitle": "预约冲突与优先级",
-      "priorityDescription": "若因网课、生日会等个人原因预约教室，遇到更高优先级的集体活动时，原预约可能会被调整或顶替。优先级由高至低为：",
+      "priorityDescription": "若因网课等其他活动预约教室，遇到更高优先级的集体活动时，原预约可能会被调整或顶替。优先级由高至低为：",
       "priority": {
         "teacher": "老师",
         "club": "社团活动",
         "presentation": "个人 Presentation",
-        "personal": "网课、生日会等个人用途"
+        "personal": "网课等其他活动"
       },
       "iosDescription": "你也可以下载 iOS App，在手机上更方便地预约教室。",
       "iosAction": "下载 iOS App",
