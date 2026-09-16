@@ -14,7 +14,7 @@ declare module "axios" {
 const backendUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   process.env.NEXT_PUBLIC_BACKEND_URL ||
-  "/backend"
+  "https://cn.hfiuc.api.743.world"
 
 export const api = axios.create({
   baseURL: backendUrl,

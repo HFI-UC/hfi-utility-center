@@ -56,7 +56,7 @@ export type PurposeType = "personal" | "class" | "club"
 
 export interface Reservation {
   id: number
-  roomId: number
+  roomId: number | null
   studentName: string
   studentId?: string
   email: string
