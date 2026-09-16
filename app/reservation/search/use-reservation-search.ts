@@ -41,7 +41,9 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
         const nextResult = await getReservations(
           reservationSearchRequest(filters)
         )
-        if (requestId.current === currentRequest) setResult(nextResult)
+        if (requestId.current === currentRequest) {
+          setResult(nextResult)
+        }
       } finally {
         if (requestId.current === currentRequest) setLoading(false)
       }

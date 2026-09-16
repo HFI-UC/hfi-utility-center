@@ -2,13 +2,13 @@ import type { ComponentProps } from "react"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import Link from "next/link"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/astryx"
 import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
-} from "@/components/ui/pagination"
+} from "@/components/astryx"
 import { cn } from "@/lib/utils"
 
 import {
@@ -22,11 +22,13 @@ export function ReservationSearchPagination({
   totalReservations,
   previousLabel,
   nextLabel,
+  sidebar = false,
 }: {
   filters: ReservationSearchFilters
   totalReservations: number
   previousLabel: string
   nextLabel: string
+  sidebar?: boolean
 }) {
   if (totalReservations <= 20) return null
 
@@ -36,8 +38,10 @@ export function ReservationSearchPagination({
   const atLastPage = filters.page >= totalPages - 1
 
   return (
-    <Pagination className="pt-6">
-      <PaginationContent>
+    <Pagination className={sidebar ? "sidebar-page-controls" : "pt-6"}>
+      <PaginationContent
+        className={sidebar ? "sidebar-page-controls__list" : undefined}
+      >
         <PaginationItem>
           <PaginationRouteLink
             href={reservationSearchHref(filters, Math.max(0, filters.page - 1))}
@@ -48,7 +52,9 @@ export function ReservationSearchPagination({
             }
           >
             <ChevronLeftIcon />
-            <span className="hidden sm:block">{previousLabel}</span>
+            <span className={sidebar ? "sr-only" : "hidden sm:block"}>
+              {previousLabel}
+            </span>
           </PaginationRouteLink>
         </PaginationItem>
         {pages.map((page, index) => (
@@ -80,7 +86,9 @@ export function ReservationSearchPagination({
               atLastPage ? "pointer-events-none opacity-50" : undefined
             }
           >
-            <span className="hidden sm:block">{nextLabel}</span>
+            <span className={sidebar ? "sr-only" : "hidden sm:block"}>
+              {nextLabel}
+            </span>
             <ChevronRightIcon />
           </PaginationRouteLink>
         </PaginationItem>

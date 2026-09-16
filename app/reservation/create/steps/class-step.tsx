@@ -1,23 +1,16 @@
 import { useMemo, useState } from "react"
-import { Check, Search } from "lucide-react"
+import { Check } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useFormContext } from "react-hook-form"
 
-import { Button } from "@/components/ui/button"
 import {
   FieldError,
   FieldGroup,
   FieldLegend,
   FieldSet,
-} from "@/components/ui/field"
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group"
+} from "@/components/astryx"
 import type { CatalogData } from "@/lib/api/types"
 
-import { ChoiceGrid } from "../choice-grid"
 import type { ReservationFormValues } from "../form"
 import { StepLayout } from "../step-layout"
 
@@ -57,36 +50,23 @@ export function ClassStep({ catalog }: { catalog: CatalogData }) {
 
   return (
     <StepLayout title={t("classTitle")}>
-      <InputGroup className="mb-5 max-w-md">
-        <InputGroupAddon>
-          <Search />
-        </InputGroupAddon>
-        <InputGroupInput
-          id="class-search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={t("classSearch")}
-          aria-label={t("classSearch")}
-        />
-      </InputGroup>
-      <div className="grid gap-5 md:grid-cols-[13rem_1fr]">
+      <div className="wizard-content-grid wizard-content-grid--step-one">
         <FieldSet className="gap-3">
-          <FieldLegend variant="label">{t("campus")}</FieldLegend>
-          <FieldGroup className="gap-2">
+          <FieldLegend variant="label">所属校区</FieldLegend>
+          <FieldGroup className="selection-stack">
             {catalog.campuses.map((item) => {
               const selected = item.id === campusId
               return (
-                <Button
+                <button
                   key={item.id}
                   type="button"
-                  variant={selected ? "default" : "outline"}
                   aria-pressed={selected}
                   onClick={() => selectCampus(item.id)}
-                  className="w-full justify-between"
+                  className={`selection-button ${selected ? "selection-button--selected" : ""}`}
                 >
                   <span>{item.name}</span>
                   {selected ? <Check /> : null}
-                </Button>
+                </button>
               )
             })}
           </FieldGroup>
@@ -99,16 +79,34 @@ export function ClassStep({ catalog }: { catalog: CatalogData }) {
               <FieldLegend variant="label">
                 {campus?.name ?? t("classTitle")}
               </FieldLegend>
-              <ChoiceGrid
-                {...field}
-                label={t("classTitle")}
-                invalid={fieldState.invalid}
-                items={classes.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                }))}
-                emptyText={t("classEmpty")}
-              />
+              <label className="list-search neo-class-search">
+                <input
+                  id="class-search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder={t("classSearch")}
+                />
+              </label>
+              <div
+                className="class-grid"
+                role="radiogroup"
+                aria-label={t("classTitle")}
+              >
+                {classes.map((item) => (
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={field.value === item.id}
+                    className={`selection-button ${field.value === item.id ? "selection-button--selected" : ""}`}
+                    key={item.id}
+                    onClick={() => field.onChange(item.id)}
+                  >
+                    {item.name}
+                    {field.value === item.id ? <Check size={14} /> : null}
+                  </button>
+                ))}
+              </div>
+              {!classes.length ? <p>{t("classEmpty")}</p> : null}
               <FieldError errors={[fieldState.error]} />
             </FieldSet>
           )}

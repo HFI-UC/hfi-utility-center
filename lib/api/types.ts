@@ -28,13 +28,6 @@ export interface RoomPolicy {
   enabled: boolean
 }
 
-export interface RoomApprover {
-  id: number
-  roomId: number
-  adminId: number
-  notificationsEnabled: boolean
-}
-
 export interface CatalogAdminData {
   campuses: Campus[]
   classes: SchoolClass[]
@@ -49,7 +42,6 @@ export interface Room {
   enabled: boolean
   createdAt?: string
   policies: RoomPolicy[]
-  approvers?: RoomApprover[]
 }
 
 export interface CatalogData {
@@ -58,10 +50,13 @@ export interface CatalogData {
   rooms: Room[]
 }
 
-export type ReservationStatus = "pending" | "approved" | "rejected"
+export type ReservationStatus =
+  "pending" | "approved" | "rejected" | "cancelled"
+export type PurposeType = "personal" | "class" | "club"
 
 export interface Reservation {
   id: number
+  roomId: number
   studentName: string
   studentId?: string
   email: string
@@ -74,6 +69,10 @@ export interface Reservation {
   createdAt?: string
   campusName?: string
   latestExecutor?: string
+  purposeType?: PurposeType | null
+  needsMultimedia?: boolean
+  cancelledAt?: string
+  editCount?: number
 }
 
 export interface ReservationPage {
@@ -100,4 +99,13 @@ export interface Admin {
   name: string
   email: string
   createdAt?: string
+  receiveReservationNotifications: boolean
+}
+
+export interface Announcement {
+  id?: number | null
+  title: string
+  content: string
+  enabled: boolean
+  updatedAt?: string | null
 }

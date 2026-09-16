@@ -1,8 +1,8 @@
 # HFI Utility Center
 
 HFI Utility Center is a bilingual campus facility reservation and administration
-application. It uses Next.js App Router, React, TypeScript, shadcn/ui, Tailwind
-CSS, next-intl, React Hook Form, and Zod.
+application. It uses Next.js App Router, React, TypeScript, Astryx Design
+System, Tailwind CSS, next-intl, React Hook Form, and Zod.
 
 ## Development
 
@@ -15,7 +15,7 @@ The development server uses `http://localhost:3000` by default.
 
 Environment variables:
 
-- `NEXT_PUBLIC_BACKEND_URL` selects the backend used by the browser.
+- `NEXT_PUBLIC_API_BASE_URL` selects the backend used by the browser.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` enables the real Cloudflare Turnstile
   widget. Password login on localhost requires that site key to allow the
   `localhost` hostname; there is no development verification bypass.
@@ -30,7 +30,8 @@ backend or Turnstile widget is required.
 - `lib/api/` contains the backend transport, endpoint functions, API types, and
   focused administrator resource/mutation hooks.
 - `lib/reservations/` contains pure reservation availability rules.
-- `components/ui/` contains shadcn primitives and should remain domain-agnostic.
+- `components/astryx.tsx` contains the Astryx-based design primitives used by
+  public and administrator views.
 - `messages/` contains the English and Simplified Chinese translation catalogs.
 
 The browser calls the configured backend directly. The API client preserves the

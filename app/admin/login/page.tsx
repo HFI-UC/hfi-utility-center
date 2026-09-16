@@ -19,10 +19,5 @@ export default async function AdminLoginPage({
       : undefined
   )
 
-  return (
-    <AdminLoginForm
-      token={token}
-      redirectTo={redirectTo}
-    />
-  )
+  return <AdminLoginForm token={token} redirectTo={redirectTo} />
 }

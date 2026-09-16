@@ -1,15 +1,18 @@
 "use client"
 
+import { useState } from "react"
 import { Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm } from "react-hook-form"
 
 import { AdminSection } from "@/app/admin/admin-shell"
-import { Button } from "@/components/ui/button"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/astryx"
+import { Field, FieldError, FieldLabel } from "@/components/astryx"
+import { Input } from "@/components/astryx"
 import type { AdminMutation } from "@/lib/api/admin-hooks"
 import { createAdmin } from "@/lib/api/admins"
+
+import styles from "./admin-user.module.css"
 
 type CreateAdminFields = { name: string; email: string; password: string }
 
@@ -21,6 +24,8 @@ export function CreateAdminForm({
   working: boolean
 }) {
   const t = useTranslations("admin")
+  const common = useTranslations("common")
+  const [actionError, setActionError] = useState(false)
   const form = useForm<CreateAdminFields>({
     defaultValues: { name: "", email: "", password: "" },
   })
@@ -29,18 +34,23 @@ export function CreateAdminForm({
   }
 
   async function createAccount(values: CreateAdminFields) {
-    const created = await mutate(
-      () =>
-        createAdmin(values.name.trim(), values.email.trim(), values.password),
-      t("adminCreated")
-    )
-    if (created) form.reset()
+    setActionError(false)
+    try {
+      const created = await mutate(
+        () =>
+          createAdmin(values.name.trim(), values.email.trim(), values.password),
+        t("adminCreated")
+      )
+      if (created) form.reset()
+    } catch {
+      setActionError(true)
+    }
   }
 
   return (
     <AdminSection title={t("addAdmin")}>
       <form
-        className="grid gap-3 md:grid-cols-2 xl:grid-cols-4"
+        className={styles.createForm}
         onSubmit={form.handleSubmit(createAccount)}
       >
         <Controller
@@ -98,10 +108,18 @@ export function CreateAdminForm({
             </Field>
           )}
         />
-        <Button className="self-end" disabled={working}>
-          <Plus />
+        <Button
+          className={styles.createAction}
+          disabled={working || form.formState.isSubmitting}
+          icon={<Plus />}
+        >
           {t("addAccount")}
         </Button>
+        {actionError ? (
+          <p className={styles.formError} role="alert">
+            {common("unknown")}
+          </p>
+        ) : null}
       </form>
     </AdminSection>
   )

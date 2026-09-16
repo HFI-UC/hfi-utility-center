@@ -26,6 +26,8 @@ export function useReservationSchema() {
           .regex(/^GJ\d{8}$/, t("validation.studentIdFormat")),
         email: z.string().trim().email(t("validation.emailInvalid")),
         reason: z.string().trim().min(1, t("validation.reasonRequired")),
+        purposeType: z.enum(["personal", "class", "club"]),
+        needsMultimedia: z.boolean(),
         isAgreed: z
           .boolean()
           .refine(Boolean, t("validation.agreementRequired")),
@@ -49,6 +51,8 @@ export const reservationDefaults: ReservationFormValues = {
   studentId: "",
   email: "",
   reason: "",
+  purposeType: "personal",
+  needsMultimedia: false,
   isAgreed: false,
 }
 
@@ -58,7 +62,15 @@ export const bookingSteps = [
   { id: "dateTime", fields: ["date", "startTime", "endTime"] },
   {
     id: "profile",
-    fields: ["studentName", "studentId", "email", "reason", "isAgreed"],
+    fields: [
+      "studentName",
+      "studentId",
+      "email",
+      "reason",
+      "purposeType",
+      "needsMultimedia",
+      "isAgreed",
+    ],
   },
   { id: "review", fields: [] },
 ] as const satisfies ReadonlyArray<{
