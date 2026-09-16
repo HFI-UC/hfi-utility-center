@@ -8,6 +8,7 @@ export type ReservationSearchFilters = {
   startDate: string
   endDate: string
   page: number
+  sort: "time" | "sequence"
 }
 
 type SearchParams = Record<string, string | string[] | undefined>
@@ -47,6 +48,7 @@ export function parseReservationSearchFilters(
     startDate,
     endDate,
     page: (parsePositiveInteger(firstValue(params, "page")) ?? 1) - 1,
+    sort: firstValue(params, "sort") === "sequence" ? "sequence" : "time",
   }
 }
 
@@ -58,6 +60,7 @@ export function reservationSearchRequest(filters: ReservationSearchFilters) {
     page: filters.page,
     startTime: inputValueToTimestamp(filters.startDate),
     endTime: inputValueToTimestamp(filters.endDate, true),
+    sort: filters.sort,
   }
 }
 
@@ -71,6 +74,7 @@ export function reservationSearchHref(
   if (filters.status) query.set("status", filters.status)
   if (filters.startDate) query.set("start", filters.startDate)
   if (filters.endDate) query.set("end", filters.endDate)
+  if (filters.sort === "sequence") query.set("sort", "sequence")
   if (page > 0) query.set("page", String(page + 1))
 
   const search = query.toString()

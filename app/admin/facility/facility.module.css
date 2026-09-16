@@ -1,0 +1,367 @@
+.page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 5.25rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border-default);
+  border-radius: 1rem;
+  background: var(--color-background-default);
+  color: var(--color-text-primary);
+}
+
+.metricIcon {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 0.875rem;
+  background: color-mix(
+    in srgb,
+    var(--color-background-accent) 14%,
+    var(--color-background-default)
+  );
+  color: var(--color-background-accent);
+}
+
+.metricIcon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.metricValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 720;
+  line-height: 1;
+}
+
+.metricLabel {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+}
+
+.sections {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.roomSection {
+  grid-column: 1 / -1;
+}
+
+.sectionIntro {
+  margin: -0.25rem 0 1rem;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.toolbar,
+.rowActions,
+.dialogActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rowActions {
+  justify-content: flex-end;
+}
+
+.actionButton {
+  min-height: 2.35rem;
+  white-space: nowrap;
+}
+
+.actionButton svg,
+.primaryButton svg,
+.dangerButton svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.primaryButton,
+.dangerButton,
+.secondaryButton {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease;
+}
+
+.primaryButton {
+  border: 1px solid var(--color-background-accent);
+  background: var(--color-background-accent);
+  color: #fff;
+}
+
+.dangerButton {
+  border: 1px solid #dc4c4c;
+  background: #dc4c4c;
+  color: #fff;
+}
+
+.secondaryButton {
+  border: 1px solid var(--color-border-default);
+  background: var(--color-background-default);
+  color: var(--color-text-primary);
+}
+
+.primaryButton:not(:disabled):hover,
+.dangerButton:not(:disabled):hover,
+.secondaryButton:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgb(15 23 42 / 12%);
+}
+
+.primaryButton:disabled,
+.dangerButton:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.dialog {
+  opacity: 1;
+  border: 1px solid var(--color-border-default);
+  background: var(--color-background-default);
+  color: var(--color-text-primary);
+  box-shadow: 0 24px 80px rgb(8 15 30 / 28%);
+  backdrop-filter: none;
+}
+
+.dialogWide {
+  max-width: 52rem;
+}
+
+.dialogHeader {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.input,
+.selectTrigger,
+.selectContent {
+  background: var(--color-background-default);
+  color: var(--color-text-primary);
+}
+
+.selectTrigger {
+  min-height: 2.75rem;
+}
+
+.selectContent {
+  max-height: 13rem;
+  overflow-y: auto;
+}
+
+.nativeSelect {
+  min-height: 2.75rem;
+  appearance: auto;
+}
+
+.error {
+  padding: 0.75rem 0.875rem;
+  border: 1px solid color-mix(in srgb, #dc4c4c 38%, var(--color-border-default));
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, #dc4c4c 9%, var(--color-background-default));
+  color: #c83f3f;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.status::before {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+}
+
+.statusOn {
+  background: color-mix(in srgb, #0ba878 13%, var(--color-background-default));
+  color: #07845f;
+}
+
+.statusOff {
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+}
+
+.policyLauncher {
+  display: inline-flex;
+  min-width: 8.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.policyForm {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border-default);
+  border-radius: 1rem;
+  background: var(--color-background-secondary);
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.weekday {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid var(--color-border-default);
+  border-radius: 0.65rem;
+  background: var(--color-background-default);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+
+.weekdaySelected {
+  border-color: var(--color-background-accent);
+  background: color-mix(
+    in srgb,
+    var(--color-background-accent) 15%,
+    var(--color-background-default)
+  );
+  color: var(--color-background-accent);
+  font-weight: 700;
+}
+
+.timeFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.policyList {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.policyItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(8rem, 0.7fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border-default);
+  border-radius: 0.9rem;
+  background: var(--color-background-default);
+}
+
+.policyDays {
+  font-weight: 650;
+}
+
+.policyTime {
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  display: grid;
+  min-height: 7rem;
+  place-items: center;
+  border: 1px dashed var(--color-border-default);
+  border-radius: 0.9rem;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .sections,
+  .overview {
+    grid-template-columns: 1fr;
+  }
+
+  .roomSection {
+    grid-column: auto;
+  }
+
+  .policyItem {
+    grid-template-columns: 1fr auto;
+  }
+
+  .policyTime {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .formGrid,
+  .timeFields {
+    grid-template-columns: 1fr;
+  }
+
+  .weekdays {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .dialogActions > * {
+    flex: 1 1 8rem;
+  }
+
+  .rowActions {
+    justify-content: flex-start;
+  }
+}

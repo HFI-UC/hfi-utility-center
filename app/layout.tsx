@@ -1,11 +1,12 @@
 import "./globals.css"
-import { Geist_Mono, Inter } from "next/font/google"
+import { Geist_Mono, Inter, Outfit } from "next/font/google"
 
 import { Providers } from "@/app/providers"
 import { Navbar } from "@/components/navbar"
 import { cn } from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" })
 const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
@@ -24,7 +25,8 @@ export default function RootLayout({
         "antialiased",
         fontMono.variable,
         "font-sans",
-        inter.variable
+        inter.variable,
+        outfit.variable
       )}
     >
       <body>
@@ -39,4 +41,8 @@ export default function RootLayout({
 export const metadata = {
   title: "HFI Utility Center",
   description: "HFI campus space reservation and administration platform",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg",
+  },
 }

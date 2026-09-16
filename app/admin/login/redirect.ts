@@ -3,6 +3,7 @@ const ADMIN_ROUTES = new Set([
   "/admin",
   "/admin/reservation",
   "/admin/facility",
+  "/admin/announcement",
   "/admin/user",
 ])
 

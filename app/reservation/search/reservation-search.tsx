@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl"
 
-import { Spinner } from "@/components/ui/spinner"
+import { Spinner } from "@/components/astryx"
+import { NeoFooter, NeoPage } from "@/components/neo/shared"
 import type { Reservation } from "@/lib/api/types"
 
 import { ReservationResults } from "./reservation-results"
@@ -23,37 +24,63 @@ export function ReservationSearch({
   const { catalog, result, loading } = useReservationSearch(filters)
 
   return (
-    <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-8 sm:px-8 sm:py-10">
-      <header className="pb-2">
-        <h1 className="text-3xl font-semibold">{t("title")}</h1>
-      </header>
-
-      <ReservationSearchFilterForm
-        key={reservationSearchHref(filters, filters.page)}
-        catalog={catalog}
-        filters={filters}
-      />
-
-      <SearchContent loading={loading} reservations={result.reservations} />
-
-      {!loading ? (
-        <ReservationSearchPagination
-          filters={filters}
-          totalReservations={result.total}
-          previousLabel={t("previous")}
-          nextLabel={t("next")}
-        />
-      ) : null}
-    </main>
+    <NeoPage>
+      <main className="internal-main booking-list-page">
+        <div className="list-layout">
+          <aside className="booking-sidebar">
+            <div className="booking-sidebar__intro">
+              <strong>{t("filtersTitle")}</strong>
+              <span>{t("filtersDescription")}</span>
+            </div>
+            <ReservationSearchFilterForm
+              key={reservationSearchHref(filters, filters.page)}
+              catalog={catalog}
+              filters={filters}
+            />
+            <div className="sidebar-pagination">
+              <div className="sidebar-pagination__summary">
+                <span>{t("total", { count: result.total })}</span>
+                <span>{t("page", { page: filters.page + 1 })}</span>
+              </div>
+              {!loading ? (
+                <ReservationSearchPagination
+                  filters={filters}
+                  totalReservations={result.total}
+                  previousLabel={t("previous")}
+                  nextLabel={t("next")}
+                  sidebar
+                />
+              ) : null}
+            </div>
+          </aside>
+          <section className="booking-list-content">
+            <div className="page-title-row">
+              <div>
+                <span className="page-overline">HFI Utility Center</span>
+                <h1>{t("title")}</h1>
+              </div>
+            </div>
+            <SearchContent
+              loading={loading}
+              reservations={result.reservations}
+              sort={filters.sort}
+            />
+          </section>
+        </div>
+      </main>
+      <NeoFooter />
+    </NeoPage>
   )
 }
 
 function SearchContent({
   loading,
   reservations,
+  sort,
 }: {
   loading: boolean
   reservations: Reservation[]
+  sort: ReservationSearchFilters["sort"]
 }) {
   const t = useTranslations("searchPage")
 
@@ -69,7 +96,7 @@ function SearchContent({
     )
   }
   if (reservations.length) {
-    return <ReservationResults reservations={reservations} />
+    return <ReservationResults reservations={reservations} sort={sort} />
   }
 
   return (

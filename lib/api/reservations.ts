@@ -8,6 +8,7 @@ import type {
   ReservationPage,
   ReservationStatus,
   Room,
+  PurposeType,
 } from "@/lib/api/types"
 
 export interface CreateReservationInput {
@@ -19,6 +20,8 @@ export interface CreateReservationInput {
   reason: string
   startTime: number
   endTime: number
+  purposeType: PurposeType
+  needsMultimedia: boolean
 }
 
 export async function getAvailability(
@@ -63,6 +66,9 @@ export async function getReservations(params: {
   page?: number
   startTime?: number
   endTime?: number
+  purposeType?: PurposeType
+  needsMultimedia?: boolean
+  sort?: "time" | "sequence"
 }) {
   const { data } = await api.get<ApiResponse<ReservationPage>>(
     "/reservation/get",
@@ -70,6 +76,62 @@ export async function getReservations(params: {
   )
   return data.data!
 }
+
+export interface CancellationPreview {
+  reservationId: number
+  roomId: number
+  status: ReservationStatus
+  roomName: string
+  studentName: string
+  reason: string
+  startTime: string
+  endTime: string
+  purposeType?: PurposeType | null
+  needsMultimedia: boolean
+  editCount: number
+  remainingEdits: number
+}
+
+export async function previewCancellation(token: string) {
+  const { data } = await api.get<ApiResponse<CancellationPreview>>(
+    "/reservation/cancel/preview",
+    { params: { token }, suppressErrorToast: true }
+  )
+  return data.data!
+}
+
+export async function cancelReservation(token: string) {
+  const { data } = await api.post<ApiResponse<unknown>>("/reservation/cancel", {
+    token,
+  })
+  return data.message || "Reservation cancelled."
+}
+
+export interface ReservationEditInput {
+  room: number
+  startTime: number
+  endTime: number
+  reason: string
+  purposeType: PurposeType
+  needsMultimedia: boolean
+}
+
+export async function modifyReservation(
+  token: string,
+  input: ReservationEditInput
+) {
+  const { data } = await api.post<
+    ApiResponse<{
+      reservationId: number
+      editCount: number
+      remainingEdits: number
+    }>
+  >("/reservation/modify", { token, ...input })
+  return data.data!
+}
+
+export const adminEditReservation = (id: number, input: ReservationEditInput) =>
+  api.post("/reservation/admin-edit", { id, ...input })
 
 export async function getFutureReservations() {
   const response = await api.get<ApiResponse<Reservation[]>>(

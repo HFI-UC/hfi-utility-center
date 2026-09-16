@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { toast } from "sonner"
 
 import { checkLogin } from "@/lib/api/auth"
 
@@ -65,7 +64,7 @@ export function useAdminMutation({ reload }: { reload: () => Promise<void> }) {
 
       try {
         await action()
-        if (successMessage) toast.success(successMessage)
+        if (successMessage) console.info(successMessage)
         await reload()
         return true
       } finally {

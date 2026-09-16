@@ -9,16 +9,16 @@ import {
   useWatch,
 } from "react-hook-form"
 
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import { Button } from "@/components/astryx"
+import { Calendar } from "@/components/astryx"
 import {
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLegend,
   FieldSet,
-} from "@/components/ui/field"
-import { Spinner } from "@/components/ui/spinner"
+} from "@/components/astryx"
+import { Spinner } from "@/components/astryx"
 import { dateToInputValue, inputValueToDate } from "@/lib/date-time"
 import type { Room } from "@/lib/api/types"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
@@ -29,6 +29,7 @@ import {
   buildTimeOptions,
   timeCanBeSelected,
   timeIsSelected,
+  timeShouldBeVisible,
   type TimeOption,
 } from "./time-options"
 import { useRoomAvailability } from "./use-room-availability"
@@ -76,6 +77,18 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
     () => buildTimeOptions(availability?.slots ?? []),
     [availability]
   )
+  const visibleTimeOptions = useMemo(() => {
+    if (!availability) return []
+
+    return timeOptions.filter((option) =>
+      timeShouldBeVisible({
+        option,
+        slots: availability.slots,
+        startTime,
+        endTime,
+      })
+    )
+  }, [availability, endTime, startTime, timeOptions])
 
   useEffect(() => {
     if (!availability) return
@@ -161,52 +174,87 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
 
   return (
     <StepLayout title={t("dateTimeTitle")} error={error}>
-      <div className="grid gap-8 lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-start">
-        <Controller
-          control={control}
-          name="date"
-          render={({ field, fieldState }) => (
-            <FieldSet className="gap-4" data-invalid={fieldState.invalid}>
-              <FieldLegend variant="label">{t("dateTitle")}</FieldLegend>
-              <FieldDescription>{t("dateDescription")}</FieldDescription>
-              <FieldGroup>
-                <Calendar
-                  className="mx-auto max-w-full p-0 lg:mx-0 lg:p-3"
-                  mode="single"
-                  locale={locale === "zh-CN" ? zhCN : enUS}
-                  selected={inputValueToDate(field.value)}
-                  defaultMonth={inputValueToDate(field.value) ?? today}
-                  startMonth={today}
-                  endMonth={maximumDate}
-                  disabled={{ before: today, after: maximumDate }}
-                  aria-invalid={fieldState.invalid}
-                  onSelect={(selected) => selectDate(selected, field.onChange)}
-                />
-              </FieldGroup>
-              <FieldError errors={[fieldState.error]} />
-            </FieldSet>
-          )}
-        />
+      <div className="datetime-card">
+        <div className="datetime-card__calendar">
+          <Controller
+            control={control}
+            name="date"
+            render={({ field, fieldState }) => (
+              <FieldSet className="gap-4" data-invalid={fieldState.invalid}>
+                <div className="panel-heading">
+                  <span className="panel-heading__accent" />
+                  <div>
+                    <FieldLegend variant="label">{t("dateTitle")}</FieldLegend>
+                    <FieldDescription>{t("dateDescription")}</FieldDescription>
+                  </div>
+                </div>
+                <FieldGroup>
+                  <Calendar
+                    className="booking-calendar"
+                    classNames={{
+                      month: "booking-calendar__month",
+                      month_caption: "booking-calendar__caption",
+                      caption_label: "booking-calendar__caption-label",
+                      nav: "booking-calendar__nav",
+                      button_previous: "booking-calendar__previous",
+                      button_next: "booking-calendar__next",
+                      month_grid: "booking-calendar__grid",
+                      weekdays: "booking-calendar__weekdays",
+                      weekday: "booking-calendar__weekday",
+                      week: "booking-calendar__week",
+                      day: "booking-calendar__day",
+                      day_button: "booking-calendar__day-button",
+                      selected: "booking-calendar__selected",
+                      outside: "booking-calendar__outside",
+                      disabled: "booking-calendar__disabled",
+                      today: "booking-calendar__today",
+                    }}
+                    mode="single"
+                    showOutsideDays
+                    locale={locale === "zh-CN" ? zhCN : enUS}
+                    selected={inputValueToDate(field.value)}
+                    defaultMonth={inputValueToDate(field.value) ?? today}
+                    startMonth={today}
+                    endMonth={maximumDate}
+                    disabled={{ before: today, after: maximumDate }}
+                    aria-invalid={fieldState.invalid}
+                    onSelect={(selected) =>
+                      selectDate(selected, field.onChange)
+                    }
+                  />
+                </FieldGroup>
+                <FieldError errors={[fieldState.error]} />
+              </FieldSet>
+            )}
+          />
+        </div>
+
+        <div className="datetime-card__divider" />
 
         {date ? (
           <FieldSet
-            className="relative min-w-0 gap-4"
+            className="datetime-card__time min-w-0 gap-4"
             data-invalid={startTimeState.invalid || endTimeState.invalid}
           >
-            <FieldLegend variant="label">{t("timeRange")}</FieldLegend>
-            <Button
-              className="absolute -top-2 right-0"
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={refresh}
-              title={t("refresh")}
-              disabled={loading}
-            >
-              {loading ? <Spinner /> : <RefreshCw />}
-            </Button>
-            <FieldDescription>{selectedRangeLabel()}</FieldDescription>
-
+            <div className="panel-heading datetime-panel-heading">
+              <span className="panel-heading__accent" />
+              <div>
+                <FieldLegend variant="label">{t("timeRange")}</FieldLegend>
+                <FieldDescription>{selectedRangeLabel()}</FieldDescription>
+              </div>
+              <Button
+                className="availability-refresh-button"
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={refresh}
+                title={t("refresh")}
+                aria-label={t("refresh")}
+                disabled={loading}
+              >
+                {loading ? <Spinner /> : <RefreshCw size={15} />}
+              </Button>
+            </div>
             <FieldGroup>
               {loading ? (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -216,33 +264,47 @@ export function DateTimeStep({ rooms }: { rooms: Room[] }) {
               ) : null}
 
               {availability && !loading ? (
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-8">
-                  {timeOptions.map((option) => {
-                    const selected = timeIsSelected(
-                      option.timestamp,
-                      startTime,
-                      endTime
-                    )
-                    const selectable = timeCanBeSelected({
-                      option,
-                      slots: availability.slots,
-                      startTime,
-                      endTime,
-                    })
-                    return (
-                      <Button
-                        type="button"
-                        key={option.timestamp}
-                        disabled={!selectable && !selected}
-                        aria-pressed={selected}
-                        variant={selected ? "default" : "outline"}
-                        onClick={() => selectTime(option)}
-                      >
-                        {formatTime(option.timestamp)}
-                      </Button>
-                    )
-                  })}
-                </div>
+                <>
+                  <div className="neo-time-legend" aria-hidden="true">
+                    <span>
+                      <i className="neo-time-legend__available" />
+                      {t("available")}
+                    </span>
+                    <span>
+                      <i className="neo-time-legend__occupied" />
+                      {t("occupied")}
+                    </span>
+                  </div>
+                  <div className="neo-time-grid">
+                    {visibleTimeOptions.map((option) => {
+                      const selected = timeIsSelected(
+                        option.timestamp,
+                        startTime,
+                        endTime
+                      )
+                      const selectable = timeCanBeSelected({
+                        option,
+                        slots: availability.slots,
+                        startTime,
+                        endTime,
+                      })
+                      return (
+                        <Button
+                          type="button"
+                          key={option.timestamp}
+                          disabled={!selectable && !selected}
+                          aria-pressed={selected}
+                          aria-label={`${formatTime(option.timestamp)}${option.status === "occupied" && !selectable ? `, ${t("occupied")}` : ""}`}
+                          variant={selected ? "default" : "outline"}
+                          className={`neo-time-cell ${option.status === "occupied" && !selectable ? "neo-time-cell--occupied" : ""} ${selected ? "neo-time-cell--selected" : ""}`}
+                          onClick={() => selectTime(option)}
+                        >
+                          {formatTime(option.timestamp)}
+                        </Button>
+                      )
+                    })}
+                  </div>
+                </>
               ) : null}
             </FieldGroup>
             <FieldError errors={[startTimeState.error, endTimeState.error]} />

@@ -1,6 +1,5 @@
 import axios from "axios"
 import type { AxiosRequestConfig } from "axios"
-import { toast } from "sonner"
 
 import type { ApiResponse } from "@/lib/api/types"
 import enMessages from "@/messages/en-US.json"
@@ -12,10 +11,14 @@ declare module "axios" {
   }
 }
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+const backendUrl =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "/backend"
 
 export const api = axios.create({
   baseURL: backendUrl,
+  timeout: 5000,
   withCredentials: true,
   validateStatus: () => true,
   xsrfCookieName: "_csrf",
@@ -55,7 +58,7 @@ function rejectRequest(error: unknown, config?: AxiosRequestConfig) {
     !config?.suppressErrorToast &&
     !requestError.notified
   ) {
-    toast.error(requestError.message)
+    console.error("HFI Utility Center request failed:", requestError.message)
     requestError.notified = true
   }
 
@@ -65,7 +68,12 @@ function rejectRequest(error: unknown, config?: AxiosRequestConfig) {
 api.interceptors.request.use(async (config) => {
   const method = config.method?.toUpperCase()
   if (method && ["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
-    await api.get("/_csrf")
+    const csrfResponse = await api.get<ApiResponse<string>>("/_csrf", {
+      suppressErrorToast: true,
+    })
+    const csrfToken =
+      csrfResponse.headers["x-csrf-token"] || csrfResponse.data.data
+    if (csrfToken) config.headers.set("x-csrf-token", csrfToken)
   }
   return config
 })
@@ -89,5 +97,10 @@ api.interceptors.response.use(
 )
 
 export function backendHref(path: string) {
-  return new URL(path, backendUrl).toString()
+  if (/^https?:\/\//.test(backendUrl))
+    return new URL(path, backendUrl).toString()
+  const normalized = `${backendUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`
+  return typeof window === "undefined"
+    ? normalized
+    : new URL(normalized, window.location.origin).toString()
 }

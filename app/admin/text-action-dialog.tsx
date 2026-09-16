@@ -1,9 +1,11 @@
 "use client"
 
 import { useId, useState } from "react"
+import { Check, KeyRound, X } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { Controller, useForm } from "react-hook-form"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/astryx"
 import {
   Dialog,
   DialogClose,
@@ -13,9 +15,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from "@/components/astryx"
+import { Field, FieldError, FieldLabel } from "@/components/astryx"
+import { Input } from "@/components/astryx"
+
+import styles from "./user/admin-user.module.css"
 
 export function TextActionDialog({
   children,
@@ -37,29 +41,50 @@ export function TextActionDialog({
   onSave: (value: string) => Promise<boolean>
 }) {
   const [open, setOpen] = useState(false)
+  const [actionError, setActionError] = useState(false)
+  const common = useTranslations("common")
   const inputId = useId()
   const form = useForm({ defaultValues: { value: initialValue } })
 
   function handleOpenChange(nextOpen: boolean) {
+    if (!nextOpen && form.formState.isSubmitting) return
     setOpen(nextOpen)
-    if (nextOpen) form.reset({ value: initialValue })
+    if (nextOpen) {
+      setActionError(false)
+      form.reset({ value: initialValue })
+    }
   }
 
   async function saveValue({ value }: { value: string }) {
     const submittedValue = inputType === "password" ? value : value.trim()
-    const saved = await onSave(submittedValue)
-    if (saved) setOpen(false)
+    setActionError(false)
+    try {
+      const saved = await onSave(submittedValue)
+      if (saved) setOpen(false)
+    } catch {
+      setActionError(true)
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{label}</DialogDescription>
+      <DialogContent className={styles.dialogSurface}>
+        <DialogHeader className={styles.dialogHeader}>
+          <span className={styles.dialogIcon} aria-hidden="true">
+            <KeyRound />
+          </span>
+          <div>
+            <DialogTitle className={styles.dialogTitle}>{title}</DialogTitle>
+            <DialogDescription className={styles.dialogDescription}>
+              {label}
+            </DialogDescription>
+          </div>
         </DialogHeader>
-        <form className="space-y-5" onSubmit={form.handleSubmit(saveValue)}>
+        <form
+          className={styles.dialogForm}
+          onSubmit={form.handleSubmit(saveValue)}
+        >
           <Controller
             control={form.control}
             name="value"
@@ -79,16 +104,35 @@ export function TextActionDialog({
                   type={inputType}
                   autoFocus
                   aria-invalid={fieldState.invalid}
+                  className={styles.dialogInput}
                 />
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
-          <DialogFooter>
+          {actionError ? (
+            <p className={styles.formError} role="alert">
+              {common("unknown")}
+            </p>
+          ) : null}
+          <DialogFooter className={styles.dialogFooter}>
             <DialogClose asChild>
-              <Button variant="outline">{cancelLabel}</Button>
+              <Button
+                type="button"
+                variant="outline"
+                className={`${styles.dialogButton} admin-action-button`}
+                icon={<X />}
+                disabled={form.formState.isSubmitting}
+              >
+                {cancelLabel}
+              </Button>
             </DialogClose>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              className={`${styles.dialogButton} admin-action-button`}
+              icon={<Check />}
+              disabled={form.formState.isSubmitting}
+            >
               {saveLabel}
             </Button>
           </DialogFooter>

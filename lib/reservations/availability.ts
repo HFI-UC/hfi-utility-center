@@ -14,7 +14,7 @@ const SLOT_MINUTES = 15
 const DAY_START_HOUR = 8
 const DAY_END_HOUR = 21.5
 
-function overlapsRoomPolicy(
+function isWithinRoomAvailability(
   room: Room,
   date: string,
   slotStart: number,
@@ -28,11 +28,11 @@ function overlapsRoomPolicy(
       return false
     }
 
-    const blockedStart = timeOnInputDateTimestamp(date, policy.startTime)
-    const blockedEnd = timeOnInputDateTimestamp(date, policy.endTime)
-    if (blockedStart === undefined || blockedEnd === undefined) return false
+    const availableStart = timeOnInputDateTimestamp(date, policy.startTime)
+    const availableEnd = timeOnInputDateTimestamp(date, policy.endTime)
+    if (availableStart === undefined || availableEnd === undefined) return false
 
-    return blockedStart < slotEnd && blockedEnd > slotStart
+    return slotStart >= availableStart && slotEnd <= availableEnd
   })
 }
 
@@ -58,8 +58,8 @@ function getSlotStatus(
   now: Date
 ): AvailabilitySlot["status"] {
   if (slotEnd <= now.getTime() / 1000) return "past"
+  if (!isWithinRoomAvailability(room, date, slotStart, slotEnd)) return "policy"
   if (overlapsReservation(reservations, slotStart, slotEnd)) return "occupied"
-  if (overlapsRoomPolicy(room, date, slotStart, slotEnd)) return "policy"
   return "available"
 }
 
