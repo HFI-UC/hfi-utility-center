@@ -61,6 +61,7 @@ export async function createReservation(input: CreateReservationInput) {
 
 export async function getReservations(params: {
   keyword?: string
+  campusId?: number
   roomId?: number
   status?: ReservationStatus
   page?: number
