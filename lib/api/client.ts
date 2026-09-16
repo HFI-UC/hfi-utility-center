@@ -21,9 +21,10 @@ export const api = axios.create({
   timeout: 5000,
   withCredentials: true,
   validateStatus: () => true,
-  xsrfCookieName: "_csrf",
-  xsrfHeaderName: "x-csrf-token",
-  withXSRFToken: true,
+  // CSRF tokens come from the API response body. Cookie-based XSRF lookup is
+  // deliberately disabled because a stale cookie on the frontend domain can
+  // otherwise overwrite the fresh token when the API is cross-origin.
+  withXSRFToken: false,
 })
 
 class RequestError extends Error {
