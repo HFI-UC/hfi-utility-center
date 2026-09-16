@@ -3,6 +3,7 @@ import { inputValueToTimestamp } from "@/lib/date-time"
 
 export type ReservationSearchFilters = {
   keyword: string
+  campusId: number
   roomId: number
   status?: ReservationStatus
   startDate: string
@@ -43,6 +44,7 @@ export function parseReservationSearchFilters(
 
   return {
     keyword: firstValue(params, "keyword")?.trim() ?? "",
+    campusId: parsePositiveInteger(firstValue(params, "campus")) ?? 0,
     roomId: parsePositiveInteger(firstValue(params, "room")) ?? 0,
     status: parseStatus(firstValue(params, "status")),
     startDate,
@@ -64,6 +66,7 @@ export function reservationSearchRequest(
 
   return {
     keyword: filters.keyword,
+    campusId: filters.campusId || undefined,
     roomId: filters.roomId || undefined,
     status: filters.status,
     page: filters.page,
@@ -100,6 +103,7 @@ export function reservationSearchHref(
 ) {
   const query = new URLSearchParams()
   if (filters.keyword) query.set("keyword", filters.keyword)
+  if (filters.campusId) query.set("campus", String(filters.campusId))
   if (filters.roomId) query.set("room", String(filters.roomId))
   if (filters.status) query.set("status", filters.status)
   if (filters.startDate) query.set("start", filters.startDate)

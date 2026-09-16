@@ -13,7 +13,12 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { Controller, useForm, type SubmitHandler } from "react-hook-form"
+import {
+  Controller,
+  useForm,
+  useWatch,
+  type SubmitHandler,
+} from "react-hook-form"
 import type { DateRange } from "react-day-picker"
 
 import { Calendar } from "@/components/astryx"
@@ -28,6 +33,7 @@ import {
 
 type SearchFormValues = {
   keyword: string
+  campus: string
   room: string
   status: ReservationStatus | "all"
   dateRange?: DateRange
@@ -45,12 +51,12 @@ export function ReservationSearchFilterForm({
   const t = useTranslations("searchPage")
   const common = useTranslations("common")
   const statusT = useTranslations("status")
-  const [campusId, setCampusId] = useState("all")
   const [calendarOpen, setCalendarOpen] = useState(false)
   const dateLocale = useLocale() === "zh-CN" ? zhCN : enUS
-  const { control, handleSubmit } = useForm<SearchFormValues>({
+  const { control, handleSubmit, setValue } = useForm<SearchFormValues>({
     defaultValues: {
       keyword: filters.keyword,
+      campus: filters.campusId ? String(filters.campusId) : "all",
       room: filters.roomId ? String(filters.roomId) : "all",
       status: filters.status ?? "all",
       dateRange: {
@@ -60,6 +66,7 @@ export function ReservationSearchFilterForm({
       sort: filters.sort,
     },
   })
+  const campusId = useWatch({ control, name: "campus" })
   const visibleRooms = useMemo(
     () =>
       catalog?.rooms.filter(
@@ -80,6 +87,7 @@ export function ReservationSearchFilterForm({
       reservationSearchHref(
         {
           keyword: values.keyword.trim(),
+          campusId: values.campus === "all" ? 0 : Number(values.campus),
           roomId: values.room === "all" ? 0 : Number(values.room),
           status: values.status === "all" ? undefined : values.status,
           startDate,
@@ -126,20 +134,47 @@ export function ReservationSearchFilterForm({
           <MapPin size={15} />
           <span>{t("campusFilter")}</span>
         </div>
-        <select
-          value={campusId}
-          onChange={(event) => setCampusId(event.target.value)}
-          className="filter-native-select"
-        >
-          <option value="all">{t("allCampuses")}</option>
-          {catalog?.campuses
-            .filter((campus) => !campus.isPrivileged)
-            .map((campus) => (
-              <option key={campus.id} value={String(campus.id)}>
-                {campus.name}
-              </option>
-            ))}
-        </select>
+        <Controller
+          control={control}
+          name="campus"
+          render={({ field }) => (
+            <div className="filter-status-list">
+              {[
+                { value: "all", label: t("allCampuses") },
+                ...(catalog?.campuses
+                  .filter((campus) => !campus.isPrivileged)
+                  .map((campus) => ({
+                    value: String(campus.id),
+                    label:
+                      campus.name === "Shipai Campus"
+                        ? t("shipaiCampus")
+                        : campus.name === "Knowledge City Campus"
+                          ? t("knowledgeCityCampus")
+                          : campus.name,
+                  })) ?? []),
+              ].map((campus) => (
+                <button
+                  key={campus.value}
+                  type="button"
+                  className={`filter-button ${field.value === campus.value ? "filter-button--active" : ""}`}
+                  onClick={() => {
+                    field.onChange(campus.value)
+                    setValue("room", "all")
+                    void handleSubmit((values) =>
+                      onSubmit({
+                        ...values,
+                        campus: campus.value,
+                        room: "all",
+                      })
+                    )()
+                  }}
+                >
+                  {campus.label}
+                </button>
+              ))}
+            </div>
+          )}
+        />
       </div>
 
       <div className="filter-group">
