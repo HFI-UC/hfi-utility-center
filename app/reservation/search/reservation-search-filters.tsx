@@ -223,14 +223,24 @@ export function ReservationSearchFilterForm({
               <button
                 type="button"
                 className={`filter-button ${field.value === "time" ? "filter-button--active" : ""}`}
-                onClick={() => field.onChange("time")}
+                onClick={() => {
+                  field.onChange("time")
+                  void handleSubmit((values) =>
+                    onSubmit({ ...values, sort: "time" })
+                  )()
+                }}
               >
                 {t("sortByReservation")}
               </button>
               <button
                 type="button"
                 className={`filter-button ${field.value === "sequence" ? "filter-button--active" : ""}`}
-                onClick={() => field.onChange("sequence")}
+                onClick={() => {
+                  field.onChange("sequence")
+                  void handleSubmit((values) =>
+                    onSubmit({ ...values, sort: "sequence" })
+                  )()
+                }}
               >
                 {t("sortBySequence")}
               </button>
