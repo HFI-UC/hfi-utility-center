@@ -10,7 +10,7 @@ import {
   RefreshCw,
 } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { FormProvider, useForm } from "react-hook-form"
+import { FormProvider, useForm, useWatch } from "react-hook-form"
 
 import { Spinner } from "@/components/astryx"
 import { getCatalog } from "@/lib/api/catalog"
@@ -58,6 +58,14 @@ export function ReservationForm() {
     (step) => step.id === currentStepId
   )
   const currentStep = bookingSteps[currentStepIndex]
+  const selectedClassId = useWatch({ control: form.control, name: "classId" })
+  const selectedClass = catalog?.classes.find(
+    (item) => item.id === selectedClassId
+  )
+  const isPrivilegedSelection = Boolean(
+    catalog?.campuses.find((item) => item.id === selectedClass?.campus)
+      ?.isPrivileged
+  )
 
   useEffect(() => {
     let active = true
@@ -83,6 +91,8 @@ export function ReservationForm() {
 
   async function selectedTimeIsStillAvailable(values: ReservationFormValues) {
     if (!catalog) return false
+
+    if (values.isPrivileged) return true
 
     const room = catalog.rooms.find((candidate) => candidate.id === values.room)
     if (!room) {
@@ -222,7 +232,12 @@ export function ReservationForm() {
   const stepContent = {
     class: <ClassStep catalog={catalog} />,
     location: <LocationStep catalog={catalog} />,
-    dateTime: <DateTimeStep rooms={catalog.rooms} />,
+    dateTime: (
+      <DateTimeStep
+        rooms={catalog.rooms}
+        privileged={isPrivilegedSelection}
+      />
+    ),
     profile: <ProfileStep />,
     review: <ReviewStep catalog={catalog} />,
   }

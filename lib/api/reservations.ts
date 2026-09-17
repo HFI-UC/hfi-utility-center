@@ -27,7 +27,8 @@ export interface CreateReservationInput {
 export async function getAvailability(
   roomId: number,
   date: string,
-  knownRoom?: Room
+  knownRoom?: Room,
+  excludedReservationId?: number
 ) {
   const startTime = inputValueToTimestamp(date)
   const endTime = inputValueToTimestamp(date, true)
@@ -48,7 +49,13 @@ export async function getAvailability(
     )
   )
   reservations.push(...additionalPages.flatMap((page) => page.reservations))
-  return buildLegacyAvailability(room, date, reservations)
+  return buildLegacyAvailability(
+    room,
+    date,
+    excludedReservationId
+      ? reservations.filter((item) => item.id !== excludedReservationId)
+      : reservations
+  )
 }
 
 export async function createReservation(input: CreateReservationInput) {
@@ -98,7 +105,10 @@ export async function previewCancellation(token: string) {
     "/reservation/cancel/preview",
     { params: { token }, suppressErrorToast: true }
   )
-  return data.data!
+  if (!data.success || !data.data) {
+    throw new Error(data.message || "This reservation link is invalid or expired.")
+  }
+  return data.data
 }
 
 export async function cancelReservation(token: string) {

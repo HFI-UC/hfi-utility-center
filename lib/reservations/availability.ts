@@ -95,6 +95,34 @@ export function buildLegacyAvailability(
   }
 }
 
+export function buildPriorityAvailability(
+  room: Room,
+  date: string,
+  now = new Date()
+): AvailabilityData {
+  const slots: AvailabilitySlot[] = []
+  const dayStart = inputValueToTimestamp(date)
+  if (dayStart === undefined) throw new Error("Invalid availability date")
+
+  for (let index = 0; index < 24 * 4; index += 1) {
+    const slotStart = dayStart + index * SLOT_MINUTES * 60
+    const slotEnd = slotStart + SLOT_MINUTES * 60
+    slots.push({
+      startTime: slotStart,
+      endTime: slotEnd,
+      status: slotEnd <= now.getTime() / 1000 ? "past" : "available",
+    })
+  }
+
+  return {
+    roomId: room.id,
+    date,
+    slotMinutes: SLOT_MINUTES,
+    maxDurationMinutes: 120,
+    slots,
+  }
+}
+
 export function rangeIsAvailable(
   slots: AvailabilitySlot[],
   startTime: number,

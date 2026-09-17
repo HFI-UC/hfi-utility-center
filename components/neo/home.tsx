@@ -92,6 +92,9 @@ export function NeoHome() {
   }, [])
 
   useEffect(() => {
+    if (sessionStorage.getItem("hfiuc-announcement-dismissed") === "true") {
+      return
+    }
     getCurrentAnnouncement()
       .then((value) => {
         if (!value) return
@@ -279,9 +282,6 @@ export function NeoHome() {
             <span className="announcement-dialog__icon">
               <Megaphone />
             </span>
-            <span className="announcement-dialog__eyebrow">
-              {t("announcementLabel")}
-            </span>
             <h2 id="announcement-title">
               {announcement.title || t("announcementFallbackTitle")}
             </h2>
@@ -289,7 +289,12 @@ export function NeoHome() {
               content={announcement.content}
               className="announcement-dialog__content"
             />
-            <ActionButton onClick={() => setAnnouncementOpen(false)}>
+            <ActionButton
+              onClick={() => {
+                sessionStorage.setItem("hfiuc-announcement-dismissed", "true")
+                setAnnouncementOpen(false)
+              }}
+            >
               {t("announcementConfirm")}
             </ActionButton>
           </section>

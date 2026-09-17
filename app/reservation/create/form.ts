@@ -20,10 +20,8 @@ export function useReservationSchema() {
         startTime: z.number().positive(t("validation.startTimeRequired")),
         endTime: z.number().positive(t("validation.endTimeRequired")),
         studentName: z.string().trim().min(1, t("validation.nameRequired")),
-        studentId: z
-          .string()
-          .trim()
-          .regex(/^GJ\d{8}$/, t("validation.studentIdFormat")),
+        studentId: z.string().trim(),
+        isPrivileged: z.boolean(),
         email: z.string().trim().email(t("validation.emailInvalid")),
         reason: z.string().trim().min(1, t("validation.reasonRequired")),
         purposeType: z.enum(["personal", "class", "club"]),
@@ -31,6 +29,14 @@ export function useReservationSchema() {
         isAgreed: z
           .boolean()
           .refine(Boolean, t("validation.agreementRequired")),
+      }).superRefine((values, context) => {
+        if (!values.isPrivileged && !/^GJ\d{8}$/.test(values.studentId)) {
+          context.addIssue({
+            code: "custom",
+            path: ["studentId"],
+            message: t("validation.studentIdFormat"),
+          })
+        }
       }),
     [t]
   )
@@ -49,6 +55,7 @@ export const reservationDefaults: ReservationFormValues = {
   endTime: 0,
   studentName: "",
   studentId: "",
+  isPrivileged: false,
   email: "",
   reason: "",
   purposeType: "personal",

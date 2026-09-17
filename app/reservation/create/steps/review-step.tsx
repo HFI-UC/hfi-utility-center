@@ -110,10 +110,12 @@ export function ReviewStep({ catalog }: { catalog: CatalogData }) {
                 <dt>{t("name")}</dt>
                 <dd>{values.studentName}</dd>
               </div>
-              <div>
-                <dt>{t("studentId")}</dt>
-                <dd>{values.studentId}</dd>
-              </div>
+              {!values.isPrivileged ? (
+                <div>
+                  <dt>{t("studentId")}</dt>
+                  <dd>{values.studentId}</dd>
+                </div>
+              ) : null}
               <div>
                 <dt>{t("email")}</dt>
                 <dd>{values.email}</dd>

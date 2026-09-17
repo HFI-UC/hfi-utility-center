@@ -45,6 +45,7 @@ export function ClassStep({ catalog }: { catalog: CatalogData }) {
     )?.campus
     if (selectedClassCampus !== nextCampusId) {
       setValue("classId", 0, { shouldValidate: false })
+      setValue("isPrivileged", false, { shouldValidate: false })
     }
   }
 
@@ -99,7 +100,12 @@ export function ClassStep({ catalog }: { catalog: CatalogData }) {
                     aria-checked={field.value === item.id}
                     className={`selection-button ${field.value === item.id ? "selection-button--selected" : ""}`}
                     key={item.id}
-                    onClick={() => field.onChange(item.id)}
+                    onClick={() => {
+                      field.onChange(item.id)
+                      setValue("isPrivileged", Boolean(campus?.isPrivileged), {
+                        shouldValidate: false,
+                      })
+                    }}
                   >
                     {item.name}
                     {field.value === item.id ? <Check size={14} /> : null}
