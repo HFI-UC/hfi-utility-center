@@ -6,24 +6,12 @@ import { useRouter } from "next/navigation"
 import { Controller, useForm } from "react-hook-form"
 
 import { Turnstile } from "@/components/turnstile"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
-import {
-  checkLogin,
-  forgetAdminEmail,
-  loginWithPassword,
-  loginWithToken,
-  rememberAdminEmail,
-} from "@/lib/api/auth"
+import { Button } from "@/components/astryx"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/astryx"
+import { Field, FieldError, FieldLabel } from "@/components/astryx"
+import { Input } from "@/components/astryx"
+import { Spinner } from "@/components/astryx"
+import { checkLogin, loginWithPassword, loginWithToken } from "@/lib/api/auth"
 
 type LoginFields = { email: string; password: string }
 
@@ -42,31 +30,37 @@ export function AdminLoginForm({
   const [turnstileToken, setTurnstileToken] = useState("")
   const [error, setError] = useState<string>()
   const [checkingSession, setCheckingSession] = useState(true)
-  const handleToken = useCallback(
-    (value: string) => setTurnstileToken(value),
-    []
-  )
+  const handleToken = useCallback((value: string) => {
+    setTurnstileToken(value)
+    if (value) setError(undefined)
+  }, [])
 
   useEffect(() => {
     let ignore = false
 
     async function restoreSession() {
-      if (token) {
+      if (!token) {
+        setCheckingSession(false)
         try {
-          forgetAdminEmail()
-          await loginWithToken(token)
+          if ((await checkLogin()) && !ignore) {
+            router.replace(redirectTo)
+            router.refresh()
+          }
         } catch {
-          if (!ignore) setCheckingSession(false)
-          return
+          // The login form stays usable when the session probe is unavailable.
         }
-      } else if (!(await checkLogin())) {
-        if (!ignore) setCheckingSession(false)
         return
       }
 
-      if (!ignore) {
-        router.replace(redirectTo)
-        router.refresh()
+      try {
+        await loginWithToken(token)
+
+        if (!ignore) {
+          router.replace(redirectTo)
+          router.refresh()
+        }
+      } catch {
+        if (!ignore) setCheckingSession(false)
       }
     }
 
@@ -82,83 +76,98 @@ export function AdminLoginForm({
       return
     }
     setError(undefined)
-    await loginWithPassword(email, password, turnstileToken)
-    rememberAdminEmail(email)
-    router.replace(redirectTo)
-    router.refresh()
+    try {
+      await loginWithPassword(email.trim(), password, turnstileToken)
+      router.replace(redirectTo)
+      router.refresh()
+    } catch (loginError) {
+      setError(
+        loginError instanceof Error ? loginError.message : t("loginFailed")
+      )
+    }
   }
 
   if (checkingSession) {
     return (
-      <main className="flex flex-1 items-center justify-center">
+      <main className="admin-login-loading">
         <Spinner className="size-8" />
+        <span>{t("loginLoading")}</span>
       </main>
     )
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center px-5 py-10">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold">
-            {t("loginTitle")}
-          </CardTitle>
-          <CardDescription>{t("loginDescription")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            noValidate
-            onSubmit={form.handleSubmit(submit)}
-            className="space-y-4"
-          >
-            <Controller
-              control={form.control}
-              name="email"
-              rules={{ required: t("emailRequired") }}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>{t("email")}</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    type="email"
-                    autoComplete="email"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  <FieldError errors={[fieldState.error]} />
-                </Field>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="password"
-              rules={{ required: t("passwordRequired") }}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>{t("password")}</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    type="password"
-                    autoComplete="current-password"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  <FieldError errors={[fieldState.error]} />
-                </Field>
-              )}
-            />
-            <Turnstile onToken={handleToken} />
-            <p className="min-h-5 text-sm text-destructive">{error}</p>
-            <Button
-              className="w-full"
-              disabled={form.formState.isSubmitting || !turnstileToken}
+    <main className="admin-login-page">
+      <section className="admin-login-brand" aria-label="HFI Campus" />
+
+      <section className="admin-login-form-panel">
+        <Card className="admin-login-card">
+          <CardHeader className="admin-login-card__header">
+            <CardTitle>{t("loginTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="admin-login-card__content">
+            <form
+              noValidate
+              onSubmit={form.handleSubmit(submit)}
+              className="admin-login-form"
             >
-              {form.formState.isSubmitting ? <Spinner /> : null}
-              {form.formState.isSubmitting ? t("loggingIn") : t("login")}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              <Controller
+                control={form.control}
+                name="email"
+                rules={{ required: t("emailRequired") }}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>{t("email")}</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      type="email"
+                      autoComplete="email"
+                      placeholder="name@hfiuc.org"
+                      className="admin-login-input"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
+              <Controller
+                control={form.control}
+                name="password"
+                rules={{ required: t("passwordRequired") }}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      {t("password")}
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      type="password"
+                      autoComplete="current-password"
+                      className="admin-login-input"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
+              <Turnstile onToken={handleToken} />
+              <p className="admin-login-error" role="alert">
+                {error}
+              </p>
+              <Button
+                type="submit"
+                className="admin-login-submit"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? <Spinner /> : null}
+                {form.formState.isSubmitting ? t("loggingIn") : t("login")}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </section>
     </main>
   )
 }

@@ -2,13 +2,13 @@ import type { ComponentProps } from "react"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import Link from "next/link"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/astryx"
 import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
-} from "@/components/ui/pagination"
+} from "@/components/astryx"
 import { cn } from "@/lib/utils"
 
 import {
@@ -36,7 +36,7 @@ export function ReservationSearchPagination({
   const atLastPage = filters.page >= totalPages - 1
 
   return (
-    <Pagination className="pt-6">
+    <Pagination>
       <PaginationContent>
         <PaginationItem>
           <PaginationRouteLink

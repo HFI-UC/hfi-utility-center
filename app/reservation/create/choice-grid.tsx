@@ -1,6 +1,6 @@
 import type { Ref } from "react"
 import { Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/astryx"
 
 export function ChoiceGrid<T extends number | string>({
   items,

@@ -1,9 +1,11 @@
+"use client"
+
+import { useState } from "react"
 import { Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -11,9 +13,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
+} from "@/components/astryx"
 import type { AdminMutation } from "@/lib/api/admin-hooks"
+
+import styles from "./facility.module.css"
 
 export type FacilityEditorActions = {
   mutate: AdminMutation
@@ -31,34 +34,51 @@ export function ConfirmFacilityDelete({
 }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
+  const [open, setOpen] = useState(false)
+  const [error, setError] = useState("")
+
+  async function removeFacility() {
+    setError("")
+    try {
+      if (await mutate(action, t("facilityDeleted"))) setOpen(false)
+    } catch {
+      setError(common("unknown"))
+    }
+  }
 
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button
-          size="icon-sm"
-          variant="ghost"
-          title={`${common("delete")} ${label}`}
+        <button
+          type="button"
+          className={styles.secondaryButton}
           disabled={working}
         >
           <Trash2 />
-        </Button>
+          {common("delete")}
+        </button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
+      <AlertDialogContent className={styles.dialog}>
+        <AlertDialogHeader className={styles.dialogHeader}>
           <AlertDialogTitle>{common("delete")}</AlertDialogTitle>
           <AlertDialogDescription>
             {t("confirmDelete", { name: label })}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{common("cancel")}</AlertDialogCancel>
-          <AlertDialogAction
-            variant="destructive"
-            onClick={() => mutate(action, t("facilityDeleted"))}
+        {error ? <p className={styles.error}>{error}</p> : null}
+        <AlertDialogFooter className={styles.dialogActions}>
+          <AlertDialogCancel className={styles.secondaryButton}>
+            {common("cancel")}
+          </AlertDialogCancel>
+          <button
+            type="button"
+            className={styles.dangerButton}
+            disabled={working}
+            onClick={removeFacility}
           >
+            <Trash2 />
             {common("delete")}
-          </AlertDialogAction>
+          </button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -1,11 +1,8 @@
 "use client"
 
-import { Pencil, Plus } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 
 import { AdminSection } from "@/app/admin/admin-shell"
-import { TextActionDialog } from "@/app/admin/text-action-dialog"
-import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -13,14 +10,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import type { Campus } from "@/lib/api/types"
+} from "@/components/astryx"
 import { createCampus, deleteCampus, editCampus } from "@/lib/api/catalog"
+import type { Campus } from "@/lib/api/types"
 
 import {
   ConfirmFacilityDelete,
   type FacilityEditorActions,
 } from "./facility-editor-actions"
+import styles from "./facility.module.css"
+import { FacilityNameDialog } from "./name-dialog"
 
 export function CampusEditor({
   campuses,
@@ -28,7 +27,6 @@ export function CampusEditor({
   working,
 }: FacilityEditorActions & { campuses: Campus[] }) {
   const t = useTranslations("admin")
-  const common = useTranslations("common")
   const dateFormatter = new Intl.DateTimeFormat(useLocale(), {
     dateStyle: "medium",
   })
@@ -37,27 +35,22 @@ export function CampusEditor({
     <AdminSection
       title={t("campuses")}
       action={
-        <TextActionDialog
+        <FacilityNameDialog
+          mode="create"
           title={t("newCampus")}
           label={t("campusName")}
-          cancelLabel={common("cancel")}
-          saveLabel={common("add")}
+          working={working}
           onSave={(name) =>
-            mutate(() => createCampus(name.trim()), t("campusCreated"))
+            mutate(() => createCampus(name), t("campusCreated"))
           }
-        >
-          <Button size="icon-sm" disabled={working}>
-            <Plus />
-            <span className="sr-only">{common("add")}</span>
-          </Button>
-        </TextActionDialog>
+        />
       }
     >
-      <Table>
+      <p className={styles.sectionIntro}>{t("facilitiesDescription")}</p>
+      <Table className={styles.table}>
         <TableHeader>
           <TableRow>
-            <TableHead className="hidden sm:table-cell">{t("id")}</TableHead>
-            <TableHead>{t("name")}</TableHead>
+            <TableHead>{t("facilityName")}</TableHead>
             <TableHead className="hidden md:table-cell">
               {t("createdAt")}
             </TableHead>
@@ -68,39 +61,32 @@ export function CampusEditor({
           {campuses.length ? (
             campuses.map((campus) => (
               <TableRow key={campus.id}>
-                <TableCell className="hidden sm:table-cell">
-                  #{campus.id}
+                <TableCell className="font-medium">
+                  {campus.name}
+                  <span className={styles.recordId}>#{campus.id}</span>
                 </TableCell>
-                <TableCell className="font-medium">{campus.name}</TableCell>
-                <TableCell className="hidden md:table-cell">
+                <TableCell
+                  className={`hidden md:table-cell ${styles.secondaryText}`}
+                >
                   {campus.createdAt
                     ? dateFormatter.format(new Date(campus.createdAt))
                     : "—"}
                 </TableCell>
                 <TableCell>
-                  <div className="flex justify-end">
-                    <TextActionDialog
+                  <div className={styles.rowActions}>
+                    <FacilityNameDialog
+                      mode="edit"
                       title={t("renameCampus")}
                       label={t("campusName")}
                       initialValue={campus.name}
-                      cancelLabel={common("cancel")}
-                      saveLabel={common("save")}
+                      working={working}
                       onSave={(name) =>
                         mutate(
                           () => editCampus(campus.id, name),
                           t("campusUpdated")
                         )
                       }
-                    >
-                      <Button
-                        size="icon-sm"
-                        variant="ghost"
-                        title={t("renameCampus")}
-                        disabled={working}
-                      >
-                        <Pencil />
-                      </Button>
-                    </TextActionDialog>
+                    />
                     <ConfirmFacilityDelete
                       label={campus.name}
                       action={() => deleteCampus(campus.id)}
@@ -113,8 +99,8 @@ export function CampusEditor({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={4} className="h-24 text-center">
-                {t("campusesEmpty")}
+              <TableCell colSpan={3}>
+                <div className={styles.empty}>{t("campusesEmpty")}</div>
               </TableCell>
             </TableRow>
           )}

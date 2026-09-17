@@ -1,4 +1,4 @@
-import { Spinner } from "@/components/ui/spinner"
+import { Spinner } from "@/components/astryx"
 
 export default function Loading() {
   return (

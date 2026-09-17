@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { RefreshCw } from "lucide-react"
 import { useTranslations } from "next-intl"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/astryx"
 
 declare global {
   interface Window {
@@ -111,7 +111,7 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
     return (
       <div className="flex items-center justify-between gap-3 border-y py-3">
         <p className="text-sm text-destructive">{t("turnstileLoadFailed")}</p>
-        <Button  size="sm" variant="outline" onClick={retry}>
+        <Button size="sm" variant="outline" onClick={retry}>
           <RefreshCw />
           {t("retryVerification")}
         </Button>
@@ -119,5 +119,9 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
     )
   }
 
-  return <div ref={ref} className="min-h-16" />
+  return (
+    <div className="turnstile-widget-shell">
+      <div ref={ref} className="min-h-16" />
+    </div>
+  )
 }

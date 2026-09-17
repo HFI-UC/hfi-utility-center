@@ -8,6 +8,7 @@ import type {
   ReservationPage,
   ReservationStatus,
   Room,
+  PurposeType,
 } from "@/lib/api/types"
 
 export interface CreateReservationInput {
@@ -19,12 +20,15 @@ export interface CreateReservationInput {
   reason: string
   startTime: number
   endTime: number
+  purposeType: PurposeType
+  needsMultimedia: boolean
 }
 
 export async function getAvailability(
   roomId: number,
   date: string,
-  knownRoom?: Room
+  knownRoom?: Room,
+  excludedReservationId?: number
 ) {
   const startTime = inputValueToTimestamp(date)
   const endTime = inputValueToTimestamp(date, true)
@@ -45,7 +49,13 @@ export async function getAvailability(
     )
   )
   reservations.push(...additionalPages.flatMap((page) => page.reservations))
-  return buildLegacyAvailability(room, date, reservations)
+  return buildLegacyAvailability(
+    room,
+    date,
+    excludedReservationId
+      ? reservations.filter((item) => item.id !== excludedReservationId)
+      : reservations
+  )
 }
 
 export async function createReservation(input: CreateReservationInput) {
@@ -58,11 +68,15 @@ export async function createReservation(input: CreateReservationInput) {
 
 export async function getReservations(params: {
   keyword?: string
+  campusId?: number
   roomId?: number
   status?: ReservationStatus
   page?: number
   startTime?: number
   endTime?: number
+  purposeType?: PurposeType
+  needsMultimedia?: boolean
+  sort?: "time" | "sequence"
 }) {
   const { data } = await api.get<ApiResponse<ReservationPage>>(
     "/reservation/get",
@@ -70,6 +84,65 @@ export async function getReservations(params: {
   )
   return data.data!
 }
+
+export interface CancellationPreview {
+  reservationId: number
+  roomId: number
+  status: ReservationStatus
+  roomName: string
+  studentName: string
+  reason: string
+  startTime: string
+  endTime: string
+  purposeType?: PurposeType | null
+  needsMultimedia: boolean
+  editCount: number
+  remainingEdits: number
+}
+
+export async function previewCancellation(token: string) {
+  const { data } = await api.get<ApiResponse<CancellationPreview>>(
+    "/reservation/cancel/preview",
+    { params: { token }, suppressErrorToast: true }
+  )
+  if (!data.success || !data.data) {
+    throw new Error(data.message || "This reservation link is invalid or expired.")
+  }
+  return data.data
+}
+
+export async function cancelReservation(token: string) {
+  const { data } = await api.post<ApiResponse<unknown>>("/reservation/cancel", {
+    token,
+  })
+  return data.message || "Reservation cancelled."
+}
+
+export interface ReservationEditInput {
+  room: number
+  startTime: number
+  endTime: number
+  reason: string
+  purposeType: PurposeType
+  needsMultimedia: boolean
+}
+
+export async function modifyReservation(
+  token: string,
+  input: ReservationEditInput
+) {
+  const { data } = await api.post<
+    ApiResponse<{
+      reservationId: number
+      editCount: number
+      remainingEdits: number
+    }>
+  >("/reservation/modify", { token, ...input })
+  return data.data!
+}
+
+export const adminEditReservation = (id: number, input: ReservationEditInput) =>
+  api.post("/reservation/admin-edit", { id, ...input })
 
 export async function getFutureReservations() {
   const response = await api.get<ApiResponse<Reservation[]>>(

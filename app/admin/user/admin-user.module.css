@@ -1,0 +1,447 @@
+.pageGrid {
+  display: grid;
+  gap: 24px;
+}
+
+.createForm {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: start;
+  gap: 16px;
+}
+
+.createAction {
+  min-width: 148px;
+  align-self: end;
+}
+
+.createAction,
+.actionButton,
+.dialogButton,
+.retryButton {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  white-space: nowrap;
+}
+
+.createAction svg,
+.actionButton svg,
+.dialogButton svg,
+.retryButton svg {
+  width: 17px !important;
+  height: 17px !important;
+  flex: 0 0 auto;
+}
+
+.formError {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 10px 12px;
+  color: #9f2d24;
+  font-size: 13px;
+  line-height: 1.5;
+  background: #fff3f1;
+  border: 1px solid #f3c7c1;
+  border-radius: 10px;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.accountCard {
+  display: grid;
+  min-width: 0;
+  gap: 20px;
+  padding: 20px;
+  color: #172033;
+  background: #fff;
+  border: 1px solid #e1e7ef;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
+}
+
+.accountHeader {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.avatar {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 750;
+  background: linear-gradient(145deg, #ff6845, #ff3e18);
+  border-radius: 13px;
+  box-shadow: 0 8px 18px rgba(255, 68, 26, 0.2);
+}
+
+.identity {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.identity strong {
+  display: block;
+  overflow: hidden;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 720;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.identity a {
+  display: block;
+  overflow: hidden;
+  margin-top: 4px;
+  color: #69758a;
+  font-size: 13px;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.identity a:hover {
+  color: #ff4b27;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.notificationRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 14px;
+  background: #f7f9fc;
+  border: 1px solid #e6ebf2;
+  border-radius: 13px;
+}
+
+.notificationCopy {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.notificationIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #68758a;
+  background: #fff;
+  border: 1px solid #dde4ed;
+  border-radius: 10px;
+}
+
+.notificationIcon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.notificationLabel {
+  display: grid;
+  gap: 2px;
+}
+
+.notificationLabel strong {
+  color: inherit;
+  font-size: 13px;
+  font-weight: 680;
+}
+
+.notificationLabel span {
+  color: #7a8799;
+  font-size: 12px;
+}
+
+.notificationToggle {
+  min-width: 96px;
+}
+
+.notificationEnabled .notificationIcon {
+  color: #08795b;
+  background: #e9faf4;
+  border-color: #bcebdc;
+}
+
+.notificationEnabled .notificationToggle {
+  color: #08795b !important;
+  background: #e9faf4 !important;
+  border-color: #9addc9 !important;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  padding-top: 16px;
+  border-top: 1px solid #e8edf3;
+}
+
+.actionButton {
+  width: 100%;
+  min-width: 0;
+}
+
+.dangerButton {
+  color: #b42318 !important;
+  background: #fff4f2 !important;
+  border-color: #f7c5bf !important;
+}
+
+.emptyState,
+.errorState {
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+  gap: 12px;
+  align-content: center;
+  padding: 28px;
+  color: #667085;
+  text-align: center;
+  background: #fafbfc;
+  border: 1px dashed #d9e0e8;
+  border-radius: 15px;
+}
+
+.emptyState svg,
+.errorState svg {
+  width: 28px;
+  height: 28px;
+  color: #96a1b1;
+}
+
+.errorState {
+  color: #8f2920;
+  background: #fff8f7;
+  border-color: #f1c7c1;
+}
+
+.dialogSurface {
+  color: #172033 !important;
+  background: #fff !important;
+  border: 1px solid #dfe5ed !important;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22) !important;
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  margin-bottom: 22px;
+}
+
+.dialogIcon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #ff4b27;
+  background: #fff0eb;
+  border-radius: 12px;
+}
+
+.dialogIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.dialogTitle {
+  color: #172033 !important;
+  font-size: 19px !important;
+}
+
+.dialogDescription {
+  margin-top: 4px;
+  color: #69758a !important;
+  line-height: 1.55;
+}
+
+.dialogForm {
+  display: grid;
+  gap: 17px;
+}
+
+.dialogInput {
+  height: 46px !important;
+  padding-inline: 14px !important;
+  color: #172033 !important;
+  background: #fff !important;
+  border: 1px solid #cfd7e3 !important;
+  border-radius: 12px !important;
+}
+
+.dialogInput:focus {
+  border-color: #ff5a36 !important;
+  box-shadow: 0 0 0 3px rgba(255, 90, 54, 0.13) !important;
+}
+
+.dialogFooter {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px !important;
+}
+
+.dialogButton {
+  width: 100%;
+}
+
+.dangerDialog .dialogIcon {
+  color: #b42318;
+  background: #fff0ee;
+}
+
+.dangerName {
+  padding: 12px 14px;
+  color: #7a271a;
+  font-weight: 680;
+  background: #fff5f3;
+  border: 1px solid #f6d0ca;
+  border-radius: 11px;
+}
+
+:global(.dark) .accountCard,
+:global(.dark) .dialogSurface {
+  color: #edf2f8 !important;
+  background: #151e2d !important;
+  border-color: #334155 !important;
+  box-shadow: 0 22px 65px rgba(0, 0, 0, 0.38) !important;
+}
+
+:global(.dark) .identity a,
+:global(.dark) .notificationLabel span,
+:global(.dark) .dialogDescription {
+  color: #aeb9c9 !important;
+}
+
+:global(.dark) .notificationRow {
+  background: #101827;
+  border-color: #2d3a4c;
+}
+
+:global(.dark) .notificationIcon {
+  color: #b2bdcc;
+  background: #1c2738;
+  border-color: #344257;
+}
+
+:global(.dark) .notificationEnabled .notificationIcon,
+:global(.dark) .notificationEnabled .notificationToggle {
+  color: #62e0b9 !important;
+  background: #12372f !important;
+  border-color: #256753 !important;
+}
+
+:global(.dark) .actions {
+  border-color: #2e3a4b;
+}
+
+:global(.dark) .dangerButton {
+  color: #ff9b90 !important;
+  background: #381d21 !important;
+  border-color: #74333a !important;
+}
+
+:global(.dark) .emptyState {
+  color: #aeb9c9;
+  background: #111a28;
+  border-color: #344154;
+}
+
+:global(.dark) .errorState {
+  color: #ffb0a7;
+  background: #29191d;
+  border-color: #613039;
+}
+
+:global(.dark) .dialogTitle {
+  color: #f4f7fb !important;
+}
+
+:global(.dark) .dialogIcon {
+  color: #ff8f75;
+  background: #38221f;
+}
+
+:global(.dark) .dialogInput {
+  color: #f4f7fb !important;
+  background: #0f1724 !important;
+  border-color: #3a475a !important;
+}
+
+:global(.dark) .dangerDialog .dialogIcon {
+  color: #ff9b90;
+  background: #3b1f23;
+}
+
+:global(.dark) .dangerName {
+  color: #ffc0b8;
+  background: #311b20;
+  border-color: #67313a;
+}
+
+:global(.dark) .formError {
+  color: #ffb1a8;
+  background: #321c21;
+  border-color: #68333b;
+}
+
+@media (max-width: 1120px) {
+  .createForm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .createAction {
+    align-self: stretch;
+  }
+}
+
+@media (max-width: 820px) {
+  .list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .createForm {
+    grid-template-columns: 1fr;
+  }
+
+  .createAction {
+    width: 100%;
+  }
+
+  .notificationRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .notificationToggle {
+    width: 100%;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .dialogFooter {
+    grid-template-columns: 1fr;
+  }
+}

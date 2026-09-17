@@ -1,25 +1,28 @@
 "use client"
 
 import { useState } from "react"
-import { Pencil } from "lucide-react"
+import { Check, Pencil, X } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Controller, useForm } from "react-hook-form"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/astryx"
 import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from "@/components/astryx"
+import { Field, FieldError, FieldLabel } from "@/components/astryx"
+import { Input } from "@/components/astryx"
 import type { AdminMutation } from "@/lib/api/admin-hooks"
 import { editAdmin } from "@/lib/api/admins"
 import type { Admin } from "@/lib/api/types"
+
+import styles from "./admin-user.module.css"
 
 type EditAdminFields = { name: string; email: string }
 
@@ -35,6 +38,7 @@ export function EditAdminDialog({
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const [open, setOpen] = useState(false)
+  const [actionError, setActionError] = useState(false)
   const form = useForm<EditAdminFields>({
     defaultValues: { name: admin.name, email: admin.email },
   })
@@ -43,31 +47,58 @@ export function EditAdminDialog({
   }
 
   function handleOpenChange(nextOpen: boolean) {
+    if (!nextOpen && form.formState.isSubmitting) return
     setOpen(nextOpen)
-    if (nextOpen) form.reset({ name: admin.name, email: admin.email })
+    if (nextOpen) {
+      setActionError(false)
+      form.reset({ name: admin.name, email: admin.email })
+    }
   }
 
   async function saveAdmin({ name, email }: EditAdminFields) {
-    const saved = await mutate(
-      () => editAdmin(admin.id, name.trim(), email.trim()),
-      t("adminUpdated")
-    )
-    if (saved) setOpen(false)
+    setActionError(false)
+    try {
+      const saved = await mutate(
+        () => editAdmin(admin.id, name.trim(), email.trim()),
+        t("adminUpdated")
+      )
+      if (saved) setOpen(false)
+    } catch {
+      setActionError(true)
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" disabled={working}>
-          <Pencil />
+        <Button
+          size="sm"
+          variant="outline"
+          className={styles.actionButton}
+          disabled={working}
+          icon={<Pencil />}
+        >
           {common("edit")}
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{common("edit")}</DialogTitle>
+      <DialogContent className={styles.dialogSurface}>
+        <DialogHeader className={styles.dialogHeader}>
+          <span className={styles.dialogIcon} aria-hidden="true">
+            <Pencil />
+          </span>
+          <div>
+            <DialogTitle className={styles.dialogTitle}>
+              {common("edit")} · {admin.name}
+            </DialogTitle>
+            <DialogDescription className={styles.dialogDescription}>
+              {admin.email}
+            </DialogDescription>
+          </div>
         </DialogHeader>
-        <form className="space-y-4" onSubmit={form.handleSubmit(saveAdmin)}>
+        <form
+          className={styles.dialogForm}
+          onSubmit={form.handleSubmit(saveAdmin)}
+        >
           <Controller
             control={form.control}
             name="name"
@@ -81,6 +112,7 @@ export function EditAdminDialog({
                   {...field}
                   id={`admin-name-${admin.id}`}
                   aria-invalid={fieldState.invalid}
+                  className={styles.dialogInput}
                 />
                 <FieldError errors={[fieldState.error]} />
               </Field>
@@ -100,17 +132,33 @@ export function EditAdminDialog({
                   id={`admin-email-${admin.id}`}
                   type="email"
                   aria-invalid={fieldState.invalid}
+                  className={styles.dialogInput}
                 />
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
-          <DialogFooter>
+          {actionError ? (
+            <p className={styles.formError} role="alert">
+              {common("unknown")}
+            </p>
+          ) : null}
+          <DialogFooter className={styles.dialogFooter}>
             <DialogClose asChild>
-              <Button variant="outline">{common("cancel")}</Button>
+              <Button
+                type="button"
+                variant="outline"
+                className={`${styles.dialogButton} admin-action-button`}
+                icon={<X />}
+                disabled={form.formState.isSubmitting}
+              >
+                {common("cancel")}
+              </Button>
             </DialogClose>
             <Button
               type="submit"
+              className={`${styles.dialogButton} admin-action-button`}
+              icon={<Check />}
               disabled={form.formState.isSubmitting || working}
             >
               {common("save")}

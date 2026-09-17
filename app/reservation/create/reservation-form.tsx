@@ -1,23 +1,23 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, type FormEvent } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  RefreshCw,
+} from "lucide-react"
 import { useTranslations } from "next-intl"
 import { FormProvider, useForm, useWatch } from "react-hook-form"
 
-import { Button } from "@/components/ui/button"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination"
-import { Progress } from "@/components/ui/progress"
-import { Spinner } from "@/components/ui/spinner"
+import { Spinner } from "@/components/astryx"
 import { getCatalog } from "@/lib/api/catalog"
 import { createReservation, getAvailability } from "@/lib/api/reservations"
 import type { CatalogData } from "@/lib/api/types"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
+import { ActionButton, NeoFooter, NeoHeader } from "@/components/neo/shared"
 
 import {
   bookingSteps,
@@ -52,29 +52,32 @@ export function ReservationForm() {
   const [result, setResult] = useState<ReservationResult>()
   const [catalog, setCatalog] = useState<CatalogData>()
   const [catalogLoading, setCatalogLoading] = useState(true)
-  const selectedClassId = useWatch({
-    control: form.control,
-    name: "classId",
-  })
-  const selectedClass = catalog?.classes.find(
-    (schoolClass) => schoolClass.id === selectedClassId
-  )
-  const privileged = Boolean(
-    catalog?.campuses.find((campus) => campus.id === selectedClass?.campus)
-      ?.isPrivileged
-  )
+  const [catalogError, setCatalogError] = useState<string>()
+  const [catalogReloadKey, setCatalogReloadKey] = useState(0)
   const currentStepIndex = bookingSteps.findIndex(
     (step) => step.id === currentStepId
   )
   const currentStep = bookingSteps[currentStepIndex]
+  const selectedClassId = useWatch({ control: form.control, name: "classId" })
+  const selectedClass = catalog?.classes.find(
+    (item) => item.id === selectedClassId
+  )
+  const isPrivilegedSelection = Boolean(
+    catalog?.campuses.find((item) => item.id === selectedClass?.campus)
+      ?.isPrivileged
+  )
 
   useEffect(() => {
     let active = true
 
     async function loadCatalog() {
+      setCatalogLoading(true)
+      setCatalogError(undefined)
       try {
         const data = await getCatalog()
         if (active) setCatalog(data)
+      } catch {
+        if (active) setCatalogError("无法连接预约服务，请检查网络后重试。")
       } finally {
         if (active) setCatalogLoading(false)
       }
@@ -84,18 +87,12 @@ export function ReservationForm() {
     return () => {
       active = false
     }
-  }, [])
+  }, [catalogReloadKey])
 
   async function selectedTimeIsStillAvailable(values: ReservationFormValues) {
     if (!catalog) return false
 
-    const schoolClass = catalog.classes.find(
-      (candidate) => candidate.id === values.classId
-    )
-    const classCampus = catalog.campuses.find(
-      (candidate) => candidate.id === schoolClass?.campus
-    )
-    if (classCampus?.isPrivileged) return true
+    if (values.isPrivileged) return true
 
     const room = catalog.rooms.find((candidate) => candidate.id === values.room)
     if (!room) {
@@ -156,11 +153,23 @@ export function ReservationForm() {
         reason: values.reason.trim(),
         startTime: values.startTime,
         endTime: values.endTime,
+        purposeType: values.purposeType,
+        needsMultimedia: values.needsMultimedia,
       })
       setResult({ reservationId: response.reservationId })
     } finally {
       setIsWorking(false)
     }
+  }
+
+  function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (currentStep.id !== "review") {
+      void continueToNextStep()
+      return
+    }
+
+    void form.handleSubmit(confirmReservation)(event)
   }
 
   function returnToPreviousStep() {
@@ -177,115 +186,182 @@ export function ReservationForm() {
     setFlowError(undefined)
   }
 
-  if (catalogLoading || !catalog) {
+  if (catalogLoading) {
     return (
-      <main className="flex flex-1 items-start justify-center px-5 py-16 sm:px-8">
-        <Spinner className="size-8" />
-      </main>
+      <div className="app-page app-page--light">
+        <NeoHeader />
+        <main className="neo-load-state">
+          <Spinner className="size-8" />
+          <strong>正在载入预约资源</strong>
+          <span>通常会在一秒内完成</span>
+        </main>
+      </div>
+    )
+  }
+
+  if (catalogError || !catalog) {
+    return (
+      <div className="app-page app-page--light">
+        <NeoHeader />
+        <main className="neo-load-state neo-load-state--error">
+          <AlertCircle size={30} />
+          <strong>预约服务暂时无法连接</strong>
+          <span>{catalogError}</span>
+          <ActionButton onClick={() => setCatalogReloadKey((key) => key + 1)}>
+            <RefreshCw />
+            重新加载
+          </ActionButton>
+        </main>
+        <NeoFooter />
+      </div>
     )
   }
 
   if (result) {
     return (
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-5 py-8 sm:px-8">
-        <h1 className="text-2xl font-semibold sm:text-3xl">
-          {t("createTitle")}
-        </h1>
-        <SuccessStep {...result} onReset={resetReservation} />
-      </main>
+      <div className="app-page app-page--light">
+        <NeoHeader />
+        <main className="success-shell">
+          <SuccessStep {...result} onReset={resetReservation} />
+        </main>
+        <NeoFooter />
+      </div>
     )
   }
 
   const stepContent = {
     class: <ClassStep catalog={catalog} />,
     location: <LocationStep catalog={catalog} />,
-    dateTime: <DateTimeStep rooms={catalog.rooms} privileged={privileged} />,
+    dateTime: (
+      <DateTimeStep
+        rooms={catalog.rooms}
+        privileged={isPrivilegedSelection}
+      />
+    ),
     profile: <ProfileStep />,
     review: <ReviewStep catalog={catalog} />,
   }
 
   return (
-    <FormProvider {...form}>
-      <form
-        noValidate
-        onSubmit={form.handleSubmit(confirmReservation)}
-        className="flex flex-1 flex-col"
-      >
-        <div className="px-5 pt-8 sm:px-8 sm:pt-10">
-          <header className="mx-auto max-w-5xl">
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-              <h1 className="text-2xl font-semibold sm:text-3xl">
-                {t("createTitle")}
-              </h1>
-              <p className="text-sm font-medium text-muted-foreground">
+    <div className="app-page app-page--light">
+      <NeoHeader />
+      <FormProvider {...form}>
+        <form
+          noValidate
+          onSubmit={handleFormSubmit}
+          className="internal-main wizard-page"
+        >
+          <div className="wizard-card">
+            <header className="wizard-title-row">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+                <h1>{t("createTitle")}</h1>
+              </div>
+              <p className="wizard-count">
                 {t("step", {
                   current: currentStepIndex + 1,
                   total: bookingSteps.length,
                 })}
               </p>
-            </div>
-            <Progress
-              className="mt-4"
-              value={((currentStepIndex + 1) / bookingSteps.length) * 100}
-              aria-label={t("progress")}
-            />
-          </header>
-        </div>
-        <div className="flex-1 px-5 py-6 sm:px-8 sm:py-8">
-          {stepContent[currentStep.id]}
-        </div>
-        <div className="sticky bottom-0 z-20 border-t bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/80 sm:px-8">
-          <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 py-3">
-            <div className="flex items-center gap-3">
-              {flowError ? (
-                <p className="hidden max-w-md text-right text-xs text-destructive sm:block">
-                  {flowError}
-                </p>
-              ) : null}
-            </div>
-            <Pagination className="mx-0 w-auto">
-              <PaginationContent>
-                <PaginationItem>
-                  <Button
+            </header>
+            <div className="booking-stepper" aria-label={t("progress")}>
+              {bookingSteps.map((step, index) => (
+                <div className="stepper-item-wrap" key={step.id}>
+                  <button
                     type="button"
-                    variant="ghost"
-                    disabled={currentStepIndex === 0 || isWorking}
-                    onClick={returnToPreviousStep}
+                    className={`stepper-item ${index < currentStepIndex ? "stepper-item--complete" : ""} ${index === currentStepIndex ? "stepper-item--active" : ""}`}
+                    onClick={() =>
+                      index <= currentStepIndex && setCurrentStepId(step.id)
+                    }
                   >
-                    <ArrowLeft />
-                    {common("back")}
-                  </Button>
-                </PaginationItem>
+                    <span className="stepper-item__number">
+                      {index < currentStepIndex ? (
+                        <Check size={14} />
+                      ) : (
+                        index + 1
+                      )}
+                    </span>
+                    <span className="stepper-item__label">
+                      {
+                        [
+                          t("classTitle"),
+                          t("locationTitle"),
+                          t("dateTimeTitle"),
+                          t("profileTitle"),
+                          t("reviewTitle"),
+                        ][index]
+                      }
+                    </span>
+                  </button>
+                  {index < bookingSteps.length - 1 ? (
+                    <span
+                      className={`stepper-divider ${index < currentStepIndex ? "stepper-divider--complete" : ""}`}
+                    />
+                  ) : null}
+                </div>
+              ))}
+            </div>
+            <div className="wizard-step-body">
+              {stepContent[currentStep.id]}
+            </div>
+            <div className="wizard-actions">
+              <div className="flex items-center gap-3">
+                {flowError ? (
+                  <p className="hidden max-w-md text-right text-xs text-destructive sm:block">
+                    {flowError}
+                  </p>
+                ) : null}
+              </div>
+              <div className="wizard-action-controls">
+                <ActionButton
+                  className="wizard-nav-button"
+                  icon={<ArrowLeft size={16} />}
+                  ariaLabel={common("back")}
+                  variant="secondary"
+                  disabled={currentStepIndex === 0 || isWorking}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    returnToPreviousStep()
+                  }}
+                >
+                  {common("back")}
+                </ActionButton>
                 {currentStep.id === "review" ? (
-                  <PaginationItem key="confirm">
-                    <Button type="submit" disabled={isWorking}>
-                      {isWorking ? <Spinner /> : null}
-                      {t("confirmReservation")}
-                    </Button>
-                  </PaginationItem>
+                  <ActionButton
+                    ariaLabel={t("confirmReservation")}
+                    type="submit"
+                    disabled={isWorking}
+                  >
+                    {isWorking ? <Spinner /> : null}
+                    {t("confirmReservation")}
+                  </ActionButton>
                 ) : (
-                  <PaginationItem key="next">
-                    <Button
-                      type="button"
-                      disabled={isWorking}
-                      onClick={continueToNextStep}
-                    >
-                      {isWorking ? <Spinner /> : null}
-                      {common("next")}
-                      <ArrowRight />
-                    </Button>
-                  </PaginationItem>
+                  <ActionButton
+                    className="wizard-nav-button"
+                    icon={isWorking ? <Spinner /> : undefined}
+                    endContent={
+                      isWorking ? undefined : <ArrowRight size={16} />
+                    }
+                    ariaLabel={common("next")}
+                    disabled={isWorking}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      void continueToNextStep()
+                    }}
+                  >
+                    {common("next")}
+                  </ActionButton>
                 )}
-              </PaginationContent>
-            </Pagination>
+              </div>
+            </div>
+            {flowError ? (
+              <p className="pb-3 text-xs text-destructive sm:hidden">
+                {flowError}
+              </p>
+            ) : null}
           </div>
-          {flowError ? (
-            <p className="pb-3 text-xs text-destructive sm:hidden">
-              {flowError}
-            </p>
-          ) : null}
-        </div>
-      </form>
-    </FormProvider>
+        </form>
+      </FormProvider>
+      <NeoFooter />
+    </div>
   )
 }

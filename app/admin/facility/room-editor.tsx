@@ -1,14 +1,10 @@
 "use client"
 
-import { useState } from "react"
-import { Pencil, Plus, Power } from "lucide-react"
+import { useId, useState } from "react"
+import { Pencil, Plus, Power, PowerOff } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { Controller, useForm, type Control } from "react-hook-form"
 
 import { AdminSection } from "@/app/admin/admin-shell"
-import { TextActionDialog } from "@/app/admin/text-action-dialog"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -18,51 +14,37 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
+  Field,
+  FieldLabel,
+  Input,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/astryx"
 import { createRoom, deleteRoom, editRoom } from "@/lib/api/catalog"
-import type { Admin, Campus, Room } from "@/lib/api/types"
+import type { Campus, Room } from "@/lib/api/types"
 
-import { ApproverEditor } from "./approver-editor"
 import {
   ConfirmFacilityDelete,
   type FacilityEditorActions,
 } from "./facility-editor-actions"
+import styles from "./facility.module.css"
 import { PolicyEditor } from "./room-policy-editor"
-
-type RoomForm = { name: string; campus: string }
 
 export function RoomEditor({
   rooms,
   campuses,
-  admins,
   mutate,
   working,
 }: FacilityEditorActions & {
   rooms: Room[]
   campuses: Campus[]
-  admins: Admin[]
 }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
-  const [open, setOpen] = useState(false)
-  const form = useForm<RoomForm>({ defaultValues: { name: "", campus: "" } })
   const campusNames = new Map(
     campuses.map((campus) => [campus.id, campus.name])
   )
@@ -70,80 +52,29 @@ export function RoomEditor({
     dateStyle: "medium",
   })
 
-  async function createNewRoom({ name, campus }: RoomForm) {
-    const created = await mutate(
-      () => createRoom(name.trim(), Number(campus)),
-      t("roomCreated")
-    )
-    if (created) {
-      form.reset()
-      setOpen(false)
-    }
-  }
-
   return (
     <AdminSection
       title={t("rooms")}
-      className="xl:col-span-2"
+      className={styles.roomSection}
       action={
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="icon-sm" disabled={working}>
-              <Plus />
-              <span className="sr-only">{common("add")}</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t("newRoom")}</DialogTitle>
-              <DialogDescription>{t("roomName")}</DialogDescription>
-            </DialogHeader>
-            <form
-              className="grid gap-4"
-              onSubmit={form.handleSubmit(createNewRoom)}
-            >
-              <Controller
-                control={form.control}
-                name="name"
-                rules={{
-                  validate: (name) =>
-                    Boolean(name.trim()) || t("fieldRequired"),
-                }}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="new-room-name">
-                      {t("roomName")}
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="new-room-name"
-                      aria-invalid={fieldState.invalid}
-                    />
-                    <FieldError errors={[fieldState.error]} />
-                  </Field>
-                )}
-              />
-              <RoomCampusField control={form.control} campuses={campuses} />
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">{common("cancel")}</Button>
-                </DialogClose>
-                <Button disabled={working}>{common("add")}</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <RoomDialog
+          mode="create"
+          campuses={campuses}
+          working={working}
+          onSave={(name, campus) =>
+            mutate(() => createRoom(name, campus), t("roomCreated"))
+          }
+        />
       }
     >
-      <Table>
+      <p className={styles.sectionIntro}>{t("policyDialogDescription")}</p>
+      <Table className={`${styles.table} ${styles.roomTable}`}>
         <TableHeader>
           <TableRow>
-            <TableHead className="hidden sm:table-cell">{t("id")}</TableHead>
-            <TableHead>{t("name")}</TableHead>
+            <TableHead>{t("facilityName")}</TableHead>
             <TableHead>{t("status")}</TableHead>
             <TableHead>{t("campus")}</TableHead>
             <TableHead>{t("roomPolicies")}</TableHead>
-            <TableHead>{t("approvers")}</TableHead>
             <TableHead className="hidden xl:table-cell">
               {t("createdAt")}
             </TableHead>
@@ -154,46 +85,35 @@ export function RoomEditor({
           {rooms.length ? (
             rooms.map((room) => (
               <TableRow key={room.id}>
-                <TableCell className="hidden sm:table-cell">
-                  #{room.id}
+                <TableCell className="font-medium">
+                  {room.name}
+                  <span className={styles.recordId}>#{room.id}</span>
                 </TableCell>
-                <TableCell className="font-medium">{room.name}</TableCell>
                 <TableCell>
-                  <Badge
-                    className={
-                      room.enabled
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    }
+                  <span
+                    className={`${styles.status} ${
+                      room.enabled ? styles.statusOn : styles.statusOff
+                    }`}
                   >
                     {room.enabled ? common("enabled") : common("disabled")}
-                  </Badge>
+                  </span>
                 </TableCell>
-                <TableCell>{campusNames.get(room.campus)}</TableCell>
+                <TableCell>{campusNames.get(room.campus) ?? "—"}</TableCell>
                 <TableCell>
                   <PolicyEditor room={room} mutate={mutate} working={working} />
                 </TableCell>
-                <TableCell>
-                  <ApproverEditor
-                    room={room}
-                    admins={admins}
-                    mutate={mutate}
-                    working={working}
-                  />
-                </TableCell>
-                <TableCell className="hidden xl:table-cell">
+                <TableCell
+                  className={`hidden xl:table-cell ${styles.secondaryText}`}
+                >
                   {room.createdAt
                     ? dateFormatter.format(new Date(room.createdAt))
                     : "—"}
                 </TableCell>
                 <TableCell>
-                  <div className="flex justify-end">
-                    <Button
-                      size="icon-sm"
-                      variant="ghost"
-                      title={
-                        room.enabled ? t("roomClosed") : t("restoreBooking")
-                      }
+                  <div className={styles.rowActions}>
+                    <button
+                      type="button"
+                      className={styles.secondaryButton}
                       disabled={working}
                       onClick={() =>
                         mutate(
@@ -208,36 +128,21 @@ export function RoomEditor({
                         )
                       }
                     >
-                      <Power />
-                    </Button>
-                    <TextActionDialog
-                      title={t("renameRoom")}
-                      label={t("roomName")}
-                      initialValue={room.name}
-                      cancelLabel={common("cancel")}
-                      saveLabel={common("save")}
-                      onSave={(name) =>
+                      {room.enabled ? <PowerOff /> : <Power />}
+                      {room.enabled ? t("roomClosed") : t("restoreBooking")}
+                    </button>
+                    <RoomDialog
+                      mode="edit"
+                      room={room}
+                      campuses={campuses}
+                      working={working}
+                      onSave={(name, campus) =>
                         mutate(
-                          () =>
-                            editRoom(
-                              room.id,
-                              name,
-                              room.campus,
-                              room.enabled
-                            ),
+                          () => editRoom(room.id, name, campus, room.enabled),
                           t("roomUpdated")
                         )
                       }
-                    >
-                      <Button
-                        size="icon-sm"
-                        variant="ghost"
-                        title={t("renameRoom")}
-                        disabled={working}
-                      >
-                        <Pencil />
-                      </Button>
-                    </TextActionDialog>
+                    />
                     <ConfirmFacilityDelete
                       label={room.name}
                       action={() => deleteRoom(room.id)}
@@ -250,8 +155,8 @@ export function RoomEditor({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center">
-                {t("roomsEmpty")}
+              <TableCell colSpan={6}>
+                <div className={styles.empty}>{t("roomsEmpty")}</div>
               </TableCell>
             </TableRow>
           )}
@@ -261,44 +166,121 @@ export function RoomEditor({
   )
 }
 
-function RoomCampusField({
-  control,
+function RoomDialog({
+  mode,
+  room,
   campuses,
+  working,
+  onSave,
 }: {
-  control: Control<RoomForm>
+  mode: "create" | "edit"
+  room?: Room
   campuses: Campus[]
+  working: boolean
+  onSave: (name: string, campus: number) => Promise<boolean>
 }) {
   const t = useTranslations("admin")
+  const common = useTranslations("common")
+  const nameId = useId()
+  const [open, setOpen] = useState(false)
+  const [name, setName] = useState(room?.name ?? "")
+  const [campus, setCampus] = useState(room ? String(room.campus) : "")
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState("")
+
+  function handleOpenChange(nextOpen: boolean) {
+    if (nextOpen) {
+      setName(room?.name ?? "")
+      setCampus(room ? String(room.campus) : "")
+      setError("")
+    }
+    setOpen(nextOpen)
+  }
+
+  async function submit(event: React.FormEvent) {
+    event.preventDefault()
+    if (!name.trim() || !campus) {
+      setError(t("fieldRequired"))
+      return
+    }
+    setSaving(true)
+    setError("")
+    try {
+      if (await onSave(name.trim(), Number(campus))) setOpen(false)
+    } catch {
+      setError(common("unknown"))
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
-    <Controller
-      control={control}
-      name="campus"
-      rules={{ required: t("fieldRequired") }}
-      render={({ field, fieldState }) => (
-        <Field data-invalid={fieldState.invalid}>
-          <FieldLabel htmlFor="new-room-campus">{t("selectCampus")}</FieldLabel>
-          <Select
-            name={field.name}
-            value={field.value}
-            onValueChange={field.onChange}
-          >
-            <SelectTrigger
-              id="new-room-campus"
-              aria-invalid={fieldState.invalid}
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <button
+          type="button"
+          className={
+            mode === "create" ? styles.primaryButton : styles.secondaryButton
+          }
+          disabled={working || campuses.length === 0}
+        >
+          {mode === "create" ? <Plus /> : <Pencil />}
+          {mode === "create" ? common("add") : common("edit")}
+        </button>
+      </DialogTrigger>
+      <DialogContent className={styles.dialog}>
+        <DialogHeader className={styles.dialogHeader}>
+          <DialogTitle>
+            {mode === "create" ? t("newRoom") : t("renameRoom")}
+          </DialogTitle>
+          <DialogDescription>{t("roomName")}</DialogDescription>
+        </DialogHeader>
+        <form className={styles.form} onSubmit={submit}>
+          <Field>
+            <FieldLabel htmlFor={nameId}>{t("roomName")}</FieldLabel>
+            <Input
+              id={nameId}
+              className={styles.input}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              autoFocus
+            />
+          </Field>
+          <Field>
+            <FieldLabel>{t("selectCampus")}</FieldLabel>
+            <select
+              className={`${styles.input} ${styles.nativeSelect}`}
+              value={campus}
+              onChange={(event) => setCampus(event.target.value)}
             >
-              <SelectValue placeholder={t("selectCampus")} />
-            </SelectTrigger>
-            <SelectContent>
-              {campuses.map((campus) => (
-                <SelectItem key={campus.id} value={String(campus.id)}>
-                  {campus.name}
-                </SelectItem>
+              <option value="" disabled>
+                {t("selectCampus")}
+              </option>
+              {campuses.map((item) => (
+                <option key={item.id} value={String(item.id)}>
+                  {item.name}
+                </option>
               ))}
-            </SelectContent>
-          </Select>
-          <FieldError errors={[fieldState.error]} />
-        </Field>
-      )}
-    />
+            </select>
+          </Field>
+          {error ? <p className={styles.error}>{error}</p> : null}
+          <DialogFooter className={styles.dialogActions}>
+            <DialogClose asChild>
+              <button type="button" className={styles.secondaryButton}>
+                {common("cancel")}
+              </button>
+            </DialogClose>
+            <button
+              type="submit"
+              className={styles.primaryButton}
+              disabled={working || saving}
+            >
+              {mode === "create" ? <Plus /> : <Pencil />}
+              {mode === "create" ? common("add") : common("save")}
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   )
 }

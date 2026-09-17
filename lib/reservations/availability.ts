@@ -14,7 +14,7 @@ const SLOT_MINUTES = 15
 const DAY_START_HOUR = 8
 const DAY_END_HOUR = 21.5
 
-function overlapsRoomPolicy(
+function isWithinRoomAvailability(
   room: Room,
   date: string,
   slotStart: number,
@@ -28,11 +28,11 @@ function overlapsRoomPolicy(
       return false
     }
 
-    const blockedStart = timeOnInputDateTimestamp(date, policy.startTime)
-    const blockedEnd = timeOnInputDateTimestamp(date, policy.endTime)
-    if (blockedStart === undefined || blockedEnd === undefined) return false
+    const availableStart = timeOnInputDateTimestamp(date, policy.startTime)
+    const availableEnd = timeOnInputDateTimestamp(date, policy.endTime)
+    if (availableStart === undefined || availableEnd === undefined) return false
 
-    return blockedStart < slotEnd && blockedEnd > slotStart
+    return slotStart >= availableStart && slotEnd <= availableEnd
   })
 }
 
@@ -58,8 +58,8 @@ function getSlotStatus(
   now: Date
 ): AvailabilitySlot["status"] {
   if (slotEnd <= now.getTime() / 1000) return "past"
+  if (!isWithinRoomAvailability(room, date, slotStart, slotEnd)) return "policy"
   if (overlapsReservation(reservations, slotStart, slotEnd)) return "occupied"
-  if (overlapsRoomPolicy(room, date, slotStart, slotEnd)) return "policy"
   return "available"
 }
 
@@ -83,6 +83,34 @@ export function buildLegacyAvailability(
       startTime: slotStart,
       endTime: slotEnd,
       status: getSlotStatus(room, date, reservations, slotStart, slotEnd, now),
+    })
+  }
+
+  return {
+    roomId: room.id,
+    date,
+    slotMinutes: SLOT_MINUTES,
+    maxDurationMinutes: 120,
+    slots,
+  }
+}
+
+export function buildPriorityAvailability(
+  room: Room,
+  date: string,
+  now = new Date()
+): AvailabilityData {
+  const slots: AvailabilitySlot[] = []
+  const dayStart = inputValueToTimestamp(date)
+  if (dayStart === undefined) throw new Error("Invalid availability date")
+
+  for (let index = 0; index < 24 * 4; index += 1) {
+    const slotStart = dayStart + index * SLOT_MINUTES * 60
+    const slotEnd = slotStart + SLOT_MINUTES * 60
+    slots.push({
+      startTime: slotStart,
+      endTime: slotEnd,
+      status: slotEnd <= now.getTime() / 1000 ? "past" : "available",
     })
   }
 

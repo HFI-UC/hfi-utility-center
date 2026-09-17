@@ -3,29 +3,29 @@
 import {
   Building2,
   CalendarClock,
-  CalendarPlus,
+  LayoutDashboard,
   LogOut,
+  Megaphone,
   Users,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/astryx"
 import {
   Card,
   CardAction,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Spinner } from "@/components/ui/spinner"
+} from "@/components/astryx"
+import { Spinner } from "@/components/astryx"
 import { useAdminSession } from "@/lib/api/admin-hooks"
 import { logout } from "@/lib/api/auth"
 import { cn } from "@/lib/utils"
 
-const shellClassName =
-  "mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-7xl flex-1 gap-6 px-5 py-8 sm:px-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8"
+const shellClassName = "admin-workspace"
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -50,16 +50,17 @@ function AuthenticatedAdminShell({
   const session = useAdminSession(pathname)
   const navigationItems = [
     {
+      href: "/admin",
+      label: t("overview"),
+      icon: LayoutDashboard,
+    },
+    {
       href: "/admin/reservation",
       label: t("reservations"),
       icon: CalendarClock,
     },
-    {
-      href: "/admin/force-reservation",
-      label: t("forceReservationTab"),
-      icon: CalendarPlus,
-    },
     { href: "/admin/facility", label: t("facilities"), icon: Building2 },
+    { href: "/admin/announcement", label: t("announcements"), icon: Megaphone },
     { href: "/admin/user", label: t("users"), icon: Users },
   ]
 
@@ -74,14 +75,14 @@ function AuthenticatedAdminShell({
   if (session.checking) {
     return (
       <div className={shellClassName}>
-        <aside>
-          <Card size="sm" className="min-h-52 lg:min-h-56">
+        <aside className="admin-sidebar">
+          <Card size="sm" className="admin-sidebar-card">
             <CardHeader>
               <CardTitle>{t("workspace")}</CardTitle>
             </CardHeader>
           </Card>
         </aside>
-        <main className="flex items-start gap-2 text-sm text-muted-foreground">
+        <main className="admin-content flex items-start gap-2 text-sm text-muted-foreground">
           <Spinner />
           {t("checking")}
         </main>
@@ -92,21 +93,25 @@ function AuthenticatedAdminShell({
 
   return (
     <div className={shellClassName}>
-      <aside className="lg:sticky lg:top-24 lg:self-start">
-        <Card size="sm" className="min-h-52 lg:min-h-56">
-          <CardHeader>
+      <aside className="admin-sidebar">
+        <Card size="sm" className="admin-sidebar-card">
+          <CardHeader className="admin-sidebar-heading">
             <CardTitle>{t("workspace")}</CardTitle>
+            <span>HFI Utility Center</span>
           </CardHeader>
-          <CardContent>
-            <nav className="grid grid-cols-2 gap-1 sm:grid-cols-4 lg:grid-cols-1">
+          <CardContent className="admin-sidebar-body">
+            <nav className="admin-nav">
               {navigationItems.map((item) => {
-                const active = pathname === item.href
+                const active =
+                  item.href === "/admin"
+                    ? pathname === "/admin"
+                    : pathname.startsWith(item.href)
                 return (
                   <Button
                     key={item.href}
                     asChild
                     variant={active ? "secondary" : "ghost"}
-                    className="w-full justify-start"
+                    className={`admin-nav-item ${active ? "admin-nav-item--active" : ""}`}
                   >
                     <Link
                       href={item.href}
@@ -121,16 +126,18 @@ function AuthenticatedAdminShell({
             </nav>
             <Button
               variant="ghost"
-              className="w-full justify-start"
+              size="icon-sm"
+              className="admin-logout-button"
+              title={t("logout")}
+              aria-label={t("logout")}
               onClick={signOut}
             >
               <LogOut />
-              {t("logout")}
             </Button>
           </CardContent>
         </Card>
       </aside>
-      <div className="min-w-0">{children}</div>
+      <div className="admin-content">{children}</div>
     </div>
   )
 }
@@ -147,8 +154,8 @@ export function AdminSection({
   action?: React.ReactNode
 }) {
   return (
-    <Card className={cn("h-full", className)}>
-      <CardHeader>
+    <Card className={cn("admin-section h-full", className)}>
+      <CardHeader className="admin-section__header">
         <CardTitle>{title}</CardTitle>
         {action ? <CardAction>{action}</CardAction> : null}
       </CardHeader>
@@ -167,14 +174,14 @@ export function AdminPageHeader({
   actions?: React.ReactNode
 }) {
   return (
-    <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <header className="admin-page-header">
       <div>
         <h1 className="text-3xl font-semibold">{title}</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
           {description}
         </p>
       </div>
-      {actions ? <div className="flex shrink-0 gap-2">{actions}</div> : null}
+      {actions ? <div className="admin-page-actions">{actions}</div> : null}
     </header>
   )
 }

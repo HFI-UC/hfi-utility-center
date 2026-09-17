@@ -3,11 +3,13 @@ import { inputValueToTimestamp } from "@/lib/date-time"
 
 export type ReservationSearchFilters = {
   keyword: string
+  campusId: number
   roomId: number
   status?: ReservationStatus
   startDate: string
   endDate: string
   page: number
+  sort: "time" | "sequence"
 }
 
 type SearchParams = Record<string, string | string[] | undefined>
@@ -42,23 +44,57 @@ export function parseReservationSearchFilters(
 
   return {
     keyword: firstValue(params, "keyword")?.trim() ?? "",
+    campusId: parsePositiveInteger(firstValue(params, "campus")) ?? 0,
     roomId: parsePositiveInteger(firstValue(params, "room")) ?? 0,
     status: parseStatus(firstValue(params, "status")),
     startDate,
     endDate,
     page: (parsePositiveInteger(firstValue(params, "page")) ?? 1) - 1,
+    sort: firstValue(params, "sort") === "sequence" ? "sequence" : "time",
   }
 }
 
-export function reservationSearchRequest(filters: ReservationSearchFilters) {
+export function reservationSearchRequest(
+  filters: ReservationSearchFilters,
+  now = new Date()
+) {
+  const selectedStartTime = inputValueToTimestamp(filters.startDate)
+  const startTime =
+    filters.sort === "time"
+      ? Math.max(selectedStartTime ?? 0, shanghaiDayStart(now))
+      : selectedStartTime
+
   return {
     keyword: filters.keyword,
+    campusId: filters.campusId || undefined,
     roomId: filters.roomId || undefined,
     status: filters.status,
     page: filters.page,
-    startTime: inputValueToTimestamp(filters.startDate),
+    startTime,
     endTime: inputValueToTimestamp(filters.endDate, true),
+    sort: filters.sort,
   }
+}
+
+function shanghaiDayStart(now: Date) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now)
+  const values = Object.fromEntries(
+    parts.map((part) => [part.type, part.value])
+  )
+  return (
+    Date.UTC(
+      Number(values.year),
+      Number(values.month) - 1,
+      Number(values.day)
+    ) /
+      1000 -
+    8 * 60 * 60
+  )
 }
 
 export function reservationSearchHref(
@@ -67,10 +103,12 @@ export function reservationSearchHref(
 ) {
   const query = new URLSearchParams()
   if (filters.keyword) query.set("keyword", filters.keyword)
+  if (filters.campusId) query.set("campus", String(filters.campusId))
   if (filters.roomId) query.set("room", String(filters.roomId))
   if (filters.status) query.set("status", filters.status)
   if (filters.startDate) query.set("start", filters.startDate)
   if (filters.endDate) query.set("end", filters.endDate)
+  if (filters.sort === "sequence") query.set("sort", "sequence")
   if (page > 0) query.set("page", String(page + 1))
 
   const search = query.toString()

@@ -1,0 +1,445 @@
+.page {
+  display: grid;
+  gap: 1.5rem;
+  color: var(--foreground);
+}
+
+.overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 5.25rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 2px 8px rgb(15 23 42 / 5%);
+}
+
+.metricIcon {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 0.875rem;
+  background: var(--primary-50);
+  color: var(--primary);
+}
+
+.metricIcon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.metricValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 720;
+  line-height: 1;
+}
+
+.metricLabel {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+}
+
+.sections {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.roomSection {
+  grid-column: 1 / -1;
+}
+
+.sectionIntro {
+  margin: -0.25rem 0 1rem;
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.toolbar,
+.rowActions,
+.dialogActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rowActions {
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  min-width: max-content;
+}
+
+.actionButton {
+  min-height: 2.35rem;
+  white-space: nowrap;
+}
+
+.actionButton svg,
+.primaryButton svg,
+.dangerButton svg,
+.secondaryButton svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.primaryButton,
+.dangerButton,
+.secondaryButton {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease,
+    border-color 150ms ease;
+}
+
+.primaryButton {
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--primary) 24%, transparent);
+}
+
+.dangerButton {
+  border: 1px solid var(--destructive);
+  background: var(--destructive);
+  color: #fff;
+}
+
+.secondaryButton {
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+}
+
+.primaryButton:not(:disabled):hover,
+.dangerButton:not(:disabled):hover,
+.secondaryButton:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgb(15 23 42 / 12%);
+}
+
+.secondaryButton:not(:disabled):hover {
+  border-color: color-mix(in srgb, var(--foreground) 24%, var(--border));
+  background: var(--muted);
+}
+
+.primaryButton:focus-visible,
+.dangerButton:focus-visible,
+.secondaryButton:focus-visible,
+.weekday:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--ring) 30%, transparent);
+  outline-offset: 2px;
+}
+
+.primaryButton:disabled,
+.dangerButton:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.dialog {
+  opacity: 1;
+  isolation: isolate;
+  border: 1px solid var(--border);
+  background: var(--popover) !important;
+  color: var(--popover-foreground);
+  box-shadow:
+    0 24px 80px rgb(8 15 30 / 30%),
+    0 2px 8px rgb(8 15 30 / 12%);
+  backdrop-filter: none;
+}
+
+.dialogWide {
+  max-width: 52rem;
+}
+
+.dialogHeader {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.dialogHeader h2 {
+  color: var(--popover-foreground);
+}
+
+.dialogHeader p {
+  color: var(--muted-foreground);
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.input,
+.selectTrigger,
+.selectContent {
+  border-color: var(--input);
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.selectTrigger {
+  min-height: 2.75rem;
+}
+
+.selectContent {
+  max-height: 13rem;
+  overflow-y: auto;
+}
+
+.nativeSelect {
+  min-height: 2.75rem;
+  appearance: auto;
+  border: 1px solid var(--input);
+  border-radius: 0.5rem;
+  padding: 0 0.75rem;
+}
+
+.error {
+  padding: 0.75rem 0.875rem;
+  border: 1px solid color-mix(in srgb, var(--destructive) 38%, var(--border));
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--destructive) 9%, var(--card));
+  color: var(--destructive);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.status::before {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+}
+
+.statusOn {
+  background: color-mix(in srgb, var(--success) 14%, var(--card));
+  color: color-mix(in srgb, var(--success) 82%, #064e3b);
+}
+
+.statusOff {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.policyLauncher {
+  display: inline-flex;
+  min-width: 8.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.policyForm {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--muted);
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.weekday {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+
+.weekdaySelected {
+  border-color: var(--primary);
+  background: var(--primary-50);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.timeFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.policyList {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.policyItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(8rem, 0.7fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background: var(--card);
+}
+
+.policyDays {
+  font-weight: 650;
+}
+
+.policyTime {
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  display: grid;
+  min-height: 7rem;
+  place-items: center;
+  border: 1px dashed var(--border);
+  border-radius: 0.9rem;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.table {
+  min-width: 32rem;
+  color: var(--foreground);
+}
+
+.roomTable {
+  min-width: 67rem;
+}
+
+.table th {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.table td {
+  color: var(--foreground);
+}
+
+.table tbody tr {
+  transition: background 120ms ease;
+}
+
+.table tbody tr:hover {
+  background: color-mix(in srgb, var(--muted) 70%, transparent);
+}
+
+.recordId,
+.secondaryText {
+  color: var(--muted-foreground);
+}
+
+.recordId {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+}
+
+:global(.dark) .metric,
+:global(.dark) .secondaryButton,
+:global(.dark) .policyItem,
+:global(.dark) .weekday {
+  box-shadow: none;
+}
+
+:global(.dark) .dialog {
+  border-color: var(--border);
+  background: var(--popover) !important;
+  box-shadow: 0 28px 90px rgb(0 0 0 / 58%);
+}
+
+@media (max-width: 900px) {
+  .sections,
+  .overview {
+    grid-template-columns: 1fr;
+  }
+
+  .roomSection {
+    grid-column: auto;
+  }
+
+  .policyItem {
+    grid-template-columns: 1fr auto;
+  }
+
+  .policyTime {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .formGrid,
+  .timeFields {
+    grid-template-columns: 1fr;
+  }
+
+  .weekdays {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .dialogActions > * {
+    flex: 1 1 8rem;
+  }
+
+  .rowActions {
+    justify-content: flex-start;
+  }
+}

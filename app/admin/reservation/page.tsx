@@ -5,16 +5,7 @@ import { Check, Download, RefreshCw, Search, X } from "lucide-react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { AdminPageHeader, AdminSection } from "@/app/admin/admin-shell"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Button } from "@/components/astryx"
 import {
   Dialog,
   DialogClose,
@@ -23,15 +14,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
+} from "@/components/astryx"
+import { Field, FieldError, FieldLabel } from "@/components/astryx"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group"
-import { Spinner } from "@/components/ui/spinner"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/astryx"
+import { Spinner } from "@/components/astryx"
+import { Textarea } from "@/components/astryx"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import {
   getFutureReservations,
@@ -124,14 +115,8 @@ export default function AdminReservationsPage() {
     setError(undefined)
   }
 
-  function statusClassName(status: Reservation["status"]) {
-    if (status === "rejected") return "bg-destructive/10 text-destructive"
-    if (status === "approved") return "bg-secondary text-secondary-foreground"
-    return "bg-primary text-primary-foreground"
-  }
-
   return (
-    <main className="space-y-6">
+    <main className="admin-page space-y-6">
       <AdminPageHeader
         title={t("reservationsTitle")}
         description={t("reservationsDescription")}
@@ -139,10 +124,11 @@ export default function AdminReservationsPage() {
           <>
             <Button
               variant="outline"
+              icon={<RefreshCw />}
+              className="admin-action-button"
               onClick={reservationResource.reload}
               disabled={reservationResource.loading}
             >
-              <RefreshCw />
               {common("refresh")}
             </Button>
             <Button asChild variant="outline">
@@ -155,7 +141,7 @@ export default function AdminReservationsPage() {
         }
       />
       <AdminSection title={t("reservationQueue")}>
-        <InputGroup className="max-w-lg">
+        <InputGroup className="admin-reservation-search max-w-lg">
           <InputGroupInput
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -179,18 +165,20 @@ export default function AdminReservationsPage() {
             </p>
           </div>
         ) : null}
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="admin-reservation-grid mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filtered.map((item) => (
-            <Card key={item.id} size="sm">
-              <CardHeader className="border-b">
-                <CardTitle>{t("reservationNumber", { id: item.id })}</CardTitle>
-                <CardAction>
-                  <Badge className={statusClassName(item.status)}>
-                    {statusT(item.status)}
-                  </Badge>
-                </CardAction>
-              </CardHeader>
-              <CardContent className="flex-1 gap-6">
+            <article key={item.id} className="admin-reservation-card">
+              <header className="admin-reservation-card__header">
+                <h3 className="admin-reservation-card__title">
+                  {t("reservationNumber", { id: item.id })}
+                </h3>
+                <span
+                  className={`admin-reservation-status admin-reservation-status--${item.status}`}
+                >
+                  {statusT(item.status)}
+                </span>
+              </header>
+              <div className="admin-reservation-card__content">
                 <ReservationGroup title={t("studentInformation")}>
                   <ReservationField label={t("name")}>
                     {item.studentName}
@@ -230,33 +218,30 @@ export default function AdminReservationsPage() {
                     {item.reason}
                   </ReservationField>
                 </ReservationGroup>
-              </CardContent>
-              <CardFooter className="gap-2 border-t">
+              </div>
+              <footer className="admin-reservation-card__footer">
                 {item.status !== "approved" ? (
-                  <Button
-                    className="flex-1"
-                    size="sm"
+                  <button
+                    type="button"
+                    className="admin-decision-button admin-decision-button--approve"
                     disabled={working}
                     onClick={() => submitDecision(item.id, "approved")}
                   >
-                    <Check />
-                    {t("approve")}
-                  </Button>
+                    <Check /> <span>{t("approve")}</span>
+                  </button>
                 ) : null}
                 {item.status !== "rejected" ? (
-                  <Button
-                    className="flex-1"
-                    size="sm"
-                    variant="destructive"
+                  <button
+                    type="button"
+                    className="admin-decision-button admin-decision-button--reject"
                     disabled={working}
                     onClick={() => startRejection(item.id)}
                   >
-                    <X />
-                    {t("reject")}
-                  </Button>
+                    <X /> <span>{t("reject")}</span>
+                  </button>
                 ) : null}
-              </CardFooter>
-            </Card>
+              </footer>
+            </article>
           ))}
         </div>
       </AdminSection>

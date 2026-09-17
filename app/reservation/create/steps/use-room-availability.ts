@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import { getAvailability } from "@/lib/api/reservations"
 import type { AvailabilityData, Room } from "@/lib/api/types"
-import { buildLegacyAvailability } from "@/lib/reservations/availability"
+import { buildPriorityAvailability } from "@/lib/reservations/availability"
 
 export function useRoomAvailability({
   room,
@@ -14,8 +14,6 @@ export function useRoomAvailability({
   privileged?: boolean
 }) {
   const [availability, setAvailability] = useState<AvailabilityData>()
-  const [availabilityIsPrivileged, setAvailabilityIsPrivileged] =
-    useState(false)
   const [error, setError] = useState<string>()
   const [refreshing, setRefreshing] = useState(false)
 
@@ -25,22 +23,10 @@ export function useRoomAvailability({
     const selectedRoom = room
 
     async function loadAvailability() {
-      if (privileged) {
-        setAvailability(
-          buildLegacyAvailability({ ...selectedRoom, policies: [] }, date, [])
-        )
-        setAvailabilityIsPrivileged(true)
-        return
-      }
-      const nextAvailability = await getAvailability(
-        selectedRoom.id,
-        date,
-        selectedRoom
-      )
-      if (active) {
-        setAvailability(nextAvailability)
-        setAvailabilityIsPrivileged(false)
-      }
+      const nextAvailability = privileged
+        ? buildPriorityAvailability(selectedRoom, date)
+        : await getAvailability(selectedRoom.id, date, selectedRoom)
+      if (active) setAvailability(nextAvailability)
     }
 
     loadAvailability()
@@ -54,15 +40,11 @@ export function useRoomAvailability({
     setRefreshing(true)
     setError(undefined)
     try {
-      if (privileged) {
-        setAvailability(
-          buildLegacyAvailability({ ...room, policies: [] }, date, [])
-        )
-        setAvailabilityIsPrivileged(true)
-      } else {
-        setAvailability(await getAvailability(room.id, date, room))
-        setAvailabilityIsPrivileged(false)
-      }
+      setAvailability(
+        privileged
+          ? buildPriorityAvailability(room, date)
+          : await getAvailability(room.id, date, room)
+      )
     } finally {
       setRefreshing(false)
     }
@@ -71,8 +53,7 @@ export function useRoomAvailability({
   const currentAvailability =
     availability &&
     availability.roomId === room?.id &&
-    availability.date === date &&
-    availabilityIsPrivileged === privileged
+    availability.date === date
       ? availability
       : undefined
 
