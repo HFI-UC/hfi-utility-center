@@ -437,6 +437,16 @@
       "confirmCancel": "确认取消预约",
       "keepReservation": "保留预约"
     },
+    "reservations": {
+      "location": "预约地点",
+      "roomFallback": "教室",
+      "reason": "预约原因",
+      "reasonFallback": "未填写预约原因",
+      "purposePersonal": "个人",
+      "purposeClass": "班级",
+      "purposeClub": "社团",
+      "multimedia": "多媒体设备"
+    },
     "footer": {
       "terms": "使用条款",
       "privacy": "隐私政策",

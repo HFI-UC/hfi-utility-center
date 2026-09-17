@@ -445,6 +445,16 @@
       "confirmCancel": "Cancel reservation",
       "keepReservation": "Keep reservation"
     },
+    "reservations": {
+      "location": "Location",
+      "roomFallback": "Room",
+      "reason": "Reservation reason",
+      "reasonFallback": "No reason provided",
+      "purposePersonal": "Personal",
+      "purposeClass": "Class",
+      "purposeClub": "Club",
+      "multimedia": "Multimedia equipment"
+    },
     "footer": {
       "terms": "Terms",
       "privacy": "Privacy",

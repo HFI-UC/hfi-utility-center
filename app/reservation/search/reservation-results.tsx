@@ -1,6 +1,14 @@
 "use client"
 
-import { CheckCircle2, Clock3, Search } from "lucide-react"
+import {
+  Clock3,
+  FileText,
+  GraduationCap,
+  MapPin,
+  Monitor,
+  Search,
+  UserRound,
+} from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 
 import { StatusBadge, Surface, type Tone } from "@/components/neo/shared"
@@ -22,6 +30,7 @@ export function ReservationResults({
 }) {
   const locale = useLocale()
   const statusT = useTranslations("status")
+  const t = useTranslations("neo.reservations")
   const dateFormatter = new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "long",
@@ -65,49 +74,63 @@ export function ReservationResults({
               className={`booking-list-card booking-list-card--${reservation.status}`}
               key={reservation.id}
             >
-              <div className="booking-list-card__main">
-                <div className="booking-list-card__title-row">
-                  <strong>{reservation.roomName || "教室"}</strong>
-                  <span
-                    className="booking-course-tag"
-                    title={reservation.reason}
-                  >
-                    {reservation.reason}
+              <header className="booking-list-card__header">
+                <div className="booking-list-card__room">
+                  <span className="booking-list-card__room-icon">
+                    <MapPin size={18} />
                   </span>
+                  <div>
+                    <span>{t("location")}</span>
+                    <strong>{reservation.roomName || t("roomFallback")}</strong>
+                  </div>
                 </div>
+                <StatusBadge tone={statusTone[reservation.status]}>
+                  {statusT(reservation.status)}
+                </StatusBadge>
+              </header>
+
+              <div className="booking-list-card__reason">
+                <span>
+                  <FileText size={16} /> {t("reason")}
+                </span>
+                <p>{reservation.reason || t("reasonFallback")}</p>
+              </div>
+
+              <footer className="booking-list-card__footer">
                 <div className="booking-list-card__meta">
                   <span>
-                    <CheckCircle2 size={14} /> {reservation.studentName}
+                    <UserRound size={14} /> {reservation.studentName}
                   </span>
-                  <span>· {reservation.className || "HFI"}</span>
+                  <span>
+                    <GraduationCap size={14} />
+                    {reservation.className || "HFI"}
+                  </span>
                   {reservation.purposeType ? (
                     <span>
-                      ·{" "}
                       {
-                        { personal: "个人", class: "班级", club: "社团" }[
-                          reservation.purposeType
-                        ]
+                        {
+                          personal: t("purposePersonal"),
+                          class: t("purposeClass"),
+                          club: t("purposeClub"),
+                        }[reservation.purposeType]
                       }
                     </span>
                   ) : null}
                   {reservation.needsMultimedia ? (
-                    <span>· 多媒体设备</span>
+                    <span>
+                      <Monitor size={14} /> {t("multimedia")}
+                    </span>
                   ) : null}
                 </div>
-              </div>
-              <div className="booking-list-card__right">
                 <span className="booking-time">
-                  <Clock3 size={15} />{" "}
+                  <Clock3 size={15} />
                   {sort === "sequence"
                     ? `${dateFormatter.format(new Date(reservation.startTime))} · `
                     : null}
-                  {timeFormatter.format(new Date(reservation.startTime))} -{" "}
+                  {timeFormatter.format(new Date(reservation.startTime))} –{" "}
                   {timeFormatter.format(new Date(reservation.endTime))}
                 </span>
-                <StatusBadge tone={statusTone[reservation.status]}>
-                  {statusT(reservation.status)}
-                </StatusBadge>
-              </div>
+              </footer>
             </article>
           ))}
         </section>
