@@ -3,5 +3,6 @@ node_modules/
 .next/
 .turbo/
 coverage/
+neo/
 pnpm-lock.yaml
 .pnpm-store/
