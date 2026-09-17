@@ -3,6 +3,7 @@
 import {
   useEffect,
   useState,
+  useSyncExternalStore,
   type MouseEventHandler,
   type ReactNode,
 } from "react"
@@ -136,6 +137,11 @@ export function NeoHeader({ home = false }: { home?: boolean }) {
   const neo = useTranslations("neo.nav")
   const { locale, setLocale } = useAppLocale()
   const { resolvedTheme, setTheme } = useTheme()
+  const themeMounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  )
   const [mobileOpen, setMobileOpen] = useState(false)
   const navItems = [
     {
@@ -226,7 +232,11 @@ export function NeoHeader({ home = false }: { home?: boolean }) {
           title={t("theme")}
           onClick={toggleTheme}
         >
-          {resolvedTheme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+          {themeMounted && resolvedTheme === "dark" ? (
+            <Sun size={17} />
+          ) : (
+            <Moon size={17} />
+          )}
         </button>
         <a
           className="hfi-one-button"
@@ -280,7 +290,7 @@ export function NeoHeader({ home = false }: { home?: boolean }) {
                   title={t("theme")}
                   onClick={toggleTheme}
                 >
-                  {resolvedTheme === "dark" ? (
+                  {themeMounted && resolvedTheme === "dark" ? (
                     <Sun size={16} />
                   ) : (
                     <Moon size={16} />

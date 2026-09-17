@@ -2,13 +2,16 @@ import { useEffect, useState } from "react"
 
 import { getAvailability } from "@/lib/api/reservations"
 import type { AvailabilityData, Room } from "@/lib/api/types"
+import { buildPriorityAvailability } from "@/lib/reservations/availability"
 
 export function useRoomAvailability({
   room,
   date,
+  privileged = false,
 }: {
   room?: Room
   date: string
+  privileged?: boolean
 }) {
   const [availability, setAvailability] = useState<AvailabilityData>()
   const [error, setError] = useState<string>()
@@ -20,11 +23,9 @@ export function useRoomAvailability({
     const selectedRoom = room
 
     async function loadAvailability() {
-      const nextAvailability = await getAvailability(
-        selectedRoom.id,
-        date,
-        selectedRoom
-      )
+      const nextAvailability = privileged
+        ? buildPriorityAvailability(selectedRoom, date)
+        : await getAvailability(selectedRoom.id, date, selectedRoom)
       if (active) setAvailability(nextAvailability)
     }
 
@@ -32,14 +33,18 @@ export function useRoomAvailability({
     return () => {
       active = false
     }
-  }, [date, room])
+  }, [date, privileged, room])
 
   async function refresh() {
     if (!date || !room) return
     setRefreshing(true)
     setError(undefined)
     try {
-      setAvailability(await getAvailability(room.id, date, room))
+      setAvailability(
+        privileged
+          ? buildPriorityAvailability(room, date)
+          : await getAvailability(room.id, date, room)
+      )
     } finally {
       setRefreshing(false)
     }

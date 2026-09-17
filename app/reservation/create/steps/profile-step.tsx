@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl"
-import { Controller, useFormContext } from "react-hook-form"
+import { Controller, useFormContext, useWatch } from "react-hook-form"
 
 import { Checkbox } from "@/components/astryx"
 import {
@@ -20,6 +20,7 @@ import { ReservationTermsDialog } from "./reservation-terms-dialog"
 export function ProfileStep() {
   const t = useTranslations("booking")
   const { control } = useFormContext<ReservationFormValues>()
+  const privileged = useWatch({ control, name: "isPrivileged" })
 
   return (
     <StepLayout title={t("profileTitle")}>
@@ -47,27 +48,29 @@ export function ProfileStep() {
               )}
             />
 
-            <Controller
-              control={control}
-              name="studentId"
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>{t("studentId")}</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    autoComplete="off"
-                    autoCapitalize="characters"
-                    placeholder="GJ00000000"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  <FieldDescription>
-                    {t("studentIdDescription")}
-                  </FieldDescription>
-                  <FieldError errors={[fieldState.error]} />
-                </Field>
-              )}
-            />
+            {!privileged ? (
+              <Controller
+                control={control}
+                name="studentId"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>{t("studentId")}</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      autoComplete="off"
+                      autoCapitalize="characters"
+                      placeholder="GJ00000000"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <FieldDescription>
+                      {t("studentIdDescription")}
+                    </FieldDescription>
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
+            ) : null}
 
             <Controller
               control={control}
