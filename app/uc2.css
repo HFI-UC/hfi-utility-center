@@ -4643,7 +4643,7 @@ a {
   justify-content: flex-end;
   overflow: hidden;
   color: #142033;
-  background: url("https://cn.hfiuc.api.743.world/assets/hfi-campus-hero-v2.webp")
+  background: url("https://api.hfiuc.org/assets/hfi-campus-hero-v2.webp")
     center / cover no-repeat;
 }
 .admin-login-loading {
@@ -7871,7 +7871,7 @@ button[aria-disabled="true"] {
 }
 .dark .admin-login-page,
 .admin-login-page {
-  background: url("https://cn.hfiuc.api.743.world/assets/hfi-campus-hero-v2.webp")
+  background: url("https://api.hfiuc.org/assets/hfi-campus-hero-v2.webp")
     center / cover no-repeat !important;
 }
 .dark .admin-login-page .admin-login-form-panel,
