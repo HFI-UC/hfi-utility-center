@@ -84,9 +84,16 @@ export function ReservationResults({
                     <strong>{reservation.roomName || t("roomFallback")}</strong>
                   </div>
                 </div>
-                <StatusBadge tone={statusTone[reservation.status]}>
-                  {statusT(reservation.status)}
-                </StatusBadge>
+                <span className="booking-time">
+                  <Clock3 size={17} />
+                  <strong>
+                    {sort === "sequence"
+                      ? `${dateFormatter.format(new Date(reservation.startTime))} · `
+                      : null}
+                    {timeFormatter.format(new Date(reservation.startTime))} –{" "}
+                    {timeFormatter.format(new Date(reservation.endTime))}
+                  </strong>
+                </span>
               </header>
 
               <div className="booking-list-card__reason">
@@ -122,14 +129,9 @@ export function ReservationResults({
                     </span>
                   ) : null}
                 </div>
-                <span className="booking-time">
-                  <Clock3 size={15} />
-                  {sort === "sequence"
-                    ? `${dateFormatter.format(new Date(reservation.startTime))} · `
-                    : null}
-                  {timeFormatter.format(new Date(reservation.startTime))} –{" "}
-                  {timeFormatter.format(new Date(reservation.endTime))}
-                </span>
+                <StatusBadge tone={statusTone[reservation.status]}>
+                  {statusT(reservation.status)}
+                </StatusBadge>
               </footer>
             </article>
           ))}
