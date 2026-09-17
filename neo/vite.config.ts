@@ -6,13 +6,5 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5174,
-    proxy: {
-      '/api': {
-        target: 'https://cn.hfiuc.api.743.world',
-        changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
   },
 })

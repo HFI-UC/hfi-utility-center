@@ -59,7 +59,7 @@ Neo 是一个纯客户端单页应用，分为三层：
 
 ## 后端接口
 
-默认开发代理目标为 `https://cn.hfiuc.api.743.world`。
+默认直接连接香港正式后端 `https://api.hfiuc.org`，不经过 Vite 或 Vercel 中转。
 
 | 方法 | 路径 | 用途 |
 | --- | --- | --- |
@@ -81,19 +81,18 @@ npm install
 npm run dev
 ```
 
-默认地址为 `http://localhost:5174`。Vite 会把浏览器的 `/api/*` 请求代理到
-CN Rust 后端，因此本地开发不需要修改后端 CORS 配置。
+默认地址为 `http://localhost:5174`。浏览器会直接请求香港 Rust 后端；本地地址和
+`https://neo.hfiuc.org` 已加入后端 CORS 白名单。
 
 ## 环境变量
 
 `VITE_API_BASE_URL` 可以覆盖 API 根地址：
 
 ```bash
-VITE_API_BASE_URL=https://cn.hfiuc.api.743.world
+VITE_API_BASE_URL=https://api.hfiuc.org
 ```
 
-未设置时使用 `/api`，适用于本地 Vite 代理或同源部署。跨域部署前需要确保目标
-前端域名已加入 Rust 后端的 CORS 白名单。
+未设置时使用 `https://api.hfiuc.org`。只有连接其他测试后端时才需要覆盖此变量。
 
 ## 构建与预览
 
@@ -103,6 +102,16 @@ npm run preview
 ```
 
 生产文件输出到 `dist/`。`dist/` 和 `node_modules/` 不应提交到 Git。
+
+## Vercel 部署
+
+Neo 在浏览器中直接连接 `https://api.hfiuc.org`，Vercel 不配置 API Rewrite。
+Vercel Project 应将 Root Directory 设置为 `neo`，Framework Preset 使用 Vite，
+生产构建命令为 `npm run build`，输出目录为 `dist`。
+
+当前独立项目使用域名 `neo.hfiuc.org`。若 DNS 不由 Vercel 管理，应在域名服务商
+处按 Vercel Project 的 Domains 页面提示添加 CNAME 记录；完成解析后由 Vercel
+自动签发 HTTPS 证书。
 
 ## 预约提交结构
 
