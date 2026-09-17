@@ -3,14 +3,7 @@
 import { useMemo, useState } from "react"
 import { format } from "date-fns"
 import { enUS, zhCN } from "date-fns/locale"
-import {
-  CalendarDays,
-  Clock3,
-  DoorOpen,
-  Filter,
-  MapPin,
-  Search,
-} from "lucide-react"
+import { CalendarDays, Clock3, DoorOpen, MapPin, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 import {
@@ -23,7 +16,7 @@ import type { DateRange } from "react-day-picker"
 
 import { Calendar } from "@/components/astryx"
 import { Field, FieldLabel } from "@/components/astryx"
-import type { CatalogData, ReservationStatus } from "@/lib/api/types"
+import type { CatalogData } from "@/lib/api/types"
 import { inputValueToDate } from "@/lib/date-time"
 
 import {
@@ -35,7 +28,6 @@ type SearchFormValues = {
   keyword: string
   campus: string
   room: string
-  status: ReservationStatus | "all"
   dateRange?: DateRange
   sort: "time" | "sequence"
 }
@@ -50,7 +42,6 @@ export function ReservationSearchFilterForm({
   const router = useRouter()
   const t = useTranslations("searchPage")
   const common = useTranslations("common")
-  const statusT = useTranslations("status")
   const [calendarOpen, setCalendarOpen] = useState(false)
   const dateLocale = useLocale() === "zh-CN" ? zhCN : enUS
   const { control, handleSubmit, setValue } = useForm<SearchFormValues>({
@@ -58,7 +49,6 @@ export function ReservationSearchFilterForm({
       keyword: filters.keyword,
       campus: filters.campusId ? String(filters.campusId) : "all",
       room: filters.roomId ? String(filters.roomId) : "all",
-      status: filters.status ?? "all",
       dateRange: {
         from: inputValueToDate(filters.startDate),
         to: inputValueToDate(filters.endDate),
@@ -89,7 +79,7 @@ export function ReservationSearchFilterForm({
           keyword: values.keyword.trim(),
           campusId: values.campus === "all" ? 0 : Number(values.campus),
           roomId: values.room === "all" ? 0 : Number(values.room),
-          status: values.status === "all" ? undefined : values.status,
+          status: undefined,
           startDate,
           endDate,
           page: 0,
@@ -312,35 +302,6 @@ export function ReservationSearchFilterForm({
                   </option>
                 ))}
               </select>
-            </Field>
-          )}
-        />
-      </div>
-
-      <div className="filter-group">
-        <div className="filter-heading">
-          <Filter size={15} />
-          <span>{t("statusFilter")}</span>
-        </div>
-        <Controller
-          control={control}
-          name="status"
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <div className="filter-status-list">
-                {(["all", "approved", "pending", "rejected"] as const).map(
-                  (status) => (
-                    <button
-                      type="button"
-                      key={status}
-                      className={`filter-button ${field.value === status ? "filter-button--active" : ""}`}
-                      onClick={() => field.onChange(status)}
-                    >
-                      {status === "all" ? t("allStatuses") : statusT(status)}
-                    </button>
-                  )
-                )}
-              </div>
             </Field>
           )}
         />

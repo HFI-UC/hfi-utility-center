@@ -817,6 +817,22 @@ a {
   justify-content: space-between;
   gap: 8px;
 }
+
+.list-pagination {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--neo-border);
+}
+
+.list-pagination__summary {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--neo-muted);
+  font-size: 0.8rem;
+}
 .sidebar-page-controls {
   width: 100%;
   padding: 0 !important;
@@ -4137,7 +4153,8 @@ a {
   justify-content: flex-end;
   overflow: hidden;
   color: #142033;
-  background: url("https://cn.hfiuc.api.743.world/assets/hfi-campus-hero-v2.webp") center / cover no-repeat;
+  background: url("https://cn.hfiuc.api.743.world/assets/hfi-campus-hero-v2.webp")
+    center / cover no-repeat;
 }
 .admin-login-loading {
   display: flex;
@@ -7094,7 +7111,11 @@ button[aria-disabled="true"] {
 .dark .announcement-dialog {
   color: var(--ink);
   background:
-    radial-gradient(circle at 100% 0, rgba(255, 106, 71, 0.16), transparent 36%),
+    radial-gradient(
+      circle at 100% 0,
+      rgba(255, 106, 71, 0.16),
+      transparent 36%
+    ),
     #121c2c !important;
   border-color: #34445e;
   box-shadow: 0 28px 90px rgba(0, 0, 0, 0.48);
@@ -7307,7 +7328,8 @@ button[aria-disabled="true"] {
 }
 .dark .admin-login-page,
 .admin-login-page {
-  background: url("https://cn.hfiuc.api.743.world/assets/hfi-campus-hero-v2.webp") center / cover no-repeat !important;
+  background: url("https://cn.hfiuc.api.743.world/assets/hfi-campus-hero-v2.webp")
+    center / cover no-repeat !important;
 }
 .dark .admin-login-page .admin-login-form-panel,
 .admin-login-page .admin-login-form-panel {

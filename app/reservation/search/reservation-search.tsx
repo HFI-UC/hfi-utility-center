@@ -37,21 +37,6 @@ export function ReservationSearch({
               catalog={catalog}
               filters={filters}
             />
-            <div className="sidebar-pagination">
-              <div className="sidebar-pagination__summary">
-                <span>{t("total", { count: result.total })}</span>
-                <span>{t("page", { page: filters.page + 1 })}</span>
-              </div>
-              {!loading ? (
-                <ReservationSearchPagination
-                  filters={filters}
-                  totalReservations={result.total}
-                  previousLabel={t("previous")}
-                  nextLabel={t("next")}
-                  sidebar
-                />
-              ) : null}
-            </div>
           </aside>
           <section className="booking-list-content">
             <div className="page-title-row">
@@ -65,6 +50,20 @@ export function ReservationSearch({
               reservations={result.reservations}
               sort={filters.sort}
             />
+            {!loading ? (
+              <div className="list-pagination">
+                <div className="list-pagination__summary">
+                  <span>{t("total", { count: result.total })}</span>
+                  <span>{t("page", { page: filters.page + 1 })}</span>
+                </div>
+                <ReservationSearchPagination
+                  filters={filters}
+                  totalReservations={result.total}
+                  previousLabel={t("previous")}
+                  nextLabel={t("next")}
+                />
+              </div>
+            ) : null}
           </section>
         </div>
       </main>
