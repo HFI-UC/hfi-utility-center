@@ -3874,15 +3874,18 @@ a {
   white-space: nowrap;
 }
 .booking-list-card__reason {
-  padding: 16px 18px;
-  background:
-    radial-gradient(circle at 100% 0, rgba(255, 90, 54, 0.08), transparent 34%),
-    var(--canvas);
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  background: var(--canvas);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 11px;
 }
 .booking-list-card__reason > span {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 7px;
   color: var(--primary);
@@ -3891,12 +3894,15 @@ a {
   letter-spacing: 0.04em;
 }
 .booking-list-card__reason p {
-  margin: 8px 0 0;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
   color: var(--ink);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 650;
-  line-height: 1.55;
-  overflow-wrap: anywhere;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .booking-list-card__footer {
   padding-top: 2px;
@@ -3925,13 +3931,19 @@ a {
   color: var(--primary);
 }
 .booking-list-card .booking-time {
-  min-height: 32px;
-  padding: 0 12px;
-  color: var(--ink-soft);
-  background: var(--canvas);
-  border-color: var(--line);
-  font-family: var(--font-sans), sans-serif;
-  font-size: 12px;
+  min-height: 38px;
+  justify-content: flex-end;
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  font-family: var(--font-outfit), var(--font-sans), sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: right;
+}
+.booking-list-card .booking-time svg {
+  color: var(--primary);
 }
 @media (max-width: 720px) {
   .booking-list-card__header,
@@ -3939,11 +3951,12 @@ a {
     align-items: flex-start;
   }
   .booking-list-card__footer {
-    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
   }
   .booking-list-card .booking-time {
-    width: 100%;
-    justify-content: center;
+    min-height: 34px;
+    font-size: 14px;
   }
 }
 
@@ -7391,11 +7404,15 @@ button[aria-disabled="true"] {
   background: rgba(255, 90, 54, 0.14);
 }
 .dark .booking-list-card__reason,
-.dark .booking-list-card__meta span,
-.dark .booking-list-card .booking-time {
+.dark .booking-list-card__meta span {
   color: var(--ink-soft);
   background: #151f30;
   border-color: #2b3a51;
+}
+.dark .booking-list-card .booking-time {
+  color: var(--ink);
+  background: transparent;
+  border-color: transparent;
 }
 .dark .booking-list-card__reason p,
 .dark .booking-list-card__room strong {
