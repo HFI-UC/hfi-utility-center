@@ -65,10 +65,10 @@ export function ClassEditor({
       }
     >
       <p className={styles.sectionIntro}>{t("newClassDescription")}</p>
-      <Table>
+      <Table className={styles.table}>
         <TableHeader>
           <TableRow>
-            <TableHead>{t("name")}</TableHead>
+            <TableHead>{t("facilityName")}</TableHead>
             <TableHead>{t("campus")}</TableHead>
             <TableHead className="hidden md:table-cell">
               {t("createdAt")}
@@ -82,14 +82,14 @@ export function ClassEditor({
               <TableRow key={schoolClass.id}>
                 <TableCell className="font-medium">
                   {schoolClass.name}
-                  <span className="ml-2 text-xs text-[var(--color-text-secondary)]">
-                    #{schoolClass.id}
-                  </span>
+                  <span className={styles.recordId}>#{schoolClass.id}</span>
                 </TableCell>
                 <TableCell>
                   {campusNames.get(schoolClass.campus) ?? "—"}
                 </TableCell>
-                <TableCell className="hidden md:table-cell">
+                <TableCell
+                  className={`hidden md:table-cell ${styles.secondaryText}`}
+                >
                   {schoolClass.createdAt
                     ? dateFormatter.format(new Date(schoolClass.createdAt))
                     : "—"}
