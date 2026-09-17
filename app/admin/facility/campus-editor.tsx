@@ -47,10 +47,10 @@ export function CampusEditor({
       }
     >
       <p className={styles.sectionIntro}>{t("facilitiesDescription")}</p>
-      <Table>
+      <Table className={styles.table}>
         <TableHeader>
           <TableRow>
-            <TableHead>{t("name")}</TableHead>
+            <TableHead>{t("facilityName")}</TableHead>
             <TableHead className="hidden md:table-cell">
               {t("createdAt")}
             </TableHead>
@@ -63,11 +63,11 @@ export function CampusEditor({
               <TableRow key={campus.id}>
                 <TableCell className="font-medium">
                   {campus.name}
-                  <span className="ml-2 text-xs text-[var(--color-text-secondary)]">
-                    #{campus.id}
-                  </span>
+                  <span className={styles.recordId}>#{campus.id}</span>
                 </TableCell>
-                <TableCell className="hidden md:table-cell">
+                <TableCell
+                  className={`hidden md:table-cell ${styles.secondaryText}`}
+                >
                   {campus.createdAt
                     ? dateFormatter.format(new Date(campus.createdAt))
                     : "—"}

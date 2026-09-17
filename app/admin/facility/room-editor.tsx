@@ -68,10 +68,10 @@ export function RoomEditor({
       }
     >
       <p className={styles.sectionIntro}>{t("policyDialogDescription")}</p>
-      <Table>
+      <Table className={`${styles.table} ${styles.roomTable}`}>
         <TableHeader>
           <TableRow>
-            <TableHead>{t("name")}</TableHead>
+            <TableHead>{t("facilityName")}</TableHead>
             <TableHead>{t("status")}</TableHead>
             <TableHead>{t("campus")}</TableHead>
             <TableHead>{t("roomPolicies")}</TableHead>
@@ -87,9 +87,7 @@ export function RoomEditor({
               <TableRow key={room.id}>
                 <TableCell className="font-medium">
                   {room.name}
-                  <span className="ml-2 text-xs text-[var(--color-text-secondary)]">
-                    #{room.id}
-                  </span>
+                  <span className={styles.recordId}>#{room.id}</span>
                 </TableCell>
                 <TableCell>
                   <span
@@ -104,7 +102,9 @@ export function RoomEditor({
                 <TableCell>
                   <PolicyEditor room={room} mutate={mutate} working={working} />
                 </TableCell>
-                <TableCell className="hidden xl:table-cell">
+                <TableCell
+                  className={`hidden xl:table-cell ${styles.secondaryText}`}
+                >
                   {room.createdAt
                     ? dateFormatter.format(new Date(room.createdAt))
                     : "—"}
