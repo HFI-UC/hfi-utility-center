@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/pagination"
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
+import { getAdmins } from "@/lib/api/admins"
 import { getCatalog } from "@/lib/api/catalog"
 import { createReservation, getAvailability } from "@/lib/api/reservations"
 import type { CatalogData } from "@/lib/api/types"
@@ -37,6 +38,10 @@ type ReservationResult = {
   reservationId?: number
 }
 
+function normalizeEmail(email: string) {
+  return email.trim().toLowerCase()
+}
+
 export function ReservationForm() {
   const t = useTranslations("booking")
   const common = useTranslations("common")
@@ -51,18 +56,12 @@ export function ReservationForm() {
   const [isWorking, setIsWorking] = useState(false)
   const [result, setResult] = useState<ReservationResult>()
   const [catalog, setCatalog] = useState<CatalogData>()
+  const [privilegedEmails, setPrivilegedEmails] = useState<Set<string>>(
+    () => new Set()
+  )
   const [catalogLoading, setCatalogLoading] = useState(true)
-  const selectedClassId = useWatch({
-    control: form.control,
-    name: "classId",
-  })
-  const selectedClass = catalog?.classes.find(
-    (schoolClass) => schoolClass.id === selectedClassId
-  )
-  const privileged = Boolean(
-    catalog?.campuses.find((campus) => campus.id === selectedClass?.campus)
-      ?.isPrivileged
-  )
+  const email = useWatch({ control: form.control, name: "email" })
+  const privileged = privilegedEmails.has(normalizeEmail(email || ""))
   const currentStepIndex = bookingSteps.findIndex(
     (step) => step.id === currentStepId
   )
@@ -73,8 +72,16 @@ export function ReservationForm() {
 
     async function loadCatalog() {
       try {
-        const data = await getCatalog()
-        if (active) setCatalog(data)
+        const [data, admins] = await Promise.all([
+          getCatalog(),
+          getAdmins().catch(() => []),
+        ])
+        if (active) {
+          setCatalog(data)
+          setPrivilegedEmails(
+            new Set(admins.map((admin) => normalizeEmail(admin.email)))
+          )
+        }
       } finally {
         if (active) setCatalogLoading(false)
       }
@@ -89,13 +96,7 @@ export function ReservationForm() {
   async function selectedTimeIsStillAvailable(values: ReservationFormValues) {
     if (!catalog) return false
 
-    const schoolClass = catalog.classes.find(
-      (candidate) => candidate.id === values.classId
-    )
-    const classCampus = catalog.campuses.find(
-      (candidate) => candidate.id === schoolClass?.campus
-    )
-    if (classCampus?.isPrivileged) return true
+    if (privilegedEmails.has(normalizeEmail(values.email))) return true
 
     const room = catalog.rooms.find((candidate) => candidate.id === values.room)
     if (!room) {

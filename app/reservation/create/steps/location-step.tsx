@@ -31,9 +31,10 @@ export function LocationStep({ catalog }: { catalog: CatalogData }) {
               {...field}
               label={t("campus")}
               invalid={fieldState.invalid}
-              items={catalog.campuses
-                .filter((campus) => !campus.isPrivileged)
-                .map((campus) => ({ value: campus.id, label: campus.name }))}
+              items={catalog.campuses.map((campus) => ({
+                value: campus.id,
+                label: campus.name,
+              }))}
               onChange={(nextCampusId) => {
                 field.onChange(nextCampusId)
                 setValue("room", 0)
