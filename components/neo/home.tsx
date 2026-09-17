@@ -166,7 +166,7 @@ export function NeoHome() {
     <div className="home-page">
       <section className="home-hero">
         <Image
-          src="https://cn.hfiuc.api.743.world/assets/hfi-campus-hero-v2.webp"
+          src="https://api.hfiuc.org/assets/hfi-campus-hero-v2.webp"
           alt="HFI 校园"
           fill
           sizes="100vw"
