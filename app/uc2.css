@@ -7891,12 +7891,14 @@ button[aria-disabled="true"] {
 .home-page .home-hero {
   position: relative;
   display: flex;
-  min-height: 660px;
+  min-height: 100vh;
+  min-height: 100svh;
   flex: 1 0 auto;
   align-items: center;
   justify-content: center;
   height: auto;
-  padding: 160px 48px 112px;
+  box-sizing: border-box;
+  padding: clamp(116px, 14vh, 168px) 48px clamp(72px, 10vh, 120px);
   overflow: visible;
   color: var(--ink);
   background: radial-gradient(
@@ -7985,8 +7987,9 @@ button[aria-disabled="true"] {
 
 @media (max-width: 760px) {
   .home-page .home-hero {
-    min-height: 610px;
-    padding: 132px 22px 84px;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 112px 22px 72px;
   }
 
   .home-page .home-hero__content { gap: 32px; }
