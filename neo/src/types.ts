@@ -61,7 +61,6 @@ export interface CreateReservationResponse {
 }
 
 export type PanelName =
-  | 'identity'
   | 'classCampus'
   | 'schoolClass'
   | 'campus'

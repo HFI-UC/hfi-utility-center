@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Button, Calendar, ScrollableArea, TextArea, TextInput } from '@astryxdesign/core'
+import { Button, Calendar, ScrollableArea, TextArea } from '@astryxdesign/core'
 import { Check, ChevronDown, LoaderCircle, RotateCcw } from 'lucide-react'
 import { hfiApi } from './api'
 import type {
@@ -116,6 +116,45 @@ function InlineValue({
     >
       {value || placeholder}
     </button>
+  )
+}
+
+function InlineTextInput({
+  value,
+  placeholder,
+  ariaLabel,
+  onChange,
+  invalid = false,
+  className = '',
+  autoComplete,
+  inputMode,
+}: {
+  value: string
+  placeholder: string
+  ariaLabel: string
+  onChange: (value: string) => void
+  invalid?: boolean
+  className?: string
+  autoComplete?: string
+  inputMode?: 'email' | 'text'
+}) {
+  return (
+    <span className={`inline-input ${invalid ? 'inline-input--invalid' : ''} ${className}`}>
+      <span className="inline-input__measure" aria-hidden="true">
+        {value || placeholder}
+      </span>
+      <input
+        className="inline-input__control"
+        size={1}
+        value={value}
+        placeholder={placeholder}
+        aria-label={ariaLabel}
+        aria-invalid={invalid}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </span>
   )
 }
 
@@ -432,23 +471,35 @@ function App() {
       <section className="sentence-wrap" aria-label="教室预约表单">
         <div className="sentence" aria-live="polite">
           <span>我是</span>
-          <InlineValue value={name} placeholder="预约人姓名" onClick={() => togglePanel('identity')} invalid={!name && activePanel !== 'identity'} />
+          <InlineTextInput
+            value={name}
+            placeholder="预约人姓名"
+            ariaLabel="预约人姓名"
+            autoComplete="name"
+            onChange={setName}
+          />
           <span>，学号</span>
-          <InlineValue value={studentId} placeholder="GJ00000000" onClick={() => togglePanel('identity')} invalid={Boolean(studentId && !/^GJ\d{8}$/.test(studentId))} />
+          <InlineTextInput
+            value={studentId}
+            placeholder="GJ00000000"
+            ariaLabel="学号，格式为 GJ 加 8 位数字"
+            autoComplete="off"
+            className="inline-input--student-id"
+            invalid={Boolean(studentId && !/^GJ\d{8}$/.test(studentId))}
+            onChange={(value) => setStudentId(value.toUpperCase())}
+          />
           <span>，邮箱</span>
-          <InlineValue value={emailPrefix} placeholder="邮箱前缀" onClick={() => togglePanel('identity')} />
+          <InlineTextInput
+            value={emailPrefix}
+            placeholder="邮箱前缀"
+            ariaLabel="邮箱前缀"
+            autoComplete="off"
+            inputMode="email"
+            className="inline-input--email"
+            invalid={Boolean(emailPrefix && !/^[a-zA-Z0-9._%+-]+$/.test(emailPrefix))}
+            onChange={setEmailPrefix}
+          />
           <span className="sentence-fixed">@gdhfi.com</span>
-          <ExpandablePanel open={activePanel === 'identity'} className="panel-identity">
-            <div className="field-grid">
-              <TextInput label="预约人姓名" isLabelHidden value={name} onChange={setName} placeholder="预约人姓名" />
-              <TextInput label="学号" isLabelHidden value={studentId} onChange={setStudentId} placeholder="GJ00000000" />
-              <div className="email-field">
-                <TextInput label="邮箱前缀" isLabelHidden value={emailPrefix} onChange={setEmailPrefix} placeholder="邮箱前缀" />
-                <span>@gdhfi.com</span>
-              </div>
-            </div>
-            <p className="panel-note">学号格式为 GJ 加 8 位数字。</p>
-          </ExpandablePanel>
           <span>，我来自</span>
           <InlineValue value={selectedClassCampus ? (selectedClassCampus.id === 1 ? '石牌校区' : '知识城校区') : ''} placeholder="哪个校区" onClick={() => togglePanel('classCampus')} />
           <ExpandablePanel open={activePanel === 'classCampus'} className="panel-choice">
