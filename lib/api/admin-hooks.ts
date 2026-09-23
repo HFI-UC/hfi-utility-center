@@ -21,12 +21,17 @@ export function useAdminResource<T>({
 }) {
   const [data, setData] = useState(initialData)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<unknown>()
 
   const reload = useCallback(async () => {
     setLoading(true)
 
     try {
       setData(await loadResource())
+      setError(undefined)
+    } catch (loadError) {
+      setError(loadError)
+      throw loadError
     } finally {
       setLoading(false)
     }
@@ -36,6 +41,8 @@ export function useAdminResource<T>({
     async function loadInitialData() {
       try {
         setData(await loadResource())
+      } catch (loadError) {
+        setError(loadError)
       } finally {
         setLoading(false)
       }
@@ -47,6 +54,7 @@ export function useAdminResource<T>({
   return {
     data,
     loading,
+    error,
     reload,
   }
 }
@@ -64,7 +72,7 @@ export function useAdminMutation({ reload }: { reload: () => Promise<void> }) {
 
       try {
         await action()
-        if (successMessage) console.info(successMessage)
+        void successMessage
         await reload()
         return true
       } finally {

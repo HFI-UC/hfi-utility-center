@@ -37,6 +37,9 @@ export default function AdminReservationsPage() {
   const statusT = useTranslations("status")
   const locale = useLocale()
   const [query, setQuery] = useState("")
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | Reservation["status"]
+  >("all")
   const [rejectingId, setRejectingId] = useState<number>()
   const [reason, setReason] = useState("")
   const [error, setError] = useState<string>()
@@ -62,9 +65,10 @@ export default function AdminReservationsPage() {
 
   const filtered = useMemo(() => {
     const keyword = query.trim().toLowerCase()
-    if (!keyword) return reservationResource.data
-    return reservationResource.data.filter((item) =>
-      [
+    return reservationResource.data.filter((item) => {
+      if (statusFilter !== "all" && item.status !== statusFilter) return false
+      if (!keyword) return true
+      return [
         item.studentName,
         item.email,
         item.studentId,
@@ -73,8 +77,8 @@ export default function AdminReservationsPage() {
         item.reason,
         String(item.id),
       ].some((value) => value?.toLowerCase().includes(keyword))
-    )
-  }, [query, reservationResource.data])
+    })
+  }, [query, reservationResource.data, statusFilter])
 
   async function submitDecision(
     id: number,
@@ -126,7 +130,9 @@ export default function AdminReservationsPage() {
               variant="outline"
               icon={<RefreshCw />}
               className="admin-action-button"
-              onClick={reservationResource.reload}
+              onClick={() =>
+                void reservationResource.reload().catch(() => undefined)
+              }
               disabled={reservationResource.loading}
             >
               {common("refresh")}
@@ -151,6 +157,39 @@ export default function AdminReservationsPage() {
             <Search />
           </InputGroupAddon>
         </InputGroup>
+        <div
+          className="mt-3 flex flex-wrap gap-2"
+          role="group"
+          aria-label={t("reservationStatusFilter")}
+        >
+          {(
+            ["all", "pending", "approved", "rejected", "cancelled"] as const
+          ).map((status) => (
+            <Button
+              key={status}
+              type="button"
+              size="sm"
+              variant={statusFilter === status ? "default" : "outline"}
+              onClick={() => setStatusFilter(status)}
+            >
+              {status === "all" ? t("allStatuses") : statusT(status)}
+            </Button>
+          ))}
+        </div>
+        {reservationResource.error && !reservationResource.loading ? (
+          <div className="admin-error-state mt-5" role="alert">
+            <p>{common("unknown")}</p>
+            <Button
+              variant="outline"
+              onClick={() =>
+                void reservationResource.reload().catch(() => undefined)
+              }
+            >
+              <RefreshCw />
+              {common("retry")}
+            </Button>
+          </div>
+        ) : null}
         {reservationResource.loading ? (
           <p className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
             <Spinner />

@@ -712,6 +712,27 @@ a {
   flex: 0 0 auto;
   color: var(--primary);
 }
+.site-footer__filings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 16px;
+  color: var(--uc2-muted-dark);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.site-footer__filings a {
+  color: inherit;
+  text-decoration: none;
+}
+.site-footer__filings a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 
 /* Booking list */
 .internal-main {
@@ -4641,7 +4662,7 @@ a {
   justify-content: flex-end;
   overflow: hidden;
   color: #142033;
-  background: url("https://api.hfiuc.org/assets/hfi-campus-hero-v2.webp")
+  background: url("https://preview-api.hfiuc.org/assets/hfi-campus-hero-v2.webp")
     center / cover no-repeat;
 }
 .admin-login-loading {
@@ -4985,6 +5006,21 @@ a {
   gap: 10px;
   color: var(--uc2-muted-dark);
   font-size: 12px;
+}
+.admin-error-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid color-mix(in srgb, var(--danger) 24%, transparent);
+  border-radius: 12px;
+}
+.admin-error-state p {
+  margin: 0;
+  font-size: 13px;
 }
 .admin-dashboard-grid {
   display: grid;
@@ -7869,7 +7905,7 @@ button[aria-disabled="true"] {
 }
 .dark .admin-login-page,
 .admin-login-page {
-  background: url("https://api.hfiuc.org/assets/hfi-campus-hero-v2.webp")
+  background: url("https://preview-api.hfiuc.org/assets/hfi-campus-hero-v2.webp")
     center / cover no-repeat !important;
 }
 .dark .admin-login-page .admin-login-form-panel,
@@ -7923,8 +7959,8 @@ button[aria-disabled="true"] {
 .home-page .home-hero__title-stack h1 {
   margin: 0;
   color: var(--ink);
-  font-family: "Outfit", sans-serif;
-  font-size: clamp(52px, 7vw, 92px);
+  font-family: var(--font-outfit), sans-serif;
+  font-size: clamp(46px, 6vw, 76px);
   font-weight: 800;
   line-height: 1.02;
   letter-spacing: 0;
@@ -7995,7 +8031,7 @@ button[aria-disabled="true"] {
   .home-page .home-hero__content { gap: 32px; }
 
   .home-page .home-hero__title-stack h1 {
-    font-size: clamp(42px, 13vw, 60px);
+    font-size: clamp(38px, 11vw, 52px);
     line-height: 1.05;
   }
 
