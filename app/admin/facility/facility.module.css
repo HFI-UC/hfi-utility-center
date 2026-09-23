@@ -1,6 +1,7 @@
 .page {
   display: grid;
   gap: 1.5rem;
+  color: var(--foreground);
 }
 
 .overview {
@@ -15,10 +16,11 @@
   gap: 0.875rem;
   min-height: 5.25rem;
   padding: 1rem;
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--border);
   border-radius: 1rem;
-  background: var(--color-background-default);
-  color: var(--color-text-primary);
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 2px 8px rgb(15 23 42 / 5%);
 }
 
 .metricIcon {
@@ -28,12 +30,8 @@
   flex: 0 0 auto;
   place-items: center;
   border-radius: 0.875rem;
-  background: color-mix(
-    in srgb,
-    var(--color-background-accent) 14%,
-    var(--color-background-default)
-  );
-  color: var(--color-background-accent);
+  background: var(--primary-50);
+  color: var(--primary);
 }
 
 .metricIcon svg {
@@ -51,7 +49,7 @@
 .metricLabel {
   display: block;
   margin-top: 0.35rem;
-  color: var(--color-text-secondary);
+  color: var(--muted-foreground);
   font-size: 0.8125rem;
 }
 
@@ -67,7 +65,7 @@
 
 .sectionIntro {
   margin: -0.25rem 0 1rem;
-  color: var(--color-text-secondary);
+  color: var(--muted-foreground);
   font-size: 0.8125rem;
   line-height: 1.55;
 }
@@ -83,6 +81,8 @@
 
 .rowActions {
   justify-content: flex-end;
+  flex-wrap: nowrap;
+  min-width: max-content;
 }
 
 .actionButton {
@@ -92,7 +92,8 @@
 
 .actionButton svg,
 .primaryButton svg,
-.dangerButton svg {
+.dangerButton svg,
+.secondaryButton svg {
   width: 1rem;
   height: 1rem;
   flex: 0 0 auto;
@@ -113,25 +114,28 @@
   transition:
     transform 150ms ease,
     box-shadow 150ms ease,
-    background 150ms ease;
+    background 150ms ease,
+    border-color 150ms ease;
 }
 
 .primaryButton {
-  border: 1px solid var(--color-background-accent);
-  background: var(--color-background-accent);
+  border: 1px solid var(--primary);
+  background: var(--primary);
   color: #fff;
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--primary) 24%, transparent);
 }
 
 .dangerButton {
-  border: 1px solid #dc4c4c;
-  background: #dc4c4c;
+  border: 1px solid var(--destructive);
+  background: var(--destructive);
   color: #fff;
 }
 
 .secondaryButton {
-  border: 1px solid var(--color-border-default);
-  background: var(--color-background-default);
-  color: var(--color-text-primary);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
 }
 
 .primaryButton:not(:disabled):hover,
@@ -139,6 +143,19 @@
 .secondaryButton:not(:disabled):hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 18px rgb(15 23 42 / 12%);
+}
+
+.secondaryButton:not(:disabled):hover {
+  border-color: color-mix(in srgb, var(--foreground) 24%, var(--border));
+  background: var(--muted);
+}
+
+.primaryButton:focus-visible,
+.dangerButton:focus-visible,
+.secondaryButton:focus-visible,
+.weekday:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--ring) 30%, transparent);
+  outline-offset: 2px;
 }
 
 .primaryButton:disabled,
@@ -150,10 +167,13 @@
 
 .dialog {
   opacity: 1;
-  border: 1px solid var(--color-border-default);
-  background: var(--color-background-default);
-  color: var(--color-text-primary);
-  box-shadow: 0 24px 80px rgb(8 15 30 / 28%);
+  isolation: isolate;
+  border: 1px solid var(--border);
+  background: var(--popover) !important;
+  color: var(--popover-foreground);
+  box-shadow:
+    0 24px 80px rgb(8 15 30 / 30%),
+    0 2px 8px rgb(8 15 30 / 12%);
   backdrop-filter: none;
 }
 
@@ -163,7 +183,15 @@
 
 .dialogHeader {
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--color-border-default);
+  border-bottom: 1px solid var(--border);
+}
+
+.dialogHeader h2 {
+  color: var(--popover-foreground);
+}
+
+.dialogHeader p {
+  color: var(--muted-foreground);
 }
 
 .form {
@@ -180,8 +208,9 @@
 .input,
 .selectTrigger,
 .selectContent {
-  background: var(--color-background-default);
-  color: var(--color-text-primary);
+  border-color: var(--input);
+  background: var(--card);
+  color: var(--foreground);
 }
 
 .selectTrigger {
@@ -196,14 +225,17 @@
 .nativeSelect {
   min-height: 2.75rem;
   appearance: auto;
+  border: 1px solid var(--input);
+  border-radius: 0.5rem;
+  padding: 0 0.75rem;
 }
 
 .error {
   padding: 0.75rem 0.875rem;
-  border: 1px solid color-mix(in srgb, #dc4c4c 38%, var(--color-border-default));
+  border: 1px solid color-mix(in srgb, var(--destructive) 38%, var(--border));
   border-radius: 0.75rem;
-  background: color-mix(in srgb, #dc4c4c 9%, var(--color-background-default));
-  color: #c83f3f;
+  background: color-mix(in srgb, var(--destructive) 9%, var(--card));
+  color: var(--destructive);
   font-size: 0.8125rem;
   line-height: 1.45;
 }
@@ -227,13 +259,13 @@
 }
 
 .statusOn {
-  background: color-mix(in srgb, #0ba878 13%, var(--color-background-default));
-  color: #07845f;
+  background: color-mix(in srgb, var(--success) 14%, var(--card));
+  color: color-mix(in srgb, var(--success) 82%, #064e3b);
 }
 
 .statusOff {
-  background: var(--color-background-secondary);
-  color: var(--color-text-secondary);
+  background: var(--muted);
+  color: var(--muted-foreground);
 }
 
 .policyLauncher {
@@ -248,9 +280,9 @@
   display: grid;
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--border);
   border-radius: 1rem;
-  background: var(--color-background-secondary);
+  background: var(--muted);
 }
 
 .weekdays {
@@ -265,22 +297,18 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--border);
   border-radius: 0.65rem;
-  background: var(--color-background-default);
-  color: var(--color-text-primary);
+  background: var(--card);
+  color: var(--foreground);
   cursor: pointer;
   font-size: 0.78rem;
 }
 
 .weekdaySelected {
-  border-color: var(--color-background-accent);
-  background: color-mix(
-    in srgb,
-    var(--color-background-accent) 15%,
-    var(--color-background-default)
-  );
-  color: var(--color-background-accent);
+  border-color: var(--primary);
+  background: var(--primary-50);
+  color: var(--primary);
   font-weight: 700;
 }
 
@@ -303,9 +331,9 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.85rem 1rem;
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--border);
   border-radius: 0.9rem;
-  background: var(--color-background-default);
+  background: var(--card);
 }
 
 .policyDays {
@@ -313,7 +341,7 @@
 }
 
 .policyTime {
-  color: var(--color-text-secondary);
+  color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
 }
 
@@ -321,11 +349,61 @@
   display: grid;
   min-height: 7rem;
   place-items: center;
-  border: 1px dashed var(--color-border-default);
+  border: 1px dashed var(--border);
   border-radius: 0.9rem;
-  color: var(--color-text-secondary);
+  color: var(--muted-foreground);
   font-size: 0.875rem;
   text-align: center;
+}
+
+.table {
+  min-width: 32rem;
+  color: var(--foreground);
+}
+
+.roomTable {
+  min-width: 67rem;
+}
+
+.table th {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.table td {
+  color: var(--foreground);
+}
+
+.table tbody tr {
+  transition: background 120ms ease;
+}
+
+.table tbody tr:hover {
+  background: color-mix(in srgb, var(--muted) 70%, transparent);
+}
+
+.recordId,
+.secondaryText {
+  color: var(--muted-foreground);
+}
+
+.recordId {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+}
+
+:global(.dark) .metric,
+:global(.dark) .secondaryButton,
+:global(.dark) .policyItem,
+:global(.dark) .weekday {
+  box-shadow: none;
+}
+
+:global(.dark) .dialog {
+  border-color: var(--border);
+  background: var(--popover) !important;
+  box-shadow: 0 28px 90px rgb(0 0 0 / 58%);
 }
 
 @media (max-width: 900px) {
