@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "preview-api.hfiuc.org",
+        hostname: "api.hfiuc.org",
         pathname: "/assets/**",
       },
     ],

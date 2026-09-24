@@ -298,11 +298,17 @@ export default function CancelReservationPage() {
       setDraft({ ...draft, startTime: 0, endTime: 0 })
       return
     }
-    if (!draft.startTime || draft.endTime || option.timestamp < draft.startTime) {
+    if (
+      !draft.startTime ||
+      draft.endTime ||
+      option.timestamp < draft.startTime
+    ) {
       setDraft({ ...draft, startTime: option.timestamp, endTime: 0 })
       return
     }
-    if (rangeIsAvailable(availability.slots, draft.startTime, option.timestamp)) {
+    if (
+      rangeIsAvailable(availability.slots, draft.startTime, option.timestamp)
+    ) {
       setDraft({ ...draft, endTime: option.timestamp })
     } else {
       setAvailabilityError(bookingT("rangeUnavailable"))
@@ -311,13 +317,7 @@ export default function CancelReservationPage() {
 
   async function saveChanges() {
     if (!draft || !preview || !availability) return
-    if (
-      !rangeIsAvailable(
-        availability.slots,
-        draft.startTime,
-        draft.endTime
-      )
-    ) {
+    if (!rangeIsAvailable(availability.slots, draft.startTime, draft.endTime)) {
       setAvailabilityError(bookingT("rangeUnavailable"))
       return
     }
@@ -408,7 +408,9 @@ export default function CancelReservationPage() {
                 <h2>{t("cancelledTitle")}</h2>
                 <p>{t("cancelledDescription")}</p>
                 <div className="management-empty-state__actions">
-                  <ActionButton href="/reservation/create">{t("bookAgain")}</ActionButton>
+                  <ActionButton href="/reservation/create">
+                    {t("bookAgain")}
+                  </ActionButton>
                   <ActionButton variant="secondary" href="/">
                     {t("home")}
                   </ActionButton>
@@ -430,11 +432,17 @@ export default function CancelReservationPage() {
                   </div>
                   <div className="management-summary__meta">
                     <StatusBadge
-                      tone={preview.status === "approved" ? "success" : "warning"}
+                      tone={
+                        preview.status === "approved" ? "success" : "warning"
+                      }
                     >
-                      {preview.status === "approved" ? t("approved") : t("pending")}
+                      {preview.status === "approved"
+                        ? t("approved")
+                        : t("pending")}
                     </StatusBadge>
-                    <span>{t("remainingEdits", { count: preview.remainingEdits })}</span>
+                    <span>
+                      {t("remainingEdits", { count: preview.remainingEdits })}
+                    </span>
                   </div>
                 </div>
 
@@ -466,7 +474,8 @@ export default function CancelReservationPage() {
                         <Clock3 size={19} />
                         <span>{t("time")}</span>
                         <strong>
-                          {preview.startTime.slice(11, 16)} – {preview.endTime.slice(11, 16)}
+                          {preview.startTime.slice(11, 16)} –{" "}
+                          {preview.endTime.slice(11, 16)}
                         </strong>
                       </article>
                       <article>
@@ -483,7 +492,9 @@ export default function CancelReservationPage() {
                         <Monitor size={19} />
                         <span>{t("multimedia")}</span>
                         <strong>
-                          {preview.needsMultimedia ? t("required") : t("notRequired")}
+                          {preview.needsMultimedia
+                            ? t("required")
+                            : t("notRequired")}
                         </strong>
                       </article>
                       <article className="management-detail-grid__wide">
@@ -524,9 +535,18 @@ export default function CancelReservationPage() {
 
                 {mode === "edit" ? (
                   <div className="management-editor">
-                    <div className="management-edit-progress" aria-label={t("modifyProgress")}>
-                      <div className={editStep === "location" ? "is-active" : "is-complete"}>
-                        <span>{editStep === "time" ? <Check size={15} /> : "1"}</span>
+                    <div
+                      className="management-edit-progress"
+                      aria-label={t("modifyProgress")}
+                    >
+                      <div
+                        className={
+                          editStep === "location" ? "is-active" : "is-complete"
+                        }
+                      >
+                        <span>
+                          {editStep === "time" ? <Check size={15} /> : "1"}
+                        </span>
                         <strong>{t("selectLocation")}</strong>
                       </div>
                       <i />
@@ -540,7 +560,9 @@ export default function CancelReservationPage() {
                       <div className="management-booking-step">
                         <div className="management-section-heading">
                           <div>
-                            <span className="page-overline">{t("stepOne")}</span>
+                            <span className="page-overline">
+                              {t("stepOne")}
+                            </span>
                             <h3>{t("selectLocation")}</h3>
                           </div>
                           <span>{t("locationHint")}</span>
@@ -570,11 +592,15 @@ export default function CancelReservationPage() {
                         </div>
                         <div className="resource-heading management-resource-heading">
                           <div>
-                            <span className="page-overline">Room resources</span>
+                            <span className="page-overline">
+                              Room resources
+                            </span>
                             <h2>{bookingT("rooms")}</h2>
                           </div>
                           <span className="resource-count">
-                            {t("availableSpaces", { count: roomsForCampus.length })}
+                            {t("availableSpaces", {
+                              count: roomsForCampus.length,
+                            })}
                           </span>
                         </div>
                         <div className="room-grid">
@@ -633,7 +659,9 @@ export default function CancelReservationPage() {
                       <div className="management-booking-step">
                         <div className="management-section-heading">
                           <div>
-                            <span className="page-overline">{t("stepTwo")}</span>
+                            <span className="page-overline">
+                              {t("stepTwo")}
+                            </span>
                             <h3>{t("selectDateTime")}</h3>
                           </div>
                           <span>{selectedRoom?.name}</span>
@@ -658,7 +686,8 @@ export default function CancelReservationPage() {
                               classNames={{
                                 month: "booking-calendar__month",
                                 month_caption: "booking-calendar__caption",
-                                caption_label: "booking-calendar__caption-label",
+                                caption_label:
+                                  "booking-calendar__caption-label",
                                 nav: "booking-calendar__nav",
                                 button_previous: "booking-calendar__previous",
                                 button_next: "booking-calendar__next",
@@ -677,12 +706,15 @@ export default function CancelReservationPage() {
                               showOutsideDays
                               locale={locale === "zh-CN" ? zhCN : enUS}
                               selected={inputValueToDate(draft.date)}
-                              defaultMonth={inputValueToDate(draft.date) || today}
+                              defaultMonth={
+                                inputValueToDate(draft.date) || today
+                              }
                               startMonth={today}
                               endMonth={maximumDate}
                               disabled={{ before: today, after: maximumDate }}
                               onSelect={(selected) => {
-                                if (selected) resetTimes(dateToInputValue(selected))
+                                if (selected)
+                                  resetTimes(dateToInputValue(selected))
                               }}
                             />
                           </div>
@@ -710,9 +742,15 @@ export default function CancelReservationPage() {
                                 className="availability-refresh-button"
                                 aria-label={bookingT("refresh")}
                                 disabled={loadingAvailability}
-                                onClick={() => setAvailabilityReload((value) => value + 1)}
+                                onClick={() =>
+                                  setAvailabilityReload((value) => value + 1)
+                                }
                               >
-                                {loadingAvailability ? <Spinner /> : <RefreshCw size={15} />}
+                                {loadingAvailability ? (
+                                  <Spinner />
+                                ) : (
+                                  <RefreshCw size={15} />
+                                )}
                               </Button>
                             </div>
                             {loadingAvailability ? (
@@ -723,7 +761,10 @@ export default function CancelReservationPage() {
                             ) : null}
                             {availability && !loadingAvailability ? (
                               <>
-                                <div className="neo-time-legend" aria-hidden="true">
+                                <div
+                                  className="neo-time-legend"
+                                  aria-hidden="true"
+                                >
                                   <span>
                                     <i className="neo-time-legend__available" />
                                     {bookingT("available")}
@@ -752,7 +793,9 @@ export default function CancelReservationPage() {
                                         key={option.timestamp}
                                         disabled={!selectable && !selected}
                                         aria-pressed={selected}
-                                        variant={selected ? "default" : "outline"}
+                                        variant={
+                                          selected ? "default" : "outline"
+                                        }
                                         className={`neo-time-cell ${option.status === "occupied" && !selectable ? "neo-time-cell--occupied" : ""} ${selected ? "neo-time-cell--selected" : ""}`}
                                         onClick={() => selectTime(option)}
                                       >
@@ -776,7 +819,9 @@ export default function CancelReservationPage() {
                           </ActionButton>
                           <ActionButton
                             icon={working ? <Spinner /> : <Save size={17} />}
-                            disabled={working || !draft.startTime || !draft.endTime}
+                            disabled={
+                              working || !draft.startTime || !draft.endTime
+                            }
                             onClick={saveChanges}
                           >
                             {t("save")}
@@ -793,7 +838,11 @@ export default function CancelReservationPage() {
                       <AlertTriangle size={26} />
                     </div>
                     <h3>{t("cancelConfirmTitle")}</h3>
-                    <p>{t("cancelConfirmDescription", { date: preview.startTime.slice(0, 10) })}</p>
+                    <p>
+                      {t("cancelConfirmDescription", {
+                        date: preview.startTime.slice(0, 10),
+                      })}
+                    </p>
                     <div className="management-actions">
                       <ActionButton
                         icon={working ? <Spinner /> : <XCircle size={17} />}

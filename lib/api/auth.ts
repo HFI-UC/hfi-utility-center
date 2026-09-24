@@ -47,6 +47,17 @@ export async function checkLogin() {
   })
   return Boolean(response.data?.success)
 }
+
+export interface AdminSession {
+  email: string
+  name: string
+}
+
+export async function getAdminSession() {
+  const response =
+    await api.get<ApiResponse<AdminSession>>("/admin/check-login")
+  return response.data.data!
+}
 export async function logout() {
   try {
     return await api.get("/admin/logout")

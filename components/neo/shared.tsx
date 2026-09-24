@@ -40,8 +40,9 @@ export function BrandLogo({ dark = false }: { dark?: boolean }) {
         src="/assets/hfi-logo.svg"
         alt="HFI"
         width={48}
-        height={31}
+        height={30}
         className="brand-logo__image"
+        style={{ height: "auto" }}
         priority
       />
     </span>
@@ -364,18 +365,6 @@ export function NeoFooter() {
           <Heart aria-label="love" fill="currentColor" strokeWidth={2.4} />
           BY MAKERs&apos;
         </small>
-        <span className="site-footer__filings">
-          <a
-            href="https://beian.mps.gov.cn/#/query/webSearch?code=44011302005027"
-            rel="noreferrer"
-            target="_blank"
-          >
-            粤公网安备44011302005027号
-          </a>
-          <a href="https://beian.miit.gov.cn/" rel="noreferrer" target="_blank">
-            粤ICP备2023143201号
-          </a>
-        </span>
       </p>
     </footer>
   )

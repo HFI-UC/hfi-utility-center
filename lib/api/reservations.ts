@@ -1,5 +1,4 @@
 import { api } from "@/lib/api/client"
-import { getRooms } from "@/lib/api/catalog"
 import { inputValueToTimestamp } from "@/lib/date-time"
 import { buildLegacyAvailability } from "@/lib/reservations/availability"
 import type {
@@ -30,35 +29,91 @@ export async function getAvailability(
   knownRoom?: Room,
   excludedReservationId?: number
 ) {
-  const startTime = inputValueToTimestamp(date)
-  const endTime = inputValueToTimestamp(date, true)
-  if (startTime === undefined || endTime === undefined) {
-    throw new Error("Invalid availability date")
-  }
-  const [rooms, firstPage] = await Promise.all([
-    knownRoom ? Promise.resolve([knownRoom]) : getRooms(),
-    getReservations({ roomId, startTime, endTime, page: 0 }),
-  ])
-  const room = rooms.find((item) => item.id === roomId && item.enabled)
-  if (!room) throw new Error("Room is unavailable")
-  const reservations = [...firstPage.reservations]
-  const pageCount = Math.ceil(firstPage.total / 20)
-  const additionalPages = await Promise.all(
-    Array.from({ length: Math.max(0, pageCount - 1) }, (_, index) =>
-      getReservations({ roomId, startTime, endTime, page: index + 1 })
+  const { data } = await api.get<
+    ApiResponse<{
+      roomId: number
+      date: string
+      occupied: Array<{
+        startTime: string
+        endTime: string
+        status: ReservationStatus
+      }>
+    }>
+  >("/reservation/availability", {
+    params: {
+      roomId,
+      date,
+      excludeReservationId: excludedReservationId,
+    },
+  })
+  const availability = data.data!
+  if (!knownRoom) throw new Error("Room availability is incomplete")
+
+  // Rust returns occupied intervals. For self-service edits we additionally
+  // fetch the day's reservations because that endpoint currently has no
+  // exclude-reservation parameter.
+  if (excludedReservationId) {
+    const startTime = inputValueToTimestamp(date)
+    const endTime = inputValueToTimestamp(date, true)
+    if (startTime === undefined || endTime === undefined) {
+      throw new Error("Invalid availability date")
+    }
+    const firstPage = await getReservations({
+      roomId,
+      startTime,
+      endTime,
+      page: 0,
+    })
+    const pageCount = Math.ceil(firstPage.total / 20)
+    const additionalPages = await Promise.all(
+      Array.from({ length: Math.max(0, pageCount - 1) }, (_, index) =>
+        getReservations({
+          roomId,
+          startTime,
+          endTime,
+          page: index + 1,
+        })
+      )
     )
-  )
-  reservations.push(...additionalPages.flatMap((page) => page.reservations))
+    return buildLegacyAvailability(
+      knownRoom,
+      date,
+      [
+        ...firstPage.reservations,
+        ...additionalPages.flatMap((page) => page.reservations),
+      ].filter((item) => item.id !== excludedReservationId)
+    )
+  }
+
   return buildLegacyAvailability(
-    room,
+    knownRoom,
     date,
-    excludedReservationId
-      ? reservations.filter((item) => item.id !== excludedReservationId)
-      : reservations
+    availability.occupied.map((item, index) => ({
+      id: index,
+      roomId,
+      studentName: "",
+      email: "",
+      reason: "",
+      startTime: item.startTime,
+      endTime: item.endTime,
+      status: item.status,
+    }))
   )
 }
 
 export async function createReservation(input: CreateReservationInput) {
+  const { data } = await api.post<ApiResponse<{ reservationId: number }>>(
+    "/reservation/create",
+    input
+  )
+  return data.data!
+}
+
+export type ForceReservationInput = CreateReservationInput
+
+export async function forceReservation(input: ForceReservationInput) {
+  // Rust activates its priority path through the regular create endpoint when
+  // the payload uses an administrator identity and a privileged class.
   const { data } = await api.post<ApiResponse<{ reservationId: number }>>(
     "/reservation/create",
     input
@@ -106,7 +161,9 @@ export async function previewCancellation(token: string) {
     { params: { token }, suppressErrorToast: true }
   )
   if (!data.success || !data.data) {
-    throw new Error(data.message || "This reservation link is invalid or expired.")
+    throw new Error(
+      data.message || "This reservation link is invalid or expired."
+    )
   }
   return data.data
 }

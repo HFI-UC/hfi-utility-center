@@ -1,0 +1,108 @@
+/* Reservation success */
+.success-shell {
+  width: min(1120px, calc(100% - 48px));
+  flex: 1;
+  margin: 0 auto;
+}
+.success-page {
+  display: grid;
+  min-height: calc(100svh - 190px);
+  place-items: center;
+  padding: 42px 0 58px;
+}
+.success-card {
+  position: relative;
+  width: min(760px, 100%);
+  overflow: hidden;
+  padding: 48px !important;
+  background: var(--surface) !important;
+  border-radius: 28px !important;
+  text-align: center;
+}
+.success-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: linear-gradient(90deg, var(--success), #5fd8c1);
+}
+.success-card::after {
+  content: "";
+  position: absolute;
+  top: -110px;
+  right: -80px;
+  width: 250px;
+  height: 250px;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(16, 185, 129, 0.11),
+    transparent 68%
+  );
+}
+.success-card__icon {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 22px;
+  color: var(--success);
+  background: var(--success-bg);
+  border: 1px solid color-mix(in srgb, var(--success), transparent 65%);
+  border-radius: 22px;
+  box-shadow: 0 12px 26px rgba(16, 185, 129, 0.13);
+}
+.success-card h2 {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-family: "Outfit", sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.success-card__description {
+  max-width: 480px;
+  margin: 10px auto 0;
+  color: var(--uc2-muted-dark);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.success-card__number {
+  display: inline-flex;
+  min-width: 240px;
+  flex-direction: column;
+  gap: 4px;
+  margin: 28px auto 0;
+  padding: 15px 26px;
+  color: var(--uc2-muted);
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.success-card__number span {
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.success-card__number strong {
+  color: var(--primary);
+  font-family: "Outfit", sans-serif;
+  font-size: 28px;
+}
+.success-card__actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 32px;
+}
+.success-card__actions .action-button {
+  width: 100%;
+  min-width: 0;
+  height: 48px !important;
+  border-radius: 14px !important;
+}
+
