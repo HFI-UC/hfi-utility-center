@@ -14,16 +14,29 @@ import type { CatalogData } from "@/lib/api/types"
 import type { ReservationFormValues } from "../form"
 import { StepLayout } from "../step-layout"
 
-export function ClassStep({ catalog }: { catalog: CatalogData }) {
+export function ClassStep({
+  catalog,
+  privilegedOnly = false,
+}: {
+  catalog: CatalogData
+  privilegedOnly?: boolean
+}) {
   const t = useTranslations("booking")
   const [query, setQuery] = useState("")
   const { control, getValues, setValue } =
     useFormContext<ReservationFormValues>()
+  const visibleCampuses = useMemo(
+    () =>
+      privilegedOnly
+        ? catalog.campuses.filter((campus) => campus.isPrivileged)
+        : catalog.campuses,
+    [catalog.campuses, privilegedOnly]
+  )
   const [campusId, setCampusId] = useState(
     () =>
       catalog.classes.find((item) => item.id === getValues("classId"))
         ?.campus ??
-      catalog.campuses[0]?.id ??
+      visibleCampuses[0]?.id ??
       0
   )
   const campus = catalog.campuses.find((item) => item.id === campusId)
@@ -55,7 +68,7 @@ export function ClassStep({ catalog }: { catalog: CatalogData }) {
         <FieldSet className="gap-3">
           <FieldLegend variant="label">所属校区</FieldLegend>
           <FieldGroup className="selection-stack">
-            {catalog.campuses.map((item) => {
+            {visibleCampuses.map((item) => {
               const selected = item.id === campusId
               return (
                 <button

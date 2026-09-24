@@ -15,7 +15,8 @@ The development server uses `http://localhost:3000` by default.
 
 Environment variables:
 
-- `NEXT_PUBLIC_API_BASE_URL` selects the backend used by the browser.
+- `NEXT_PUBLIC_API_BASE_URL` selects the Rust backend used by the browser and
+  defaults to `https://api.hfiuc.org`.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` enables the real Cloudflare Turnstile
   widget. Password login on localhost requires that site key to allow the
   `localhost` hostname; there is no development verification bypass.
@@ -27,6 +28,8 @@ backend or Turnstile widget is required.
 
 - `app/` contains routes and feature-specific UI. Route pages coordinate data;
   large interactive views are split into named feature components.
+- `app/styles/` contains ordered global style layers grouped by feature. Small,
+  route-specific styles continue to use colocated CSS modules.
 - `lib/api/` contains the backend transport, endpoint functions, API types, and
   focused administrator resource/mutation hooks.
 - `lib/reservations/` contains pure reservation availability rules.
@@ -34,8 +37,9 @@ backend or Turnstile widget is required.
   public and administrator views.
 - `messages/` contains the English and Simplified Chinese translation catalogs.
 
-The browser calls the configured backend directly. The API client preserves the
-legacy response and payload contracts.
+The browser calls the configured Rust backend directly. The API client targets
+the Rust response and payload contracts, including the occupied-interval
+availability response.
 
 ## Quality Checks
 

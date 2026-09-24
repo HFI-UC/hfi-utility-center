@@ -1,0 +1,638 @@
+/* Final mobile pass for the complete reservation flow.
+ * These rules intentionally come last so the desktop fidelity pass above
+ * cannot reintroduce fixed widths or compressed text on small screens. */
+@media (max-width: 900px) {
+  .wizard-content-grid--step-one {
+    grid-template-columns: 1fr;
+  }
+
+  .datetime-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .datetime-card__divider {
+    display: none;
+  }
+
+  .profile-identity-grid,
+  .profile-options-grid,
+  .confirm-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .profile-reason-field,
+  .management-detail-grid__wide {
+    grid-column: auto;
+  }
+
+  .management-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .internal-main,
+  .booking-list-page,
+  .wizard-page,
+  .management-page {
+    padding-inline: 12px;
+  }
+
+  .wizard-page {
+    padding-top: 16px;
+    padding-bottom: 36px;
+  }
+
+  .wizard-card {
+    padding: 18px 14px 16px;
+    border-radius: 14px;
+  }
+
+  .wizard-title-row {
+    align-items: flex-start;
+    gap: 6px 12px;
+    margin-bottom: 8px;
+  }
+
+  .wizard-title-row h1,
+  .page-title-row h1 {
+    max-width: 100%;
+    font-size: clamp(24px, 7vw, 30px);
+    line-height: 1.18;
+    overflow-wrap: anywhere;
+  }
+
+  .wizard-count {
+    flex: 0 0 auto;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .booking-stepper {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 12px 0;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+
+  .stepper-item-wrap {
+    flex: 0 0 auto;
+  }
+
+  .stepper-item {
+    min-width: max-content;
+    gap: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .stepper-item__number {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    font-size: 11px;
+  }
+
+  .stepper-divider {
+    width: 20px;
+    min-width: 20px;
+    flex: 0 0 20px;
+    margin-inline: 8px;
+  }
+
+  .wizard-step-body {
+    padding-top: 18px;
+  }
+
+  .wizard-step-full,
+  .wizard-content-grid,
+  .datetime-card,
+  .form-step,
+  .profile-card,
+  .confirm-step {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .panel-heading {
+    align-items: flex-start;
+    gap: 9px;
+  }
+
+  .panel-heading h2,
+  .datetime-card .panel-heading h2 {
+    font-size: 17px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .panel-heading p,
+  .datetime-card .panel-heading p,
+  .form-card__header p,
+  .confirm-banner p,
+  .management-hero p,
+  .management-section-heading > span {
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+
+  .wizard-content-grid--step-one {
+    gap: 22px;
+  }
+
+  .wizard-panel {
+    padding: 16px;
+  }
+
+  .selection-button,
+  .class-grid .selection-button {
+    min-height: 48px;
+    padding: 10px 13px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .campus-tabs {
+    max-width: 100%;
+    margin-inline: 0;
+    padding-bottom: 16px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: thin;
+  }
+
+  .campus-tab {
+    flex: 0 0 auto;
+    min-height: 42px;
+    padding: 10px 16px;
+    white-space: nowrap;
+  }
+
+  .resource-heading {
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .resource-heading h2 {
+    font-size: 17px;
+  }
+
+  .room-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .room-card {
+    min-width: 0;
+    min-height: 58px;
+    padding: 12px;
+  }
+
+  .room-card strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+  }
+
+  .datetime-card {
+    gap: 18px;
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .datetime-card__calendar,
+  .datetime-card__time {
+    min-width: 0;
+  }
+
+  .booking-calendar {
+    padding-inline: 8px !important;
+  }
+
+  .booking-calendar__day-button {
+    width: 29px;
+    height: 29px;
+  }
+
+  .neo-time-grid {
+    gap: 5px;
+  }
+
+  .neo-time-cell {
+    min-width: 0 !important;
+    padding-inline: 3px !important;
+    font-size: 10px !important;
+  }
+
+  .time-grid-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .form-card,
+  .profile-card {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .form-grid,
+  .profile-identity-grid,
+  .profile-options-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    margin-top: 18px;
+  }
+
+  .profile-option-panel {
+    min-width: 0;
+    min-height: 0;
+    padding: 14px !important;
+  }
+
+  .profile-purpose-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .purpose-option {
+    min-width: 0;
+    padding: 10px 6px;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .profile-agreement {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .profile-agreement [data-slot="field-label"],
+  .profile-agreement label,
+  .profile-agreement p {
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+
+  .confirm-step {
+    gap: 12px;
+  }
+
+  .confirm-banner {
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .confirm-banner__icon {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .confirm-banner h2 {
+    font-size: 18px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+
+  .confirm-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .confirm-card {
+    min-width: 0;
+  }
+
+  .confirm-card__label,
+  .confirm-card__value {
+    min-width: 0;
+  }
+
+  .confirm-card__value,
+  .confirm-card dd,
+  .reason-quote,
+  .confirm-note {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.55;
+  }
+
+  .confirm-card dl div {
+    align-items: flex-start;
+  }
+
+  .confirm-card dt {
+    flex: 0 0 58px;
+    width: 58px;
+  }
+
+  .wizard-actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 18px;
+    padding-top: 16px;
+  }
+
+  .wizard-action-controls {
+    width: 100%;
+    margin-left: 0;
+    justify-content: stretch;
+    gap: 8px;
+  }
+
+  .wizard-actions .action-button {
+    min-width: 0 !important;
+    flex: 1 1 0;
+    padding-inline: 12px !important;
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  .submit-toast {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .rules-modal {
+    max-height: calc(100svh - 24px);
+  }
+
+  .rules-modal__header {
+    height: auto;
+    min-height: 62px;
+    padding: 16px;
+  }
+
+  .rules-modal__header h2 {
+    max-width: calc(100% - 42px);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .rules-modal__body {
+    height: auto;
+    max-height: calc(100svh - 190px);
+    padding: 16px;
+  }
+
+  .rules-modal__body p {
+    align-items: flex-start;
+    font-size: 13px;
+  }
+
+  .rules-modal__footer {
+    padding: 12px 16px 16px;
+  }
+
+  .rules-modal__footer .action-button {
+    width: 100%;
+  }
+
+  .success-shell {
+    width: min(100% - 24px, 620px);
+  }
+
+  .success-page {
+    min-height: calc(100svh - 150px);
+    padding: 24px 0 36px;
+  }
+
+  .success-card {
+    padding: 32px 16px 22px !important;
+    border-radius: 20px !important;
+  }
+
+  .success-card h2 {
+    font-size: clamp(26px, 8vw, 34px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .success-card__description {
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+
+  .success-card__number {
+    min-width: 0;
+    width: min(100%, 280px);
+    padding-inline: 18px;
+  }
+
+  .success-card__actions {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+    margin-top: 24px;
+  }
+
+  .booking-list-page .list-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .booking-list-page .booking-sidebar {
+    padding: 16px;
+  }
+
+  .booking-list-content,
+  .booking-groups,
+  .booking-day-group,
+  .booking-list-card {
+    min-width: 0;
+  }
+
+  .page-title-row {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .booking-list-card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .booking-list-card__header,
+  .booking-list-card__footer {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .booking-list-card__room strong,
+  .booking-list-card__reason p,
+  .booking-list-card .booking-time {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .booking-list-card__reason {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .booking-list-card__reason p {
+    width: 100%;
+  }
+
+  .booking-list-card .booking-time {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .list-pagination__summary {
+    flex-wrap: wrap;
+    line-height: 1.45;
+  }
+
+  .management-page {
+    min-height: auto;
+    padding-top: 26px;
+    padding-bottom: 42px;
+  }
+
+  .management-hero {
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .management-hero__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+
+  .management-hero h1 {
+    font-size: clamp(28px, 8vw, 38px);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .management-content {
+    padding: 16px;
+  }
+
+  .management-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .management-summary__room {
+    min-width: 0;
+  }
+
+  .management-summary__room h2 {
+    font-size: 18px;
+    overflow-wrap: anywhere;
+  }
+
+  .management-summary__meta {
+    align-items: flex-start;
+  }
+
+  .management-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .management-detail-grid__wide {
+    grid-column: auto;
+  }
+
+  .management-detail-grid article {
+    min-width: 0;
+    padding: 14px;
+  }
+
+  .management-detail-grid article strong {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .management-actions,
+  .management-empty-state__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .management-actions .action-button,
+  .management-empty-state__actions .action-button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .management-edit-progress {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .management-edit-progress > i {
+    width: 1px;
+    height: 12px;
+    margin-left: 14px;
+  }
+
+  .management-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-stepper {
+    display: grid;
+    gap: 0;
+    overflow: visible;
+  }
+
+  .stepper-item-wrap,
+  .stepper-item-wrap:last-child {
+    display: flex;
+    width: 100%;
+    flex: none;
+    align-items: center;
+  }
+
+  .stepper-item {
+    min-width: 0;
+    gap: 8px;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .stepper-item__label {
+    display: inline;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+
+  .stepper-divider {
+    width: 1px;
+    min-width: 1px;
+    height: 13px;
+    flex: 0 0 1px;
+    margin: 0 0 0 12px;
+  }
+
+  .profile-purpose-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .purpose-option {
+    text-align: left;
+  }
+}

@@ -2,7 +2,21 @@
 @import "@astryxdesign/core/reset.css";
 @import "@astryxdesign/core/astryx.css";
 @import "@astryxdesign/theme-neutral/theme.css";
-@import "./uc2.css";
+@import "./styles/foundation.css";
+@import "./styles/home.css";
+@import "./styles/reservation-list.css";
+@import "./styles/reservation-wizard.css";
+@import "./styles/facility-dashboard.css";
+@import "./styles/booking-fidelity.css";
+@import "./styles/reservation-success.css";
+@import "./styles/admin-workspace.css";
+@import "./styles/facility-fidelity.css";
+@import "./styles/interactions.css";
+@import "./styles/theme-bridge.css";
+@import "./styles/dark-theme.css";
+@import "./styles/admin-login.css";
+@import "./styles/home-minimal.css";
+@import "./styles/mobile.css";
 
 @custom-variant dark (&:is(.dark *));
 

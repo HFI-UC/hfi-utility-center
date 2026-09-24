@@ -12,11 +12,11 @@ declare module "axios" {
 }
 
 const backendUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://preview-api.hfiuc.org"
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.hfiuc.org"
 
 export const api = axios.create({
   baseURL: backendUrl,
-  timeout: 5000,
+  timeout: 15000,
   withCredentials: true,
   validateStatus: () => true,
   // CSRF tokens come from the API response body. Cookie-based XSRF lookup is
