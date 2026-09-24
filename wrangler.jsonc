@@ -38,6 +38,10 @@
       "pattern": "hfiuc.org",
       "custom_domain": true,
       "previews_enabled": true
+    },
+    {
+      "pattern": "www.hfiuc.org",
+      "custom_domain": true
     }
   ],
 
