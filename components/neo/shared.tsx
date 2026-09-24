@@ -40,8 +40,9 @@ export function BrandLogo({ dark = false }: { dark?: boolean }) {
         src="/assets/hfi-logo.svg"
         alt="HFI"
         width={48}
-        height={31}
+        height={30}
         className="brand-logo__image"
+        style={{ height: "auto" }}
         priority
       />
     </span>

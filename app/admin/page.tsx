@@ -124,7 +124,7 @@ export default function AdminPage() {
         actions={
           <Button
             variant="outline"
-            onClick={resource.reload}
+            onClick={() => void resource.reload().catch(() => undefined)}
             disabled={resource.loading}
           >
             <RefreshCw />
@@ -153,6 +153,19 @@ export default function AdminPage() {
         <div className="admin-dashboard-loading">
           <Spinner />
           {t("overviewLoading")}
+        </div>
+      ) : null}
+
+      {resource.error && !resource.loading ? (
+        <div className="admin-error-state" role="alert">
+          <p>{common("unknown")}</p>
+          <Button
+            variant="outline"
+            onClick={() => void resource.reload().catch(() => undefined)}
+          >
+            <RefreshCw />
+            {common("retry")}
+          </Button>
         </div>
       ) : null}
 

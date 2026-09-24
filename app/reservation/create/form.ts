@@ -9,35 +9,37 @@ export function useReservationSchema() {
 
   return useMemo(
     () =>
-      z.object({
-        classId: z.number().int().positive(t("validation.classRequired")),
-        bookingCampusId: z
-          .number()
-          .int()
-          .positive(t("validation.campusRequired")),
-        room: z.number().int().positive(t("validation.roomRequired")),
-        date: z.string().min(1, t("validation.dateRequired")),
-        startTime: z.number().positive(t("validation.startTimeRequired")),
-        endTime: z.number().positive(t("validation.endTimeRequired")),
-        studentName: z.string().trim().min(1, t("validation.nameRequired")),
-        studentId: z.string().trim(),
-        isPrivileged: z.boolean(),
-        email: z.string().trim().email(t("validation.emailInvalid")),
-        reason: z.string().trim().min(1, t("validation.reasonRequired")),
-        purposeType: z.enum(["personal", "class", "club"]),
-        needsMultimedia: z.boolean(),
-        isAgreed: z
-          .boolean()
-          .refine(Boolean, t("validation.agreementRequired")),
-      }).superRefine((values, context) => {
-        if (!values.isPrivileged && !/^GJ\d{8}$/.test(values.studentId)) {
-          context.addIssue({
-            code: "custom",
-            path: ["studentId"],
-            message: t("validation.studentIdFormat"),
-          })
-        }
-      }),
+      z
+        .object({
+          classId: z.number().int().positive(t("validation.classRequired")),
+          bookingCampusId: z
+            .number()
+            .int()
+            .positive(t("validation.campusRequired")),
+          room: z.number().int().positive(t("validation.roomRequired")),
+          date: z.string().min(1, t("validation.dateRequired")),
+          startTime: z.number().positive(t("validation.startTimeRequired")),
+          endTime: z.number().positive(t("validation.endTimeRequired")),
+          studentName: z.string().trim().min(1, t("validation.nameRequired")),
+          studentId: z.string().trim(),
+          isPrivileged: z.boolean(),
+          email: z.string().trim().email(t("validation.emailInvalid")),
+          reason: z.string().trim().min(1, t("validation.reasonRequired")),
+          purposeType: z.enum(["personal", "class", "club"]),
+          needsMultimedia: z.boolean(),
+          isAgreed: z
+            .boolean()
+            .refine(Boolean, t("validation.agreementRequired")),
+        })
+        .superRefine((values, context) => {
+          if (!values.isPrivileged && !/^GJ\d{8}$/.test(values.studentId)) {
+            context.addIssue({
+              code: "custom",
+              path: ["studentId"],
+              message: t("validation.studentIdFormat"),
+            })
+          }
+        }),
     [t]
   )
 }

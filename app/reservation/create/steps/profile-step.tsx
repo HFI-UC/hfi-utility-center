@@ -17,7 +17,7 @@ import type { ReservationFormValues } from "../form"
 import { StepLayout } from "../step-layout"
 import { ReservationTermsDialog } from "./reservation-terms-dialog"
 
-export function ProfileStep() {
+export function ProfileStep({ adminMode = false }: { adminMode?: boolean }) {
   const t = useTranslations("booking")
   const { control } = useFormContext<ReservationFormValues>()
   const privileged = useWatch({ control, name: "isPrivileged" })
@@ -40,6 +40,7 @@ export function ProfileStep() {
                     {...field}
                     id={field.name}
                     autoComplete="name"
+                    readOnly={adminMode}
                     aria-invalid={fieldState.invalid}
                   />
                   <FieldDescription>{t("nameDescription")}</FieldDescription>
@@ -54,7 +55,9 @@ export function ProfileStep() {
                 name="studentId"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>{t("studentId")}</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>
+                      {t("studentId")}
+                    </FieldLabel>
                     <Input
                       {...field}
                       id={field.name}
@@ -83,6 +86,7 @@ export function ProfileStep() {
                     id={field.name}
                     type="email"
                     autoComplete="email"
+                    readOnly={adminMode}
                     aria-invalid={fieldState.invalid}
                   />
                   <FieldDescription>{t("emailDescription")}</FieldDescription>
@@ -168,34 +172,36 @@ export function ProfileStep() {
             />
           </div>
 
-          <Controller
-            control={control}
-            name="isAgreed"
-            render={({ field, fieldState }) => (
-              <Field
-                className="profile-agreement text-sm"
-                orientation="horizontal"
-                data-invalid={fieldState.invalid}
-              >
-                <Checkbox
-                  id={field.name}
-                  name={field.name}
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  aria-invalid={fieldState.invalid}
-                />
-                <FieldContent>
-                  <div className="flex flex-wrap items-baseline gap-x-1">
-                    <FieldLabel htmlFor={field.name}>
-                      {t("agreementPrefix")}
-                    </FieldLabel>
-                    <ReservationTermsDialog />
-                  </div>
-                  <FieldError errors={[fieldState.error]} />
-                </FieldContent>
-              </Field>
-            )}
-          />
+          {!adminMode ? (
+            <Controller
+              control={control}
+              name="isAgreed"
+              render={({ field, fieldState }) => (
+                <Field
+                  className="profile-agreement text-sm"
+                  orientation="horizontal"
+                  data-invalid={fieldState.invalid}
+                >
+                  <Checkbox
+                    id={field.name}
+                    name={field.name}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  <FieldContent>
+                    <div className="flex flex-wrap items-baseline gap-x-1">
+                      <FieldLabel htmlFor={field.name}>
+                        {t("agreementPrefix")}
+                      </FieldLabel>
+                      <ReservationTermsDialog />
+                    </div>
+                    <FieldError errors={[fieldState.error]} />
+                  </FieldContent>
+                </Field>
+              )}
+            />
+          ) : null}
         </FieldGroup>
       </div>
     </StepLayout>

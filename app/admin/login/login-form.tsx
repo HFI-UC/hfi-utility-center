@@ -11,7 +11,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/astryx"
 import { Field, FieldError, FieldLabel } from "@/components/astryx"
 import { Input } from "@/components/astryx"
 import { Spinner } from "@/components/astryx"
-import { checkLogin, loginWithPassword, loginWithToken } from "@/lib/api/auth"
+import {
+  checkLogin,
+  loginWithPassword,
+  loginWithToken,
+  rememberAdminEmail,
+} from "@/lib/api/auth"
 
 type LoginFields = { email: string; password: string }
 
@@ -77,7 +82,9 @@ export function AdminLoginForm({
     }
     setError(undefined)
     try {
-      await loginWithPassword(email.trim(), password, turnstileToken)
+      const normalizedEmail = email.trim()
+      await loginWithPassword(normalizedEmail, password, turnstileToken)
+      rememberAdminEmail(normalizedEmail)
       router.replace(redirectTo)
       router.refresh()
     } catch (loginError) {

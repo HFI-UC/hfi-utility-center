@@ -47,7 +47,7 @@ export default function AdminUsersPage() {
             variant="outline"
             icon={<RefreshCw />}
             className="admin-action-button"
-            onClick={adminResource.reload}
+            onClick={() => void adminResource.reload().catch(() => undefined)}
             disabled={adminResource.loading}
           >
             {common("refresh")}
@@ -69,7 +69,7 @@ export default function AdminUsersPage() {
               variant="outline"
               className={styles.retryButton}
               icon={<RefreshCw />}
-              onClick={adminResource.reload}
+              onClick={() => void adminResource.reload().catch(() => undefined)}
             >
               {common("refresh")}
             </Button>

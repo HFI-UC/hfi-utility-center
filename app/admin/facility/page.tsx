@@ -58,7 +58,9 @@ export default function AdminFacilitiesPage() {
           <button
             type="button"
             className={styles.secondaryButton}
-            onClick={facilityResource.reload}
+            onClick={() =>
+              void facilityResource.reload().catch(() => undefined)
+            }
             disabled={facilityResource.loading}
           >
             <RefreshCw />

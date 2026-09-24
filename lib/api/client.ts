@@ -16,7 +16,7 @@ const backendUrl =
 
 export const api = axios.create({
   baseURL: backendUrl,
-  timeout: 5000,
+  timeout: 15000,
   withCredentials: true,
   validateStatus: () => true,
   // CSRF tokens come from the API response body. Cookie-based XSRF lookup is

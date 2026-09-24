@@ -13,8 +13,13 @@ import { useTranslations } from "next-intl"
 import { FormProvider, useForm, useWatch } from "react-hook-form"
 
 import { Spinner } from "@/components/astryx"
+import { getAdminSession, type AdminSession } from "@/lib/api/auth"
 import { getCatalog } from "@/lib/api/catalog"
-import { createReservation, getAvailability } from "@/lib/api/reservations"
+import {
+  createReservation,
+  forceReservation,
+  getAvailability,
+} from "@/lib/api/reservations"
 import type { CatalogData } from "@/lib/api/types"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
 import { ActionButton, NeoFooter, NeoHeader } from "@/components/neo/shared"
@@ -37,9 +42,15 @@ type ReservationResult = {
   reservationId?: number
 }
 
-export function ReservationForm() {
+export function ReservationForm({
+  mode = "public",
+}: {
+  mode?: "public" | "adminForce"
+}) {
   const t = useTranslations("booking")
+  const adminT = useTranslations("admin")
   const common = useTranslations("common")
+  const isForce = mode === "adminForce"
   const schema = useReservationSchema()
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(schema),
@@ -51,6 +62,7 @@ export function ReservationForm() {
   const [isWorking, setIsWorking] = useState(false)
   const [result, setResult] = useState<ReservationResult>()
   const [catalog, setCatalog] = useState<CatalogData>()
+  const [adminSession, setAdminSession] = useState<AdminSession>()
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [catalogError, setCatalogError] = useState<string>()
   const [catalogReloadKey, setCatalogReloadKey] = useState(0)
@@ -74,10 +86,29 @@ export function ReservationForm() {
       setCatalogLoading(true)
       setCatalogError(undefined)
       try {
-        const data = await getCatalog()
-        if (active) setCatalog(data)
-      } catch {
-        if (active) setCatalogError("无法连接预约服务，请检查网络后重试。")
+        const [data, session] = await Promise.all([
+          getCatalog(),
+          isForce ? getAdminSession() : Promise.resolve(undefined),
+        ])
+        if (!active) return
+
+        const priorityClass = findPriorityClass(data)
+        if (isForce && (!session || !priorityClass)) {
+          throw new Error(adminT("forceLoadError"))
+        }
+        setCatalog(data)
+        setAdminSession(session)
+        if (isForce && session && priorityClass) {
+          form.reset(forceReservationDefaults(priorityClass.id, session))
+        }
+      } catch (error) {
+        if (active) {
+          setCatalogError(
+            error instanceof Error
+              ? error.message
+              : "无法连接预约服务，请检查网络后重试。"
+          )
+        }
       } finally {
         if (active) setCatalogLoading(false)
       }
@@ -87,12 +118,12 @@ export function ReservationForm() {
     return () => {
       active = false
     }
-  }, [catalogReloadKey])
+  }, [adminT, catalogReloadKey, form, isForce])
 
   async function selectedTimeIsStillAvailable(values: ReservationFormValues) {
     if (!catalog) return false
 
-    if (values.isPrivileged) return true
+    if (isForce || values.isPrivileged) return true
 
     const room = catalog.rooms.find((candidate) => candidate.id === values.room)
     if (!room) {
@@ -144,19 +175,32 @@ export function ReservationForm() {
         return
       }
 
-      const response = await createReservation({
-        classId: values.classId,
-        room: values.room,
-        studentName: values.studentName.trim(),
-        studentId: values.studentId.trim().toUpperCase(),
-        email: values.email.trim(),
-        reason: values.reason.trim(),
-        startTime: values.startTime,
-        endTime: values.endTime,
-        purposeType: values.purposeType,
-        needsMultimedia: values.needsMultimedia,
-      })
-      setResult({ reservationId: response.reservationId })
+      const response = isForce
+        ? await forceReservation({
+            classId: values.classId,
+            room: values.room,
+            studentName: values.studentName.trim(),
+            studentId: "-",
+            email: values.email.trim(),
+            reason: values.reason.trim(),
+            startTime: values.startTime,
+            endTime: values.endTime,
+            purposeType: values.purposeType,
+            needsMultimedia: values.needsMultimedia,
+          })
+        : await createReservation({
+            classId: values.classId,
+            room: values.room,
+            studentName: values.studentName.trim(),
+            studentId: values.studentId.trim().toUpperCase(),
+            email: values.email.trim(),
+            reason: values.reason.trim(),
+            startTime: values.startTime,
+            endTime: values.endTime,
+            purposeType: values.purposeType,
+            needsMultimedia: values.needsMultimedia,
+          })
+      setResult(response)
     } finally {
       setIsWorking(false)
     }
@@ -180,13 +224,26 @@ export function ReservationForm() {
   }
 
   function resetReservation() {
-    form.reset()
+    const priorityClass = catalog && findPriorityClass(catalog)
+    form.reset(
+      isForce && adminSession && priorityClass
+        ? forceReservationDefaults(priorityClass.id, adminSession)
+        : reservationDefaults
+    )
     setCurrentStepId("class")
     setResult(undefined)
     setFlowError(undefined)
   }
 
   if (catalogLoading) {
+    if (isForce) {
+      return (
+        <div className="admin-dashboard-loading">
+          <Spinner />
+          {adminT("forceLoading")}
+        </div>
+      )
+    }
     return (
       <div className="app-page app-page--light">
         <NeoHeader />
@@ -200,6 +257,19 @@ export function ReservationForm() {
   }
 
   if (catalogError || !catalog) {
+    if (isForce) {
+      return (
+        <div className="neo-load-state neo-load-state--error">
+          <AlertCircle size={30} />
+          <strong>{adminT("forceLoadError")}</strong>
+          <span>{catalogError}</span>
+          <ActionButton onClick={() => setCatalogReloadKey((key) => key + 1)}>
+            <RefreshCw />
+            {common("retry")}
+          </ActionButton>
+        </div>
+      )
+    }
     return (
       <div className="app-page app-page--light">
         <NeoHeader />
@@ -219,32 +289,37 @@ export function ReservationForm() {
 
   if (result) {
     return (
-      <div className="app-page app-page--light">
-        <NeoHeader />
+      <div
+        className={isForce ? "admin-force-booking" : "app-page app-page--light"}
+      >
+        {!isForce ? <NeoHeader /> : null}
         <main className="success-shell">
-          <SuccessStep {...result} onReset={resetReservation} />
+          <SuccessStep
+            {...result}
+            adminForce={isForce}
+            onReset={resetReservation}
+          />
         </main>
-        <NeoFooter />
+        {!isForce ? <NeoFooter /> : null}
       </div>
     )
   }
 
   const stepContent = {
-    class: <ClassStep catalog={catalog} />,
+    class: <ClassStep catalog={catalog} privilegedOnly={isForce} />,
     location: <LocationStep catalog={catalog} />,
     dateTime: (
-      <DateTimeStep
-        rooms={catalog.rooms}
-        privileged={isPrivilegedSelection}
-      />
+      <DateTimeStep rooms={catalog.rooms} privileged={isPrivilegedSelection} />
     ),
-    profile: <ProfileStep />,
+    profile: <ProfileStep adminMode={isForce} />,
     review: <ReviewStep catalog={catalog} />,
   }
 
   return (
-    <div className="app-page app-page--light">
-      <NeoHeader />
+    <div
+      className={isForce ? "admin-force-booking" : "app-page app-page--light"}
+    >
+      {!isForce ? <NeoHeader /> : null}
       <FormProvider {...form}>
         <form
           noValidate
@@ -254,7 +329,9 @@ export function ReservationForm() {
           <div className="wizard-card">
             <header className="wizard-title-row">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-                <h1>{t("createTitle")}</h1>
+                <h1>
+                  {isForce ? adminT("forceReservationTitle") : t("createTitle")}
+                </h1>
               </div>
               <p className="wizard-count">
                 {t("step", {
@@ -332,7 +409,7 @@ export function ReservationForm() {
                     disabled={isWorking}
                   >
                     {isWorking ? <Spinner /> : null}
-                    {t("confirmReservation")}
+                    {isForce ? adminT("forceConfirm") : t("confirmReservation")}
                   </ActionButton>
                 ) : (
                   <ActionButton
@@ -361,7 +438,31 @@ export function ReservationForm() {
           </div>
         </form>
       </FormProvider>
-      <NeoFooter />
+      {!isForce ? <NeoFooter /> : null}
     </div>
   )
+}
+
+function findPriorityClass(catalog: CatalogData) {
+  const privilegedCampusIds = new Set(
+    catalog.campuses
+      .filter((campus) => campus.isPrivileged)
+      .map((campus) => campus.id)
+  )
+  return catalog.classes.find((item) => privilegedCampusIds.has(item.campus))
+}
+
+function forceReservationDefaults(
+  classId: number,
+  admin: AdminSession
+): ReservationFormValues {
+  return {
+    ...reservationDefaults,
+    classId,
+    studentName: admin.name,
+    email: admin.email,
+    isPrivileged: true,
+    purposeType: "class",
+    isAgreed: true,
+  }
 }

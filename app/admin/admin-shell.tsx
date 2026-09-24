@@ -3,6 +3,7 @@
 import {
   Building2,
   CalendarClock,
+  CalendarPlus,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -58,6 +59,11 @@ function AuthenticatedAdminShell({
       href: "/admin/reservation",
       label: t("reservations"),
       icon: CalendarClock,
+    },
+    {
+      href: "/admin/force-reservation",
+      label: t("forceReservationTab"),
+      icon: CalendarPlus,
     },
     { href: "/admin/facility", label: t("facilities"), icon: Building2 },
     { href: "/admin/announcement", label: t("announcements"), icon: Megaphone },
