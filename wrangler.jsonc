@@ -37,8 +37,13 @@
     {
       "pattern": "hfiuc.org",
       "custom_domain": true,
-      "previews_enabled": true
     },
+    {
+    "pattern": "preview.hfiuc.org",
+    "custom_domain": true,
+    "previews_enabled": true,
+    "enabled": false
+  },
     {
       "pattern": "www.hfiuc.org",
       "custom_domain": true
@@ -47,6 +52,20 @@
 
   "workers_dev": true,
   "preview_urls": true,
+
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true
+    }
+  },
 
   "previews": {
     "services": [
