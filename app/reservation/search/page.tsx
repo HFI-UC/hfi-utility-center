@@ -1,13 +1,19 @@
+import { Suspense } from "react"
+
+import { Spinner } from "@/components/astryx"
+
 import { ReservationSearch } from "./reservation-search"
-import { parseReservationSearchFilters } from "./search-query"
 
-type SearchParams = Record<string, string | string[] | undefined>
-
-export default async function ReservationSearchPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>
-}) {
-  const filters = parseReservationSearchFilters(await searchParams)
-  return <ReservationSearch filters={filters} />
+export default function ReservationSearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex flex-1 items-center justify-center">
+          <Spinner className="size-8" />
+        </main>
+      }
+    >
+      <ReservationSearch />
+    </Suspense>
+  )
 }
