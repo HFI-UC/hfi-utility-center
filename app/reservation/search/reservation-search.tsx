@@ -1,6 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
+import { useSearchParams } from "next/navigation"
 
 import { Spinner } from "@/components/astryx"
 import { NeoFooter, NeoPage } from "@/components/neo/shared"
@@ -10,16 +11,17 @@ import { ReservationResults } from "./reservation-results"
 import { ReservationSearchFilterForm } from "./reservation-search-filters"
 import { ReservationSearchPagination } from "./reservation-search-pagination"
 import {
+  parseReservationSearchFilters,
   reservationSearchHref,
   type ReservationSearchFilters,
 } from "./search-query"
 import { useReservationSearch } from "./use-reservation-search"
 
-export function ReservationSearch({
-  filters,
-}: {
-  filters: ReservationSearchFilters
-}) {
+export function ReservationSearch() {
+  const searchParams = useSearchParams()
+  const filters = parseReservationSearchFilters(
+    Object.fromEntries(searchParams.entries())
+  )
   const t = useTranslations("searchPage")
   const { catalog, result, loading } = useReservationSearch(filters)
 

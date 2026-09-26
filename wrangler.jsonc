@@ -1,36 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
 
-  "main": ".open-next/worker.js",
   "name": "hfi-utility-center",
 
   "compatibility_date": "2026-09-24",
-  "compatibility_flags": [
-    "nodejs_compat",
-    "global_fetch_strictly_public"
-  ],
 
   "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
-  },
-
-  "services": [
-    {
-      "binding": "WORKER_SELF_REFERENCE",
-      "service": "hfi-utility-center"
-    }
-  ],
-
-  "r2_buckets": [
-    {
-      "binding": "NEXT_INC_CACHE_R2_BUCKET",
-      "bucket_name": "hfi-utility-center-opennext-cache"
-    }
-  ],
-
-  "images": {
-    "binding": "IMAGES"
+    "directory": "./out",
+    "html_handling": "auto-trailing-slash"
   },
 
   "routes": [
@@ -39,11 +16,11 @@
       "custom_domain": true,
     },
     {
-    "pattern": "preview.hfiuc.org",
-    "custom_domain": true,
-    "previews_enabled": true,
-    "enabled": false
-  },
+      "pattern": "preview.hfiuc.org",
+      "custom_domain": true,
+      "previews_enabled": true,
+      "enabled": false
+    },
     {
       "pattern": "www.hfiuc.org",
       "custom_domain": true
@@ -64,30 +41,6 @@
       "enabled": true,
       "head_sampling_rate": 1,
       "persist": true
-    }
-  },
-
-  "previews": {
-    "services": [
-      {
-        "binding": "WORKER_SELF_REFERENCE",
-        "service": "hfi-utility-center"
-      }
-    ],
-
-    "r2_buckets": [
-      {
-        "binding": "NEXT_INC_CACHE_R2_BUCKET",
-        "bucket_name": "hfi-utility-center-opennext-cache"
-      }
-    ],
-
-    "images": {
-      "binding": "IMAGES"
-    },
-
-    "vars": {
-      "NEXT_INC_CACHE_R2_PREFIX": "preview"
     }
   }
 }

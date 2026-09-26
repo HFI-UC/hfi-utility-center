@@ -11,16 +11,14 @@
     "format": "prettier --write \"**/*.{ts,tsx,mjs}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,mjs}\"",
     "typecheck": "tsc --noEmit",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "preview": "next build && wrangler dev",
+    "deploy": "next build && wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@astryxdesign/core": "^0.6.2",
     "@astryxdesign/theme-neutral": "^0.6.2",
     "@hookform/resolvers": "^5.4.0",
-    "@opennextjs/cloudflare": "^1.20.6",
     "axios": "^1.18.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

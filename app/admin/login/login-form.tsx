@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Controller, useForm } from "react-hook-form"
 
 import { Turnstile } from "@/components/turnstile"
@@ -18,15 +18,24 @@ import {
   rememberAdminEmail,
 } from "@/lib/api/auth"
 
+import { safeAdminRedirect } from "./redirect"
+
 type LoginFields = { email: string; password: string }
 
-export function AdminLoginForm({
-  token,
-  redirectTo,
-}: {
-  token?: string
-  redirectTo: string
-}) {
+export function AdminLoginForm() {
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get("redirect") ?? ""
+  const redirectParams = new URLSearchParams(redirect.split("?")[1] ?? "")
+  const token =
+    searchParams.get("token") ?? redirectParams.get("token") ?? undefined
+  redirectParams.delete("token")
+  const redirectPath = redirect.split("?", 1)[0]
+  const redirectQuery = redirectParams.toString()
+  const redirectTo = safeAdminRedirect(
+    redirectPath
+      ? `${redirectPath}${redirectQuery ? `?${redirectQuery}` : ""}`
+      : undefined
+  )
   const t = useTranslations("admin")
   const router = useRouter()
   const form = useForm<LoginFields>({

@@ -21,7 +21,6 @@ import {
   XCircle,
 } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 
 import { Button, Calendar, Spinner } from "@/components/astryx"
@@ -89,8 +88,7 @@ function addDays(date: Date, days: number) {
 }
 
 export default function CancelReservationPage() {
-  const params = useSearchParams()
-  const token = params.get("token") || ""
+  const [token, setToken] = useState("")
   const locale = useLocale()
   const t = useTranslations("neo.management")
   const bookingT = useTranslations("booking")
@@ -107,6 +105,22 @@ export default function CancelReservationPage() {
   const [editStep, setEditStep] = useState<"location" | "time">("location")
   const [result, setResult] = useState<"modified" | "cancelled">()
   const [error, setError] = useState<string>()
+
+  useEffect(() => {
+    let active = true
+    const nextToken =
+      new URLSearchParams(window.location.search).get("token") || ""
+    if (nextToken) {
+      queueMicrotask(() => {
+        if (!active) return
+        setToken(nextToken)
+        setLoading(true)
+      })
+    }
+    return () => {
+      active = false
+    }
+  }, [])
 
   useEffect(() => {
     if (!token) return
