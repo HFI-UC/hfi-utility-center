@@ -25,7 +25,6 @@ import {
 } from "./form"
 import { ClassStep } from "./steps/class-step"
 import { LocationStep } from "./steps/location-step"
-import { ProfileStep } from "./steps/profile-step"
 import { ReviewStep } from "./steps/review-step"
 import { SuccessStep } from "./steps/success-step"
 import {
@@ -49,7 +48,7 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
     defaultValues: reservationDefaults,
     mode: "onTouched",
   })
-  const [currentStepId, setCurrentStepId] = useState<BookingStepId>("class")
+  const [currentStepId, setCurrentStepId] = useState<BookingStepId>("details")
   const [flowError, setFlowError] = useState<string>()
   const [isWorking, setIsWorking] = useState(false)
   const [result, setResult] = useState<ReservationResult>()
@@ -126,7 +125,7 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
       return
     }
 
-    if (currentStep.id === "class") {
+    if (currentStep.id === "details") {
       if (!form.getValues("bookingCampusId")) {
         const campus =
           catalog?.campuses.find(
@@ -153,6 +152,18 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
     if (!nextStep) return
     setFlowError(undefined)
     goToStep(nextStep.id)
+  }
+
+  function continueFromDetails() {
+    if (isWorking || currentStep.id !== "details") return
+    const parsed = schema.safeParse(form.getValues())
+    const detailsComplete =
+      parsed.success ||
+      parsed.error.issues.every((issue) => {
+        const field = issue.path[0]
+        return typeof field !== "string" || !currentStep.fields.some((name) => name === field)
+      })
+    if (detailsComplete) void continueToNextStep()
   }
 
   async function confirmReservation(values: ReservationFormValues) {
@@ -227,7 +238,7 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
         ? forceReservationDefaults(priorityClass.id, adminSessionRef.current)
         : reservationDefaults,
     )
-    goToStep("class")
+    goToStep("details")
     setResult(undefined)
     setFlowError(undefined)
   }
@@ -256,9 +267,15 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
   }
 
   const stepContent: Record<BookingStepId, ReactNode> = {
-    class: <ClassStep catalog={catalog} privilegedOnly={isForce} />,
+    details: (
+      <ClassStep
+        catalog={catalog}
+        privilegedOnly={isForce}
+        adminMode={isForce}
+        onClassSelected={() => continueFromDetails()}
+      />
+    ),
     location: <LocationStep catalog={catalog} privileged={isPrivilegedSelection} />,
-    profile: <ProfileStep adminMode={isForce} />,
     review: <ReviewStep catalog={catalog} onEdit={goToStep} />,
   }
 
@@ -271,9 +288,8 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
       >
         <BookingStepper
           titles={{
-            class: t("steps.class"),
+            details: t("steps.details"),
             location: t("steps.location"),
-            profile: t("steps.profile"),
             review: t("steps.review"),
           }}
           currentStepIndex={currentStepIndex}

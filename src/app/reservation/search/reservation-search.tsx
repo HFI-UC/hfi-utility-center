@@ -12,7 +12,7 @@ import type { Reservation } from "@/lib/api/types"
 import { ReservationResults } from "./reservation-results"
 import { ReservationSearchFilterForm } from "./reservation-search-filters"
 import { ReservationSearchPagination } from "./reservation-search-pagination"
-import { reservationSearchHref, type ReservationSearchFilters } from "./search-query"
+import { type ReservationSearchFilters } from "./search-query"
 import { useReservationSearch } from "./use-reservation-search"
 
 export function ReservationSearch({ filters }: { filters: ReservationSearchFilters }) {
@@ -45,11 +45,7 @@ export function ReservationSearch({ filters }: { filters: ReservationSearchFilte
                 />
               </div>
             ) : null}
-            <ReservationSearchFilterForm
-              key={reservationSearchHref(filters, filters.page)}
-              catalog={catalog}
-              filters={filters}
-            />
+            <ReservationSearchFilterForm catalog={catalog} filters={filters} />
           </SectionCard>
         </div>
 

@@ -10,7 +10,7 @@ const SHANGHAI_DAY_FORMATTER = new Intl.DateTimeFormat("en-US", {
 
 export type ReservationSearchFilters = {
   keyword: string
-  campusId: number
+  campusIds: number[]
   roomId: number
   status?: ReservationStatus
   startDate: string
@@ -38,6 +38,18 @@ function parsePositiveInteger(value: string | undefined) {
   return Number.isSafeInteger(number) && number > 0 ? number : undefined
 }
 
+function parseCampusIds(value: string | undefined) {
+  if (!value) return []
+  return [
+    ...new Set(
+      value.split(",").flatMap((part) => {
+        const id = parsePositiveInteger(part)
+        return id === undefined ? [] : [id]
+      }),
+    ),
+  ]
+}
+
 function parseDate(value: string | undefined) {
   return value && inputValueToTimestamp(value) !== undefined ? value : ""
 }
@@ -49,7 +61,7 @@ export function parseReservationSearchFilters(params: SearchParams): Reservation
 
   return {
     keyword: firstValue(params, "keyword")?.trim() ?? "",
-    campusId: parsePositiveInteger(firstValue(params, "campus")) ?? 0,
+    campusIds: parseCampusIds(firstValue(params, "campus")),
     roomId: parsePositiveInteger(firstValue(params, "room")) ?? 0,
     status: parseStatus(firstValue(params, "status")),
     startDate,
@@ -68,7 +80,10 @@ export function reservationSearchRequest(filters: ReservationSearchFilters, now 
 
   return {
     keyword: filters.keyword,
-    campusId: filters.campusId || undefined,
+    // The API filters one campus per request: none or every campus checked
+    // means unfiltered, and a partial multi-campus pick (needs 3+ campuses)
+    // also degrades to unfiltered.
+    campusId: filters.campusIds.length === 1 ? filters.campusIds[0] : undefined,
     roomId: filters.roomId || undefined,
     status: filters.status,
     page: filters.page,
@@ -89,7 +104,7 @@ function shanghaiDayStart(now: Date) {
 export function reservationSearchHref(filters: ReservationSearchFilters, page: number) {
   const query = new URLSearchParams()
   if (filters.keyword) query.set("keyword", filters.keyword)
-  if (filters.campusId) query.set("campus", String(filters.campusId))
+  if (filters.campusIds.length) query.set("campus", filters.campusIds.join(","))
   if (filters.roomId) query.set("room", String(filters.roomId))
   if (filters.status) query.set("status", filters.status)
   if (filters.startDate) query.set("start", filters.startDate)

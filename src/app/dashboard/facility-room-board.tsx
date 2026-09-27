@@ -123,7 +123,7 @@ export function FacilityRoomBoard({
                 const dayHref = reservationSearchHref(
                   {
                     keyword: "",
-                    campusId: 0,
+                    campusIds: [],
                     roomId: day.room.id,
                     status: undefined,
                     startDate: today,

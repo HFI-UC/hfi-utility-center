@@ -59,11 +59,10 @@ export const reservationDefaults: ReservationFormValues = {
 }
 
 export const bookingSteps = [
-  { id: "class", fields: ["classId"] },
-  { id: "location", fields: ["bookingCampusId", "room", "date", "startTime", "endTime"] },
   {
-    id: "profile",
+    id: "details",
     fields: [
+      "classId",
       "studentName",
       "studentId",
       "email",
@@ -73,6 +72,7 @@ export const bookingSteps = [
       "isAgreed",
     ],
   },
+  { id: "location", fields: ["bookingCampusId", "room", "date", "startTime", "endTime"] },
   { id: "review", fields: [] },
 ] as const satisfies ReadonlyArray<{
   id: string
