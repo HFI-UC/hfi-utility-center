@@ -256,10 +256,12 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   --animate-page-slide: t-page-slide-in var(--duration-fast) var(--ease-smooth-out) both;
+  --animate-route-enter: t-route-enter var(--duration-fast) var(--ease-smooth-out) both;
   --animate-content-reveal: t-content-reveal var(--duration-slow) var(--ease-in-out) both;
   --animate-success-check: t-success-check-in var(--duration-very-slow) var(--ease-smooth-out) both;
   --animate-success-icon: t-success-icon-in var(--duration-very-slow) var(--ease-smooth-out) both;
   --animate-shake-x: t-shake calc(var(--duration-micro) * 4) linear;
+  --animate-digit-pop: t-digit-pop-in var(--duration-very-slow) var(--ease-bounce) both;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -513,6 +515,125 @@
 
   @media (prefers-reduced-motion: reduce) {
     .t-digit-group .t-digit {
+      animation: none !important;
+    }
+  }
+
+  /* Route enter
+     One vertical reveal when a route mounts. Header stays put. */
+  .t-route-enter {
+    --t-route-distance: var(--distance-medium);
+    --t-route-blur: var(--blur-medium);
+    --t-route-dur: var(--duration-fast);
+    --t-route-ease: var(--ease-smooth-out);
+
+    animation: t-route-enter var(--t-route-dur) var(--t-route-ease) both;
+    will-change: opacity, transform, filter;
+  }
+
+  @keyframes t-route-enter {
+    from {
+      opacity: 0;
+      filter: blur(var(--blur-medium));
+      transform: translateY(var(--distance-medium));
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-route-enter {
+      animation: none !important;
+    }
+  }
+
+  /* Step progress
+     The completed rail grows; the current marker scales in. */
+  .t-step-rail {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--duration-fast) var(--ease-smooth-out);
+  }
+
+  .t-step-rail[data-reached] {
+    transform: scaleX(1);
+  }
+
+  .t-step-marker {
+    transition:
+      transform var(--duration-fast) var(--ease-bounce),
+      background-color var(--duration-quick) var(--ease-smooth-out),
+      color var(--duration-quick) var(--ease-smooth-out);
+  }
+
+  .t-step-marker[data-current] {
+    transform: scale(1.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-step-rail,
+    .t-step-marker {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Interactive lift
+     Hover is quick; the return is slightly springier. */
+  .t-lift {
+    transition-property: transform !important;
+    transition-duration: var(--duration-fast) !important;
+    transition-timing-function: var(--ease-smooth-out) !important;
+  }
+
+  .t-lift:hover {
+    transform: translateY(calc(var(--distance-micro) * -1));
+  }
+
+  .t-lift:not(:hover) {
+    transition-timing-function: var(--ease-bounce) !important;
+  }
+
+  .t-arrow {
+    transition: transform var(--duration-fast) var(--ease-smooth-out);
+  }
+
+  .t-arrow-host:hover .t-arrow,
+  .t-arrow-host:focus-visible .t-arrow {
+    transform: translate(var(--distance-micro), calc(var(--distance-micro) * -1));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-lift,
+    .t-arrow {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Staggered reveal. data-stagger is 0–3; later items stay still. */
+  .t-stagger {
+    animation: t-content-reveal var(--duration-slow) var(--ease-in-out) both;
+    animation-delay: calc(var(--duration-stagger) * var(--stagger, 0));
+  }
+
+  .t-stagger[data-stagger="1"] {
+    --stagger: 1;
+  }
+
+  .t-stagger[data-stagger="2"] {
+    --stagger: 2;
+  }
+
+  .t-stagger[data-stagger="3"] {
+    --stagger: 3;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-stagger {
       animation: none !important;
     }
   }

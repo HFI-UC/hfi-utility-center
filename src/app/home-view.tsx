@@ -65,7 +65,7 @@ export function HomeView() {
   return (
     <AppShell>
       {announcement ? (
-        <Alert className="flex items-start gap-3 px-4 py-4">
+        <Alert className="t-route-enter flex items-start gap-3 px-4 py-4">
           <Megaphone aria-hidden className="mt-1 size-4 shrink-0" />
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <AlertTitle className="break-words">
@@ -105,12 +105,15 @@ export function HomeView() {
         <div className="min-w-0 self-end">
           <h1
             id="home-title"
-            className="text-[clamp(2.75rem,6vw,5.25rem)] leading-[1.12] font-semibold tracking-tight"
+            className="t-stagger text-[clamp(2.75rem,6vw,5.25rem)] leading-[1.12] font-semibold tracking-tight"
           >
             <span className="block">{t("headlineFirst")}</span>
             <span className="block">{t("headlineSecond")}</span>
           </h1>
-          <p className="mt-6 max-w-sm text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p
+            className="t-stagger mt-6 max-w-sm text-base leading-relaxed text-muted-foreground sm:text-lg"
+            data-stagger="1"
+          >
             {t("intro")}
           </p>
         </div>
@@ -121,7 +124,7 @@ export function HomeView() {
             prefetch={false}
             aria-labelledby="book-action"
             aria-describedby="book-hint"
-            className="relative block overflow-hidden rounded-2xl bg-primary text-primary-foreground outline-none hover:bg-primary/95 focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background lg:-rotate-3"
+            className="t-lift t-arrow-host relative block overflow-hidden rounded-2xl bg-primary text-primary-foreground outline-none hover:bg-primary/95 focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background lg:-rotate-3"
           >
             <div className="flex items-start justify-between gap-6 px-7 pt-7 sm:px-9 sm:pt-9">
               <span className="text-sm font-medium">{t("ticketLabel")}</span>
@@ -153,7 +156,7 @@ export function HomeView() {
                 {t("bookAction")}
               </span>
               <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-foreground text-primary">
-                <ArrowUpRight aria-hidden className="size-5" />
+                <ArrowUpRight aria-hidden className="t-arrow size-5" />
               </span>
             </div>
           </Link>
@@ -165,7 +168,7 @@ export function HomeView() {
               key={item.href}
               href={item.href}
               prefetch={false}
-              className="flex min-w-0 items-center gap-4 rounded-lg py-4 pr-3 pl-2 outline-none hover:bg-accent/60 focus-visible:ring-3 focus-visible:ring-ring"
+              className="t-lift t-arrow-host flex min-w-0 items-center gap-4 rounded-lg py-4 pr-3 pl-2 outline-none hover:bg-accent/60 focus-visible:ring-3 focus-visible:ring-ring"
             >
               <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border text-primary">
                 <item.icon aria-hidden className="size-4" />
@@ -174,7 +177,7 @@ export function HomeView() {
                 <span className="text-base font-medium break-words">{t(item.labelKey)}</span>
                 <span className="text-sm text-muted-foreground">{t(item.hintKey)}</span>
               </span>
-              <ArrowUpRight aria-hidden className="size-4 shrink-0 text-muted-foreground" />
+              <ArrowUpRight aria-hidden className="t-arrow size-4 shrink-0 text-muted-foreground" />
             </Link>
           ))}
         </div>
@@ -184,12 +187,16 @@ export function HomeView() {
         aria-labelledby="booking-rules-title"
         className="mt-4 grid min-w-0 gap-6 border-t pt-7 pb-4 lg:grid-cols-[10rem_1fr] lg:gap-8 lg:pt-8"
       >
-        <h2 id="booking-rules-title" className="text-base font-medium">
+        <h2 id="booking-rules-title" className="text-base font-medium lg:self-center">
           {t("factsTitle")}
         </h2>
         <dl className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4">
-          {FACTS.map((fact) => (
-            <div key={fact.labelKey} className="flex min-w-0 flex-col gap-2">
+          {FACTS.map((fact, index) => (
+            <div
+              key={fact.labelKey}
+              className="t-stagger flex min-w-0 flex-col gap-2"
+              data-stagger={String(Math.min(index, 3))}
+            >
               <dt className="text-sm text-muted-foreground">{t(fact.labelKey)}</dt>
               <dd className="text-base font-medium tracking-tight break-words sm:text-lg">
                 {t(fact.valueKey)}

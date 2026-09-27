@@ -40,9 +40,9 @@ const NAV = [
 
 const linkClasses = (active: boolean) =>
   cn(
-    "relative rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors",
+    "relative rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-(--duration-quick) ease-(--ease-smooth-out)",
     "text-muted-foreground hover:text-foreground",
-    "after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-primary after:opacity-0 after:transition-opacity hover:after:opacity-40",
+    "after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-primary after:opacity-0 after:transition-opacity after:duration-(--duration-quick) after:ease-(--ease-smooth-out) hover:after:opacity-40",
     active && "text-foreground after:opacity-100",
   )
 

@@ -29,7 +29,7 @@ export function RefreshButton({
             onClick={onRefresh}
             disabled={loading}
           >
-            <RefreshCw />
+            <RefreshCw className={cn(loading && "motion-safe:animate-spin")} />
           </Button>
         </TooltipTrigger>
         <TooltipContent>{label}</TooltipContent>

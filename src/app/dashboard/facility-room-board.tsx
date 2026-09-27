@@ -148,7 +148,7 @@ export function FacilityRoomBoard({
                   <li
                     key={day.room.id}
                     className={cn(
-                      "grid min-w-0 gap-x-6 gap-y-4 px-4 py-5 sm:px-6 lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)_2.75rem] lg:items-start lg:py-6",
+                      "t-lift grid min-w-0 gap-x-6 gap-y-4 px-4 py-5 hover:bg-accent/40 sm:px-6 lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)_2.75rem] lg:items-start lg:py-6",
                       portrait && "lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)]",
                     )}
                   >

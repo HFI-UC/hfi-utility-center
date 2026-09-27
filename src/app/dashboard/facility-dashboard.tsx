@@ -7,6 +7,7 @@ import { useMemo, useState } from "react"
 
 import { AppShell } from "@/components/layout/app-shell"
 import { ErrorState, LoadingState } from "@/components/layout/data-state"
+import { MotionNumber } from "@/components/layout/motion-number"
 import { RefreshButton } from "@/components/layout/refresh-button"
 import { Button } from "@/components/ui/button"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
@@ -120,7 +121,7 @@ export function FacilityDashboard({ portrait = false }: { portrait?: boolean }) 
                 >
                   <dt className="text-sm text-muted-foreground">{t(item.label)}</dt>
                   <dd className="text-2xl font-semibold tracking-tight tabular-nums">
-                    {updated ? item.value : "—"}
+                    {updated ? <MotionNumber value={String(item.value)} /> : "—"}
                   </dd>
                 </div>
               ))}

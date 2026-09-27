@@ -29,11 +29,18 @@ export function BookingStepper({
           <li
             key={step.id}
             aria-current={index === currentStepIndex ? "step" : undefined}
-            className={cn(
-              "min-w-0 border-t-2 pt-2",
-              index <= currentStepIndex ? "border-primary" : "border-border",
-            )}
+            className="relative min-w-0 pt-2"
           >
+            <span
+              aria-hidden
+              className="t-step-rail absolute inset-x-0 top-0 h-0.5 bg-border"
+              data-reached=""
+            />
+            <span
+              aria-hidden
+              className="t-step-rail absolute inset-x-0 top-0 h-0.5 bg-primary"
+              data-reached={index <= currentStepIndex ? "" : undefined}
+            />
             <Button
               type="button"
               variant="ghost"
@@ -46,9 +53,10 @@ export function BookingStepper({
             >
               <span
                 className={cn(
-                  "flex size-6 shrink-0 items-center justify-center rounded-full text-xs tabular-nums",
+                  "t-step-marker flex size-6 shrink-0 items-center justify-center rounded-full text-xs tabular-nums",
                   index === currentStepIndex ? "bg-primary text-primary-foreground" : "bg-muted",
                 )}
+                data-current={index === currentStepIndex ? "" : undefined}
               >
                 {index < currentStepIndex ? <Check aria-hidden className="size-3.5" /> : index + 1}
               </span>
