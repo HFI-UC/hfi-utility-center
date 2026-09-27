@@ -16,6 +16,7 @@ import type { Reservation, ReservationStatus } from "@/lib/api/types"
 
 const statusTone: Record<ReservationStatus, Tone> = {
   pending: "warning",
+  ai_reviewing: "warning",
   approved: "success",
   rejected: "danger",
   cancelled: "info",

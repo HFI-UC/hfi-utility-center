@@ -25,15 +25,18 @@ import type { Admin } from "@/lib/api/types"
 
 import styles from "./admin-user.module.css"
 import { EditAdminDialog } from "./edit-admin-dialog"
+import { PermissionDialog } from "./permission-dialog"
 
 export function AdminList({
   admins,
   mutate,
   working,
+  canManagePermissions,
 }: {
   admins: Admin[]
   mutate: AdminMutation
   working: boolean
+  canManagePermissions: boolean
 }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
@@ -64,6 +67,9 @@ export function AdminList({
               <div className={styles.identity}>
                 <strong>{admin.name}</strong>
                 <a href={`mailto:${admin.email}`}>{admin.email}</a>
+                <span className="text-xs text-muted-foreground">
+                  {admin.role === "global" ? t("globalAdmin") : t("roomAdmin")}
+                </span>
               </div>
             </header>
 
@@ -116,6 +122,13 @@ export function AdminList({
             ) : null}
 
             <footer className={styles.actions}>
+              {canManagePermissions ? (
+                <PermissionDialog
+                  admin={admin}
+                  mutate={mutate}
+                  working={working}
+                />
+              ) : null}
               <EditAdminDialog
                 admin={admin}
                 mutate={mutate}

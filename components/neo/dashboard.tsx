@@ -33,7 +33,8 @@ function hourValue(value: Date) {
 
 function toneFor(reservation: Reservation): Tone {
   if (reservation.status === "approved") return "success"
-  if (reservation.status === "pending") return "warning"
+  if (reservation.status === "pending" || reservation.status === "ai_reviewing")
+    return "warning"
   if (reservation.status === "rejected") return "danger"
   return "info"
 }
@@ -42,6 +43,7 @@ function statusLabel(reservation: Reservation) {
   return {
     approved: "已确认",
     pending: "待审批",
+    ai_reviewing: "AI 审核中",
     rejected: "已拒绝",
     cancelled: "已取消",
   }[reservation.status]

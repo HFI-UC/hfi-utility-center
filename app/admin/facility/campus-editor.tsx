@@ -11,11 +11,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/astryx"
-import { createCampus, deleteCampus, editCampus } from "@/lib/api/catalog"
+import {
+  createCampus,
+  deleteCampus,
+  editCampus,
+  restoreCampus,
+} from "@/lib/api/catalog"
 import type { Campus } from "@/lib/api/types"
 
 import {
   ConfirmFacilityDelete,
+  RestoreFacilityButton,
   type FacilityEditorActions,
 } from "./facility-editor-actions"
 import styles from "./facility.module.css"
@@ -64,6 +70,11 @@ export function CampusEditor({
                 <TableCell className="font-medium">
                   {campus.name}
                   <span className={styles.recordId}>#{campus.id}</span>
+                  {campus.deletedAt ? (
+                    <span className="ml-2 text-xs text-amber-700">
+                      {t("archived")}
+                    </span>
+                  ) : null}
                 </TableCell>
                 <TableCell
                   className={`hidden md:table-cell ${styles.secondaryText}`}
@@ -74,25 +85,35 @@ export function CampusEditor({
                 </TableCell>
                 <TableCell>
                   <div className={styles.rowActions}>
-                    <FacilityNameDialog
-                      mode="edit"
-                      title={t("renameCampus")}
-                      label={t("campusName")}
-                      initialValue={campus.name}
-                      working={working}
-                      onSave={(name) =>
-                        mutate(
-                          () => editCampus(campus.id, name),
-                          t("campusUpdated")
-                        )
-                      }
-                    />
-                    <ConfirmFacilityDelete
-                      label={campus.name}
-                      action={() => deleteCampus(campus.id)}
-                      mutate={mutate}
-                      working={working}
-                    />
+                    {campus.deletedAt ? (
+                      <RestoreFacilityButton
+                        action={() => restoreCampus(campus.id)}
+                        mutate={mutate}
+                        working={working}
+                      />
+                    ) : (
+                      <>
+                        <FacilityNameDialog
+                          mode="edit"
+                          title={t("renameCampus")}
+                          label={t("campusName")}
+                          initialValue={campus.name}
+                          working={working}
+                          onSave={(name) =>
+                            mutate(
+                              () => editCampus(campus.id, name),
+                              t("campusUpdated")
+                            )
+                          }
+                        />
+                        <ConfirmFacilityDelete
+                          label={campus.name}
+                          action={() => deleteCampus(campus.id)}
+                          mutate={mutate}
+                          working={working}
+                        />
+                      </>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

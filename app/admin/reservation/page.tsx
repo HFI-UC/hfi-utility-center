@@ -5,6 +5,7 @@ import { Check, Download, RefreshCw, Search, X } from "lucide-react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { AdminPageHeader, AdminSection } from "@/app/admin/admin-shell"
+import { TextActionDialog } from "@/app/admin/text-action-dialog"
 import { Button } from "@/components/astryx"
 import {
   Dialog,
@@ -24,8 +25,10 @@ import {
 import { Spinner } from "@/components/astryx"
 import { Textarea } from "@/components/astryx"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
+import { getAdminSession, type AdminSession } from "@/lib/api/auth"
 import {
   getFutureReservations,
+  unlockAiReview,
   updateReservationApproval,
 } from "@/lib/api/reservations"
 import type { Reservation } from "@/lib/api/types"
@@ -46,6 +49,10 @@ export default function AdminReservationsPage() {
   const reservationResource = useAdminResource<Reservation[]>({
     loadResource: getFutureReservations,
     initialData: [],
+  })
+  const sessionResource = useAdminResource<AdminSession | null>({
+    loadResource: getAdminSession,
+    initialData: null,
   })
   const { mutate, working } = useAdminMutation({
     reload: reservationResource.reload,
@@ -163,7 +170,14 @@ export default function AdminReservationsPage() {
           aria-label={t("reservationStatusFilter")}
         >
           {(
-            ["all", "pending", "approved", "rejected", "cancelled"] as const
+            [
+              "all",
+              "pending",
+              "ai_reviewing",
+              "approved",
+              "rejected",
+              "cancelled",
+            ] as const
           ).map((status) => (
             <Button
               key={status}
@@ -259,7 +273,7 @@ export default function AdminReservationsPage() {
                 </ReservationGroup>
               </div>
               <footer className="admin-reservation-card__footer">
-                {item.status !== "approved" ? (
+                {item.status === "pending" ? (
                   <button
                     type="button"
                     className="admin-decision-button admin-decision-button--approve"
@@ -269,7 +283,26 @@ export default function AdminReservationsPage() {
                     <Check /> <span>{t("approve")}</span>
                   </button>
                 ) : null}
-                {item.status !== "rejected" ? (
+                {item.status === "ai_reviewing" &&
+                sessionResource.data?.role === "global" ? (
+                  <TextActionDialog
+                    title={t("unlockAi")}
+                    label={t("unlockAiReason")}
+                    cancelLabel={common("cancel")}
+                    saveLabel={t("unlockAi")}
+                    onSave={(value) =>
+                      mutate(
+                        () => unlockAiReview(item.id, value),
+                        t("aiUnlocked")
+                      )
+                    }
+                  >
+                    <Button type="button" variant="outline" disabled={working}>
+                      {t("unlockAi")}
+                    </Button>
+                  </TextActionDialog>
+                ) : null}
+                {item.status === "pending" ? (
                   <button
                     type="button"
                     className="admin-decision-button admin-decision-button--reject"

@@ -92,6 +92,7 @@ export default function CancelReservationPage() {
   const locale = useLocale()
   const t = useTranslations("neo.management")
   const bookingT = useTranslations("booking")
+  const statusT = useTranslations("status")
   const [preview, setPreview] = useState<CancellationPreview>()
   const [catalog, setCatalog] = useState<CatalogData>()
   const [draft, setDraft] = useState<EditDraft>()
@@ -144,8 +145,8 @@ export default function CancelReservationPage() {
         }
         const demoCatalog: CatalogData = {
           campuses: [
-            { id: 1, name: "石牌校区", isPrivileged: false },
-            { id: 2, name: "知识城校区", isPrivileged: false },
+            { id: 1, name: "石牌校区" },
+            { id: 2, name: "知识城校区" },
           ],
           classes: [],
           rooms: [
@@ -450,9 +451,7 @@ export default function CancelReservationPage() {
                         preview.status === "approved" ? "success" : "warning"
                       }
                     >
-                      {preview.status === "approved"
-                        ? t("approved")
-                        : t("pending")}
+                      {statusT(preview.status)}
                     </StatusBadge>
                     <span>
                       {t("remainingEdits", { count: preview.remainingEdits })}
@@ -582,27 +581,25 @@ export default function CancelReservationPage() {
                           <span>{t("locationHint")}</span>
                         </div>
                         <div className="campus-tabs">
-                          {catalog.campuses
-                            .filter((campus) => !campus.isPrivileged)
-                            .map((campus) => (
-                              <button
-                                type="button"
-                                key={campus.id}
-                                className={`campus-tab ${draft.campus === campus.id ? "campus-tab--active" : ""}`}
-                                onClick={() => {
-                                  setDraft({
-                                    ...draft,
-                                    campus: campus.id,
-                                    room: 0,
-                                    startTime: 0,
-                                    endTime: 0,
-                                  })
-                                  setAvailability(undefined)
-                                }}
-                              >
-                                {campus.name}
-                              </button>
-                            ))}
+                          {catalog.campuses.map((campus) => (
+                            <button
+                              type="button"
+                              key={campus.id}
+                              className={`campus-tab ${draft.campus === campus.id ? "campus-tab--active" : ""}`}
+                              onClick={() => {
+                                setDraft({
+                                  ...draft,
+                                  campus: campus.id,
+                                  room: 0,
+                                  startTime: 0,
+                                  endTime: 0,
+                                })
+                                setAvailability(undefined)
+                              }}
+                            >
+                              {campus.name}
+                            </button>
+                          ))}
                         </div>
                         <div className="resource-heading management-resource-heading">
                           <div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { AlertCircle, RefreshCw } from "lucide-react"
 import { useTranslations } from "next-intl"
 
@@ -9,6 +9,7 @@ import { Button } from "@/components/astryx"
 import { Spinner } from "@/components/astryx"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import { getAdmins } from "@/lib/api/admins"
+import { getAdminSession } from "@/lib/api/auth"
 import type { Admin } from "@/lib/api/types"
 
 import { AdminList } from "./admin-list"
@@ -19,6 +20,18 @@ export default function AdminUsersPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const [loadError, setLoadError] = useState(false)
+  const [canManagePermissions, setCanManagePermissions] = useState(false)
+  useEffect(() => {
+    let active = true
+    void getAdminSession()
+      .then((session) => {
+        if (active) setCanManagePermissions(session.role === "global")
+      })
+      .catch(() => undefined)
+    return () => {
+      active = false
+    }
+  }, [])
   const loadAdmins = useCallback(async () => {
     try {
       const admins = await getAdmins()
@@ -79,6 +92,7 @@ export default function AdminUsersPage() {
             admins={adminResource.data}
             mutate={mutate}
             working={working}
+            canManagePermissions={canManagePermissions}
           />
         )}
       </AdminSection>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Building2, GraduationCap, RefreshCw, School } from "lucide-react"
 import { useTranslations } from "next-intl"
 
@@ -28,9 +29,9 @@ const emptyFacilityData: FacilityData = {
 
 async function loadFacilityData(): Promise<FacilityData> {
   const [campuses, classes, rooms] = await Promise.all([
-    getCampuses(),
-    getClasses(),
-    getRooms(),
+    getCampuses(true),
+    getClasses(true),
+    getRooms(true),
   ])
   return { campuses, classes, rooms }
 }
@@ -38,6 +39,7 @@ async function loadFacilityData(): Promise<FacilityData> {
 export default function AdminFacilitiesPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
+  const [showArchived, setShowArchived] = useState(false)
   const facilityResource = useAdminResource({
     loadResource: loadFacilityData,
     initialData: emptyFacilityData,
@@ -46,6 +48,14 @@ export default function AdminFacilitiesPage() {
     reload: facilityResource.reload,
   })
   const { campuses, classes, rooms } = facilityResource.data
+  const activeCampuses = campuses.filter((item) => !item.deletedAt)
+  const activeCampusIds = new Set(activeCampuses.map((item) => item.id))
+  const activeClasses = classes.filter(
+    (item) => !item.deletedAt && activeCampusIds.has(item.campus)
+  )
+  const activeRooms = rooms.filter(
+    (item) => !item.deletedAt && activeCampusIds.has(item.campus)
+  )
   const editorActions = { mutate, working }
   const loadingSections = [t("rooms"), t("campuses"), t("classes")]
 
@@ -55,33 +65,43 @@ export default function AdminFacilitiesPage() {
         title={t("facilitiesTitle")}
         description={t("facilitiesDescription")}
         actions={
-          <button
-            type="button"
-            className={styles.secondaryButton}
-            onClick={() =>
-              void facilityResource.reload().catch(() => undefined)
-            }
-            disabled={facilityResource.loading}
-          >
-            <RefreshCw />
-            {common("refresh")}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              aria-pressed={showArchived}
+              onClick={() => setShowArchived((value) => !value)}
+            >
+              {showArchived ? t("hideArchived") : t("showArchived")}
+            </button>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={() =>
+                void facilityResource.reload().catch(() => undefined)
+              }
+              disabled={facilityResource.loading}
+            >
+              <RefreshCw />
+              {common("refresh")}
+            </button>
+          </div>
         }
       />
       <div className={styles.overview}>
         <FacilityMetric
           icon={<School />}
-          value={campuses.length}
+          value={activeCampuses.length}
           label={t("campuses")}
         />
         <FacilityMetric
           icon={<GraduationCap />}
-          value={classes.length}
+          value={activeClasses.length}
           label={t("classes")}
         />
         <FacilityMetric
           icon={<Building2 />}
-          value={rooms.length}
+          value={activeRooms.length}
           label={t("rooms")}
         />
       </div>
@@ -101,10 +121,17 @@ export default function AdminFacilitiesPage() {
           ))
         ) : (
           <>
-            <RoomEditor rooms={rooms} campuses={campuses} {...editorActions} />
-            <CampusEditor campuses={campuses} {...editorActions} />
+            <RoomEditor
+              rooms={showArchived ? rooms : activeRooms}
+              campuses={campuses}
+              {...editorActions}
+            />
+            <CampusEditor
+              campuses={showArchived ? campuses : activeCampuses}
+              {...editorActions}
+            />
             <ClassEditor
-              classes={classes}
+              classes={showArchived ? classes : activeClasses}
               campuses={campuses}
               {...editorActions}
             />

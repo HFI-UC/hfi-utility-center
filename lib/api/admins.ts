@@ -14,3 +14,18 @@ export const changeAdminPassword = (admin: number, newPassword: string) =>
 export const deleteAdmin = (id: number) => api.post("/admin/delete", { id })
 export const setAdminNotifications = (id: number, enabled: boolean) =>
   api.post("/admin/notification-settings", { id, enabled })
+
+export interface AdminPermission {
+  adminId: number
+  role: "global" | "room"
+  roomIds: number[]
+}
+
+export async function getAdminPermissions() {
+  const response =
+    await api.get<ApiResponse<AdminPermission[]>>("/admin/permissions")
+  return response.data.data!
+}
+
+export const updateAdminPermissions = (permission: AdminPermission) =>
+  api.post("/admin/permissions/update", permission)

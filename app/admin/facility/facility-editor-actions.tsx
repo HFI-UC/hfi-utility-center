@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Trash2 } from "lucide-react"
+import { Archive, RotateCcw } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 import {
@@ -23,6 +23,25 @@ export type FacilityEditorActions = {
   working: boolean
 }
 
+export function RestoreFacilityButton({
+  action,
+  mutate,
+  working,
+}: FacilityEditorActions & { action: () => Promise<unknown> }) {
+  const t = useTranslations("admin")
+  return (
+    <button
+      type="button"
+      className={styles.secondaryButton}
+      disabled={working}
+      onClick={() => void mutate(action, t("facilityRestored"))}
+    >
+      <RotateCcw />
+      {t("restoreArchived")}
+    </button>
+  )
+}
+
 export function ConfirmFacilityDelete({
   label,
   action,
@@ -40,7 +59,7 @@ export function ConfirmFacilityDelete({
   async function removeFacility() {
     setError("")
     try {
-      if (await mutate(action, t("facilityDeleted"))) setOpen(false)
+      if (await mutate(action, t("facilityArchived"))) setOpen(false)
     } catch {
       setError(common("unknown"))
     }
@@ -54,15 +73,15 @@ export function ConfirmFacilityDelete({
           className={styles.secondaryButton}
           disabled={working}
         >
-          <Trash2 />
-          {common("delete")}
+          <Archive />
+          {t("archive")}
         </button>
       </AlertDialogTrigger>
       <AlertDialogContent className={styles.dialog}>
         <AlertDialogHeader className={styles.dialogHeader}>
-          <AlertDialogTitle>{common("delete")}</AlertDialogTitle>
+          <AlertDialogTitle>{t("archive")}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t("confirmDelete", { name: label })}
+            {t("confirmArchive", { name: label })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         {error ? <p className={styles.error}>{error}</p> : null}
@@ -76,8 +95,8 @@ export function ConfirmFacilityDelete({
             disabled={working}
             onClick={removeFacility}
           >
-            <Trash2 />
-            {common("delete")}
+            <Archive />
+            {t("archive")}
           </button>
         </AlertDialogFooter>
       </AlertDialogContent>

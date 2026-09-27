@@ -9,8 +9,8 @@ import {
   Check,
   RefreshCw,
 } from "lucide-react"
-import { useTranslations } from "next-intl"
-import { FormProvider, useForm, useWatch } from "react-hook-form"
+import { useLocale, useTranslations } from "next-intl"
+import { FormProvider, useForm } from "react-hook-form"
 
 import { Spinner } from "@/components/astryx"
 import { getAdminSession, type AdminSession } from "@/lib/api/auth"
@@ -19,6 +19,9 @@ import {
   createReservation,
   forceReservation,
   getAvailability,
+  previewReservation,
+  type CreateReservationInput,
+  type CreateReservationPreview,
 } from "@/lib/api/reservations"
 import type { CatalogData } from "@/lib/api/types"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
@@ -50,8 +53,9 @@ export function ReservationForm({
   const t = useTranslations("booking")
   const adminT = useTranslations("admin")
   const common = useTranslations("common")
+  const locale = useLocale()
   const isForce = mode === "adminForce"
-  const schema = useReservationSchema()
+  const schema = useReservationSchema(isForce)
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(schema),
     defaultValues: reservationDefaults,
@@ -61,6 +65,10 @@ export function ReservationForm({
   const [flowError, setFlowError] = useState<string>()
   const [isWorking, setIsWorking] = useState(false)
   const [result, setResult] = useState<ReservationResult>()
+  const [priorityPreview, setPriorityPreview] = useState<{
+    input: CreateReservationInput
+    preview: CreateReservationPreview
+  }>()
   const [catalog, setCatalog] = useState<CatalogData>()
   const [adminSession, setAdminSession] = useState<AdminSession>()
   const [catalogLoading, setCatalogLoading] = useState(true)
@@ -70,15 +78,6 @@ export function ReservationForm({
     (step) => step.id === currentStepId
   )
   const currentStep = bookingSteps[currentStepIndex]
-  const selectedClassId = useWatch({ control: form.control, name: "classId" })
-  const selectedClass = catalog?.classes.find(
-    (item) => item.id === selectedClassId
-  )
-  const isPrivilegedSelection = Boolean(
-    catalog?.campuses.find((item) => item.id === selectedClass?.campus)
-      ?.isPrivileged
-  )
-
   useEffect(() => {
     let active = true
 
@@ -92,14 +91,13 @@ export function ReservationForm({
         ])
         if (!active) return
 
-        const priorityClass = findPriorityClass(data)
-        if (isForce && (!session || !priorityClass)) {
+        if (isForce && !session) {
           throw new Error(adminT("forceLoadError"))
         }
         setCatalog(data)
         setAdminSession(session)
-        if (isForce && session && priorityClass) {
-          form.reset(forceReservationDefaults(priorityClass.id, session))
+        if (isForce && session) {
+          form.reset(forceReservationDefaults(session))
         }
       } catch (error) {
         if (active) {
@@ -123,7 +121,7 @@ export function ReservationForm({
   async function selectedTimeIsStillAvailable(values: ReservationFormValues) {
     if (!catalog) return false
 
-    if (isForce || values.isPrivileged) return true
+    if (isForce) return true
 
     const room = catalog.rooms.find((candidate) => candidate.id === values.room)
     if (!room) {
@@ -162,6 +160,7 @@ export function ReservationForm({
     const nextStep = bookingSteps[currentStepIndex + 1]
     if (!nextStep) return
     setFlowError(undefined)
+    setPriorityPreview(undefined)
     setCurrentStepId(nextStep.id)
   }
 
@@ -170,37 +169,55 @@ export function ReservationForm({
     setFlowError(undefined)
 
     try {
+      if (priorityPreview) {
+        try {
+          setResult(
+            await forceReservation(
+              priorityPreview.input,
+              priorityPreview.preview.conflicts.map((conflict) => conflict.id)
+            )
+          )
+          setPriorityPreview(undefined)
+        } catch (error) {
+          setPriorityPreview(undefined)
+          setFlowError(
+            error instanceof Error
+              ? `${t("priorityChanged")} ${error.message}`
+              : t("priorityChanged")
+          )
+        }
+        return
+      }
+
       if (!(await selectedTimeIsStillAvailable(values))) {
         setCurrentStepId("dateTime")
         return
       }
 
-      const response = isForce
-        ? await forceReservation({
-            classId: values.classId,
-            room: values.room,
-            studentName: values.studentName.trim(),
-            studentId: "-",
-            email: values.email.trim(),
-            reason: values.reason.trim(),
-            startTime: values.startTime,
-            endTime: values.endTime,
-            purposeType: values.purposeType,
-            needsMultimedia: values.needsMultimedia,
-          })
-        : await createReservation({
-            classId: values.classId,
-            room: values.room,
-            studentName: values.studentName.trim(),
-            studentId: values.studentId.trim().toUpperCase(),
-            email: values.email.trim(),
-            reason: values.reason.trim(),
-            startTime: values.startTime,
-            endTime: values.endTime,
-            purposeType: values.purposeType,
-            needsMultimedia: values.needsMultimedia,
-          })
-      setResult(response)
+      const input: CreateReservationInput = {
+        classId: values.classId || undefined,
+        room: values.room,
+        studentName: values.studentName.trim(),
+        studentId: isForce ? "-" : values.studentId.trim().toUpperCase(),
+        email: values.email.trim(),
+        reason: values.reason.trim(),
+        startTime: values.startTime,
+        endTime: values.endTime,
+        purposeType: values.purposeType,
+        needsMultimedia: values.needsMultimedia,
+      }
+      const preview = await previewReservation(input)
+      if (preview.mode === "priority") {
+        setPriorityPreview({ input, preview })
+        return
+      }
+      if (isForce) {
+        setFlowError(adminT("forceIdentityInvalid"))
+        return
+      }
+      setResult(await createReservation(input))
+    } catch (error) {
+      setFlowError(error instanceof Error ? error.message : t("submitError"))
     } finally {
       setIsWorking(false)
     }
@@ -220,18 +237,19 @@ export function ReservationForm({
     const previousStep = bookingSteps[currentStepIndex - 1]
     if (!previousStep) return
     setFlowError(undefined)
+    setPriorityPreview(undefined)
     setCurrentStepId(previousStep.id)
   }
 
   function resetReservation() {
-    const priorityClass = catalog && findPriorityClass(catalog)
     form.reset(
-      isForce && adminSession && priorityClass
-        ? forceReservationDefaults(priorityClass.id, adminSession)
+      isForce && adminSession
+        ? forceReservationDefaults(adminSession)
         : reservationDefaults
     )
     setCurrentStepId("class")
     setResult(undefined)
+    setPriorityPreview(undefined)
     setFlowError(undefined)
   }
 
@@ -306,13 +324,11 @@ export function ReservationForm({
   }
 
   const stepContent = {
-    class: <ClassStep catalog={catalog} privilegedOnly={isForce} />,
+    class: <ClassStep catalog={catalog} optional={isForce} />,
     location: <LocationStep catalog={catalog} />,
-    dateTime: (
-      <DateTimeStep rooms={catalog.rooms} privileged={isPrivilegedSelection} />
-    ),
+    dateTime: <DateTimeStep rooms={catalog.rooms} privileged={isForce} />,
     profile: <ProfileStep adminMode={isForce} />,
-    review: <ReviewStep catalog={catalog} />,
+    review: <ReviewStep catalog={catalog} adminMode={isForce} />,
   }
 
   return (
@@ -346,9 +362,12 @@ export function ReservationForm({
                   <button
                     type="button"
                     className={`stepper-item ${index < currentStepIndex ? "stepper-item--complete" : ""} ${index === currentStepIndex ? "stepper-item--active" : ""}`}
-                    onClick={() =>
-                      index <= currentStepIndex && setCurrentStepId(step.id)
-                    }
+                    onClick={() => {
+                      if (index <= currentStepIndex) {
+                        setPriorityPreview(undefined)
+                        setCurrentStepId(step.id)
+                      }
+                    }}
                   >
                     <span className="stepper-item__number">
                       {index < currentStepIndex ? (
@@ -379,6 +398,44 @@ export function ReservationForm({
             </div>
             <div className="wizard-step-body">
               {stepContent[currentStep.id]}
+              {currentStep.id === "review" && priorityPreview ? (
+                <section
+                  className="mx-auto mb-6 max-w-3xl rounded-xl border border-amber-300 bg-amber-50 p-5 text-amber-950"
+                  aria-live="polite"
+                >
+                  <h2 className="font-semibold">{t("priorityPreviewTitle")}</h2>
+                  <p className="mt-2 text-sm">
+                    {t("priorityPreviewDescription", {
+                      count: priorityPreview.preview.cancelledCount,
+                    })}
+                  </p>
+                  {priorityPreview.preview.conflicts.length > 0 ? (
+                    <ul className="mt-4 space-y-2 text-sm">
+                      {priorityPreview.preview.conflicts.map((conflict) => (
+                        <li
+                          key={conflict.id}
+                          className="rounded-lg border border-amber-200 bg-white p-3"
+                        >
+                          <strong>
+                            #{conflict.id} · {conflict.studentName}
+                          </strong>
+                          <span className="block">
+                            {conflict.roomName} ·{" "}
+                            {new Intl.DateTimeFormat(locale, {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            }).format(new Date(conflict.startTime))}
+                            {" – "}
+                            {new Intl.DateTimeFormat(locale, {
+                              timeStyle: "short",
+                            }).format(new Date(conflict.endTime))}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </section>
+              ) : null}
             </div>
             <div className="wizard-actions">
               <div className="flex items-center gap-3">
@@ -409,7 +466,11 @@ export function ReservationForm({
                     disabled={isWorking}
                   >
                     {isWorking ? <Spinner /> : null}
-                    {isForce ? adminT("forceConfirm") : t("confirmReservation")}
+                    {priorityPreview
+                      ? t("confirmPriority")
+                      : isForce
+                        ? t("previewPriority")
+                        : t("confirmReservation")}
                   </ActionButton>
                 ) : (
                   <ActionButton
@@ -443,25 +504,11 @@ export function ReservationForm({
   )
 }
 
-function findPriorityClass(catalog: CatalogData) {
-  const privilegedCampusIds = new Set(
-    catalog.campuses
-      .filter((campus) => campus.isPrivileged)
-      .map((campus) => campus.id)
-  )
-  return catalog.classes.find((item) => privilegedCampusIds.has(item.campus))
-}
-
-function forceReservationDefaults(
-  classId: number,
-  admin: AdminSession
-): ReservationFormValues {
+function forceReservationDefaults(admin: AdminSession): ReservationFormValues {
   return {
     ...reservationDefaults,
-    classId,
     studentName: admin.name,
     email: admin.email,
-    isPrivileged: true,
     purposeType: "class",
     isAgreed: true,
   }

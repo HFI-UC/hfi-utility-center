@@ -29,22 +29,20 @@ export function LocationStep({ catalog }: { catalog: CatalogData }) {
         render={({ field, fieldState }) => (
           <FieldSet className="gap-3" data-invalid={fieldState.invalid}>
             <div className="campus-tabs">
-              {catalog.campuses
-                .filter((campus) => !campus.isPrivileged)
-                .map((campus) => (
-                  <button
-                    type="button"
-                    key={campus.id}
-                    className={`campus-tab ${field.value === campus.id ? "campus-tab--active" : ""}`}
-                    onClick={() => {
-                      field.onChange(campus.id)
-                      setValue("room", 0)
-                      clearSelectedTime()
-                    }}
-                  >
-                    {campus.name}
-                  </button>
-                ))}
+              {catalog.campuses.map((campus) => (
+                <button
+                  type="button"
+                  key={campus.id}
+                  className={`campus-tab ${field.value === campus.id ? "campus-tab--active" : ""}`}
+                  onClick={() => {
+                    field.onChange(campus.id)
+                    setValue("room", 0)
+                    clearSelectedTime()
+                  }}
+                >
+                  {campus.name}
+                </button>
+              ))}
             </div>
             <FieldError errors={[fieldState.error]} />
           </FieldSet>

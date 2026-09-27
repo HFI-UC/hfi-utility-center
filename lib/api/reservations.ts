@@ -11,7 +11,7 @@ import type {
 } from "@/lib/api/types"
 
 export interface CreateReservationInput {
-  classId: number
+  classId?: number
   room: number
   studentName: string
   studentId: string
@@ -111,12 +111,36 @@ export async function createReservation(input: CreateReservationInput) {
 
 export type ForceReservationInput = CreateReservationInput
 
-export async function forceReservation(input: ForceReservationInput) {
-  // Rust activates its priority path through the regular create endpoint when
-  // the payload uses an administrator identity and a privileged class.
+export interface PriorityConflict {
+  id: number
+  studentName: string
+  startTime: string
+  endTime: string
+  status: ReservationStatus
+  roomName: string
+}
+
+export interface CreateReservationPreview {
+  mode: "normal" | "priority"
+  conflicts: PriorityConflict[]
+  cancelledCount: number
+}
+
+export async function previewReservation(input: CreateReservationInput) {
+  const { data } = await api.post<ApiResponse<CreateReservationPreview>>(
+    "/reservation/create",
+    { ...input, preview: true }
+  )
+  return data.data!
+}
+
+export async function forceReservation(
+  input: ForceReservationInput,
+  expectedConflictIds: number[]
+) {
   const { data } = await api.post<ApiResponse<{ reservationId: number }>>(
     "/reservation/create",
-    input
+    { ...input, confirmPriority: true, expectedConflictIds }
   )
   return data.data!
 }
@@ -200,6 +224,9 @@ export async function modifyReservation(
 
 export const adminEditReservation = (id: number, input: ReservationEditInput) =>
   api.post("/reservation/admin-edit", { id, ...input })
+
+export const unlockAiReview = (id: number, reason: string) =>
+  api.post("/reservation/ai-unlock", { id, reason })
 
 export async function getFutureReservations() {
   const response = await api.get<ApiResponse<Reservation[]>>(

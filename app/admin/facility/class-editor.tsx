@@ -24,11 +24,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/astryx"
-import { createClass, deleteClass, editClass } from "@/lib/api/catalog"
+import {
+  createClass,
+  deleteClass,
+  editClass,
+  restoreClass,
+} from "@/lib/api/catalog"
 import type { Campus, SchoolClass } from "@/lib/api/types"
 
 import {
   ConfirmFacilityDelete,
+  RestoreFacilityButton,
   type FacilityEditorActions,
 } from "./facility-editor-actions"
 import styles from "./facility.module.css"
@@ -46,6 +52,7 @@ export function ClassEditor({
   const campusNames = new Map(
     campuses.map((campus) => [campus.id, campus.name])
   )
+  const activeCampuses = campuses.filter((campus) => !campus.deletedAt)
   const dateFormatter = new Intl.DateTimeFormat(useLocale(), {
     dateStyle: "medium",
   })
@@ -56,7 +63,7 @@ export function ClassEditor({
       action={
         <ClassDialog
           mode="create"
-          campuses={campuses}
+          campuses={activeCampuses}
           working={working}
           onSave={(name, campus) =>
             mutate(() => createClass(name, campus), t("classCreated"))
@@ -83,6 +90,11 @@ export function ClassEditor({
                 <TableCell className="font-medium">
                   {schoolClass.name}
                   <span className={styles.recordId}>#{schoolClass.id}</span>
+                  {schoolClass.deletedAt ? (
+                    <span className="ml-2 text-xs text-amber-700">
+                      {t("archived")}
+                    </span>
+                  ) : null}
                 </TableCell>
                 <TableCell>
                   {campusNames.get(schoolClass.campus) ?? "—"}
@@ -96,24 +108,34 @@ export function ClassEditor({
                 </TableCell>
                 <TableCell>
                   <div className={styles.rowActions}>
-                    <ClassDialog
-                      mode="edit"
-                      schoolClass={schoolClass}
-                      campuses={campuses}
-                      working={working}
-                      onSave={(name, campus) =>
-                        mutate(
-                          () => editClass(schoolClass.id, name, campus),
-                          t("classUpdated")
-                        )
-                      }
-                    />
-                    <ConfirmFacilityDelete
-                      label={schoolClass.name}
-                      action={() => deleteClass(schoolClass.id)}
-                      mutate={mutate}
-                      working={working}
-                    />
+                    {schoolClass.deletedAt ? (
+                      <RestoreFacilityButton
+                        action={() => restoreClass(schoolClass.id)}
+                        mutate={mutate}
+                        working={working}
+                      />
+                    ) : (
+                      <>
+                        <ClassDialog
+                          mode="edit"
+                          schoolClass={schoolClass}
+                          campuses={activeCampuses}
+                          working={working}
+                          onSave={(name, campus) =>
+                            mutate(
+                              () => editClass(schoolClass.id, name, campus),
+                              t("classUpdated")
+                            )
+                          }
+                        />
+                        <ConfirmFacilityDelete
+                          label={schoolClass.name}
+                          action={() => deleteClass(schoolClass.id)}
+                          mutate={mutate}
+                          working={working}
+                        />
+                      </>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

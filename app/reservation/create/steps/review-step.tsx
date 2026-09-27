@@ -35,7 +35,13 @@ function ConfirmValue({
   )
 }
 
-export function ReviewStep({ catalog }: { catalog: CatalogData }) {
+export function ReviewStep({
+  catalog,
+  adminMode = false,
+}: {
+  catalog: CatalogData
+  adminMode?: boolean
+}) {
   const t = useTranslations("booking")
   const locale = useLocale()
   const { getValues } = useFormContext<ReservationFormValues>()
@@ -110,7 +116,7 @@ export function ReviewStep({ catalog }: { catalog: CatalogData }) {
                 <dt>{t("name")}</dt>
                 <dd>{values.studentName}</dd>
               </div>
-              {!values.isPrivileged ? (
+              {!adminMode ? (
                 <div>
                   <dt>{t("studentId")}</dt>
                   <dd>{values.studentId}</dd>

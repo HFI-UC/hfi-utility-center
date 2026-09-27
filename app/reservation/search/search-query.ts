@@ -20,7 +20,13 @@ function firstValue(params: SearchParams, key: string) {
 }
 
 function parseStatus(value: string | undefined): ReservationStatus | undefined {
-  if (value === "pending" || value === "approved" || value === "rejected") {
+  if (
+    value === "pending" ||
+    value === "ai_reviewing" ||
+    value === "approved" ||
+    value === "rejected" ||
+    value === "cancelled"
+  ) {
     return value
   }
   return undefined

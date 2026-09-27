@@ -131,17 +131,15 @@ export function ReservationSearchFilterForm({
             <div className="filter-status-list">
               {[
                 { value: "all", label: t("allCampuses") },
-                ...(catalog?.campuses
-                  .filter((campus) => !campus.isPrivileged)
-                  .map((campus) => ({
-                    value: String(campus.id),
-                    label:
-                      campus.name === "Shipai Campus"
-                        ? t("shipaiCampus")
-                        : campus.name === "Knowledge City Campus"
-                          ? t("knowledgeCityCampus")
-                          : campus.name,
-                  })) ?? []),
+                ...(catalog?.campuses.map((campus) => ({
+                  value: String(campus.id),
+                  label:
+                    campus.name === "Shipai Campus"
+                      ? t("shipaiCampus")
+                      : campus.name === "Knowledge City Campus"
+                        ? t("knowledgeCityCampus")
+                        : campus.name,
+                })) ?? []),
               ].map((campus) => (
                 <button
                   key={campus.value}

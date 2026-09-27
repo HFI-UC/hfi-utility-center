@@ -8,8 +8,9 @@ export interface ApiResponse<T = unknown> {
 export interface Campus {
   id: number
   name: string
-  isPrivileged: boolean
   createdAt?: string
+  deletedAt?: string | null
+  deletedBy?: number | null
 }
 
 export interface SchoolClass {
@@ -17,6 +18,8 @@ export interface SchoolClass {
   name: string
   campus: number
   createdAt?: string
+  deletedAt?: string | null
+  deletedBy?: number | null
 }
 
 export interface RoomPolicy {
@@ -41,6 +44,8 @@ export interface Room {
   campus: number
   enabled: boolean
   createdAt?: string
+  deletedAt?: string | null
+  deletedBy?: number | null
   policies: RoomPolicy[]
 }
 
@@ -51,7 +56,7 @@ export interface CatalogData {
 }
 
 export type ReservationStatus =
-  "pending" | "approved" | "rejected" | "cancelled"
+  "pending" | "ai_reviewing" | "approved" | "rejected" | "cancelled"
 export type PurposeType = "personal" | "class" | "club"
 
 export interface Reservation {
@@ -100,6 +105,7 @@ export interface Admin {
   email: string
   createdAt?: string
   receiveReservationNotifications: boolean
+  role: "global" | "room"
 }
 
 export interface Announcement {

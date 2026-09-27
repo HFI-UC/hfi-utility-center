@@ -51,6 +51,7 @@ export async function checkLogin() {
 export interface AdminSession {
   email: string
   name: string
+  role: "global" | "room"
 }
 
 export async function getAdminSession() {

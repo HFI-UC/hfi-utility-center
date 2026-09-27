@@ -16,22 +16,16 @@ import { StepLayout } from "../step-layout"
 
 export function ClassStep({
   catalog,
-  privilegedOnly = false,
+  optional = false,
 }: {
   catalog: CatalogData
-  privilegedOnly?: boolean
+  optional?: boolean
 }) {
   const t = useTranslations("booking")
   const [query, setQuery] = useState("")
   const { control, getValues, setValue } =
     useFormContext<ReservationFormValues>()
-  const visibleCampuses = useMemo(
-    () =>
-      privilegedOnly
-        ? catalog.campuses.filter((campus) => campus.isPrivileged)
-        : catalog.campuses,
-    [catalog.campuses, privilegedOnly]
-  )
+  const visibleCampuses = catalog.campuses
   const [campusId, setCampusId] = useState(
     () =>
       catalog.classes.find((item) => item.id === getValues("classId"))
@@ -58,7 +52,6 @@ export function ClassStep({
     )?.campus
     if (selectedClassCampus !== nextCampusId) {
       setValue("classId", 0, { shouldValidate: false })
-      setValue("isPrivileged", false, { shouldValidate: false })
     }
   }
 
@@ -106,6 +99,18 @@ export function ClassStep({
                 role="radiogroup"
                 aria-label={t("classTitle")}
               >
+                {optional ? (
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={field.value === 0}
+                    className={`selection-button ${field.value === 0 ? "selection-button--selected" : ""}`}
+                    onClick={() => field.onChange(0)}
+                  >
+                    {t("noClass")}
+                    {field.value === 0 ? <Check size={14} /> : null}
+                  </button>
+                ) : null}
                 {classes.map((item) => (
                   <button
                     type="button"
@@ -113,12 +118,7 @@ export function ClassStep({
                     aria-checked={field.value === item.id}
                     className={`selection-button ${field.value === item.id ? "selection-button--selected" : ""}`}
                     key={item.id}
-                    onClick={() => {
-                      field.onChange(item.id)
-                      setValue("isPrivileged", Boolean(campus?.isPrivileged), {
-                        shouldValidate: false,
-                      })
-                    }}
+                    onClick={() => field.onChange(item.id)}
                   >
                     {item.name}
                     {field.value === item.id ? <Check size={14} /> : null}

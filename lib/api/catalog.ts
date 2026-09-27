@@ -16,18 +16,24 @@ export async function getCatalog(): Promise<CatalogData> {
   return { campuses, classes, rooms }
 }
 
-export async function getCampuses() {
-  const response = await api.get<ApiResponse<Campus[]>>("/campus/list")
+export async function getCampuses(includeArchived = false) {
+  const response = await api.get<ApiResponse<Campus[]>>("/campus/list", {
+    params: includeArchived ? { includeArchived: true } : undefined,
+  })
   return response.data.data!
 }
 
-export async function getClasses() {
-  const response = await api.get<ApiResponse<SchoolClass[]>>("/class/list")
+export async function getClasses(includeArchived = false) {
+  const response = await api.get<ApiResponse<SchoolClass[]>>("/class/list", {
+    params: includeArchived ? { includeArchived: true } : undefined,
+  })
   return response.data.data!
 }
 
-export async function getRooms() {
-  const response = await api.get<ApiResponse<Room[]>>("/room/list")
+export async function getRooms(includeArchived = false) {
+  const response = await api.get<ApiResponse<Room[]>>("/room/list", {
+    params: includeArchived ? { includeArchived: true } : undefined,
+  })
   return response.data.data!
 }
 
@@ -36,11 +42,13 @@ export const createCampus = (name: string) =>
 export const editCampus = (id: number, name: string) =>
   api.post("/campus/edit", { id, name })
 export const deleteCampus = (id: number) => api.post("/campus/delete", { id })
+export const restoreCampus = (id: number) => api.post("/campus/restore", { id })
 export const createClass = (name: string, campus: number) =>
   api.post("/class/create", { name, campus })
 export const editClass = (id: number, name: string, campus: number) =>
   api.post("/class/edit", { id, name, campus })
 export const deleteClass = (id: number) => api.post("/class/delete", { id })
+export const restoreClass = (id: number) => api.post("/class/restore", { id })
 export const createRoom = (name: string, campus: number) =>
   api.post("/room/create", { name, campus })
 export const editRoom = (
@@ -50,6 +58,7 @@ export const editRoom = (
   enabled: boolean
 ) => api.post("/room/edit", { id, name, campus, enabled })
 export const deleteRoom = (id: number) => api.post("/room/delete", { id })
+export const restoreRoom = (id: number) => api.post("/room/restore", { id })
 export const createPolicy = (
   room: number,
   days: number[],

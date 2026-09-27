@@ -24,11 +24,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/astryx"
-import { createRoom, deleteRoom, editRoom } from "@/lib/api/catalog"
+import {
+  createRoom,
+  deleteRoom,
+  editRoom,
+  restoreRoom,
+} from "@/lib/api/catalog"
 import type { Campus, Room } from "@/lib/api/types"
 
 import {
   ConfirmFacilityDelete,
+  RestoreFacilityButton,
   type FacilityEditorActions,
 } from "./facility-editor-actions"
 import styles from "./facility.module.css"
@@ -48,6 +54,7 @@ export function RoomEditor({
   const campusNames = new Map(
     campuses.map((campus) => [campus.id, campus.name])
   )
+  const activeCampuses = campuses.filter((campus) => !campus.deletedAt)
   const dateFormatter = new Intl.DateTimeFormat(useLocale(), {
     dateStyle: "medium",
   })
@@ -59,7 +66,7 @@ export function RoomEditor({
       action={
         <RoomDialog
           mode="create"
-          campuses={campuses}
+          campuses={activeCampuses}
           working={working}
           onSave={(name, campus) =>
             mutate(() => createRoom(name, campus), t("roomCreated"))
@@ -88,6 +95,11 @@ export function RoomEditor({
                 <TableCell className="font-medium">
                   {room.name}
                   <span className={styles.recordId}>#{room.id}</span>
+                  {room.deletedAt ? (
+                    <span className="ml-2 text-xs text-amber-700">
+                      {t("archived")}
+                    </span>
+                  ) : null}
                 </TableCell>
                 <TableCell>
                   <span
@@ -100,7 +112,15 @@ export function RoomEditor({
                 </TableCell>
                 <TableCell>{campusNames.get(room.campus) ?? "—"}</TableCell>
                 <TableCell>
-                  <PolicyEditor room={room} mutate={mutate} working={working} />
+                  {room.deletedAt ? (
+                    "—"
+                  ) : (
+                    <PolicyEditor
+                      room={room}
+                      mutate={mutate}
+                      working={working}
+                    />
+                  )}
                 </TableCell>
                 <TableCell
                   className={`hidden xl:table-cell ${styles.secondaryText}`}
@@ -111,44 +131,55 @@ export function RoomEditor({
                 </TableCell>
                 <TableCell>
                   <div className={styles.rowActions}>
-                    <button
-                      type="button"
-                      className={styles.secondaryButton}
-                      disabled={working}
-                      onClick={() =>
-                        mutate(
-                          () =>
-                            editRoom(
-                              room.id,
-                              room.name,
-                              room.campus,
-                              !room.enabled
-                            ),
-                          t("roomStatusUpdated")
-                        )
-                      }
-                    >
-                      {room.enabled ? <PowerOff /> : <Power />}
-                      {room.enabled ? t("roomClosed") : t("restoreBooking")}
-                    </button>
-                    <RoomDialog
-                      mode="edit"
-                      room={room}
-                      campuses={campuses}
-                      working={working}
-                      onSave={(name, campus) =>
-                        mutate(
-                          () => editRoom(room.id, name, campus, room.enabled),
-                          t("roomUpdated")
-                        )
-                      }
-                    />
-                    <ConfirmFacilityDelete
-                      label={room.name}
-                      action={() => deleteRoom(room.id)}
-                      mutate={mutate}
-                      working={working}
-                    />
+                    {room.deletedAt ? (
+                      <RestoreFacilityButton
+                        action={() => restoreRoom(room.id)}
+                        mutate={mutate}
+                        working={working}
+                      />
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className={styles.secondaryButton}
+                          disabled={working}
+                          onClick={() =>
+                            mutate(
+                              () =>
+                                editRoom(
+                                  room.id,
+                                  room.name,
+                                  room.campus,
+                                  !room.enabled
+                                ),
+                              t("roomStatusUpdated")
+                            )
+                          }
+                        >
+                          {room.enabled ? <PowerOff /> : <Power />}
+                          {room.enabled ? t("roomClosed") : t("restoreBooking")}
+                        </button>
+                        <RoomDialog
+                          mode="edit"
+                          room={room}
+                          campuses={activeCampuses}
+                          working={working}
+                          onSave={(name, campus) =>
+                            mutate(
+                              () =>
+                                editRoom(room.id, name, campus, room.enabled),
+                              t("roomUpdated")
+                            )
+                          }
+                        />
+                        <ConfirmFacilityDelete
+                          label={room.name}
+                          action={() => deleteRoom(room.id)}
+                          mutate={mutate}
+                          working={working}
+                        />
+                      </>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>
