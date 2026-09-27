@@ -1,24 +1,13 @@
 "use client"
 
-import { Building2, CalendarPlus, SearchX } from "lucide-react"
+import { ArrowUpRight, Building2, SearchX } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
-import type { ReactNode } from "react"
 
 import { EmptyState } from "@/components/layout/data-state"
 import { PercentSpan } from "@/components/layout/percent-span"
 import { StatusBadge, type StatusTone } from "@/components/layout/status-badge"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { dateToInputValue } from "@/lib/date-time"
 import { DAY_END_HOUR, DAY_START_HOUR } from "@/lib/reservations/availability"
 import { cn } from "@/lib/utils"
@@ -33,6 +22,9 @@ const TONE_BY_STATUS: Record<RoomDayStatus, StatusTone> = {
   pending: "pending",
   closed: "neutral",
 }
+const HOURS = [DAY_START_HOUR, 12, 16, 20, DAY_END_HOUR]
+const hourPosition = (hour: number) =>
+  `${((hour - DAY_START_HOUR) / (DAY_END_HOUR - DAY_START_HOUR)) * 100}%`
 
 export function FacilityRoomBoard({
   days,
@@ -54,36 +46,14 @@ export function FacilityRoomBoard({
   onResetFilters: () => void
 }) {
   const t = useTranslations("dashboard")
-
-  if (loading && totalRooms === 0) {
-    return (
-      <div className="grid min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {Array.from({ length: 6 }, (_, slot) => `room-skeleton-${slot + 1}`).map((key) => (
-          <Card key={key} size="sm" aria-hidden="true">
-            <CardHeader>
-              <Skeleton className="h-4 w-2/3" />
-              <Skeleton className="h-3 w-1/3" />
-            </CardHeader>
-            <CardContent className="flex min-w-0 flex-col gap-2">
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-2 w-full" />
-              <Skeleton className="h-3 w-full" />
-              <Skeleton className="h-3 w-5/6" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    )
-  }
+  const statusT = useTranslations("status")
 
   if (totalRooms === 0) {
-    // First-load failure is reported by the dashboard error banner instead.
     if (error || loading) return null
     return (
       <EmptyState icon={Building2} title={t("noRooms")} description={t("noRoomsDescription")} />
     )
   }
-
   if (days.length === 0) {
     return (
       <EmptyState
@@ -91,7 +61,7 @@ export function FacilityRoomBoard({
         title={t("noResults")}
         description={t("noResultsDescription")}
         action={
-          <Button type="button" variant="outline" size="sm" onClick={onResetFilters}>
+          <Button type="button" variant="outline" onClick={onResetFilters}>
             {t("resetFilters")}
           </Button>
         }
@@ -104,204 +74,218 @@ export function FacilityRoomBoard({
   const nowPct = Math.min(100, Math.max(0, ((nowMs - start) / Math.max(1, end - start)) * 100))
   const showNow = nowMs >= start && nowMs <= end
   const today = dateToInputValue(now)
+  const groups = new Map<number, RoomDay[]>()
+  for (const day of days) {
+    const group = groups.get(day.room.campus)
+    if (group) group.push(day)
+    else groups.set(day.room.campus, [day])
+  }
 
   return (
-    <div className="grid min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      {days.map((day) => (
-        <RoomDayCard
-          key={day.room.id}
-          day={day}
-          nowMs={nowMs}
-          nowPct={nowPct}
-          showNow={showNow}
-          today={today}
-          portrait={portrait}
-          formatters={formatters}
-        />
+    <div className="flex min-w-0 flex-col gap-9">
+      {Array.from(groups, ([campusId, campusDays]) => (
+        <section key={campusId} aria-labelledby={`campus-${campusId}`} className="min-w-0">
+          <div className="flex flex-wrap items-center gap-3 pb-4">
+            <span aria-hidden className="h-6 w-1.5 rounded-full bg-primary" />
+            <h2 id={`campus-${campusId}`} className="min-w-0 text-xl font-semibold tracking-tight">
+              {campusDays[0].campusName || t("otherCampus")}
+            </h2>
+            <span className="text-sm text-muted-foreground">
+              {t("campusRooms", { count: campusDays.length })}
+            </span>
+          </div>
+          <div className="rounded-2xl border bg-card">
+            <div
+              aria-hidden
+              className={cn(
+                "sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)_2.75rem] items-center gap-6 rounded-t-2xl border-b bg-muted px-6 py-4 lg:grid",
+                portrait && "lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)]",
+              )}
+            >
+              <span className="text-xs text-muted-foreground">{t("roomColumn")}</span>
+              <TimeRuler />
+            </div>
+            <ul className="divide-y">
+              {campusDays.map((day) => {
+                const upcoming = day.bookings
+                  .filter((item) => Date.parse(item.endTime) > nowMs)
+                  .slice(0, 3)
+                const fallback = t("purposeFallback")
+                const headline = day.current
+                  ? t("endsAt", { time: formatters.time(day.current.endTime) })
+                  : day.status === "closed"
+                    ? t("closedToday")
+                    : day.next
+                      ? t("freeUntil", { time: formatters.time(day.next.startTime) })
+                      : day.bookings.length
+                        ? t("noMoreBookings")
+                        : t("noBookingsToday")
+                const dayHref = reservationSearchHref(
+                  {
+                    keyword: "",
+                    campusId: 0,
+                    roomId: day.room.id,
+                    status: undefined,
+                    startDate: today,
+                    endDate: today,
+                    page: 0,
+                    sort: "time",
+                  },
+                  0,
+                )
+                const timelineLabel = [
+                  t("timelineLabel", {
+                    start: formatDayHour(DAY_START_HOUR),
+                    end: formatDayHour(DAY_END_HOUR),
+                  }),
+                  ...day.bookings.map(
+                    (item) =>
+                      `${formatters.time(item.startTime)}–${formatters.time(item.endTime)} ${statusT(item.status)}`,
+                  ),
+                ].join("; ")
+
+                return (
+                  <li
+                    key={day.room.id}
+                    className={cn(
+                      "grid min-w-0 gap-x-6 gap-y-4 px-4 py-5 sm:px-6 lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)_2.75rem] lg:items-start lg:py-6",
+                      portrait && "lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)]",
+                    )}
+                  >
+                    <div className="flex min-w-0 items-start justify-between gap-3 lg:block">
+                      <div className="min-w-0">
+                        <h3 className="text-lg leading-snug font-semibold tracking-tight break-words sm:text-xl">
+                          {day.room.name}
+                        </h3>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {t("bookingsCount", { count: day.bookings.length })}
+                        </p>
+                      </div>
+                      <StatusBadge
+                        tone={TONE_BY_STATUS[day.status]}
+                        dot
+                        className="shrink-0 lg:mt-3"
+                      >
+                        {t(`status_${day.status}`)}
+                      </StatusBadge>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="mb-2 lg:hidden">
+                        <TimeRuler />
+                      </div>
+                      <div
+                        // A timeline is a single graphic with a text equivalent for every booking.
+                        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
+                        role="img"
+                        aria-label={timelineLabel}
+                        className={cn(
+                          "relative h-9 overflow-hidden rounded-md bg-muted",
+                          day.status === "closed" && "opacity-60",
+                        )}
+                      >
+                        {HOURS.map((hour) => (
+                          <PercentSpan
+                            key={hour}
+                            aria-hidden
+                            left={hourPosition(hour)}
+                            className="inset-y-0 w-px bg-border"
+                          />
+                        ))}
+                        {day.segments.map((segment) => (
+                          <PercentSpan
+                            key={segment.id}
+                            aria-hidden
+                            left={`${segment.left}%`}
+                            width={`${segment.width}%`}
+                            className={cn(
+                              "inset-y-1 rounded-sm",
+                              segment.status === "approved"
+                                ? "bg-info"
+                                : "border border-dashed border-warning bg-warning/20",
+                            )}
+                          />
+                        ))}
+                        {showNow ? (
+                          <PercentSpan
+                            aria-hidden
+                            left={`${nowPct}%`}
+                            className="inset-y-0 z-10 w-0.5 -translate-x-1/2 bg-primary"
+                          />
+                        ) : null}
+                      </div>
+                      <p className="mt-2.5 text-sm text-muted-foreground">{headline}</p>
+                      {upcoming.length ? (
+                        <ul className="mt-2 flex min-w-0 flex-col gap-1.5">
+                          {upcoming.map((item) => (
+                            <li
+                              key={item.id}
+                              className="flex min-w-0 flex-wrap items-baseline gap-x-2 text-sm"
+                            >
+                              <time
+                                dateTime={item.startTime}
+                                className="shrink-0 text-xs text-muted-foreground tabular-nums"
+                              >
+                                {formatters.time(item.startTime)}–{formatters.time(item.endTime)}
+                              </time>
+                              <span className="min-w-0 break-words">{item.reason || fallback}</span>
+                              <span
+                                className={cn(
+                                  "text-xs",
+                                  item.status === "pending" ? "text-warning" : "text-info",
+                                )}
+                              >
+                                {day.current?.id === item.id
+                                  ? `${statusT(item.status)} / ${t("nowBadge")}`
+                                  : statusT(item.status)}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                    {portrait ? null : (
+                      <Button
+                        asChild
+                        variant="ghost"
+                        className="h-11 w-fit justify-self-end rounded-full px-3 lg:size-11 lg:p-0"
+                      >
+                        <Link
+                          href={dayHref}
+                          prefetch={false}
+                          aria-label={t("viewRoomDay", { room: day.room.name })}
+                        >
+                          <span className="lg:hidden">{t("viewDay")}</span>
+                          <ArrowUpRight aria-hidden className="size-4" />
+                        </Link>
+                      </Button>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </section>
       ))}
     </div>
   )
 }
 
-function RoomDayCard({
-  day,
-  nowMs,
-  nowPct,
-  showNow,
-  today,
-  portrait,
-  formatters,
-}: {
-  day: RoomDay
-  nowMs: number
-  nowPct: number
-  showNow: boolean
-  today: string
-  portrait: boolean
-  formatters: Formatters
-}) {
-  const t = useTranslations("dashboard")
-  const statusT = useTranslations("status")
-  const fallback = t("purposeFallback")
-  const statusLabel =
-    day.status === "free"
-      ? t("statusFree")
-      : day.status === "in-use"
-        ? t("inUse")
-        : day.status === "pending"
-          ? t("pendingApproval")
-          : t("statusClosed")
-
-  const description = day.campusName
-    ? `${day.campusName} · ${t("bookingsCount", { count: day.bookings.length })}`
-    : day.bookings.length > 0
-      ? t("bookingsCount", { count: day.bookings.length })
-      : t("noBookingsToday")
-
-  let headline: ReactNode
-  if (day.current) {
-    headline = (
-      <div className="min-w-0">
-        <p className="truncate text-sm font-medium">{day.current.reason || fallback}</p>
-        <p className="mt-0.5 truncate text-xs text-muted-foreground">
-          {statusLabel} · {t("endsAt", { time: formatters.time(day.current.endTime) })}
-        </p>
-      </div>
-    )
-  } else if (day.status === "closed") {
-    headline = <p className="text-sm text-muted-foreground">{t("closedToday")}</p>
-  } else if (day.next) {
-    const range = `${formatters.time(day.next.startTime)}–${formatters.time(day.next.endTime)}`
-    headline = (
-      <div className="min-w-0">
-        <p className="text-sm font-medium">
-          {t("freeUntil", {
-            time: formatters.time(
-              day.freeUntil !== null ? new Date(day.freeUntil) : day.next.startTime,
-            ),
-          })}
-        </p>
-        <p className="mt-0.5 truncate text-xs text-muted-foreground">
-          {t("nextBooking", { time: range })} · {day.next.reason || fallback}
-        </p>
-      </div>
-    )
-  } else {
-    headline = <p className="text-sm font-medium">{t("freeAllDay")}</p>
-  }
-
-  const upcoming = day.bookings.filter((item) => Date.parse(item.endTime) > nowMs).slice(0, 3)
-  const dayHref = reservationSearchHref(
-    {
-      keyword: "",
-      campusId: 0,
-      roomId: day.room.id,
-      status: undefined,
-      startDate: today,
-      endDate: today,
-      page: 0,
-      sort: "time",
-    },
-    0,
-  )
-
+function TimeRuler() {
   return (
-    <Card size="sm" className="min-w-0">
-      <CardHeader>
-        <CardTitle className={cn("truncate", portrait && "text-xl")}>{day.room.name}</CardTitle>
-        <CardDescription className="truncate">{description}</CardDescription>
-        <CardAction>
-          <StatusBadge tone={TONE_BY_STATUS[day.status]} dot>
-            {statusLabel}
-          </StatusBadge>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="flex min-w-0 flex-col gap-3">
-        {headline}
-        <div className="min-w-0">
-          <div
-            // Timeline hosts child segments, so `img` cannot represent it.
-            // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
-            role="img"
-            aria-label={t("timelineLabel", {
-              start: formatDayHour(DAY_START_HOUR),
-              end: formatDayHour(DAY_END_HOUR),
-            })}
-            className={cn(
-              "relative h-2 overflow-hidden rounded-full bg-muted",
-              portrait && "h-2.5",
-            )}
-          >
-            {day.segments.map((segment) => (
-              <PercentSpan
-                key={segment.id}
-                aria-hidden
-                left={`${segment.left}%`}
-                width={`${segment.width}%`}
-                className={cn(
-                  "inset-y-0 rounded-full",
-                  segment.status === "approved" ? "bg-success" : "bg-warning",
-                )}
-              />
-            ))}
-            {showNow ? (
-              <PercentSpan
-                aria-hidden
-                left={`${nowPct}%`}
-                className="inset-y-0 w-0.5 bg-foreground/80"
-              />
-            ) : null}
-          </div>
-          <div className="mt-1 flex justify-between text-[11px] text-muted-foreground tabular-nums">
-            <span>{formatDayHour(DAY_START_HOUR)}</span>
-            <span>{formatDayHour(DAY_END_HOUR)}</span>
-          </div>
-        </div>
-        {upcoming.length ? (
-          <ul className="flex min-w-0 flex-col gap-1.5">
-            {upcoming.map((item) => {
-              const isLive = day.current?.id === item.id
-              return (
-                <li key={item.id} className="flex min-w-0 items-center gap-2 text-sm">
-                  <span
-                    aria-hidden
-                    className={cn(
-                      "size-1.5 shrink-0 rounded-full",
-                      item.status === "approved" ? "bg-success" : "bg-warning",
-                    )}
-                  />
-                  <time
-                    dateTime={item.startTime}
-                    className="shrink-0 font-mono text-xs whitespace-nowrap text-muted-foreground tabular-nums"
-                  >
-                    {formatters.time(item.startTime)}–{formatters.time(item.endTime)}
-                  </time>
-                  <span className={cn("min-w-0 flex-1 truncate", isLive && "font-medium")}>
-                    {item.reason || fallback}
-                  </span>
-                  {isLive ? <Badge variant="secondary">{t("nowBadge")}</Badge> : null}
-                  <span className="sr-only">{statusT(item.status)}</span>
-                </li>
-              )
-            })}
-          </ul>
-        ) : (
-          <p className="text-sm text-muted-foreground">{t("noBookingsToday")}</p>
-        )}
-        {portrait ? null : (
-          <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
-            <Button size="sm" asChild>
-              <Link href="/reservation/create">
-                <CalendarPlus aria-hidden />
-                {t("bookRoom")}
-              </Link>
-            </Button>
-            <Button size="sm" variant="outline" asChild>
-              <Link href={dayHref}>{t("viewDay")}</Link>
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <div aria-hidden className="relative h-4 text-xs text-muted-foreground tabular-nums">
+      {HOURS.map((hour, index) => (
+        <PercentSpan
+          key={hour}
+          left={hourPosition(hour)}
+          className={cn(
+            "whitespace-nowrap",
+            index === HOURS.length - 1 ? "-translate-x-full" : index > 0 && "-translate-x-1/2",
+            hour === 20 && "hidden sm:block",
+          )}
+        >
+          {formatDayHour(hour)}
+        </PercentSpan>
+      ))}
+    </div>
   )
 }

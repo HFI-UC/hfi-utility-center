@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import type { CatalogData, ReservationStatus } from "@/lib/api/types"
 import { inputValueToDate } from "@/lib/date-time"
@@ -61,7 +62,7 @@ export function ReservationSearchFilterForm({
   const common = useTranslations("common")
   const [calendarOpen, setCalendarOpen] = useState(false)
   const dateLocale = useLocale() === "zh-CN" ? zhCN : enUS
-  const { control, handleSubmit } = useForm<SearchFormValues>({
+  const { control, handleSubmit, getValues } = useForm<SearchFormValues>({
     defaultValues: {
       keyword: filters.keyword,
       campus: filters.campusId ? String(filters.campusId) : ALL,
@@ -98,7 +99,7 @@ export function ReservationSearchFilterForm({
     [catalog, t],
   )
 
-  const onSubmit: SubmitHandler<SearchFormValues> = (values) => {
+  const applyFilters = (values: SearchFormValues) => {
     const startDate = values.dateRange?.from ? format(values.dateRange.from, "yyyy-MM-dd") : ""
     const endDate = values.dateRange?.to ? format(values.dateRange.to, "yyyy-MM-dd") : ""
 
@@ -117,6 +118,12 @@ export function ReservationSearchFilterForm({
         0,
       ),
     )
+  }
+
+  const onSubmit: SubmitHandler<SearchFormValues> = applyFilters
+
+  const applyStatus = (status: ReservationStatus | typeof ALL) => {
+    applyFilters({ ...getValues(), status })
   }
 
   return (
@@ -151,22 +158,27 @@ export function ReservationSearchFilterForm({
             control={control}
             name="campus"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger
-                  id="search-campus"
-                  className={CONTROL}
-                  aria-label={t("campusFilter")}
-                >
-                  <SelectValue placeholder={t("allCampuses")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {campuses.map((campus) => (
-                    <SelectItem key={campus.value} value={campus.value}>
-                      {campus.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                value={field.value}
+                onValueChange={(value) => {
+                  if (value) field.onChange(value)
+                }}
+                aria-label={t("campusFilter")}
+                className="flex w-full flex-wrap items-stretch gap-2"
+              >
+                {campuses.map((campus) => (
+                  <ToggleGroupItem
+                    type="button"
+                    key={campus.value}
+                    value={campus.value}
+                    className="min-h-11 flex-1 sm:min-h-8"
+                  >
+                    {campus.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
             )}
           />
         </Field>
@@ -265,7 +277,9 @@ export function ReservationSearchFilterForm({
                   <Checkbox
                     id="search-status-all"
                     checked={field.value === ALL}
-                    onCheckedChange={(checked) => field.onChange(checked ? ALL : undefined)}
+                    onCheckedChange={(checked) => {
+                      if (checked) applyStatus(ALL)
+                    }}
                   />
                   <FieldLabel htmlFor="search-status-all" className="font-normal">
                     {t("allStatuses")}
@@ -276,7 +290,7 @@ export function ReservationSearchFilterForm({
                     <Checkbox
                       id={`search-status-${status}`}
                       checked={field.value === status}
-                      onCheckedChange={(checked) => field.onChange(checked ? status : ALL)}
+                      onCheckedChange={(checked) => applyStatus(checked ? status : ALL)}
                     />
                     <FieldLabel htmlFor={`search-status-${status}`} className="font-normal">
                       {statusT(status)}

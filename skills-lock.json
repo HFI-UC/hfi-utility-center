@@ -37,6 +37,12 @@
       "skillPath": "skills/transitions-polish/SKILL.md",
       "computedHash": "f1dd8e76b5fb275447b5dcd2e24dcd8f9bcda7b93361163754ccdff957e30509"
     },
+    "ui-animation": {
+      "source": "mblode/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ui-animation/SKILL.md",
+      "computedHash": "a27a1cfdb669fb9cb3759ea0409369d01bcfb577ca8bb945d5f95645c5806312"
+    },
     "ui-ux-pro-max": {
       "source": "nextlevelbuilder/ui-ux-pro-max-skill",
       "sourceType": "github",
