@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 
@@ -19,8 +20,13 @@ import { useReservationSearch } from "./use-reservation-search"
 
 export function ReservationSearch() {
   const searchParams = useSearchParams()
-  const filters = parseReservationSearchFilters(
-    Object.fromEntries(searchParams.entries())
+  const search = searchParams.toString()
+  const filters = useMemo(
+    () =>
+      parseReservationSearchFilters(
+        Object.fromEntries(new URLSearchParams(search))
+      ),
+    [search]
   )
   const t = useTranslations("searchPage")
   const { catalog, result, loading } = useReservationSearch(filters)
