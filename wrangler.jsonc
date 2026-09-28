@@ -43,7 +43,7 @@
       "name": "hfi-utility-center-dev",
       "routes": [
         {
-          "pattern": "preview.hfiuc.org",
+          "pattern": "dev.hfiuc.org",
           "custom_domain": true
         }
       ]
