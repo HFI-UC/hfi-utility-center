@@ -78,7 +78,7 @@ export function ReviewStep({
           type="button"
           variant="outline"
           className="min-h-11"
-          onClick={() => onEdit("profile")}
+          onClick={() => onEdit("details")}
         >
           {t("editProfile")}
         </Button>

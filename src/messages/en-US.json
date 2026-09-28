@@ -153,16 +153,16 @@
       "reasonRequired": "Enter a reservation reason.",
       "agreementRequired": "Read and accept the reservation rules."
     },
-    "intro": "Choose a room and time, add your details, then submit.",
+    "intro": "Enter your details, choose a room and time, then submit.",
     "progress": "Booking progress",
     "steps": {
+      "details": "Your details",
       "location": "Room & time",
-      "profile": "Your details",
       "review": "Review"
     },
     "continue": {
-      "location": "Add booking details",
-      "profile": "Review booking",
+      "details": "Choose room & time",
+      "location": "Review booking",
       "review": "Submit booking"
     },
     "locationDescription": "Choose a room, then a date and time. You can also switch campuses.",

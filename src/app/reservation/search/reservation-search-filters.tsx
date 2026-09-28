@@ -5,7 +5,7 @@ import { enUS, zhCN } from "date-fns/locale"
 import { CalendarDays, RotateCcw, Search } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { Controller, useForm, useWatch, type SubmitHandler } from "react-hook-form"
 
@@ -23,7 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import type { CatalogData, ReservationStatus } from "@/lib/api/types"
 import { inputValueToDate } from "@/lib/date-time"
@@ -64,7 +63,7 @@ export function ReservationSearchFilterForm({
   const common = useTranslations("common")
   const [calendarOpen, setCalendarOpen] = useState(false)
   const dateLocale = useLocale() === "zh-CN" ? zhCN : enUS
-  const { control, handleSubmit, getValues } = useForm<SearchFormValues>({
+  const { control, handleSubmit, getValues, reset, setValue } = useForm<SearchFormValues>({
     defaultValues: {
       keyword: filters.keyword,
       campus: filters.campusId ? String(filters.campusId) : ALL,
@@ -77,6 +76,7 @@ export function ReservationSearchFilterForm({
       status: filters.status ?? ALL,
     },
   })
+  const keyword = useWatch({ control, name: "keyword" })
   const campusId = useWatch({ control, name: "campus" })
   const visibleRooms = useMemo(
     () =>
@@ -101,12 +101,11 @@ export function ReservationSearchFilterForm({
     [catalog, t],
   )
 
-  const applyFilters = (values: SearchFormValues) => {
-    const startDate = values.dateRange?.from ? format(values.dateRange.from, "yyyy-MM-dd") : ""
-    const endDate = values.dateRange?.to ? format(values.dateRange.to, "yyyy-MM-dd") : ""
-
-    router.push(
-      reservationSearchHref(
+  const applyFilters = useCallback(
+    (values: SearchFormValues, history: "push" | "replace" = "push") => {
+      const startDate = values.dateRange?.from ? format(values.dateRange.from, "yyyy-MM-dd") : ""
+      const endDate = values.dateRange?.to ? format(values.dateRange.to, "yyyy-MM-dd") : ""
+      const href = reservationSearchHref(
         {
           keyword: values.keyword.trim(),
           campusId: values.campus === ALL ? 0 : Number(values.campus),
@@ -118,15 +117,42 @@ export function ReservationSearchFilterForm({
           sort: values.sort,
         },
         0,
-      ),
-    )
-  }
+      )
+      const target = new URL(href, window.location.origin)
+      const currentPath = window.location.pathname.replace(/\/$/, "")
+      const targetPath = target.pathname.replace(/\/$/, "")
+      if (currentPath === targetPath && window.location.search === target.search) return
+      router[history](href, { scroll: false })
+    },
+    [router],
+  )
 
-  const onSubmit: SubmitHandler<SearchFormValues> = applyFilters
+  const onSubmit: SubmitHandler<SearchFormValues> = (values) => applyFilters(values)
 
   const applyStatus = (status: ReservationStatus | typeof ALL) => {
+    setValue("status", status)
     applyFilters({ ...getValues(), status })
   }
+
+  useEffect(() => {
+    reset({
+      keyword: filters.keyword,
+      campus: filters.campusId ? String(filters.campusId) : ALL,
+      room: filters.roomId ? String(filters.roomId) : ALL,
+      dateRange: {
+        from: inputValueToDate(filters.startDate),
+        to: inputValueToDate(filters.endDate),
+      },
+      sort: filters.sort,
+      status: filters.status ?? ALL,
+    })
+  }, [filters, reset])
+
+  useEffect(() => {
+    if (keyword === undefined || keyword.trim() === filters.keyword) return
+    const timer = setTimeout(() => applyFilters({ ...getValues(), keyword }, "replace"), 400)
+    return () => clearTimeout(timer)
+  }, [keyword, filters.keyword, getValues, applyFilters])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -154,36 +180,47 @@ export function ReservationSearchFilterForm({
           />
         </Field>
 
-        <Field>
-          <FieldLabel htmlFor="search-campus">{t("campusFilter")}</FieldLabel>
+        <FieldSet>
+          <FieldLegend variant="label">{t("campusFilter")}</FieldLegend>
           <Controller
             control={control}
             name="campus"
             render={({ field }) => (
-              <ToggleGroup
-                type="single"
-                variant="outline"
-                value={field.value}
-                onValueChange={(value) => {
-                  if (value) field.onChange(value)
-                }}
-                aria-label={t("campusFilter")}
-                className="flex w-full flex-wrap items-stretch gap-2"
-              >
+              <div className="flex flex-col gap-1.5">
                 {campuses.map((campus) => (
-                  <ToggleGroupItem
-                    type="button"
+                  <Field
                     key={campus.value}
-                    value={campus.value}
-                    className="min-h-11 flex-1 sm:min-h-8"
+                    orientation="horizontal"
+                    className="min-h-11 sm:min-h-8"
                   >
-                    {campus.label}
-                  </ToggleGroupItem>
+                    <Checkbox
+                      id={`search-campus-${campus.value}`}
+                      checked={field.value === campus.value}
+                      onCheckedChange={(checked) => {
+                        const nextCampus = checked ? campus.value : ALL
+                        const values = getValues()
+                        const room =
+                          nextCampus === ALL ||
+                          catalog?.rooms.some(
+                            (item) =>
+                              item.id === Number(values.room) && item.campus === Number(nextCampus),
+                          )
+                            ? values.room
+                            : ALL
+                        field.onChange(nextCampus)
+                        setValue("room", room)
+                        applyFilters({ ...values, campus: nextCampus, room })
+                      }}
+                    />
+                    <FieldLabel htmlFor={`search-campus-${campus.value}`} className="font-normal">
+                      {campus.label}
+                    </FieldLabel>
+                  </Field>
                 ))}
-              </ToggleGroup>
+              </div>
             )}
           />
-        </Field>
+        </FieldSet>
 
         <Field>
           <FieldLabel htmlFor="search-date-range">{t("dateFilter")}</FieldLabel>
@@ -212,7 +249,10 @@ export function ReservationSearchFilterForm({
                   <Calendar
                     mode="range"
                     selected={field.value}
-                    onSelect={field.onChange}
+                    onSelect={(range) => {
+                      field.onChange(range)
+                      applyFilters({ ...getValues(), dateRange: range })
+                    }}
                     locale={dateLocale}
                   />
                 </PopoverContent>
@@ -227,7 +267,14 @@ export function ReservationSearchFilterForm({
             control={control}
             name="sort"
             render={({ field }) => (
-              <RadioGroup value={field.value} onValueChange={field.onChange} className="gap-1.5">
+              <RadioGroup
+                value={field.value}
+                onValueChange={(value) => {
+                  field.onChange(value)
+                  applyFilters({ ...getValues(), sort: value as SearchFormValues["sort"] })
+                }}
+                className="gap-1.5"
+              >
                 <Field orientation="horizontal" className="min-h-11 sm:min-h-8">
                   <RadioGroupItem value="time" id="search-sort-time" />
                   <FieldLabel htmlFor="search-sort-time" className="font-normal">
@@ -251,7 +298,13 @@ export function ReservationSearchFilterForm({
             control={control}
             name="room"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={(value) => {
+                  field.onChange(value)
+                  applyFilters({ ...getValues(), room: value })
+                }}
+              >
                 <SelectTrigger id="search-room" className={CONTROL} aria-label={t("roomFilter")}>
                   <SelectValue placeholder={t("allRooms")} />
                 </SelectTrigger>

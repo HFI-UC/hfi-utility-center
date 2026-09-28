@@ -53,7 +53,7 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
     defaultValues: reservationDefaults,
     mode: "onTouched",
   })
-  const [currentStepId, setCurrentStepId] = useState<BookingStepId>("location")
+  const [currentStepId, setCurrentStepId] = useState<BookingStepId>("details")
   const [flowError, setFlowError] = useState<string>()
   const [isWorking, setIsWorking] = useState(false)
   const [result, setResult] = useState<ReservationResult>()
@@ -113,7 +113,7 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
       return
     }
 
-    if (currentStep.id === "profile") {
+    if (currentStep.id === "location") {
       setIsWorking(true)
       try {
         const values = form.getValues()
@@ -231,7 +231,7 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
       bookingCampusId: catalog?.campuses[0]?.id ?? 0,
       date: dateToInputValue(new Date()),
     })
-    goToStep("location")
+    goToStep("details")
     setResult(undefined)
     setFlowError(undefined)
     setPriorityPreview(undefined)
@@ -262,8 +262,8 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
   }
 
   const stepContent: Record<BookingStepId, ReactNode> = {
+    details: <ProfileStep adminMode={isForce} />,
     location: <LocationStep catalog={catalog} privileged={isForce} />,
-    profile: <ProfileStep adminMode={isForce} />,
     review: <ReviewStep catalog={catalog} preflight={preflight} onEdit={goToStep} />,
   }
 
@@ -276,8 +276,8 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
       >
         <BookingStepper
           titles={{
+            details: t("steps.details"),
             location: t("steps.location"),
-            profile: t("steps.profile"),
             review: t("steps.review"),
           }}
           currentStepIndex={currentStepIndex}

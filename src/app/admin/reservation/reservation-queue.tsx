@@ -21,7 +21,7 @@ import { STATUS_FILTERS, type StatusFilter } from "./use-reservation-filter"
 
 const STATUS_DOT: Record<ReservationStatus, string> = {
   pending: "bg-warning",
-  ai_reviewing: "bg-warning",
+  ai_reviewing: "bg-info",
   approved: "bg-success",
   rejected: "bg-danger",
   cancelled: "bg-muted-foreground",
@@ -29,7 +29,7 @@ const STATUS_DOT: Record<ReservationStatus, string> = {
 
 const STATUS_TEXT: Record<ReservationStatus, string> = {
   pending: "text-warning",
-  ai_reviewing: "text-warning",
+  ai_reviewing: "text-info",
   approved: "text-success",
   rejected: "text-danger",
   cancelled: "text-muted-foreground",
@@ -134,12 +134,14 @@ export function ReservationTable({
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate font-medium">{item.studentName}</span>
                   <ReservationMeta item={item} />
-                  <a
-                    href={`mailto:${item.email}`}
-                    className="truncate text-xs text-muted-foreground underline underline-offset-4"
-                  >
-                    {item.email}
-                  </a>
+                  {item.email ? (
+                    <a
+                      href={`mailto:${item.email}`}
+                      className="truncate text-xs text-muted-foreground underline underline-offset-4"
+                    >
+                      {item.email}
+                    </a>
+                  ) : null}
                 </div>
               </TableCell>
               <TableCell className="max-w-40">

@@ -153,16 +153,16 @@
       "reasonRequired": "请填写预约原因。",
       "agreementRequired": "请阅读并同意预约规则。"
     },
-    "intro": "选好教室和时间，填写信息后即可提交。",
+    "intro": "填写预约信息，选择教室和时间后即可提交。",
     "progress": "预约进度",
     "steps": {
+      "details": "填写信息",
       "location": "教室时间",
-      "profile": "填写信息",
       "review": "确认预约"
     },
     "continue": {
-      "location": "填写预约信息",
-      "profile": "核对预约",
+      "details": "选择教室与时间",
+      "location": "核对预约",
       "review": "提交预约"
     },
     "locationDescription": "先选教室，再选日期和时间。你也可以切换到其他校区。",
