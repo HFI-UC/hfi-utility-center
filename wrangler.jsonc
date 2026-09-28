@@ -16,12 +16,6 @@
       "custom_domain": true,
     },
     {
-      "pattern": "preview.hfiuc.org",
-      "custom_domain": true,
-      "previews_enabled": true,
-      "enabled": false
-    },
-    {
       "pattern": "www.hfiuc.org",
       "custom_domain": true
     }
