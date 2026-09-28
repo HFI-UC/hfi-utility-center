@@ -4,55 +4,51 @@ import { useTranslations } from "next-intl"
 import { useMemo } from "react"
 import { z } from "zod"
 
+export interface ReservationFormValues {
+  bookingCampusId: number
+  room: number
+  date: string
+  startTime: number
+  endTime: number
+  isPrivileged: boolean
+  email: string
+  reason: string
+  purposeType: "personal" | "class" | "club"
+  needsMultimedia: boolean
+  isAgreed: boolean
+}
+
 export function useReservationSchema() {
   const t = useTranslations("booking")
 
   return useMemo(
     () =>
-      z
-        .object({
-          classId: z.number().int().positive(t("validation.classRequired")),
-          bookingCampusId: z.number().int().positive(t("validation.campusRequired")),
-          room: z.number().int().positive(t("validation.roomRequired")),
-          date: z.string().min(1, t("validation.dateRequired")),
-          startTime: z.number().positive(t("validation.startTimeRequired")),
-          endTime: z.number().positive(t("validation.endTimeRequired")),
-          studentName: z.string().trim().min(1, t("validation.nameRequired")),
-          studentId: z.string().trim(),
-          isPrivileged: z.boolean(),
-          email: z.string().trim().email(t("validation.emailInvalid")),
-          reason: z.string().trim().min(1, t("validation.reasonRequired")),
-          purposeType: z.enum(["personal", "class", "club"]),
-          needsMultimedia: z.boolean(),
-          isAgreed: z.boolean().refine(Boolean, t("validation.agreementRequired")),
-        })
-        .superRefine((values, context) => {
-          if (!values.isPrivileged && !/^GJ\d{8}$/.test(values.studentId)) {
-            context.addIssue({
-              code: "custom",
-              path: ["studentId"],
-              message: t("validation.studentIdFormat"),
-            })
-          }
-        }),
+      z.object({
+        bookingCampusId: z.number().int().positive(t("validation.campusRequired")),
+        room: z.number().int().positive(t("validation.roomRequired")),
+        date: z.string().min(1, t("validation.dateRequired")),
+        startTime: z.number().positive(t("validation.startTimeRequired")),
+        endTime: z.number().positive(t("validation.endTimeRequired")),
+        email: z.string().trim().email(t("validation.emailInvalid")),
+        reason: z.string().trim().min(1, t("validation.reasonRequired")),
+        isPrivileged: z.boolean(),
+        purposeType: z.enum(["personal", "class", "club"]),
+        needsMultimedia: z.boolean(),
+        isAgreed: z.boolean().refine(Boolean, t("validation.agreementRequired")),
+      }),
     [t],
   )
 }
 
-export type ReservationFormValues = z.infer<ReturnType<typeof useReservationSchema>>
-
 export const reservationDefaults: ReservationFormValues = {
-  classId: 0,
   bookingCampusId: 0,
   room: 0,
   date: "",
   startTime: 0,
   endTime: 0,
-  studentName: "",
-  studentId: "",
-  isPrivileged: false,
   email: "",
   reason: "",
+  isPrivileged: false,
   purposeType: "personal",
   needsMultimedia: false,
   isAgreed: false,
@@ -61,16 +57,7 @@ export const reservationDefaults: ReservationFormValues = {
 export const bookingSteps = [
   {
     id: "details",
-    fields: [
-      "classId",
-      "studentName",
-      "studentId",
-      "email",
-      "reason",
-      "purposeType",
-      "needsMultimedia",
-      "isAgreed",
-    ],
+    fields: ["email", "reason", "purposeType", "needsMultimedia", "isAgreed"],
   },
   { id: "location", fields: ["bookingCampusId", "room", "date", "startTime", "endTime"] },
   { id: "review", fields: [] },

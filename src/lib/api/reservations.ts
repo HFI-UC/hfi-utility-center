@@ -11,7 +11,7 @@ import { inputValueToTimestamp } from "@/lib/date-time"
 import { buildLegacyAvailability } from "@/lib/reservations/availability"
 
 export interface CreateReservationInput {
-  classId: number
+  classId: number | null
   room: number
   studentName: string
   studentId: string
@@ -21,6 +21,25 @@ export interface CreateReservationInput {
   endTime: number
   purposeType: PurposeType
   needsMultimedia: boolean
+  preview?: boolean
+  confirmPriority?: boolean
+  expectedConflictIds?: number[]
+}
+
+export interface ReservationConflict {
+  id: number
+  studentName: string
+  startTime: string
+  endTime: string
+  status: ReservationStatus
+  roomName: string
+}
+
+export interface ReservationCreateResult {
+  mode: "normal" | "priority"
+  conflicts: ReservationConflict[]
+  cancelledCount: number
+  reservationId?: number
 }
 
 export async function getAvailability(
@@ -100,19 +119,7 @@ export async function getAvailability(
 }
 
 export async function createReservation(input: CreateReservationInput) {
-  const { data } = await api.post<ApiResponse<{ reservationId: number }>>(
-    "/reservation/create",
-    input,
-  )
-  return data.data!
-}
-
-export type ForceReservationInput = CreateReservationInput
-
-export async function forceReservation(input: ForceReservationInput) {
-  // Priority creation is handled by the standard endpoint when called with an
-  // administrator identity and privileged class.
-  const { data } = await api.post<ApiResponse<{ reservationId: number }>>(
+  const { data } = await api.post<ApiResponse<ReservationCreateResult>>(
     "/reservation/create",
     input,
   )

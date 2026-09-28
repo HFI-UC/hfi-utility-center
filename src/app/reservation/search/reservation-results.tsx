@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import type { Reservation } from "@/lib/api/types"
+import type { Reservation, ReservationStatus } from "@/lib/api/types"
 import { formatApiTimestamp } from "@/lib/date-time"
 
 const PURPOSE_LABEL = {
@@ -21,12 +21,13 @@ const PURPOSE_LABEL = {
   club: "purposeClub",
 } as const
 
-const STATUS_DOT = {
+const STATUS_DOT: Record<ReservationStatus, string> = {
   approved: "bg-success",
   pending: "bg-warning",
+  ai_reviewing: "bg-info",
   rejected: "bg-danger",
   cancelled: "bg-muted-foreground/40",
-} as const
+}
 
 export function ReservationResults({
   reservations,

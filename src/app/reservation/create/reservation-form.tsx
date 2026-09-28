@@ -8,7 +8,8 @@ import { FormProvider, useForm, useWatch } from "react-hook-form"
 import { AppShell } from "@/components/layout/app-shell"
 import { PageHeader } from "@/components/layout/page-header"
 import { useErrorShake } from "@/hooks/use-error-shake"
-import { createReservation, forceReservation, getAvailability } from "@/lib/api/reservations"
+import { lookupDirectoryProfile } from "@/lib/api/directory"
+import { createReservation, getAvailability } from "@/lib/api/reservations"
 import { dateToInputValue } from "@/lib/date-time"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
 import { cn } from "@/lib/utils"
@@ -27,11 +28,7 @@ import { ClassStep } from "./steps/class-step"
 import { LocationStep } from "./steps/location-step"
 import { ReviewStep } from "./steps/review-step"
 import { SuccessStep } from "./steps/success-step"
-import {
-  findPriorityClass,
-  forceReservationDefaults,
-  useBookingCatalog,
-} from "./use-booking-catalog"
+import { forceReservationDefaults, useBookingCatalog } from "./use-booking-catalog"
 
 type ReservationResult = {
   reservationId?: number
@@ -66,14 +63,11 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
     setCurrentStepId(nextStepId)
   }
 
-  const [selectedClassId, selectedRoomId, selectedDate, selectedStart, selectedEnd] = useWatch({
-    control: form.control,
-    name: ["classId", "room", "date", "startTime", "endTime"],
-  })
-  const selectedClass = catalog?.classes.find((item) => item.id === selectedClassId)
-  const isPrivilegedSelection = Boolean(
-    catalog?.campuses.find((item) => item.id === selectedClass?.campus)?.isPrivileged,
-  )
+  const [selectedRoomId, selectedDate, selectedStart, selectedEnd, isPrivilegedSelection] =
+    useWatch({
+      control: form.control,
+      name: ["room", "date", "startTime", "endTime", "isPrivileged"],
+    })
   const { ref: stepRef, shake: shakeStep } = useErrorShake<HTMLDivElement>()
 
   useEffect(() => {
@@ -127,10 +121,7 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
 
     if (currentStep.id === "details") {
       if (!form.getValues("bookingCampusId")) {
-        const campus =
-          catalog?.campuses.find(
-            (item) => item.id === selectedClass?.campus && !item.isPrivileged,
-          ) ?? catalog?.campuses.find((item) => !item.isPrivileged)
+        const campus = catalog?.campuses.find((item) => !item.isPrivileged)
         if (campus) form.setValue("bookingCampusId", campus.id)
       }
       if (!form.getValues("date")) form.setValue("date", dateToInputValue(new Date()))
@@ -154,18 +145,6 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
     goToStep(nextStep.id)
   }
 
-  function continueFromDetails() {
-    if (isWorking || currentStep.id !== "details") return
-    const parsed = schema.safeParse(form.getValues())
-    const detailsComplete =
-      parsed.success ||
-      parsed.error.issues.every((issue) => {
-        const field = issue.path[0]
-        return typeof field !== "string" || !currentStep.fields.some((name) => name === field)
-      })
-    if (detailsComplete) void continueToNextStep()
-  }
-
   async function confirmReservation(values: ReservationFormValues) {
     setIsWorking(true)
     setFlowError(undefined)
@@ -176,31 +155,32 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
         return
       }
 
-      const response = isForce
-        ? await forceReservation({
-            classId: values.classId,
-            room: values.room,
-            studentName: values.studentName.trim(),
-            studentId: "-",
-            email: values.email.trim(),
-            reason: values.reason.trim(),
-            startTime: values.startTime,
-            endTime: values.endTime,
-            purposeType: values.purposeType,
-            needsMultimedia: values.needsMultimedia,
-          })
-        : await createReservation({
-            classId: values.classId,
-            room: values.room,
-            studentName: values.studentName.trim(),
-            studentId: values.studentId.trim().toUpperCase(),
-            email: values.email.trim(),
-            reason: values.reason.trim(),
-            startTime: values.startTime,
-            endTime: values.endTime,
-            purposeType: values.purposeType,
-            needsMultimedia: values.needsMultimedia,
-          })
+      const email = values.email.trim()
+      const profile = isForce ? null : await lookupDirectoryProfile(email)
+      const input = {
+        classId: profile?.classId ?? null,
+        room: values.room,
+        studentName: profile?.studentName ?? "",
+        studentId: profile?.studentId ?? "",
+        email,
+        reason: values.reason.trim(),
+        startTime: values.startTime,
+        endTime: values.endTime,
+        purposeType: values.purposeType,
+        needsMultimedia: values.needsMultimedia,
+      }
+      const preview = await createReservation({ ...input, preview: true })
+      const response =
+        preview.mode === "priority"
+          ? await createReservation({
+              ...input,
+              confirmPriority: true,
+              expectedConflictIds: preview.conflicts.map((conflict) => conflict.id),
+            })
+          : await createReservation(input)
+      if (typeof response.reservationId !== "number") {
+        throw new TypeError(t("completeStep"))
+      }
       setResult(response)
     } catch (error) {
       setFlowError(error instanceof Error ? error.message : common("unknown"))
@@ -232,10 +212,9 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
   }
 
   function resetReservation() {
-    const priorityClass = catalog && findPriorityClass(catalog)
     form.reset(
-      isForce && adminSessionRef.current && priorityClass
-        ? forceReservationDefaults(priorityClass.id, adminSessionRef.current)
+      isForce && adminSessionRef.current
+        ? forceReservationDefaults(adminSessionRef.current)
         : reservationDefaults,
     )
     goToStep("details")
@@ -267,14 +246,7 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
   }
 
   const stepContent: Record<BookingStepId, ReactNode> = {
-    details: (
-      <ClassStep
-        catalog={catalog}
-        privilegedOnly={isForce}
-        adminMode={isForce}
-        onClassSelected={() => continueFromDetails()}
-      />
-    ),
+    details: <ClassStep adminMode={isForce} />,
     location: <LocationStep catalog={catalog} privileged={isPrivilegedSelection} />,
     review: <ReviewStep catalog={catalog} onEdit={goToStep} />,
   }
@@ -298,7 +270,6 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
         />
         {currentStepIndex > 0 ? (
           <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg bg-muted/60 px-4 py-3 text-sm">
-            <span className="font-medium">{selectedClass?.name}</span>
             {selectedRoomId ? (
               <span>{catalog.rooms.find((item) => item.id === selectedRoomId)?.name}</span>
             ) : null}

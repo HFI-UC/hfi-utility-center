@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import type { CancellationPreview } from "@/lib/api/reservations"
-import type { AvailabilityData, CatalogData, Room } from "@/lib/api/types"
+import type { AvailabilityData, CatalogData, ReservationStatus, Room } from "@/lib/api/types"
 import { cn } from "@/lib/utils"
 
 import type { TimeOption } from "../create/steps/time-options"
@@ -13,12 +13,13 @@ import { CancelDetails } from "./cancel-details"
 import { EditFlow } from "./edit-flow"
 import type { EditDraft, EditStep } from "./use-cancellation"
 
-const STATUS_DOT = {
+const STATUS_DOT: Record<ReservationStatus, string> = {
   approved: "bg-success",
   pending: "bg-warning",
+  ai_reviewing: "bg-info",
   rejected: "bg-danger",
   cancelled: "bg-muted-foreground/40",
-} as const
+}
 
 export function ActiveBookingPanel({
   preview,

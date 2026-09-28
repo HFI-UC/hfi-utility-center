@@ -32,7 +32,6 @@ export function ReviewStep({
   const locale = useLocale()
   const { getValues } = useFormContext<ReservationFormValues>()
   const values = getValues()
-  const className = catalog.classes.find((item) => item.id === values.classId)?.name
   const campusName = catalog.campuses.find((item) => item.id === values.bookingCampusId)?.name
   const roomName = catalog.rooms.find((item) => item.id === values.room)?.name
   const dateFormatter = useMemo(
@@ -106,20 +105,9 @@ export function ReviewStep({
           </span>
         </ConfirmRow>
         <ConfirmRow label={t("profileTitle")}>
-          <span className="flex min-w-0 flex-col gap-0.5">
-            <span className="flex min-w-0 items-center gap-1.5">
-              <UserRound aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
-              <span className="break-words">{values.studentName}</span>
-            </span>
-            {className ? (
-              <span className="break-words text-muted-foreground">{className}</span>
-            ) : null}
-            {!values.isPrivileged ? (
-              <span className="font-mono text-xs break-words text-muted-foreground">
-                {values.studentId}
-              </span>
-            ) : null}
-            <span className="break-words text-muted-foreground">{values.email}</span>
+          <span className="flex min-w-0 items-center gap-1.5">
+            <UserRound aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
+            <span className="break-words">{values.email}</span>
           </span>
         </ConfirmRow>
         <ConfirmRow label={t("reason")}>

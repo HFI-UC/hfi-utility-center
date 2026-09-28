@@ -33,14 +33,13 @@ export function useBookingCatalog(isForce: boolean, form: UseFormReturn<Reservat
         ])
         if (!active) return
 
-        const priorityClass = findPriorityClass(data)
-        if (isForce && (!session || !priorityClass)) {
+        if (isForce && !session) {
           throw new Error(adminT("forceLoadError"))
         }
         setCatalog(data)
         adminSessionRef.current = session
-        if (isForce && session && priorityClass) {
-          form.reset(forceReservationDefaults(priorityClass.id, session))
+        if (isForce && session) {
+          form.reset(forceReservationDefaults(session))
         }
       } catch (error) {
         if (active) {
@@ -66,21 +65,9 @@ export function useBookingCatalog(isForce: boolean, form: UseFormReturn<Reservat
   }
 }
 
-export function findPriorityClass(catalog: CatalogData) {
-  const privilegedCampusIds = new Set(
-    catalog.campuses.filter((campus) => campus.isPrivileged).map((campus) => campus.id),
-  )
-  return catalog.classes.find((item) => privilegedCampusIds.has(item.campus))
-}
-
-export function forceReservationDefaults(
-  classId: number,
-  admin: AdminSession,
-): ReservationFormValues {
+export function forceReservationDefaults(admin: AdminSession): ReservationFormValues {
   return {
     ...reservationDefaults,
-    classId,
-    studentName: admin.name,
     email: admin.email,
     isPrivileged: true,
     purposeType: "class",

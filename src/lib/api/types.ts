@@ -50,15 +50,15 @@ export interface CatalogData {
   rooms: Room[]
 }
 
-export type ReservationStatus = "pending" | "approved" | "rejected" | "cancelled"
+export type ReservationStatus = "pending" | "ai_reviewing" | "approved" | "rejected" | "cancelled"
 export type PurposeType = "personal" | "class" | "club"
 
 export interface Reservation {
   id: number
   roomId: number | null
   studentName: string
-  studentId?: string
-  email: string
+  studentId?: string | null
+  email?: string | null
   startTime: string
   endTime: string
   className?: string
