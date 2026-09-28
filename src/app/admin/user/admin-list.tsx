@@ -52,15 +52,18 @@ import { changeAdminPassword, deleteAdmin, setAdminNotifications } from "@/lib/a
 import type { Admin } from "@/lib/api/types"
 
 import { EditAdminDialog } from "./edit-admin-dialog"
+import { PermissionDialog } from "./permission-dialog"
 
 export function AdminList({
   admins,
   mutate,
   working,
+  canManagePermissions,
 }: {
   admins: Admin[]
   mutate: AdminMutation
   working: boolean
+  canManagePermissions: boolean
 }) {
   const t = useTranslations("admin")
   const isMobile = useIsMobile()
@@ -74,7 +77,12 @@ export function AdminList({
       <ul className="flex min-w-0 flex-col divide-y divide-border">
         {admins.map((admin) => (
           <li key={admin.id} className="py-4">
-            <AdminAccountCard admin={admin} mutate={mutate} working={working} />
+            <AdminAccountCard
+              admin={admin}
+              mutate={mutate}
+              working={working}
+              canManagePermissions={canManagePermissions}
+            />
           </li>
         ))}
       </ul>
@@ -92,7 +100,13 @@ export function AdminList({
       </TableHeader>
       <TableBody>
         {admins.map((admin) => (
-          <AdminAccountRow key={admin.id} admin={admin} mutate={mutate} working={working} />
+          <AdminAccountRow
+            key={admin.id}
+            admin={admin}
+            mutate={mutate}
+            working={working}
+            canManagePermissions={canManagePermissions}
+          />
         ))}
       </TableBody>
     </Table>
@@ -103,10 +117,12 @@ function useAccountMenu({
   admin,
   mutate,
   working,
+  canManagePermissions,
 }: {
   admin: Admin
   mutate: AdminMutation
   working: boolean
+  canManagePermissions: boolean
 }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
@@ -178,6 +194,9 @@ function useAccountMenu({
           open={deleteOpen}
           onOpenChange={setDeleteOpen}
         />
+        {canManagePermissions ? (
+          <PermissionDialog admin={admin} mutate={mutate} working={working} />
+        ) : null}
       </>
     ),
   }
@@ -210,12 +229,14 @@ function AdminAccountRow({
   admin,
   mutate,
   working,
+  canManagePermissions,
 }: {
   admin: Admin
   mutate: AdminMutation
   working: boolean
+  canManagePermissions: boolean
 }) {
-  const { trigger, dialogs } = useAccountMenu({ admin, mutate, working })
+  const { trigger, dialogs } = useAccountMenu({ admin, mutate, working, canManagePermissions })
   const { receives, error, toggle } = useNotificationToggle(admin, mutate)
 
   return (
@@ -243,12 +264,14 @@ function AdminAccountCard({
   admin,
   mutate,
   working,
+  canManagePermissions,
 }: {
   admin: Admin
   mutate: AdminMutation
   working: boolean
+  canManagePermissions: boolean
 }) {
-  const { trigger, dialogs } = useAccountMenu({ admin, mutate, working })
+  const { trigger, dialogs } = useAccountMenu({ admin, mutate, working, canManagePermissions })
   const { receives, error, toggle } = useNotificationToggle(admin, mutate)
 
   return (
@@ -278,6 +301,9 @@ function AccountIdentity({ admin }: { admin: Admin }) {
       </Avatar>
       <div className="flex min-w-0 flex-col">
         <span className="truncate text-sm font-medium break-words">{admin.name}</span>
+        <span className="text-xs text-muted-foreground">
+          {admin.role === "global" ? "Global" : "Room"}
+        </span>
         <a
           href={`mailto:${admin.email}`}
           className="truncate text-xs text-muted-foreground underline underline-offset-4"

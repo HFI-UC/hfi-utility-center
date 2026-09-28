@@ -1,12 +1,19 @@
+"use client"
+
+import { useSearchParams } from "next/navigation"
+import { Suspense } from "react"
+
 import { CancelReservationFlow } from "./cancel-reservation-flow"
 
-type SearchParams = Record<string, string | string[] | undefined>
+function CancelReservationContent() {
+  const token = useSearchParams().get("token") ?? ""
+  return <CancelReservationFlow token={token} />
+}
 
-export default async function CancelReservationPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>
-}) {
-  const { token } = await searchParams
-  return <CancelReservationFlow token={typeof token === "string" ? token : ""} />
+export default function CancelReservationPage() {
+  return (
+    <Suspense fallback={null}>
+      <CancelReservationContent />
+    </Suspense>
+  )
 }

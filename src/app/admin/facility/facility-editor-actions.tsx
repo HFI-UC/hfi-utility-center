@@ -1,6 +1,6 @@
 "use client"
 
-import { Ellipsis, Pencil, Plus, Trash2 } from "lucide-react"
+import { Ellipsis, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useState, type ReactElement, type ReactNode } from "react"
 
@@ -35,6 +35,27 @@ export type FacilityEditorActions = {
 export const touchTarget = "min-h-11 sm:min-h-0"
 
 export const iconTouchTarget = "size-11 sm:size-8"
+
+export function RestoreFacilityButton({
+  action,
+  mutate,
+  working,
+}: FacilityEditorActions & { action: () => Promise<unknown> }) {
+  const t = useTranslations("admin")
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      disabled={working}
+      onClick={() => void mutate(action, t("facilityRestored"))}
+      className={touchTarget}
+    >
+      <RotateCcw aria-hidden />
+      {t("restoreArchived")}
+    </Button>
+  )
+}
 
 export function IconHint({ label, children }: { label: string; children: ReactElement }) {
   return (
@@ -99,7 +120,6 @@ export function FacilityRowMenu({
   children?: ReactNode
 }) {
   const t = useTranslations("admin")
-  const common = useTranslations("common")
   const [deleteOpen, setDeleteOpen] = useState(false)
 
   return (
@@ -125,7 +145,7 @@ export function FacilityRowMenu({
             onSelect={() => setDeleteOpen(true)}
           >
             <Trash2 aria-hidden />
-            {common("delete")}
+            {t("archive")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -171,8 +191,8 @@ export function ConfirmFacilityDelete({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{common("delete")}</AlertDialogTitle>
-          <AlertDialogDescription>{t("confirmDelete", { name: label })}</AlertDialogDescription>
+          <AlertDialogTitle>{t("archive")}</AlertDialogTitle>
+          <AlertDialogDescription>{t("confirmArchive", { name: label })}</AlertDialogDescription>
         </AlertDialogHeader>
         {error ? <FieldError>{error}</FieldError> : null}
         <AlertDialogFooter>
@@ -187,7 +207,7 @@ export function ConfirmFacilityDelete({
             className={touchTarget}
           >
             <Trash2 aria-hidden />
-            {common("delete")}
+            {t("archive")}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -4,20 +4,20 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:cf": "opennextjs-cloudflare build",
     "build": "next build",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
-    "deploy": "pnpm run build:cf && opennextjs-cloudflare deploy",
+    "deploy": "pnpm build && wrangler deploy",
+    "deploy:dev": "pnpm build && wrangler deploy --env dev",
     "dev": "next dev",
     "doctor": "react-doctor",
     "format:check": "vp fmt --check \"**/*.{ts,tsx,mjs}\"",
     "format": "vp fmt \"**/*.{ts,tsx,mjs}\"",
     "lint": "vp lint",
     "prepare": "vp config",
-    "preview": "pnpm run build:cf && opennextjs-cloudflare preview",
+    "preview": "pnpm build && wrangler dev",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "upload": "pnpm run build:cf && opennextjs-cloudflare upload"
+    "upload": "pnpm build && wrangler deploy --dry-run"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -58,7 +58,7 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "^12.6.0",
+      "version": "12.7.0",
       "onFail": "warn"
     }
   }

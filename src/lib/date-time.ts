@@ -1,4 +1,14 @@
 const DATE_VALUE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
+const API_LOCAL_TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?$/
+const SHANGHAI_OFFSET_SECONDS = 8 * 60 * 60
+const shanghaiFormatters = new WeakMap<Intl.DateTimeFormat, Intl.DateTimeFormat>()
+
+// PHP returns Asia/Shanghai wall times without an offset. Attach that offset
+// before parsing so browser timezone settings do not change their instant.
+export function parseApiTimestamp(value: string) {
+  const normalized = value.replace(" ", "T")
+  return new Date(API_LOCAL_TIMESTAMP_PATTERN.test(normalized) ? `${normalized}+08:00` : normalized)
+}
 
 export function dateToInputValue(date: Date) {
   const year = date.getFullYear()
@@ -19,11 +29,12 @@ export function inputValueToDate(value: string) {
 }
 
 export function inputValueToTimestamp(value: string, endOfDay = false) {
-  if (!DATE_VALUE_PATTERN.test(value)) return undefined
-  const date = inputValueToDate(value)
-  if (!date) return undefined
-  if (endOfDay) date.setHours(23, 59, 59, 0)
-  return date.getTime() / 1000
+  if (!inputValueToDate(value)) return undefined
+  const [year, month, day] = value.split("-").map(Number)
+  return (
+    Date.UTC(year, month - 1, day, endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0) / 1000 -
+    SHANGHAI_OFFSET_SECONDS
+  )
 }
 
 export function timeOnInputDateTimestamp(date: string, [hour, minute]: number[]) {
@@ -44,7 +55,18 @@ export function formatApiTimestamp(
 ) {
   if (!value) return fallback
 
-  const date = new Date(value)
+  const date = typeof value === "string" ? parseApiTimestamp(value) : new Date(value)
 
-  return Number.isNaN(date.getTime()) ? fallback : formatter.format(date)
+  if (Number.isNaN(date.getTime())) return fallback
+
+  let shanghaiFormatter = shanghaiFormatters.get(formatter)
+  if (!shanghaiFormatter) {
+    const options = formatter.resolvedOptions()
+    shanghaiFormatter = new Intl.DateTimeFormat(options.locale, {
+      ...(options as Intl.DateTimeFormatOptions),
+      timeZone: "Asia/Shanghai",
+    })
+    shanghaiFormatters.set(formatter, shanghaiFormatter)
+  }
+  return shanghaiFormatter.format(date)
 }

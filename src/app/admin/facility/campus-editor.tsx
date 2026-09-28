@@ -15,12 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { createCampus, deleteCampus, editCampus } from "@/lib/api/catalog"
+import { createCampus, deleteCampus, editCampus, restoreCampus } from "@/lib/api/catalog"
 import type { Campus } from "@/lib/api/types"
 import { formatApiTimestamp } from "@/lib/date-time"
 
 import {
   FacilityRowMenu,
+  RestoreFacilityButton,
   ResourceSection,
   type FacilityEditorActions,
   touchTarget,
@@ -82,7 +83,12 @@ export function CampusEditor({
             {campuses.map((campus) => (
               <TableRow key={campus.id}>
                 <TableCell>
-                  <span className="block max-w-[16rem] truncate font-medium">{campus.name}</span>
+                  <span className="block max-w-[16rem] truncate font-medium">
+                    {campus.name}
+                    {campus.deletedAt ? (
+                      <span className="ml-2 text-xs text-amber-700">{t("archived")}</span>
+                    ) : null}
+                  </span>
                   <span className="block font-mono text-xs text-muted-foreground">
                     #{campus.id}
                   </span>
@@ -91,12 +97,20 @@ export function CampusEditor({
                   {formatApiTimestamp(dateFormatter, campus.createdAt)}
                 </TableCell>
                 <TableCell className="w-0 text-right">
-                  <CampusRowMenu
-                    campus={campus}
-                    mutate={mutate}
-                    working={working}
-                    onEdit={() => setEditingId(campus.id)}
-                  />
+                  {campus.deletedAt ? (
+                    <RestoreFacilityButton
+                      action={() => restoreCampus(campus.id)}
+                      mutate={mutate}
+                      working={working}
+                    />
+                  ) : (
+                    <CampusRowMenu
+                      campus={campus}
+                      mutate={mutate}
+                      working={working}
+                      onEdit={() => setEditingId(campus.id)}
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             ))}

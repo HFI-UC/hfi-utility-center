@@ -48,7 +48,7 @@ export function EditLocationStep({
           className={`flex w-full flex-wrap items-stretch gap-2 ${TILE_GROUP}`}
         >
           {catalog.campuses
-            .filter((campus) => !campus.isPrivileged)
+            .filter((campus) => !campus.deletedAt)
             .map((campus) => (
               <ToggleGroupItem
                 key={campus.id}

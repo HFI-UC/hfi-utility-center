@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { createRoom, deleteRoom, editRoom } from "@/lib/api/catalog"
+import { createRoom, deleteRoom, editRoom, restoreRoom } from "@/lib/api/catalog"
 import type { Campus, Room } from "@/lib/api/types"
 import { formatApiTimestamp } from "@/lib/date-time"
 
@@ -25,6 +25,7 @@ import {
   FacilityRowMenu,
   IconHint,
   ResourceSection,
+  RestoreFacilityButton,
   StateDot,
   type FacilityEditorActions,
   touchTarget,
@@ -43,6 +44,12 @@ export function RoomEditor({
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const campusNames = new Map(campuses.map((campus) => [campus.id, campus.name]))
+  const activeCampuses = campuses.filter((campus) => !campus.deletedAt)
+  const archivedCampusIds = new Set(
+    campuses.filter((campus) => campus.deletedAt).map((campus) => campus.id),
+  )
+  const isArchived = (room: Room) =>
+    Boolean(room.deletedAt) || archivedCampusIds.has(room.campus ?? -1)
   const locale = useLocale()
   const dateFormatter = useMemo(
     () =>
@@ -53,7 +60,7 @@ export function RoomEditor({
   )
   const [createOpen, setCreateOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
-  const editing = rooms.find((room) => room.id === editingId)
+  const editing = rooms.find((room) => room.id === editingId && !isArchived(room))
 
   return (
     <ResourceSection
@@ -63,7 +70,7 @@ export function RoomEditor({
         <Button
           variant="outline"
           size="sm"
-          disabled={working || campuses.length === 0}
+          disabled={working || activeCampuses.length === 0}
           onClick={() => setCreateOpen(true)}
           className={touchTarget}
         >
@@ -94,52 +101,73 @@ export function RoomEditor({
             {rooms.map((room) => (
               <TableRow key={room.id}>
                 <TableCell>
-                  <span className="block max-w-[14rem] truncate font-medium">{room.name}</span>
+                  <span className="block max-w-[14rem] truncate font-medium">
+                    {room.name}
+                    {isArchived(room) ? (
+                      <span className="ml-2 text-xs text-amber-700">{t("archived")}</span>
+                    ) : null}
+                  </span>
                   <span className="block font-mono text-xs text-muted-foreground">#{room.id}</span>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <IconHint label={room.enabled ? t("roomOpen") : t("roomClosed")}>
-                      <span className="inline-flex">
-                        <Switch
-                          size="sm"
-                          checked={room.enabled}
-                          className="after:-inset-y-4 sm:after:-inset-y-2"
-                          disabled={working}
-                          aria-label={room.name}
-                          onCheckedChange={() =>
-                            mutate(
-                              () => editRoom(room.id, room.name, room.campus, !room.enabled),
-                              t("roomStatusUpdated"),
-                            )
-                          }
-                        />
-                      </span>
-                    </IconHint>
-                    <StateDot
-                      enabled={room.enabled}
-                      label={room.enabled ? common("enabled") : common("disabled")}
-                    />
-                  </div>
+                  {isArchived(room) ? null : (
+                    <div className="flex items-center gap-2">
+                      <IconHint label={room.enabled ? t("roomOpen") : t("roomClosed")}>
+                        <span className="inline-flex">
+                          <Switch
+                            size="sm"
+                            checked={room.enabled}
+                            className="after:-inset-y-4 sm:after:-inset-y-2"
+                            disabled={working}
+                            aria-label={room.name}
+                            onCheckedChange={() =>
+                              mutate(
+                                () => editRoom(room.id, room.name, room.campus ?? 0, !room.enabled),
+                                t("roomStatusUpdated"),
+                              )
+                            }
+                          />
+                        </span>
+                      </IconHint>
+                      <StateDot
+                        enabled={room.enabled}
+                        label={room.enabled ? common("enabled") : common("disabled")}
+                      />
+                    </div>
+                  )}
                 </TableCell>
                 <TableCell>
                   <span className="block max-w-[10rem] truncate">
-                    {campusNames.get(room.campus)}
+                    {campusNames.get(room.campus ?? -1)}
                   </span>
                 </TableCell>
                 <TableCell>
-                  <PolicyEditor room={room} mutate={mutate} working={working} />
+                  {isArchived(room) ? (
+                    "—"
+                  ) : (
+                    <PolicyEditor room={room} mutate={mutate} working={working} />
+                  )}
                 </TableCell>
                 <TableCell className="hidden text-xs text-muted-foreground xl:table-cell">
                   {formatApiTimestamp(dateFormatter, room.createdAt)}
                 </TableCell>
                 <TableCell className="w-0 text-right">
-                  <RoomRowMenu
-                    room={room}
-                    mutate={mutate}
-                    working={working}
-                    onEdit={() => setEditingId(room.id)}
-                  />
+                  {room.deletedAt && !archivedCampusIds.has(room.campus ?? -1) ? (
+                    <RestoreFacilityButton
+                      action={() => restoreRoom(room.id)}
+                      mutate={mutate}
+                      working={working}
+                    />
+                  ) : isArchived(room) ? (
+                    "—"
+                  ) : (
+                    <RoomRowMenu
+                      room={room}
+                      mutate={mutate}
+                      working={working}
+                      onEdit={() => setEditingId(room.id)}
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -155,7 +183,7 @@ export function RoomEditor({
         title={t("newRoom")}
         description={t("roomName")}
         nameLabel={t("roomName")}
-        campuses={campuses}
+        campuses={activeCampuses}
         working={working}
         onSave={(name, campus) => mutate(() => createRoom(name, campus), t("roomCreated"))}
       />
@@ -168,9 +196,9 @@ export function RoomEditor({
           title={t("renameRoom")}
           description={t("roomName")}
           nameLabel={t("roomName")}
-          campuses={campuses}
+          campuses={activeCampuses}
           initialName={editing.name}
-          initialCampus={String(editing.campus)}
+          initialCampus={String(editing.campus ?? "")}
           working={working}
           onSave={(name, campus) =>
             mutate(() => editRoom(editing.id, name, campus, editing.enabled), t("roomUpdated"))

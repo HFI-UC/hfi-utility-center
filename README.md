@@ -73,13 +73,19 @@ pull requests.
 
 ## Deployment
 
-The app deploys to Cloudflare Workers through OpenNext.
+The app exports static assets into `out/` and deploys them to Cloudflare Workers.
+Cloudflare Workers Builds injects `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and
+`NEXT_PUBLIC_API_BASE_URL` at **build time**. The production Worker builds
+`main` against `https://api.hfiuc.org`; the isolated dev Worker builds `dev`
+against `https://preview-api.hfiuc.org`. Changing a build variable requires
+a new build and deployment; setting a runtime Worker variable will not change
+the JavaScript already exported by Next.js.
 
 ```bash
-pnpm build:cf   # opennextjs-cloudflare build
-pnpm preview    # build:cf, then opennextjs-cloudflare preview
-pnpm upload     # build:cf, then opennextjs-cloudflare upload
-pnpm deploy     # build:cf, then opennextjs-cloudflare deploy
+pnpm build       # static export to out/
+pnpm preview     # build, then wrangler dev
+pnpm deploy:dev  # build, then deploy to dev.hfiuc.org
+pnpm deploy      # build, then deploy to hfiuc.org
 ```
 
 `pnpm cf-typegen` regenerates `cloudflare-env.d.ts` from the Wrangler

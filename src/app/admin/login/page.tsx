@@ -1,12 +1,17 @@
+"use client"
+
+import { useSearchParams } from "next/navigation"
+import { Suspense } from "react"
+
 import { AdminLoginForm } from "./login-form"
 import { safeAdminRedirect } from "./redirect"
 
-export default async function AdminLoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ token?: string; redirect?: string }>
-}) {
-  const params = await searchParams
+function AdminLoginContent() {
+  const searchParams = useSearchParams()
+  const params = {
+    token: searchParams.get("token") ?? undefined,
+    redirect: searchParams.get("redirect") ?? undefined,
+  }
   const redirectParams = new URLSearchParams(params.redirect?.split("?")[1])
   const token = params.token ?? redirectParams.get("token") ?? undefined
   redirectParams.delete("token")
@@ -18,4 +23,12 @@ export default async function AdminLoginPage({
   )
 
   return <AdminLoginForm token={token} redirectTo={redirectTo} />
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminLoginContent />
+    </Suspense>
+  )
 }

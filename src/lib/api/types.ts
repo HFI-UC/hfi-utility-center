@@ -3,20 +3,24 @@ export interface ApiResponse<T = unknown> {
   data?: T
   message?: string
   code?: string
+  validation?: { field?: string; code?: string }
 }
 
 export interface Campus {
   id: number
   name: string
-  isPrivileged: boolean
   createdAt?: string
+  deletedAt?: string | null
+  deletedBy?: number | null
 }
 
 export interface SchoolClass {
   id: number
   name: string
-  campus: number
+  campus: number | null
   createdAt?: string
+  deletedAt?: string | null
+  deletedBy?: number | null
 }
 
 export interface RoomPolicy {
@@ -38,9 +42,11 @@ export interface CatalogAdminData {
 export interface Room {
   id: number
   name: string
-  campus: number
+  campus: number | null
   enabled: boolean
   createdAt?: string
+  deletedAt?: string | null
+  deletedBy?: number | null
   policies: RoomPolicy[]
 }
 
@@ -50,28 +56,33 @@ export interface CatalogData {
   rooms: Room[]
 }
 
-export type ReservationStatus = "pending" | "approved" | "rejected" | "cancelled"
+export type ReservationStatus = "pending" | "ai_reviewing" | "approved" | "rejected" | "cancelled"
 export type PurposeType = "personal" | "class" | "club"
 
 export interface Reservation {
   id: number
   roomId: number | null
   studentName: string
-  studentId?: string
-  email: string
+  email: string | null
   startTime: string
   endTime: string
-  className?: string
-  roomName?: string
+  className?: string | null
+  roomName?: string | null
   reason: string
   status: ReservationStatus
   createdAt?: string
-  campusName?: string
+  campusName?: string | null
   latestExecutor?: string
   purposeType?: PurposeType | null
   needsMultimedia?: boolean
   cancelledAt?: string
   editCount?: number
+}
+
+export interface ReservationCreateResult {
+  reservationId: number
+  mode: "normal" | "priority"
+  cancelledCount: number
 }
 
 export interface ReservationPage {
@@ -99,6 +110,7 @@ export interface Admin {
   email: string
   createdAt?: string
   receiveReservationNotifications: boolean
+  role: "global" | "room"
 }
 
 export interface Announcement {

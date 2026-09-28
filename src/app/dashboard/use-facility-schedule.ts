@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react"
 import { getCampuses, getRooms } from "@/lib/api/catalog"
 import { getReservations } from "@/lib/api/reservations"
 import type { Campus, Reservation, Room } from "@/lib/api/types"
+import { parseApiTimestamp } from "@/lib/date-time"
 
 const POLL_MS = 30000
 const TICK_MS = 5000
@@ -41,10 +42,11 @@ export function useFacilitySchedule() {
         ),
       )
       setRooms(catalog.filter((room) => room.enabled))
-      setCampuses(campusList.filter((campus) => !campus.isPrivileged))
+      setCampuses(campusList.filter((campus) => !campus.deletedAt))
       setReservations(
         [...first.reservations, ...rest.flatMap((page) => page.reservations)].sort(
-          (a, b) => Date.parse(a.startTime) - Date.parse(b.startTime),
+          (a, b) =>
+            parseApiTimestamp(a.startTime).getTime() - parseApiTimestamp(b.startTime).getTime(),
         ),
       )
       setUpdated(new Date())

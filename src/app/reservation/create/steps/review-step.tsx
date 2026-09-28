@@ -4,7 +4,9 @@ import { useMemo, type ReactNode } from "react"
 import { useFormContext } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
+import type { ReservationPreflight } from "@/lib/api/reservations"
 import type { CatalogData } from "@/lib/api/types"
+import { parseApiTimestamp } from "@/lib/date-time"
 
 import type { BookingStepId, ReservationFormValues } from "../form"
 import { StepLayout } from "../step-layout"
@@ -23,21 +25,25 @@ function ConfirmRow({ label, children }: { label: string; children: ReactNode })
 
 export function ReviewStep({
   catalog,
+  preflight,
   onEdit,
 }: {
   catalog: CatalogData
+  preflight?: ReservationPreflight
   onEdit: (step: BookingStepId) => void
 }) {
   const t = useTranslations("booking")
+  const statusT = useTranslations("status")
   const locale = useLocale()
   const { getValues } = useFormContext<ReservationFormValues>()
   const values = getValues()
-  const className = catalog.classes.find((item) => item.id === values.classId)?.name
+  const className = preflight?.student.className
   const campusName = catalog.campuses.find((item) => item.id === values.bookingCampusId)?.name
   const roomName = catalog.rooms.find((item) => item.id === values.room)?.name
   const dateFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(locale, {
+        timeZone: "Asia/Shanghai",
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -48,6 +54,7 @@ export function ReviewStep({
   const timeFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(locale, {
+        timeZone: "Asia/Shanghai",
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
@@ -109,15 +116,10 @@ export function ReviewStep({
           <span className="flex min-w-0 flex-col gap-0.5">
             <span className="flex min-w-0 items-center gap-1.5">
               <UserRound aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
-              <span className="break-words">{values.studentName}</span>
+              <span className="break-words">{preflight?.student.name}</span>
             </span>
             {className ? (
               <span className="break-words text-muted-foreground">{className}</span>
-            ) : null}
-            {!values.isPrivileged ? (
-              <span className="font-mono text-xs break-words text-muted-foreground">
-                {values.studentId}
-              </span>
             ) : null}
             <span className="break-words text-muted-foreground">{values.email}</span>
           </span>
@@ -135,6 +137,25 @@ export function ReviewStep({
           </span>
         </ConfirmRow>
       </dl>
+      <section className="mt-5 rounded-lg border border-border bg-muted/30 p-4">
+        <h3 className="text-sm font-semibold">{t("existingReservationsTitle")}</h3>
+        {preflight?.reservations.length ? (
+          <ul className="mt-3 divide-y divide-border text-sm">
+            {preflight.reservations.map((reservation) => (
+              <li key={reservation.id} className="flex flex-wrap justify-between gap-2 py-2">
+                <span>
+                  {reservation.roomName || t("unknownRoom")} ·{" "}
+                  {timeFormatter.format(parseApiTimestamp(reservation.startTime))}–
+                  {timeFormatter.format(parseApiTimestamp(reservation.endTime))}
+                </span>
+                <span className="text-muted-foreground">{statusT(reservation.status)}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-2 text-sm text-muted-foreground">{t("existingReservationsNone")}</p>
+        )}
+      </section>
       <p className="mt-4 flex items-start gap-2 text-xs break-words text-muted-foreground">
         <Mail aria-hidden className="mt-0.5 size-3.5 shrink-0" />
         {t("reviewEmailNote")}

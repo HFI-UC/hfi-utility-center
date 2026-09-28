@@ -21,6 +21,7 @@ import { STATUS_FILTERS, type StatusFilter } from "./use-reservation-filter"
 
 const STATUS_DOT: Record<ReservationStatus, string> = {
   pending: "bg-warning",
+  ai_reviewing: "bg-warning",
   approved: "bg-success",
   rejected: "bg-danger",
   cancelled: "bg-muted-foreground",
@@ -28,6 +29,7 @@ const STATUS_DOT: Record<ReservationStatus, string> = {
 
 const STATUS_TEXT: Record<ReservationStatus, string> = {
   pending: "text-warning",
+  ai_reviewing: "text-warning",
   approved: "text-success",
   rejected: "text-danger",
   cancelled: "text-muted-foreground",
@@ -94,12 +96,18 @@ export function ReservationTable({
   formatDateTime,
   onApprove,
   onReject,
+  onUnlock,
+  canUnlockAi = false,
+  unlockLabel,
 }: {
   reservations: Reservation[]
   working: boolean
   formatDateTime: (value: string) => string
   onApprove: (id: number) => void
   onReject: (id: number) => void
+  onUnlock?: (id: number) => void
+  canUnlockAi?: boolean
+  unlockLabel?: string
 }) {
   const t = useTranslations("admin")
   const statusT = useTranslations("status")
@@ -162,7 +170,17 @@ export function ReservationTable({
               </TableCell>
               <TableCell>
                 <div className="flex justify-end gap-1">
-                  {item.status !== "approved" ? (
+                  {canUnlockAi && item.status === "ai_reviewing" ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={working}
+                      onClick={() => onUnlock?.(item.id)}
+                    >
+                      {unlockLabel}
+                    </Button>
+                  ) : null}
+                  {item.status === "pending" ? (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -174,7 +192,7 @@ export function ReservationTable({
                       {t("approve")}
                     </Button>
                   ) : null}
-                  {item.status !== "rejected" ? (
+                  {item.status === "pending" ? (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -197,7 +215,7 @@ export function ReservationTable({
 }
 
 function ReservationMeta({ item }: { item: Reservation }) {
-  const meta = [item.studentId, item.className, item.campusName].filter(Boolean).join(" · ")
+  const meta = [item.className, item.campusName].filter(Boolean).join(" · ")
 
   if (!meta) return null
 
@@ -210,12 +228,18 @@ export function ReservationList({
   formatDateTime,
   onApprove,
   onReject,
+  onUnlock,
+  canUnlockAi = false,
+  unlockLabel,
 }: {
   reservations: Reservation[]
   working: boolean
   formatDateTime: (value: string) => string
   onApprove: (id: number) => void
   onReject: (id: number) => void
+  onUnlock?: (id: number) => void
+  canUnlockAi?: boolean
+  unlockLabel?: string
 }) {
   const t = useTranslations("admin")
   const statusT = useTranslations("status")
@@ -235,10 +259,16 @@ export function ReservationList({
             reservationDetailsLabel={t("reservationDetails")}
             onApprove={() => onApprove(item.id)}
             onReject={() => onReject(item.id)}
+            onUnlock={() => onUnlock?.(item.id)}
+            canUnlockAi={canUnlockAi}
+            unlockLabel={unlockLabel}
             fields={[
               { label: t("name"), value: item.studentName },
-              { label: t("studentId"), value: item.studentId ?? "" },
-              { label: t("email"), value: item.email, href: `mailto:${item.email}` },
+              {
+                label: t("email"),
+                value: item.email ?? "",
+                href: item.email ? `mailto:${item.email}` : undefined,
+              },
               { label: t("class"), value: item.className ?? "" },
               { label: t("campus"), value: item.campusName ?? "" },
             ].filter((field) => field.value)}
@@ -277,6 +307,9 @@ function ReservationCard({
   details,
   onApprove,
   onReject,
+  onUnlock,
+  canUnlockAi,
+  unlockLabel,
 }: {
   reservation: Reservation
   statusLabel: string
@@ -290,6 +323,9 @@ function ReservationCard({
   details: ReservationFieldData[]
   onApprove: () => void
   onReject: () => void
+  onUnlock?: () => void
+  canUnlockAi?: boolean
+  unlockLabel?: string
 }) {
   return (
     <div className="flex min-w-0 flex-col gap-3">
@@ -335,7 +371,17 @@ function ReservationCard({
         </dl>
       </div>
       <div className="flex flex-wrap gap-2">
-        {reservation.status !== "approved" ? (
+        {canUnlockAi && reservation.status === "ai_reviewing" ? (
+          <Button
+            variant="outline"
+            className="min-h-11 flex-1 sm:h-8"
+            disabled={working}
+            onClick={onUnlock}
+          >
+            {unlockLabel}
+          </Button>
+        ) : null}
+        {reservation.status === "pending" ? (
           <Button
             variant="outline"
             className="h-11 flex-1 border-success-border text-success hover:bg-success-soft sm:h-8"
@@ -346,7 +392,7 @@ function ReservationCard({
             {approveLabel}
           </Button>
         ) : null}
-        {reservation.status !== "rejected" ? (
+        {reservation.status === "pending" ? (
           <Button
             variant="ghost"
             className="min-h-11 flex-1 text-danger hover:bg-danger-soft sm:h-8"

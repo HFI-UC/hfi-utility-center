@@ -20,8 +20,10 @@ export function LocationStep({
   const t = useTranslations("booking")
   const { control, setValue, clearErrors } = useFormContext<ReservationFormValues>()
   const [campusId, roomId] = useWatch({ control, name: ["bookingCampusId", "room"] })
-  const campuses = catalog.campuses.filter((campus) => !campus.isPrivileged)
-  const rooms = catalog.rooms.filter((room) => room.campus === campusId && room.enabled)
+  const campuses = catalog.campuses
+  const rooms = catalog.rooms.filter(
+    (room) => room.campus === campusId && (privileged || room.enabled),
+  )
   const campus = campuses.find((item) => item.id === campusId)
 
   function clearSelectedTime() {

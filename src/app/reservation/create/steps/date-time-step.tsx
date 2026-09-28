@@ -39,13 +39,14 @@ export function DateTimeStep({
   })
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  const maximumDate = addDays(today, 30)
+  const maximumDate = addDays(today, privileged ? 3650 : 30)
   const dateFormatter = new Intl.DateTimeFormat(locale, {
     month: "long",
     day: "numeric",
     weekday: "short",
   })
   const timeFormatter = new Intl.DateTimeFormat(locale, {
+    timeZone: "Asia/Shanghai",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
@@ -58,7 +59,12 @@ export function DateTimeStep({
     const values = getValues()
     if (!availability || !values.startTime) return
     const valid = values.endTime
-      ? rangeIsAvailable(availability.slots, values.startTime, values.endTime)
+      ? rangeIsAvailable(
+          availability.slots,
+          values.startTime,
+          values.endTime,
+          availability.maxDurationMinutes,
+        )
       : availability.slots.some(
           (slot) => slot.startTime === values.startTime && slot.status === "available",
         )

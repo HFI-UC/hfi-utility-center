@@ -24,6 +24,7 @@ const PURPOSE_LABEL = {
 const STATUS_DOT = {
   approved: "bg-success",
   pending: "bg-warning",
+  ai_reviewing: "bg-warning",
   rejected: "bg-danger",
   cancelled: "bg-muted-foreground/40",
 } as const

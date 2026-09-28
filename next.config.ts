@@ -1,13 +1,19 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  agentRules: false,
+  output: "export",
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
         hostname: "api.hfiuc.org",
+        pathname: "/assets/**",
+      },
+      {
+        protocol: "https",
+        hostname: "preview-api.hfiuc.org",
         pathname: "/assets/**",
       },
     ],
@@ -15,5 +21,3 @@ const nextConfig: NextConfig = {
 }
 
 export default nextConfig
-
-void import("@opennextjs/cloudflare").then((m) => m.initOpenNextCloudflareForDev())

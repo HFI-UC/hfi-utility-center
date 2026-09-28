@@ -2,6 +2,7 @@
 
 import { Building2, DoorOpen, GraduationCap, RefreshCw, type LucideIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { useState } from "react"
 
 import { LoadingState } from "@/components/layout/data-state"
 import { PageHeader } from "@/components/layout/page-header"
@@ -29,7 +30,11 @@ const emptyFacilityData: FacilityData = {
 }
 
 async function loadFacilityData(): Promise<FacilityData> {
-  const [campuses, classes, rooms] = await Promise.all([getCampuses(), getClasses(), getRooms()])
+  const [campuses, classes, rooms] = await Promise.all([
+    getCampuses(true),
+    getClasses(true),
+    getRooms(true),
+  ])
   return { campuses, classes, rooms }
 }
 
@@ -56,6 +61,7 @@ function FacilityCount({
 export default function AdminFacilitiesPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
+  const [showArchived, setShowArchived] = useState(false)
   const facilityResource = useAdminResource({
     loadResource: loadFacilityData,
     initialData: emptyFacilityData,
@@ -64,6 +70,16 @@ export default function AdminFacilitiesPage() {
     reload: facilityResource.reload,
   })
   const { campuses, classes, rooms } = facilityResource.data
+  const activeCampuses = campuses.filter((item) => !item.deletedAt)
+  const archivedCampusIds = new Set(
+    campuses.filter((item) => item.deletedAt).map((item) => item.id),
+  )
+  const activeClasses = classes.filter(
+    (item) => !item.deletedAt && !archivedCampusIds.has(item.campus ?? -1),
+  )
+  const activeRooms = rooms.filter(
+    (item) => !item.deletedAt && !archivedCampusIds.has(item.campus ?? -1),
+  )
   const editorActions = { mutate, working }
   const pending = facilityResource.loading && !rooms.length
 
@@ -72,25 +88,35 @@ export default function AdminFacilitiesPage() {
       <PageHeader
         title={t("facilitiesTitle")}
         actions={
-          <IconHint label={common("refresh")}>
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
-              size="icon"
-              aria-label={common("refresh")}
-              disabled={facilityResource.loading}
-              onClick={() => void facilityResource.reload().catch(() => undefined)}
-              className={iconTouchTarget}
+              size="sm"
+              aria-pressed={showArchived}
+              onClick={() => setShowArchived((value) => !value)}
             >
-              <RefreshCw />
+              {showArchived ? t("hideArchived") : t("showArchived")}
             </Button>
-          </IconHint>
+            <IconHint label={common("refresh")}>
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label={common("refresh")}
+                disabled={facilityResource.loading}
+                onClick={() => void facilityResource.reload().catch(() => undefined)}
+                className={iconTouchTarget}
+              >
+                <RefreshCw />
+              </Button>
+            </IconHint>
+          </div>
         }
       />
 
       <dl className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-3">
-        <FacilityCount icon={Building2} label={t("campuses")} value={campuses.length} />
-        <FacilityCount icon={GraduationCap} label={t("classes")} value={classes.length} />
-        <FacilityCount icon={DoorOpen} label={t("rooms")} value={rooms.length} />
+        <FacilityCount icon={Building2} label={t("campuses")} value={activeCampuses.length} />
+        <FacilityCount icon={GraduationCap} label={t("classes")} value={activeClasses.length} />
+        <FacilityCount icon={DoorOpen} label={t("rooms")} value={activeRooms.length} />
       </dl>
 
       <Separator />
@@ -99,9 +125,17 @@ export default function AdminFacilitiesPage() {
         <LoadingState label={t("facilitiesLoading")} />
       ) : (
         <div className="flex min-w-0 flex-col gap-10">
-          <RoomEditor rooms={rooms} campuses={campuses} {...editorActions} />
-          <CampusEditor campuses={campuses} {...editorActions} />
-          <ClassEditor classes={classes} campuses={campuses} {...editorActions} />
+          <RoomEditor
+            rooms={showArchived ? rooms : activeRooms}
+            campuses={campuses}
+            {...editorActions}
+          />
+          <CampusEditor campuses={showArchived ? campuses : activeCampuses} {...editorActions} />
+          <ClassEditor
+            classes={showArchived ? classes : activeClasses}
+            campuses={campuses}
+            {...editorActions}
+          />
         </div>
       )}
     </div>

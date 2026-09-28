@@ -1,22 +1,36 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import { ErrorState, LoadingState } from "@/components/layout/data-state"
 import { PageHeader } from "@/components/layout/page-header"
 import { RefreshButton } from "@/components/layout/refresh-button"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import { getAdmins } from "@/lib/api/admins"
+import { getAdminSession } from "@/lib/api/auth"
 import type { Admin } from "@/lib/api/types"
 
 import { AdminList } from "./admin-list"
 import { CreateAdminForm } from "./create-admin-form"
+import { StudentDirectory } from "./student-directory"
 
 export default function AdminUsersPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const [loadError, setLoadError] = useState(false)
+  const [canManagePermissions, setCanManagePermissions] = useState(false)
+  useEffect(() => {
+    let active = true
+    void getAdminSession()
+      .then((session) => {
+        if (active) setCanManagePermissions(session.role === "global")
+      })
+      .catch(() => undefined)
+    return () => {
+      active = false
+    }
+  }, [])
   const loadAdmins = useCallback(async () => {
     try {
       const admins = await getAdmins()
@@ -62,10 +76,16 @@ export default function AdminUsersPage() {
               retryLabel={common("refresh")}
             />
           ) : (
-            <AdminList admins={adminResource.data} mutate={mutate} working={working} />
+            <AdminList
+              admins={adminResource.data}
+              mutate={mutate}
+              working={working}
+              canManagePermissions={canManagePermissions}
+            />
           )}
         </section>
       </div>
+      {canManagePermissions ? <StudentDirectory /> : null}
     </div>
   )
 }

@@ -32,7 +32,7 @@ release. Add a tool name to select part of the graph. For example, run
 
 Next.js 16 App Router · React 19 · TypeScript · Tailwind v4 · shadcn/ui
 (`radix-nova`, lucide icons, `neutral` base) · next-intl · React Hook Form +
-Zod · axios · next-themes · Cloudflare/OpenNext.
+Zod · axios · next-themes · Cloudflare static Workers.
 
 ## Commands
 
@@ -44,18 +44,18 @@ pnpm format       # vp fmt
 pnpm format:check # vp fmt --check
 pnpm build        # next build
 pnpm doctor       # react-doctor scan
-pnpm build:cf     # opennextjs-cloudflare build (Cloudflare worker bundle)
-pnpm preview      # build:cf + opennextjs-cloudflare preview
-pnpm upload       # build:cf + opennextjs-cloudflare upload
-pnpm deploy       # build:cf + opennextjs-cloudflare deploy
+pnpm preview      # static build + wrangler dev
+pnpm deploy:dev   # static build + wrangler deploy --env dev
+pnpm deploy       # static build + wrangler deploy
 pnpm cf-typegen   # regenerate cloudflare-env.d.ts from wrangler.jsonc
 ```
 
 ## Conventions
 
 - `pnpm <script>` for app scripts, `vp <cmd>` for Vite+ built-ins. They differ.
-- `preview`, `deploy`, and `upload` all chain `build:cf` first. Change that
-  shared build step, never re-inline `opennextjs-cloudflare build`.
+- `preview`, `deploy:dev`, and `deploy` build the static export first.
+- Workers Builds inject `NEXT_PUBLIC_API_BASE_URL` and
+  `NEXT_PUBLIC_TURNSTILE_SITE_KEY` at build time for each branch.
 - A `vp staged` pre-commit hook (`.vite-hooks/pre-commit`) checks staged files.
   CI (`.github/workflows/ci.yml`) runs `vp check`, `vp test run
 --passWithNoTests`, and `pnpm build` on every push and pull request;

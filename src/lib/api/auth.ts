@@ -8,6 +8,11 @@ export function rememberAdminEmail(email: string) {
   window.localStorage.setItem(ADMIN_EMAIL_STORAGE_KEY, email.trim().toLowerCase())
 }
 
+export function getRememberedAdminEmail() {
+  if (typeof window === "undefined") return undefined
+  return window.localStorage.getItem(ADMIN_EMAIL_STORAGE_KEY) ?? undefined
+}
+
 export function forgetAdminEmail() {
   if (typeof window === "undefined") return
   window.localStorage.removeItem(ADMIN_EMAIL_STORAGE_KEY)
@@ -39,6 +44,7 @@ export async function checkLogin() {
 export interface AdminSession {
   email: string
   name: string
+  role: "global" | "room"
 }
 
 export async function getAdminSession() {

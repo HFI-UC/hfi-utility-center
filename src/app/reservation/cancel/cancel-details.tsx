@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import type { CancellationPreview } from "@/lib/api/reservations"
 import type { PurposeType } from "@/lib/api/types"
+import { formatApiTimestamp } from "@/lib/date-time"
 
 const DETAIL =
   "grid grid-cols-[6.5rem_minmax(0,1fr)] items-baseline gap-3 py-2.5 sm:grid-cols-[8.5rem_minmax(0,1fr)]"
@@ -55,7 +56,7 @@ export function CancelDetails({
       <dl className="flex min-w-0 flex-col divide-y divide-border">
         <DetailRow label={t("date")}>
           <span className="font-mono text-xs">
-            {dateFormatter.format(new Date(preview.startTime))}
+            {formatApiTimestamp(dateFormatter, preview.startTime)}
           </span>
         </DetailRow>
         <DetailRow label={t("time")}>
@@ -93,7 +94,10 @@ export function CancelDetails({
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <Button
           type="button"
-          disabled={preview.remainingEdits <= 0}
+          disabled={
+            preview.remainingEdits <= 0 ||
+            (preview.status !== "pending" && preview.status !== "approved")
+          }
           onClick={onEdit}
           className="min-h-11 sm:min-h-8"
         >

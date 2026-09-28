@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/layout/data-state"
 import { PercentSpan } from "@/components/layout/percent-span"
 import { StatusBadge, type StatusTone } from "@/components/layout/status-badge"
 import { Button } from "@/components/ui/button"
-import { dateToInputValue } from "@/lib/date-time"
+import { dateToInputValue, parseApiTimestamp } from "@/lib/date-time"
 import { DAY_END_HOUR, DAY_START_HOUR } from "@/lib/reservations/availability"
 import { cn } from "@/lib/utils"
 
@@ -76,9 +76,10 @@ export function FacilityRoomBoard({
   const today = dateToInputValue(now)
   const groups = new Map<number, RoomDay[]>()
   for (const day of days) {
-    const group = groups.get(day.room.campus)
+    const campusId = day.room.campus ?? 0
+    const group = groups.get(campusId)
     if (group) group.push(day)
-    else groups.set(day.room.campus, [day])
+    else groups.set(campusId, [day])
   }
 
   return (
@@ -108,7 +109,7 @@ export function FacilityRoomBoard({
             <ul className="divide-y">
               {campusDays.map((day) => {
                 const upcoming = day.bookings
-                  .filter((item) => Date.parse(item.endTime) > nowMs)
+                  .filter((item) => parseApiTimestamp(item.endTime).getTime() > nowMs)
                   .slice(0, 3)
                 const fallback = t("purposeFallback")
                 const headline = day.current

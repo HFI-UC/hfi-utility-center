@@ -47,9 +47,12 @@ export function FacilityDashboard({ portrait = false }: { portrait?: boolean }) 
   const openTodayCount = rooms.filter((room) => isRoomOpenToday(room, now.getDay())).length
   const activeCount = days.filter((day) => day.status === "in-use").length
   const bookingsToday = reservations.filter(
-    (item) => item.status === "approved" || item.status === "pending",
+    (item) =>
+      item.status === "approved" || item.status === "pending" || item.status === "ai_reviewing",
   ).length
-  const pending = reservations.filter((item) => item.status === "pending").length
+  const pending = reservations.filter(
+    (item) => item.status === "pending" || item.status === "ai_reviewing",
+  ).length
   const campusDays = days.filter(
     (day) => campus === ALL_CAMPUSES || String(day.room.campus) === campus,
   )

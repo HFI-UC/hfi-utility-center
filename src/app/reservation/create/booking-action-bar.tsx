@@ -9,6 +9,7 @@ import { Spinner } from "@/components/ui/spinner"
 export function BookingActionBar({
   flowError,
   nextLabel,
+  confirmLabel,
   isFirstStep,
   isLastStep,
   isWorking,
@@ -18,6 +19,7 @@ export function BookingActionBar({
 }: {
   flowError?: string
   nextLabel: string
+  confirmLabel?: string
   isFirstStep: boolean
   isLastStep: boolean
   isWorking: boolean
@@ -57,7 +59,7 @@ export function BookingActionBar({
             className="h-auto min-h-11 min-w-0 flex-1 whitespace-normal sm:min-w-36 sm:flex-none"
           >
             {isWorking ? <Spinner /> : null}
-            {isForce ? adminT("forceConfirm") : t("confirmReservation")}
+            {confirmLabel ?? (isForce ? adminT("forceConfirm") : t("confirmReservation"))}
           </Button>
         ) : (
           <Button

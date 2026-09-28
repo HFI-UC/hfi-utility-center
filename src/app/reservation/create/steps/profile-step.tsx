@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl"
-import { Controller, useFormContext, useWatch } from "react-hook-form"
+import { Controller, useFormContext } from "react-hook-form"
 
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -25,55 +25,11 @@ const PURPOSES = ["personal", "class", "club"] as const
 export function ProfileStep({ adminMode = false }: { adminMode?: boolean }) {
   const t = useTranslations("booking")
   const { control } = useFormContext<ReservationFormValues>()
-  const privileged = useWatch({ control, name: "isPrivileged" })
 
   return (
     <StepLayout title={t("profileTitle")} description={t("profileDescription")}>
       <FieldGroup className="min-w-0">
-        <div className="grid min-w-0 gap-5 sm:grid-cols-2">
-          <Controller
-            control={control}
-            name="studentName"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>{t("name")}</FieldLabel>
-                <Input
-                  {...field}
-                  id={field.name}
-                  autoComplete="name"
-                  readOnly={adminMode}
-                  className="min-h-11"
-                  aria-invalid={fieldState.invalid}
-                />
-                <FieldError errors={[fieldState.error]} />
-              </Field>
-            )}
-          />
-
-          {!privileged ? (
-            <Controller
-              control={control}
-              name="studentId"
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>{t("studentId")}</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    autoComplete="off"
-                    autoCapitalize="characters"
-                    placeholder={t("studentIdPlaceholder")}
-                    onChange={(event) => field.onChange(event.target.value.toUpperCase())}
-                    className="min-h-11"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  <FieldDescription>{t("studentIdDescription")}</FieldDescription>
-                  <FieldError errors={[fieldState.error]} />
-                </Field>
-              )}
-            />
-          ) : null}
-
+        <div className="min-w-0">
           <Controller
             control={control}
             name="email"

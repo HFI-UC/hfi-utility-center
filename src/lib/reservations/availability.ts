@@ -1,6 +1,7 @@
 import type { AvailabilityData, AvailabilitySlot, Reservation, Room } from "@/lib/api/types"
 import {
   inputValueToTimestamp,
+  parseApiTimestamp,
   timeOnInputDateTimestamp,
   weekdayFromInputValue,
 } from "@/lib/date-time"
@@ -30,8 +31,9 @@ function overlapsReservation(reservations: Reservation[], slotStart: number, slo
   return reservations.some(
     (reservation) =>
       reservation.status !== "rejected" &&
-      new Date(reservation.startTime).getTime() / 1000 < slotEnd &&
-      new Date(reservation.endTime).getTime() / 1000 > slotStart,
+      reservation.status !== "cancelled" &&
+      parseApiTimestamp(reservation.startTime).getTime() / 1000 < slotEnd &&
+      parseApiTimestamp(reservation.endTime).getTime() / 1000 > slotStart,
   )
 }
 
@@ -103,7 +105,7 @@ export function buildPriorityAvailability(
     roomId: room.id,
     date,
     slotMinutes: SLOT_MINUTES,
-    maxDurationMinutes: 120,
+    maxDurationMinutes: 24 * 60,
     slots,
   }
 }

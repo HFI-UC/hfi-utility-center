@@ -2,6 +2,7 @@ import { api } from "@/lib/api/client"
 import type {
   ApiResponse,
   Reservation,
+  ReservationCreateResult,
   ReservationPage,
   ReservationStatus,
   Room,
@@ -11,16 +12,47 @@ import { inputValueToTimestamp } from "@/lib/date-time"
 import { buildLegacyAvailability } from "@/lib/reservations/availability"
 
 export interface CreateReservationInput {
-  classId: number
   room: number
-  studentName: string
-  studentId: string
   email: string
   reason: string
   startTime: number
   endTime: number
-  purposeType: PurposeType
-  needsMultimedia: boolean
+  purposeType?: PurposeType
+  needsMultimedia?: boolean
+}
+
+export interface ReservationPreflight {
+  email: string
+  date: string
+  mode: "normal" | "priority"
+  student: {
+    name: string
+    classId: number | null
+    className: string | null
+  }
+  reservations: Array<{
+    id: number
+    roomId: number | null
+    roomName: string | null
+    startTime: string
+    endTime: string
+    status: ReservationStatus
+    purposeType: PurposeType | null
+  }>
+}
+
+export async function getReservationPreflight(email: string, date: string) {
+  const response = await api.get<ApiResponse<ReservationPreflight>>("/reservation/preflight", {
+    params: { email, date },
+    suppressErrorToast: true,
+  })
+  if (!response.data.success || !response.data.data) {
+    if (response.status === 422 && response.data.validation?.code === "student_not_registered") {
+      throw new Error("student_not_registered")
+    }
+    throw new Error(response.data.message || "Unable to verify this email address.")
+  }
+  return response.data.data
 }
 
 export async function getAvailability(
@@ -29,8 +61,6 @@ export async function getAvailability(
   knownRoom?: Room,
   excludedReservationId?: number,
 ) {
-  if (!knownRoom) throw new Error("Room availability is incomplete")
-
   const { data } = await api.get<
     ApiResponse<{
       roomId: number
@@ -49,8 +79,11 @@ export async function getAvailability(
     },
   })
   const availability = data.data!
-  // The availability endpoint returns anonymized intervals; edits require full
-  // day reservations to filter out the excluded booking ID.
+  if (!knownRoom) throw new Error("Room availability is incomplete")
+
+  // Rust returns occupied intervals. For self-service edits we additionally
+  // fetch the day's reservations because that endpoint currently has no
+  // exclude-reservation parameter.
   if (excludedReservationId) {
     const startTime = inputValueToTimestamp(date)
     const endTime = inputValueToTimestamp(date, true)
@@ -100,7 +133,7 @@ export async function getAvailability(
 }
 
 export async function createReservation(input: CreateReservationInput) {
-  const { data } = await api.post<ApiResponse<{ reservationId: number }>>(
+  const { data } = await api.post<ApiResponse<ReservationCreateResult>>(
     "/reservation/create",
     input,
   )
@@ -109,13 +142,38 @@ export async function createReservation(input: CreateReservationInput) {
 
 export type ForceReservationInput = CreateReservationInput
 
-export async function forceReservation(input: ForceReservationInput) {
-  // Priority creation is handled by the standard endpoint when called with an
-  // administrator identity and privileged class.
-  const { data } = await api.post<ApiResponse<{ reservationId: number }>>(
-    "/reservation/create",
-    input,
-  )
+export interface PriorityConflict {
+  id: number
+  studentName: string
+  startTime: string
+  endTime: string
+  status: ReservationStatus
+  roomName: string
+}
+
+export interface CreateReservationPreview {
+  mode: "normal" | "priority"
+  conflicts: PriorityConflict[]
+  cancelledCount: number
+}
+
+export async function previewReservation(input: CreateReservationInput) {
+  const { data } = await api.post<ApiResponse<CreateReservationPreview>>("/reservation/create", {
+    ...input,
+    preview: true,
+  })
+  return data.data!
+}
+
+export async function forceReservation(
+  input: ForceReservationInput,
+  expectedConflictIds: number[] = [],
+) {
+  const { data } = await api.post<ApiResponse<ReservationCreateResult>>("/reservation/create", {
+    ...input,
+    confirmPriority: true,
+    expectedConflictIds,
+  })
   return data.data!
 }
 
@@ -139,9 +197,9 @@ export async function getReservations(params: {
 
 export interface CancellationPreview {
   reservationId: number
-  roomId: number
+  roomId: number | null
   status: ReservationStatus
-  roomName: string
+  roomName: string | null
   studentName: string
   reason: string
   startTime: string
@@ -175,8 +233,8 @@ export interface ReservationEditInput {
   startTime: number
   endTime: number
   reason: string
-  purposeType: PurposeType
-  needsMultimedia: boolean
+  purposeType?: PurposeType | null
+  needsMultimedia?: boolean
 }
 
 export async function modifyReservation(token: string, input: ReservationEditInput) {
@@ -189,6 +247,12 @@ export async function modifyReservation(token: string, input: ReservationEditInp
   >("/reservation/modify", { token, ...input })
   return data.data!
 }
+
+export const adminEditReservation = (id: number, input: ReservationEditInput) =>
+  api.post("/reservation/admin-edit", { id, ...input })
+
+export const unlockAiReview = (id: number, reason: string) =>
+  api.post("/reservation/ai-unlock", { id, reason })
 
 export async function getFutureReservations() {
   const response = await api.get<ApiResponse<Reservation[]>>("/reservation/future")

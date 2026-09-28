@@ -12,6 +12,7 @@ import {
   type CancellationPreview,
 } from "@/lib/api/reservations"
 import type { AvailabilityData, CatalogData, Room } from "@/lib/api/types"
+import { parseApiTimestamp } from "@/lib/date-time"
 import { rangeIsAvailable } from "@/lib/reservations/availability"
 
 import {
@@ -34,11 +35,11 @@ export type EditStep = "location" | "time"
 export function initialDraft(preview: CancellationPreview, rooms: Room[]): EditDraft {
   const room = rooms.find((item) => item.id === preview.roomId)
   return {
-    campus: room?.campus || 0,
-    room: preview.roomId,
+    campus: room?.campus ?? 0,
+    room: preview.roomId ?? 0,
     date: preview.startTime.slice(0, 10),
-    startTime: new Date(preview.startTime).getTime() / 1000,
-    endTime: new Date(preview.endTime).getTime() / 1000,
+    startTime: parseApiTimestamp(preview.startTime).getTime() / 1000,
+    endTime: parseApiTimestamp(preview.endTime).getTime() / 1000,
   }
 }
 
@@ -159,6 +160,7 @@ export function useCancellation(token: string) {
   const timeFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(locale, {
+        timeZone: "Asia/Shanghai",
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,

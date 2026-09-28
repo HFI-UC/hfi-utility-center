@@ -1,11 +1,12 @@
 import type { Campus, Reservation, Room } from "@/lib/api/types"
+import { parseApiTimestamp } from "@/lib/date-time"
 import { DAY_END_HOUR, DAY_START_HOUR } from "@/lib/reservations/availability"
 
 export type RoomDayStatus = "free" | "in-use" | "pending" | "closed"
 
 export interface DaySegment {
   id: number
-  status: "approved" | "pending"
+  status: "approved" | "pending" | "ai_reviewing"
   left: number
   width: number
 }
@@ -15,7 +16,7 @@ type BoardStatus = DaySegment["status"]
 type BoardBooking = Reservation & { status: BoardStatus }
 
 function isBoardBooking(item: Reservation): item is BoardBooking {
-  return item.status === "approved" || item.status === "pending"
+  return item.status === "approved" || item.status === "pending" || item.status === "ai_reviewing"
 }
 
 export interface RoomDay {
@@ -53,8 +54,8 @@ export function isRoomOpenToday(room: Room, weekday: number) {
 
 function coveringBooking(bookings: Reservation[], nowMs: number) {
   for (const item of bookings) {
-    const start = Date.parse(item.startTime)
-    const end = Date.parse(item.endTime)
+    const start = parseApiTimestamp(item.startTime).getTime()
+    const end = parseApiTimestamp(item.endTime).getTime()
     if (Number.isNaN(start) || Number.isNaN(end)) continue
     if (start <= nowMs && nowMs < end) return item
   }
@@ -78,7 +79,9 @@ export function buildRoomDays(
     else grouped.set(item.roomId, [item])
   }
   for (const list of grouped.values()) {
-    list.sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime))
+    list.sort(
+      (a, b) => parseApiTimestamp(a.startTime).getTime() - parseApiTimestamp(b.startTime).getTime(),
+    )
   }
 
   const nowMs = now.getTime()
@@ -97,7 +100,8 @@ export function buildRoomDays(
         ),
         nowMs,
       ) ?? null
-    const next = bookings.find((item) => Date.parse(item.startTime) > nowMs) ?? null
+    const next =
+      bookings.find((item) => parseApiTimestamp(item.startTime).getTime() > nowMs) ?? null
     const openToday = isRoomOpenToday(room, weekday)
     const status: RoomDayStatus = covering
       ? covering.status === "approved"
@@ -109,9 +113,10 @@ export function buildRoomDays(
 
     const segments: DaySegment[] = []
     for (const item of bookings) {
-      if (item.status !== "approved" && item.status !== "pending") continue
-      const start = Date.parse(item.startTime)
-      const end = Date.parse(item.endTime)
+      if (item.status !== "approved" && item.status !== "pending" && item.status !== "ai_reviewing")
+        continue
+      const start = parseApiTimestamp(item.startTime).getTime()
+      const end = parseApiTimestamp(item.endTime).getTime()
       if (Number.isNaN(start) || Number.isNaN(end) || end <= windowStart || start >= windowEnd) {
         continue
       }
@@ -124,12 +129,12 @@ export function buildRoomDays(
 
     return {
       room,
-      campusName: names.get(room.campus),
+      campusName: names.get(room.campus ?? -1),
       bookings,
       current: covering,
       next,
       status,
-      freeUntil: covering ? null : next ? Date.parse(next.startTime) : windowEnd,
+      freeUntil: covering ? null : next ? parseApiTimestamp(next.startTime).getTime() : windowEnd,
       segments,
       openToday,
     }

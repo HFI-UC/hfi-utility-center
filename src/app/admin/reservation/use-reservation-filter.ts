@@ -4,18 +4,18 @@ import { useMemo } from "react"
 
 import type { Reservation } from "@/lib/api/types"
 
-export const STATUS_FILTERS = ["all", "pending", "approved", "rejected", "cancelled"] as const
+export const STATUS_FILTERS = [
+  "all",
+  "pending",
+  "ai_reviewing",
+  "approved",
+  "rejected",
+  "cancelled",
+] as const
 
 export type StatusFilter = (typeof STATUS_FILTERS)[number]
 
-const SEARCH_FIELDS = [
-  "studentName",
-  "email",
-  "studentId",
-  "roomName",
-  "className",
-  "reason",
-] as const
+const SEARCH_FIELDS = ["studentName", "email", "roomName", "className", "reason"] as const
 
 // Filters reservations by matching a keyword across searchable fields and status.
 export function useReservationFilter(

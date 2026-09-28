@@ -34,8 +34,10 @@ const ALL = "all"
 
 const STATUSES = [
   "pending",
+  "ai_reviewing",
   "approved",
   "rejected",
+  "cancelled",
 ] as const satisfies ReadonlyArray<ReservationStatus>
 
 const CONTROL = "w-full min-h-11 sm:min-h-8"
@@ -85,7 +87,7 @@ export function ReservationSearchFilterForm({
     () => [
       { value: ALL, label: t("allCampuses") },
       ...(catalog?.campuses
-        .filter((campus) => !campus.isPrivileged)
+        .filter((campus) => !campus.deletedAt)
         .map((campus) => ({
           value: String(campus.id),
           label:

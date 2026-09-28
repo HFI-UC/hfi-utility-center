@@ -24,7 +24,7 @@ export function BookingStepper({
   const t = useTranslations("booking")
   return (
     <nav aria-label={t("progress")} className="mb-6">
-      <ol className="grid grid-cols-4 gap-2 sm:gap-4">
+      <ol className="grid grid-cols-3 gap-2 sm:gap-4">
         {bookingSteps.map((step, index) => (
           <li
             key={step.id}

@@ -1,4 +1,5 @@
 import axios from "axios"
+import type { AxiosRequestConfig } from "axios"
 
 import type { ApiResponse } from "@/lib/api/types"
 import enMessages from "@/messages/en-US.json"
@@ -10,7 +11,11 @@ declare module "axios" {
   }
 }
 
-const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.hfiuc.org"
+const backendUrl =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  (typeof window !== "undefined" && window.location.hostname === "dev.hfiuc.org"
+    ? "https://preview-api.hfiuc.org"
+    : "https://api.hfiuc.org")
 
 export const api = axios.create({
   baseURL: backendUrl,
@@ -23,8 +28,20 @@ export const api = axios.create({
   withXSRFToken: false,
 })
 
-class RequestError extends Error {
+export class RequestError extends Error {
   name = "RequestError"
+  notified = false
+  status?: number
+  validation?: ApiResponse["validation"]
+
+  constructor(
+    message: string,
+    options?: { status?: number; validation?: ApiResponse["validation"]; cause?: unknown },
+  ) {
+    super(message, { cause: options?.cause })
+    this.status = options?.status
+    this.validation = options?.validation
+  }
 }
 
 function requestFailedMessage() {
@@ -38,11 +55,24 @@ function normalizeRequestError(error: unknown) {
 
   if (axios.isAxiosError<ApiResponse>(error)) {
     return new RequestError(error.response?.data?.message || requestFailedMessage(), {
+      status: error.response?.status,
+      validation: error.response?.data?.validation,
       cause: error,
     })
   }
 
   return new RequestError(requestFailedMessage(), { cause: error })
+}
+
+function rejectRequest(error: unknown, config?: AxiosRequestConfig) {
+  const requestError = normalizeRequestError(error)
+
+  if (typeof window !== "undefined" && !config?.suppressErrorToast && !requestError.notified) {
+    console.error("HFI Utility Center request failed:", requestError.message)
+    requestError.notified = true
+  }
+
+  return Promise.reject(requestError)
 }
 
 api.interceptors.request.use(async (config) => {
@@ -62,11 +92,20 @@ api.interceptors.response.use(
     const payload = response.data as ApiResponse | undefined
     if (response.status < 200 || response.status >= 300 || !payload?.success) {
       if (response.config.suppressErrorToast) return response
-      return Promise.reject(new RequestError(payload?.message || requestFailedMessage()))
+      return rejectRequest(
+        new RequestError(payload?.message || requestFailedMessage(), {
+          status: response.status,
+          validation: payload?.validation,
+        }),
+        response.config,
+      )
     }
     return response
   },
-  (error: unknown) => Promise.reject(normalizeRequestError(error)),
+  (error: unknown) => {
+    const config = axios.isAxiosError(error) ? error.config : undefined
+    return rejectRequest(error, config)
+  },
 )
 
 export function backendHref(path: string) {

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
   pull_request:
 
 concurrency:
@@ -39,4 +40,7 @@ jobs:
         run: pnpm exec vp test run --passWithNoTests
 
       - name: Build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ (github.ref_name == 'dev' || github.base_ref == 'dev') && 'https://preview-api.hfiuc.org' || 'https://api.hfiuc.org' }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
         run: pnpm build

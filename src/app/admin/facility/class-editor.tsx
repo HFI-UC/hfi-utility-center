@@ -15,13 +15,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { createClass, deleteClass, editClass } from "@/lib/api/catalog"
+import { createClass, deleteClass, editClass, restoreClass } from "@/lib/api/catalog"
 import type { Campus, SchoolClass } from "@/lib/api/types"
 import { formatApiTimestamp } from "@/lib/date-time"
 
 import { CampusNameDialog } from "./campus-name-dialog"
 import {
   FacilityRowMenu,
+  RestoreFacilityButton,
   ResourceSection,
   type FacilityEditorActions,
   touchTarget,
@@ -40,6 +41,12 @@ export function ClassEditor({
   const common = useTranslations("common")
   const locale = useLocale()
   const campusNames = new Map(campuses.map((campus) => [campus.id, campus.name]))
+  const activeCampuses = campuses.filter((campus) => !campus.deletedAt)
+  const archivedCampusIds = new Set(
+    campuses.filter((campus) => campus.deletedAt).map((campus) => campus.id),
+  )
+  const isArchived = (schoolClass: SchoolClass) =>
+    Boolean(schoolClass.deletedAt) || archivedCampusIds.has(schoolClass.campus ?? -1)
   const dateFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(locale, {
@@ -49,7 +56,9 @@ export function ClassEditor({
   )
   const [createOpen, setCreateOpen] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
-  const editing = classes.find((schoolClass) => schoolClass.id === editingId)
+  const editing = classes.find(
+    (schoolClass) => schoolClass.id === editingId && !isArchived(schoolClass),
+  )
 
   return (
     <ResourceSection
@@ -59,7 +68,7 @@ export function ClassEditor({
         <Button
           variant="outline"
           size="sm"
-          disabled={working || campuses.length === 0}
+          disabled={working || activeCampuses.length === 0}
           onClick={() => setCreateOpen(true)}
           className={touchTarget}
         >
@@ -90,6 +99,9 @@ export function ClassEditor({
                 <TableCell>
                   <span className="block max-w-[14rem] truncate font-medium">
                     {schoolClass.name}
+                    {isArchived(schoolClass) ? (
+                      <span className="ml-2 text-xs text-amber-700">{t("archived")}</span>
+                    ) : null}
                   </span>
                   <span className="block font-mono text-xs text-muted-foreground">
                     #{schoolClass.id}
@@ -97,19 +109,29 @@ export function ClassEditor({
                 </TableCell>
                 <TableCell>
                   <span className="block max-w-[12rem] truncate">
-                    {campusNames.get(schoolClass.campus)}
+                    {campusNames.get(schoolClass.campus ?? -1)}
                   </span>
                 </TableCell>
                 <TableCell className="hidden text-xs text-muted-foreground md:table-cell">
                   {formatApiTimestamp(dateFormatter, schoolClass.createdAt)}
                 </TableCell>
                 <TableCell className="w-0 text-right">
-                  <ClassRowMenu
-                    schoolClass={schoolClass}
-                    mutate={mutate}
-                    working={working}
-                    onEdit={() => setEditingId(schoolClass.id)}
-                  />
+                  {schoolClass.deletedAt && !archivedCampusIds.has(schoolClass.campus ?? -1) ? (
+                    <RestoreFacilityButton
+                      action={() => restoreClass(schoolClass.id)}
+                      mutate={mutate}
+                      working={working}
+                    />
+                  ) : isArchived(schoolClass) ? (
+                    "—"
+                  ) : (
+                    <ClassRowMenu
+                      schoolClass={schoolClass}
+                      mutate={mutate}
+                      working={working}
+                      onEdit={() => setEditingId(schoolClass.id)}
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -125,7 +147,7 @@ export function ClassEditor({
         title={t("newClass")}
         description={t("newClassDescription")}
         nameLabel={t("className")}
-        campuses={campuses}
+        campuses={activeCampuses}
         working={working}
         onSave={(name, campus) => mutate(() => createClass(name, campus), t("classCreated"))}
       />
@@ -138,9 +160,9 @@ export function ClassEditor({
           title={t("renameClass")}
           description={t("newClassDescription")}
           nameLabel={t("className")}
-          campuses={campuses}
+          campuses={activeCampuses}
           initialName={editing.name}
-          initialCampus={String(editing.campus)}
+          initialCampus={String(editing.campus ?? "")}
           working={working}
           onSave={(name, campus) =>
             mutate(() => editClass(editing.id, name, campus), t("classUpdated"))
