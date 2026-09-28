@@ -13,6 +13,11 @@ const emptyResult: ReservationPage = { reservations: [], total: 0 }
 
 export function useReservationSearch(filters: ReservationSearchFilters) {
   const requestId = useRef(0)
+  const pendingRequest = useRef<{
+    key: string
+    promise: Promise<ReservationPage>
+  } | null>(null)
+  const requestKey = JSON.stringify(reservationSearchRequest(filters))
   const [catalog, setCatalog] = useState<CatalogData>()
   const [result, setResult] = useState<ReservationPage>(emptyResult)
   const [loading, setLoading] = useState(true)
@@ -33,18 +38,24 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
 
   useEffect(() => {
     const currentRequest = ++requestId.current
+    const promise =
+      pendingRequest.current?.key === requestKey
+        ? pendingRequest.current.promise
+        : getReservations(JSON.parse(requestKey))
+    pendingRequest.current = { key: requestKey, promise }
 
     async function loadReservations() {
       setLoading(true)
 
       try {
-        const nextResult = await getReservations(
-          reservationSearchRequest(filters)
-        )
+        const nextResult = await promise
         if (requestId.current === currentRequest) {
           setResult(nextResult)
         }
       } finally {
+        if (pendingRequest.current?.promise === promise) {
+          pendingRequest.current = null
+        }
         if (requestId.current === currentRequest) setLoading(false)
       }
     }
@@ -54,7 +65,7 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
     return () => {
       requestId.current += 1
     }
-  }, [filters])
+  }, [requestKey])
 
   return { catalog, result, loading }
 }
