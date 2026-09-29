@@ -43,7 +43,7 @@ const CONTROL = "w-full min-h-11 sm:min-h-8"
 
 type SearchFormValues = {
   keyword: string
-  campus: string
+  campuses: string[]
   room: string
   dateRange?: DateRange
   sort: "time" | "sequence"
@@ -66,7 +66,7 @@ export function ReservationSearchFilterForm({
   const { control, handleSubmit, getValues, reset, setValue } = useForm<SearchFormValues>({
     defaultValues: {
       keyword: filters.keyword,
-      campus: filters.campusId ? String(filters.campusId) : ALL,
+      campuses: filters.campusIds.map(String),
       room: filters.roomId ? String(filters.roomId) : ALL,
       dateRange: {
         from: inputValueToDate(filters.startDate),
@@ -77,7 +77,7 @@ export function ReservationSearchFilterForm({
     },
   })
   const keyword = useWatch({ control, name: "keyword" })
-  const campusId = useWatch({ control, name: "campus" })
+  const selectedCampuses = useWatch({ control, name: "campuses" }) ?? []
   const visibleRooms = useMemo(() => {
     const officeIds = new Set(
       catalog?.campuses.filter((campus) => !isBookableCampus(campus)).map((campus) => campus.id),
@@ -85,15 +85,13 @@ export function ReservationSearchFilterForm({
     return (
       catalog?.rooms.filter(
         (room) =>
-          !officeIds.has(room.campus ?? -1) &&
-          (campusId === ALL || room.campus === Number(campusId)),
+          !officeIds.has(room.campus ?? -1) && selectedCampuses.includes(String(room.campus)),
       ) ?? []
     )
-  }, [campusId, catalog])
+  }, [selectedCampuses, catalog])
   const campuses = useMemo(
-    () => [
-      { value: ALL, label: t("allCampuses") },
-      ...(catalog?.campuses
+    () =>
+      catalog?.campuses
         .filter((campus) => !campus.deletedAt && isBookableCampus(campus))
         .map((campus) => ({
           value: String(campus.id),
@@ -103,14 +101,13 @@ export function ReservationSearchFilterForm({
               : campus.name === "Knowledge City Campus"
                 ? t("knowledgeCityCampus")
                 : campus.name,
-        })) ?? []),
-    ],
+        })) ?? [],
     [catalog, t],
   )
+  const campusValues = campuses.map((campus) => campus.value).join(",")
   const roomGroups = useMemo(
     () =>
       campuses
-        .filter((campus) => campus.value !== ALL)
         .map((campus) => ({
           value: campus.value,
           label: campus.label,
@@ -127,7 +124,8 @@ export function ReservationSearchFilterForm({
       const href = reservationSearchHref(
         {
           keyword: values.keyword.trim(),
-          campusId: values.campus === ALL ? 0 : Number(values.campus),
+          campusIds: values.campuses.map(Number),
+          campusesChosen: true,
           roomId: values.room === ALL ? 0 : Number(values.room),
           status: values.status === ALL ? undefined : values.status,
           startDate,
@@ -156,7 +154,9 @@ export function ReservationSearchFilterForm({
   useEffect(() => {
     reset({
       keyword: filters.keyword,
-      campus: filters.campusId ? String(filters.campusId) : ALL,
+      campuses: filters.campusesChosen
+        ? filters.campusIds.map(String)
+        : campusValues.split(",").filter(Boolean),
       room: filters.roomId ? String(filters.roomId) : ALL,
       dateRange: {
         from: inputValueToDate(filters.startDate),
@@ -165,7 +165,14 @@ export function ReservationSearchFilterForm({
       sort: filters.sort,
       status: filters.status ?? ALL,
     })
-  }, [filters, reset])
+  }, [campusValues, filters, reset])
+
+  // No campus query means every bookable campus. Write that selection once the
+  // catalog is known so the form and the results share one URL.
+  useEffect(() => {
+    if (filters.campusesChosen || !campusValues) return
+    applyFilters(getValues(), "replace")
+  }, [campusValues, filters.campusesChosen, getValues, applyFilters])
 
   useEffect(() => {
     if (keyword === undefined || keyword.trim() === filters.keyword) return
@@ -203,39 +210,43 @@ export function ReservationSearchFilterForm({
           <FieldLegend variant="label">{t("campusFilter")}</FieldLegend>
           <Controller
             control={control}
-            name="campus"
+            name="campuses"
             render={({ field }) => (
               <div className="flex flex-col gap-1.5">
-                {campuses.map((campus) => (
-                  <Field
-                    key={campus.value}
-                    orientation="horizontal"
-                    className="min-h-11 sm:min-h-8"
-                  >
-                    <Checkbox
-                      id={`search-campus-${campus.value}`}
-                      checked={field.value === campus.value}
-                      onCheckedChange={(checked) => {
-                        const nextCampus = checked ? campus.value : ALL
-                        const values = getValues()
-                        const room =
-                          nextCampus === ALL ||
-                          catalog?.rooms.some(
+                {campuses.map((campus) => {
+                  const checked = field.value.includes(campus.value)
+                  return (
+                    <Field
+                      key={campus.value}
+                      orientation="horizontal"
+                      className="min-h-11 sm:min-h-8"
+                    >
+                      <Checkbox
+                        id={`search-campus-${campus.value}`}
+                        checked={checked}
+                        onCheckedChange={(nextChecked) => {
+                          const nextCampuses = nextChecked
+                            ? [...field.value, campus.value]
+                            : field.value.filter((value) => value !== campus.value)
+                          const values = getValues()
+                          const room = catalog?.rooms.some(
                             (item) =>
-                              item.id === Number(values.room) && item.campus === Number(nextCampus),
+                              item.id === Number(values.room) &&
+                              nextCampuses.includes(String(item.campus)),
                           )
                             ? values.room
                             : ALL
-                        field.onChange(nextCampus)
-                        setValue("room", room)
-                        applyFilters({ ...values, campus: nextCampus, room })
-                      }}
-                    />
-                    <FieldLabel htmlFor={`search-campus-${campus.value}`}>
-                      {campus.label}
-                    </FieldLabel>
-                  </Field>
-                ))}
+                          field.onChange(nextCampuses)
+                          setValue("room", room)
+                          applyFilters({ ...values, campuses: nextCampuses, room })
+                        }}
+                      />
+                      <FieldLabel htmlFor={`search-campus-${campus.value}`}>
+                        {campus.label}
+                      </FieldLabel>
+                    </Field>
+                  )
+                })}
               </div>
             )}
           />

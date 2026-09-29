@@ -11,7 +11,7 @@ import type { BookingStepId, ReservationFormValues } from "../form"
 import { StepLayout } from "../step-layout"
 
 const DETAIL =
-  "group grid w-full cursor-pointer grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-md py-2.5 text-left transition-colors hover:bg-muted/60 sm:grid-cols-[8.5rem_minmax(0,1fr)_auto]"
+  "group grid w-full cursor-pointer grid-cols-[6.5rem_minmax(0,1fr)] items-start gap-3 py-2.5 text-left sm:grid-cols-[8.5rem_minmax(0,1fr)]"
 
 function ConfirmRow({
   label,
@@ -27,11 +27,13 @@ function ConfirmRow({
   return (
     <button type="button" className={DETAIL} aria-label={editLabel} onClick={onEdit}>
       <span className="text-sm break-words text-muted-foreground">{label}</span>
-      <span className="min-w-0 text-sm break-words">{children}</span>
-      <Pencil
-        aria-hidden
-        className="size-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
-      />
+      <span className="flex min-w-0 items-center gap-2 text-sm break-words">
+        <span className="min-w-0 break-words">{children}</span>
+        <Pencil
+          aria-hidden
+          className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity duration-(--duration-quick) group-hover:opacity-100 group-focus-visible:opacity-100"
+        />
+      </span>
     </button>
   )
 }
@@ -100,7 +102,7 @@ export function ReviewStep({
             <span className="break-words">
               {dateFormatter.format(new Date(values.startTime * 1000))}
             </span>
-            <span className="font-mono text-xs tabular-nums">
+            <span>
               {timeFormatter.format(new Date(values.startTime * 1000))} –{" "}
               {timeFormatter.format(new Date(values.endTime * 1000))}
             </span>
@@ -111,8 +113,11 @@ export function ReviewStep({
           editLabel={t("editProfile")}
           onEdit={() => onEdit("details")}
         >
-          <span className="break-words">
-            {[preflight?.student.name, className, values.email].filter(Boolean).join("/")}
+          <span className="flex min-w-0 flex-col">
+            <span className="break-words">
+              {[preflight?.student.name, className].filter(Boolean).join("/")}
+            </span>
+            <span className="text-xs break-all text-muted-foreground/70">{values.email}</span>
           </span>
         </ConfirmRow>
         <ConfirmRow
@@ -143,8 +148,10 @@ export function ReviewStep({
           {t("dailyReservationLimit", { limit: DAILY_RESERVATION_LIMIT })}
         </p>
       ) : null}
-      <p className="mt-4 text-xs break-words text-muted-foreground">{t("reviewEmailNote")}</p>
-      <p className="mt-2 text-xs break-words text-muted-foreground">{t("reviewValidationNote")}</p>
+      <div className="mt-4 flex flex-col gap-1 text-xs break-words text-muted-foreground">
+        <p>{t("reviewEmailNote")}</p>
+        <p>{t("reviewValidationNote")}</p>
+      </div>
     </StepLayout>
   )
 }

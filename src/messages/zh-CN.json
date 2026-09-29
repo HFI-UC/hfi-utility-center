@@ -92,7 +92,7 @@
     "otherDuration": "其它",
     "previousPage": "上一周",
     "nextPage": "下一周",
-    "selectedRange": "已选择 {start} 至 {end}",
+    "selectedRange": "已选择{start}至{end}",
     "rangeUnavailable": "所选区间包含已占用或受限时段，请重新选择。",
     "timeConflict": "该时段已被占用或不符合房间政策，请重新选择。",
     "profileTitle": "填写预约信息",

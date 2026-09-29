@@ -182,7 +182,7 @@ export async function confirmPriorityReservation(
   return data.data!
 }
 
-export async function getReservations(params: {
+export type ReservationQuery = {
   keyword?: string
   campusId?: number
   roomId?: number
@@ -193,7 +193,9 @@ export async function getReservations(params: {
   purposeType?: PurposeType
   needsMultimedia?: boolean
   sort?: "time" | "sequence"
-}) {
+}
+
+export async function getReservations(params: ReservationQuery) {
   const { data } = await api.get<ApiResponse<ReservationPage>>("/reservation/get", {
     params: { ...params, page: params.page ?? 0 },
   })

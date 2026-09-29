@@ -251,7 +251,6 @@ export function ReservationForm() {
   if (result) {
     return (
       <AppShell>
-        <PageHeader title={t("success")} description={t("successDescription")} />
         <SuccessStep {...result} onReset={resetReservation} />
       </AppShell>
     )
@@ -293,9 +292,7 @@ export function ReservationForm() {
                 }).formatRange(new Date(selectedStart * 1000), new Date(selectedEnd * 1000))}
               </span>
             ) : null}
-            {selectedDate ? (
-              <span className="text-muted-foreground tabular-nums">{selectedDate}</span>
-            ) : null}
+            {selectedDate ? <span>{selectedDate}</span> : null}
           </div>
         ) : null}
         <fieldset

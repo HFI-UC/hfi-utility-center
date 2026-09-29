@@ -35,7 +35,6 @@ const NAV = [
   { href: "/reservation/create", labelKey: "book", match: "/reservation/create" },
   { href: "/reservation/search", labelKey: "reservations", match: "/reservation" },
   { href: "/dashboard", labelKey: "liveSchedule", match: "/dashboard" },
-  { href: "/admin/reservation", labelKey: "admin", match: "/admin" },
 ] as const
 
 const linkClasses = (active: boolean) =>

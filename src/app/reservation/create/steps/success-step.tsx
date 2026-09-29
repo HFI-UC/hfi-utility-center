@@ -13,7 +13,7 @@ export function SuccessStep({
 }) {
   const t = useTranslations("booking")
   return (
-    <section className="mx-auto flex w-full max-w-xl min-w-0 flex-col items-center gap-3 py-6 text-center">
+    <section className="mx-auto flex min-h-[calc(100svh-12rem)] w-full max-w-xl min-w-0 flex-col items-center justify-center gap-3 py-6 text-center">
       <span
         aria-hidden
         className="flex size-14 items-center justify-center rounded-full bg-success-soft text-success-soft-foreground motion-safe:animate-success-check [&_svg]:motion-safe:animate-success-icon"
@@ -27,7 +27,9 @@ export function SuccessStep({
       {reservationId ? (
         <p className="flex flex-col items-center gap-0.5">
           <span className="text-xs text-muted-foreground">{t("reservationNumberLabel")}</span>
-          <strong className="font-mono text-lg tabular-nums">#{reservationId}</strong>
+          <strong className="font-mono text-3xl font-semibold tabular-nums">
+            #{reservationId}
+          </strong>
         </p>
       ) : null}
       <div className="mt-2 flex w-full flex-wrap items-center justify-center gap-2">

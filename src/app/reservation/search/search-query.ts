@@ -10,7 +10,8 @@ const SHANGHAI_DAY_FORMATTER = new Intl.DateTimeFormat("en-US", {
 
 export type ReservationSearchFilters = {
   keyword: string
-  campusId: number
+  campusIds: number[]
+  campusesChosen: boolean
   roomId: number
   status?: ReservationStatus
   startDate: string
@@ -21,9 +22,14 @@ export type ReservationSearchFilters = {
 
 type SearchParams = Record<string, string | string[] | undefined>
 
-function firstValue(params: SearchParams, key: string) {
+function values(params: SearchParams, key: string) {
   const value = params[key]
-  return Array.isArray(value) ? value[0] : value
+  if (Array.isArray(value)) return value
+  return value === undefined ? [] : [value]
+}
+
+function firstValue(params: SearchParams, key: string) {
+  return values(params, key)[0]
 }
 
 function parseStatus(value: string | undefined): ReservationStatus | undefined {
@@ -55,7 +61,15 @@ export function parseReservationSearchFilters(params: SearchParams): Reservation
 
   return {
     keyword: firstValue(params, "keyword")?.trim() ?? "",
-    campusId: parsePositiveInteger(firstValue(params, "campus")) ?? 0,
+    campusIds: [
+      ...new Set(
+        values(params, "campus").flatMap((value) => {
+          const campusId = parsePositiveInteger(value)
+          return campusId === undefined ? [] : [campusId]
+        }),
+      ),
+    ].sort((left, right) => left - right),
+    campusesChosen: values(params, "campus").some((value) => value.length > 0),
     roomId: parsePositiveInteger(firstValue(params, "room")) ?? 0,
     status: parseStatus(firstValue(params, "status")),
     startDate,
@@ -74,7 +88,7 @@ export function reservationSearchRequest(filters: ReservationSearchFilters, now 
 
   return {
     keyword: filters.keyword,
-    campusId: filters.campusId || undefined,
+    campusId: filters.campusIds.length === 1 ? filters.campusIds[0] : undefined,
     roomId: filters.roomId || undefined,
     status: filters.status,
     page: filters.page,
@@ -95,7 +109,8 @@ function shanghaiDayStart(now: Date) {
 export function reservationSearchHref(filters: ReservationSearchFilters, page: number) {
   const query = new URLSearchParams()
   if (filters.keyword) query.set("keyword", filters.keyword)
-  if (filters.campusId) query.set("campus", String(filters.campusId))
+  if (filters.campusesChosen && filters.campusIds.length === 0) query.set("campus", "none")
+  for (const campusId of filters.campusIds) query.append("campus", String(campusId))
   if (filters.roomId) query.set("room", String(filters.roomId))
   if (filters.status) query.set("status", filters.status)
   if (filters.startDate) query.set("start", filters.startDate)

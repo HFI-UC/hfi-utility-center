@@ -9,10 +9,13 @@ import { parseReservationSearchFilters } from "./search-query"
 function ReservationSearchContent() {
   const searchParams = useSearchParams()
   const search = searchParams.toString()
-  const filters = useMemo(
-    () => parseReservationSearchFilters(Object.fromEntries(new URLSearchParams(search))),
-    [search],
-  )
+  const filters = useMemo(() => {
+    const params = new URLSearchParams(search)
+    return parseReservationSearchFilters({
+      ...Object.fromEntries(params),
+      campus: params.getAll("campus"),
+    })
+  }, [search])
   return <ReservationSearch filters={filters} />
 }
 
