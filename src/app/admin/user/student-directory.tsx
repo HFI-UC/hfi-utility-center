@@ -151,90 +151,98 @@ export function StudentDirectory() {
   }
 
   return (
-    <SectionCard
-      actions={
-        <Button type="button" size="sm" disabled={loading || working} onClick={openCreate}>
-          <Plus />
-          {t("addStudent")}
-        </Button>
-      }
-    >
-      {loading ? (
-        <LoadingState label={t("studentsLoading")} />
-      ) : loadError ? (
-        <ErrorState
-          title={t("studentsLoadError")}
-          retryLabel={common("refresh")}
-          onRetry={() => void load()}
-        />
-      ) : (
-        <div className="space-y-3">
+    <SectionCard>
+      <div className="space-y-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={t("studentSearch")}
             aria-label={t("studentSearch")}
-            className="max-w-sm"
+            className="w-full max-w-sm"
+            disabled={loading || Boolean(loadError)}
           />
-          <p className="text-xs text-muted-foreground">
-            {t("studentsShown", { shown: visible.length, count: matches.length })}
-          </p>
-          {visible.length ? (
-            <ul className="divide-y divide-border rounded-lg border border-border">
-              {visible.map((student) => (
-                <li
-                  key={student.email}
-                  className="flex flex-wrap items-center justify-between gap-3 p-3"
-                >
-                  <div className="flex min-w-0 items-start gap-3">
-                    <UsersRound
-                      aria-hidden
-                      className="mt-0.5 size-4 shrink-0 text-muted-foreground"
-                    />
-                    <div className="min-w-0 text-sm">
-                      <p className="font-medium">{student.name}</p>
-                      <p className="break-all text-muted-foreground">{student.email}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {student.className || t("studentNoClass")}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex shrink-0 gap-1">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      aria-label={t("editStudent", { name: student.name })}
-                      disabled={working}
-                      onClick={() => openEdit(student)}
-                    >
-                      <Pencil />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      aria-label={t("deleteStudent", { name: student.name })}
-                      disabled={working}
-                      onClick={() => {
-                        setActionError("")
-                        setDeleteTarget(student)
-                      }}
-                    >
-                      <Trash2 />
-                    </Button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-              {t("studentsEmpty")}
-            </p>
-          )}
+          <Button
+            type="button"
+            size="sm"
+            className="sm:ml-auto"
+            disabled={working}
+            onClick={openCreate}
+          >
+            <Plus />
+            {t("addStudent")}
+          </Button>
         </div>
-      )}
+        {loading ? (
+          <LoadingState label={t("studentsLoading")} />
+        ) : loadError ? (
+          <ErrorState
+            title={t("studentsLoadError")}
+            retryLabel={common("refresh")}
+            onRetry={() => void load()}
+          />
+        ) : (
+          <>
+            <p className="text-xs text-muted-foreground">
+              {t("studentsShown", { shown: visible.length, count: matches.length })}
+            </p>
+            {visible.length ? (
+              <ul className="divide-y divide-border rounded-lg border border-border">
+                {visible.map((student) => (
+                  <li
+                    key={student.email}
+                    className="flex flex-wrap items-center justify-between gap-3 p-3"
+                  >
+                    <div className="flex min-w-0 items-start gap-3">
+                      <UsersRound
+                        aria-hidden
+                        className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                      />
+                      <div className="min-w-0 text-sm">
+                        <p className="font-medium">{student.name}</p>
+                        <p className="break-all text-muted-foreground">{student.email}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {student.className || t("studentNoClass")}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label={t("editStudent", { name: student.name })}
+                        disabled={working}
+                        onClick={() => openEdit(student)}
+                      >
+                        <Pencil />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label={t("deleteStudent", { name: student.name })}
+                        disabled={working}
+                        onClick={() => {
+                          setActionError("")
+                          setDeleteTarget(student)
+                        }}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                {t("studentsEmpty")}
+              </p>
+            )}
+          </>
+        )}
+      </div>
 
       <Dialog open={editor !== null} onOpenChange={(open) => !open && !working && setEditor(null)}>
         <DialogContent>

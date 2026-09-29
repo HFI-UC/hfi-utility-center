@@ -5,6 +5,7 @@ import {
   KeyRound,
   MoreHorizontal,
   Pencil,
+  ShieldCheck,
   Trash2,
   TriangleAlert,
   UserRound,
@@ -129,6 +130,7 @@ function useAccountMenu({
   const [editOpen, setEditOpen] = useState(false)
   const [passwordOpen, setPasswordOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [permissionsOpen, setPermissionsOpen] = useState(false)
 
   return {
     trigger: (
@@ -155,6 +157,12 @@ function useAccountMenu({
                 <KeyRound />
                 {t("changePassword")}
               </DropdownMenuItem>
+              {canManagePermissions ? (
+                <DropdownMenuItem onSelect={() => setPermissionsOpen(true)}>
+                  <ShieldCheck />
+                  {t("managePermissions")}
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" onSelect={() => setDeleteOpen(true)}>
                 <Trash2 />
@@ -195,7 +203,13 @@ function useAccountMenu({
           onOpenChange={setDeleteOpen}
         />
         {canManagePermissions ? (
-          <PermissionDialog admin={admin} mutate={mutate} working={working} />
+          <PermissionDialog
+            admin={admin}
+            mutate={mutate}
+            working={working}
+            open={permissionsOpen}
+            onOpenChange={setPermissionsOpen}
+          />
         ) : null}
       </>
     ),
