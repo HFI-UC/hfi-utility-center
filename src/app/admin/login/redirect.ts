@@ -5,6 +5,7 @@ const ADMIN_ROUTES = new Set([
   "/admin/facility",
   "/admin/announcement",
   "/admin/user",
+  "/admin/student",
 ])
 
 export function safeAdminRedirect(value?: string) {

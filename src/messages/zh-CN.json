@@ -49,7 +49,7 @@
   },
   "status": {
     "pending": "审批中",
-    "ai_reviewing": "审批中",
+    "ai_reviewing": "AI 审批中",
     "approved": "已通过",
     "rejected": "已拒绝",
     "cancelled": "已取消"
@@ -241,6 +241,7 @@
     "facilities": "设施管理",
     "announcements": "公告",
     "users": "管理员",
+    "students": "学生邮箱",
     "logout": "退出登录",
     "checking": "正在检查管理员身份…",
     "loginTitle": "管理员登录",
@@ -313,7 +314,7 @@
     "reservationNotificationsOff": "预约通知已关闭",
     "adminNotificationsUpdated": "预约通知设置已更新。",
     "reservationsTitle": "预约审批",
-    "reservationsDescription": "所有管理员均可处理全部待审批预约，并修改尚未结束的已批准预约。",
+    "reservationsDescription": "所有管理员均可处理全部待审批预约（含 AI 审批），并修改尚未结束的已批准预约。",
     "reservationQueue": "预约列表",
     "reservationStatusFilter": "预约状态筛选",
     "allStatuses": "全部",
@@ -337,9 +338,6 @@
     "confirmReject": "确认拒绝",
     "reservationApproved": "预约已批准。",
     "reservationRejected": "预约已拒绝。",
-    "unlockAi": "解除 AI 审核锁定",
-    "unlockAiReason": "填写转回人工审核的原因",
-    "aiUnlocked": "已解除 AI 审核锁定。",
     "managePermissions": "管理权限",
     "permissionsLoadError": "无法加载管理员权限。",
     "permissionsLoading": "正在加载权限…",
@@ -353,6 +351,8 @@
     "studentsTitle": "学生邮箱名录",
     "studentsDescription": "只有名录中的学生邮箱可以提交普通预约；全局管理员可维护这些映射。",
     "studentsLoading": "正在加载学生邮箱…",
+    "studentsRestricted": "仅全局管理员可管理学生邮箱",
+    "studentsRestrictedDescription": "房间管理员不能添加或修改学生邮箱名录。",
     "studentsLoadError": "学生邮箱和班级加载失败。",
     "addStudent": "添加学生邮箱",
     "studentSearch": "按邮箱、姓名或班级搜索",
@@ -522,7 +522,6 @@
     "mainNav": "主导航",
     "mobileNav": "菜单",
     "openMenu": "打开导航",
-    "liveSchedule": "场地看板",
     "moreCampusTools": "更多校园工具"
   },
   "states": {

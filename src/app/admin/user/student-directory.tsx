@@ -152,8 +152,6 @@ export function StudentDirectory() {
 
   return (
     <SectionCard
-      title={t("studentsTitle")}
-      description={t("studentsDescription")}
       actions={
         <Button type="button" size="sm" disabled={loading || working} onClick={openCreate}>
           <Plus />

@@ -258,9 +258,6 @@ export async function modifyReservation(token: string, input: ReservationEditInp
 export const adminEditReservation = (id: number, input: ReservationEditInput) =>
   api.post("/reservation/admin-edit", { id, ...input })
 
-export const unlockAiReview = (id: number, reason: string) =>
-  api.post("/reservation/ai-unlock", { id, reason })
-
 export async function getFutureReservations() {
   const response = await api.get<ApiResponse<Reservation[]>>("/reservation/future")
   return response.data.data!

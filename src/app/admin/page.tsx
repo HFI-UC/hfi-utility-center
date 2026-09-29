@@ -86,7 +86,13 @@ export default function AdminPage() {
   })
   const data = resource.data
   const pendingReservations = useMemo(
-    () => data.reservations.filter((reservation) => reservation.status === "pending").slice(0, 6),
+    () =>
+      data.reservations
+        .filter(
+          (reservation) =>
+            reservation.status === "pending" || reservation.status === "ai_reviewing",
+        )
+        .slice(0, 6),
     [data.reservations],
   )
   const dateFormatter = useMemo(
@@ -171,7 +177,7 @@ export default function AdminPage() {
                   <PendingReservation
                     reservation={reservation}
                     dateFormatter={dateFormatter}
-                    statusLabel={statusT("pending")}
+                    statusLabel={statusT(reservation.status)}
                   />
                 </li>
               ))}
@@ -252,7 +258,9 @@ function PendingReservation({
         <span className="text-xs text-muted-foreground tabular-nums">
           {formatApiTimestamp(dateFormatter, reservation.startTime)}
         </span>
-        <StatusBadge tone="pending">{statusLabel}</StatusBadge>
+        <StatusBadge tone={reservation.status === "ai_reviewing" ? "info" : "pending"}>
+          {statusLabel}
+        </StatusBadge>
       </span>
     </Link>
   )

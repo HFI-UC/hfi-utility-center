@@ -13,7 +13,6 @@ import type { Admin } from "@/lib/api/types"
 
 import { AdminList } from "./admin-list"
 import { CreateAdminForm } from "./create-admin-form"
-import { StudentDirectory } from "./student-directory"
 
 export default function AdminUsersPage() {
   const t = useTranslations("admin")
@@ -85,7 +84,6 @@ export default function AdminUsersPage() {
           )}
         </section>
       </div>
-      {canManagePermissions ? <StudentDirectory /> : null}
     </div>
   )
 }

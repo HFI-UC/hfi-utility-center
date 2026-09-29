@@ -34,7 +34,6 @@ const NAV = [
   { href: "/", labelKey: "home", match: "/" },
   { href: "/reservation/create", labelKey: "book", match: "/reservation/create" },
   { href: "/reservation/search", labelKey: "reservations", match: "/reservation" },
-  { href: "/dashboard", labelKey: "liveSchedule", match: "/dashboard" },
 ] as const
 
 const linkClasses = (active: boolean) =>
@@ -67,7 +66,7 @@ export function AppHeader({ actions }: { actions?: ReactNode }) {
 
   const items = NAV.map((item) => ({
     href: item.href,
-    label: item.labelKey === "liveSchedule" ? t("liveSchedule") : nav(item.labelKey),
+    label: nav(item.labelKey),
     active: item.href === activeHref,
   }))
 

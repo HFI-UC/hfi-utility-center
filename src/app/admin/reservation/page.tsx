@@ -4,20 +4,14 @@ import { Download, Inbox } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useCallback, useMemo, useState } from "react"
 
-import { TextActionDialog } from "@/app/admin/text-action-dialog"
 import { EmptyState, ErrorState, LoadingState } from "@/components/layout/data-state"
 import { PageHeader } from "@/components/layout/page-header"
 import { RefreshButton } from "@/components/layout/refresh-button"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
-import { getAdminSession, type AdminSession } from "@/lib/api/auth"
 import { backendHref } from "@/lib/api/client"
-import {
-  getFutureReservations,
-  unlockAiReview,
-  updateReservationApproval,
-} from "@/lib/api/reservations"
+import { getFutureReservations, updateReservationApproval } from "@/lib/api/reservations"
 import type { Reservation } from "@/lib/api/types"
 import { formatApiTimestamp } from "@/lib/date-time"
 
@@ -34,14 +28,9 @@ export default function AdminReservationsPage() {
   const [rejectingId, setRejectingId] = useState<number>()
   const [reason, setReason] = useState("")
   const [error, setError] = useState<string>()
-  const [unlockingId, setUnlockingId] = useState<number>()
   const reservationResource = useAdminResource<Reservation[]>({
     loadResource: getFutureReservations,
     initialData: [],
-  })
-  const sessionResource = useAdminResource<AdminSession | null>({
-    loadResource: getAdminSession,
-    initialData: null,
   })
   const { mutate, working } = useAdminMutation({
     reload: reservationResource.reload,
@@ -154,9 +143,6 @@ export default function AdminReservationsPage() {
               formatDateTime={formatDateTime}
               onApprove={(id) => void submitDecision(id, "approved")}
               onReject={startRejection}
-              canUnlockAi={sessionResource.data?.role === "global"}
-              unlockLabel={t("unlockAi")}
-              onUnlock={setUnlockingId}
             />
             <ReservationList
               reservations={filtered}
@@ -164,9 +150,6 @@ export default function AdminReservationsPage() {
               formatDateTime={formatDateTime}
               onApprove={(id) => void submitDecision(id, "approved")}
               onReject={startRejection}
-              canUnlockAi={sessionResource.data?.role === "global"}
-              unlockLabel={t("unlockAi")}
-              onUnlock={setUnlockingId}
             />
           </>
         ) : null}
@@ -185,21 +168,6 @@ export default function AdminReservationsPage() {
           if (!open) cancelRejection()
         }}
       />
-      {unlockingId !== undefined ? (
-        <TextActionDialog
-          open
-          onOpenChange={(open) => {
-            if (!open) setUnlockingId(undefined)
-          }}
-          title={t("unlockAi")}
-          label={t("unlockAiReason")}
-          cancelLabel={common("cancel")}
-          saveLabel={t("unlockAi")}
-          onSave={(unlockReason) =>
-            mutate(() => unlockAiReview(unlockingId, unlockReason), t("aiUnlocked"))
-          }
-        />
-      ) : null}
     </div>
   )
 }

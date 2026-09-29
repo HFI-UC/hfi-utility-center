@@ -49,7 +49,7 @@
   },
   "status": {
     "pending": "In review",
-    "ai_reviewing": "In review",
+    "ai_reviewing": "AI review",
     "approved": "Approved",
     "rejected": "Rejected",
     "cancelled": "Cancelled"
@@ -241,6 +241,7 @@
     "facilities": "Facilities",
     "announcements": "Announcements",
     "users": "Administrators",
+    "students": "Students",
     "logout": "Log out",
     "checking": "Checking administrator session…",
     "loginTitle": "Administrator login",
@@ -313,7 +314,7 @@
     "reservationNotificationsOff": "Reservation notifications off",
     "adminNotificationsUpdated": "Reservation notification settings updated.",
     "reservationsTitle": "Reservation approvals",
-    "reservationsDescription": "Every administrator may process all pending reservations and edit approved reservations that have not ended.",
+    "reservationsDescription": "Every administrator may process all pending reservations, including those in AI review, and edit approved reservations that have not ended.",
     "reservationQueue": "Reservation queue",
     "reservationStatusFilter": "Reservation status filter",
     "allStatuses": "All",
@@ -337,9 +338,6 @@
     "confirmReject": "Confirm rejection",
     "reservationApproved": "Reservation approved.",
     "reservationRejected": "Reservation rejected.",
-    "unlockAi": "Unlock AI review",
-    "unlockAiReason": "Reason for returning this reservation to manual review",
-    "aiUnlocked": "AI review unlocked.",
     "managePermissions": "Manage permissions",
     "permissionsLoadError": "Unable to load administrator permissions.",
     "permissionsLoading": "Loading permissions…",
@@ -353,6 +351,8 @@
     "studentsTitle": "Student email directory",
     "studentsDescription": "Only listed student emails can make standard reservations. Global administrators manage these mappings.",
     "studentsLoading": "Loading student emails…",
+    "studentsRestricted": "Only global administrators can manage student emails",
+    "studentsRestrictedDescription": "Room administrators cannot add or change the student email directory.",
     "studentsLoadError": "Unable to load student emails and classes.",
     "addStudent": "Add student email",
     "studentSearch": "Search by email, name or class",
@@ -522,7 +522,6 @@
     "mainNav": "Main navigation",
     "mobileNav": "Menu",
     "openMenu": "Open navigation",
-    "liveSchedule": "Live schedule",
     "moreCampusTools": "More campus tools"
   },
   "states": {

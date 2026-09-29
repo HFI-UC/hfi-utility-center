@@ -96,18 +96,12 @@ export function ReservationTable({
   formatDateTime,
   onApprove,
   onReject,
-  onUnlock,
-  canUnlockAi = false,
-  unlockLabel,
 }: {
   reservations: Reservation[]
   working: boolean
   formatDateTime: (value: string) => string
   onApprove: (id: number) => void
   onReject: (id: number) => void
-  onUnlock?: (id: number) => void
-  canUnlockAi?: boolean
-  unlockLabel?: string
 }) {
   const t = useTranslations("admin")
   const statusT = useTranslations("status")
@@ -164,47 +158,39 @@ export function ReservationTable({
                 <span className="line-clamp-2 break-words">{item.reason}</span>
               </TableCell>
               <TableCell>
-                {item.status === "pending" ? (
-                  <StatusBadge tone="pending">{statusT(item.status)}</StatusBadge>
+                {item.status === "pending" || item.status === "ai_reviewing" ? (
+                  <StatusBadge tone={item.status === "ai_reviewing" ? "info" : "pending"}>
+                    {statusT(item.status)}
+                  </StatusBadge>
                 ) : (
                   <StatusDot status={item.status} label={statusT(item.status)} />
                 )}
               </TableCell>
               <TableCell>
                 <div className="flex justify-end gap-1">
-                  {canUnlockAi && item.status === "ai_reviewing" ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={working}
-                      onClick={() => onUnlock?.(item.id)}
-                    >
-                      {unlockLabel}
-                    </Button>
-                  ) : null}
-                  {item.status === "pending" ? (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-9 sm:h-7"
-                      disabled={working}
-                      onClick={() => onApprove(item.id)}
-                    >
-                      <Check />
-                      {t("approve")}
-                    </Button>
-                  ) : null}
-                  {item.status === "pending" ? (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-9 sm:h-7"
-                      disabled={working}
-                      onClick={() => onReject(item.id)}
-                    >
-                      <X />
-                      {t("reject")}
-                    </Button>
+                  {item.status === "pending" || item.status === "ai_reviewing" ? (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-9 sm:h-7"
+                        disabled={working}
+                        onClick={() => onApprove(item.id)}
+                      >
+                        <Check />
+                        {t("approve")}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-9 sm:h-7"
+                        disabled={working}
+                        onClick={() => onReject(item.id)}
+                      >
+                        <X />
+                        {t("reject")}
+                      </Button>
+                    </>
                   ) : null}
                 </div>
               </TableCell>
@@ -230,18 +216,12 @@ export function ReservationList({
   formatDateTime,
   onApprove,
   onReject,
-  onUnlock,
-  canUnlockAi = false,
-  unlockLabel,
 }: {
   reservations: Reservation[]
   working: boolean
   formatDateTime: (value: string) => string
   onApprove: (id: number) => void
   onReject: (id: number) => void
-  onUnlock?: (id: number) => void
-  canUnlockAi?: boolean
-  unlockLabel?: string
 }) {
   const t = useTranslations("admin")
   const statusT = useTranslations("status")
@@ -261,9 +241,6 @@ export function ReservationList({
             reservationDetailsLabel={t("reservationDetails")}
             onApprove={() => onApprove(item.id)}
             onReject={() => onReject(item.id)}
-            onUnlock={() => onUnlock?.(item.id)}
-            canUnlockAi={canUnlockAi}
-            unlockLabel={unlockLabel}
             fields={[
               { label: t("name"), value: item.studentName },
               {
@@ -309,9 +286,6 @@ function ReservationCard({
   details,
   onApprove,
   onReject,
-  onUnlock,
-  canUnlockAi,
-  unlockLabel,
 }: {
   reservation: Reservation
   statusLabel: string
@@ -325,9 +299,6 @@ function ReservationCard({
   details: ReservationFieldData[]
   onApprove: () => void
   onReject: () => void
-  onUnlock?: () => void
-  canUnlockAi?: boolean
-  unlockLabel?: string
 }) {
   return (
     <div className="flex min-w-0 flex-col gap-3">
@@ -346,8 +317,10 @@ function ReservationCard({
             ) : null}
           </span>
         </div>
-        {reservation.status === "pending" ? (
-          <StatusBadge tone="pending">{statusLabel}</StatusBadge>
+        {reservation.status === "pending" || reservation.status === "ai_reviewing" ? (
+          <StatusBadge tone={reservation.status === "ai_reviewing" ? "info" : "pending"}>
+            {statusLabel}
+          </StatusBadge>
         ) : (
           <StatusDot status={reservation.status} label={statusLabel} />
         )}
@@ -373,37 +346,27 @@ function ReservationCard({
         </dl>
       </div>
       <div className="flex flex-wrap gap-2">
-        {canUnlockAi && reservation.status === "ai_reviewing" ? (
-          <Button
-            variant="outline"
-            className="min-h-11 flex-1 sm:h-8"
-            disabled={working}
-            onClick={onUnlock}
-          >
-            {unlockLabel}
-          </Button>
-        ) : null}
-        {reservation.status === "pending" ? (
-          <Button
-            variant="outline"
-            className="h-11 flex-1 sm:h-8"
-            disabled={working}
-            onClick={onApprove}
-          >
-            <Check />
-            {approveLabel}
-          </Button>
-        ) : null}
-        {reservation.status === "pending" ? (
-          <Button
-            variant="ghost"
-            className="min-h-11 flex-1 sm:h-8"
-            disabled={working}
-            onClick={onReject}
-          >
-            <X />
-            {rejectLabel}
-          </Button>
+        {reservation.status === "pending" || reservation.status === "ai_reviewing" ? (
+          <>
+            <Button
+              variant="outline"
+              className="h-11 flex-1 sm:h-8"
+              disabled={working}
+              onClick={onApprove}
+            >
+              <Check />
+              {approveLabel}
+            </Button>
+            <Button
+              variant="ghost"
+              className="min-h-11 flex-1 sm:h-8"
+              disabled={working}
+              onClick={onReject}
+            >
+              <X />
+              {rejectLabel}
+            </Button>
+          </>
         ) : null}
       </div>
     </div>
