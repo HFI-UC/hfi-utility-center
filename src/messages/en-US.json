@@ -86,6 +86,7 @@
     "timeRange": "Select a start and end time",
     "selectStartHint": "Choose a start time",
     "selectEndHint": "Now choose the end time, up to 2 hours later.",
+    "selectEndHintOpen": "Now choose the end time.",
     "timelineHint": "Drag either handle to set the start and end. Tapping the timeline moves the start. Arrow keys adjust in 15-minute steps.",
     "duration": "Length",
     "durationInput": "Length in minutes",

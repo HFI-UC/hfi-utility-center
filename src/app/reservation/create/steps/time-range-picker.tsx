@@ -18,6 +18,7 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { Toggle } from "@/components/ui/toggle"
 import type { AvailabilityData } from "@/lib/api/types"
+import { MAX_DURATION_MINUTES } from "@/lib/reservations/availability"
 import {
   buildDayBands,
   dayWindow,
@@ -334,7 +335,13 @@ export function TimeRangePicker({
           onValueChange={(value) => dragEnd(Number(value))}
         >
           <SelectTrigger className="min-h-11 w-full" aria-label={t("endTime")}>
-            <SelectValue placeholder={t("selectEndHint")} />
+            <SelectValue
+              placeholder={
+                maxDurationMinutes > MAX_DURATION_MINUTES
+                  ? t("selectEndHintOpen")
+                  : t("selectEndHint")
+              }
+            />
           </SelectTrigger>
           <SelectContent>
             {endChoices(slots, startTime, latest, step).map((timestamp) => (

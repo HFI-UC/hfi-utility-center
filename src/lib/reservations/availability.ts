@@ -7,6 +7,7 @@ import {
 } from "@/lib/date-time"
 
 const SLOT_MINUTES = 15
+export const MAX_DURATION_MINUTES = 120
 export const DAY_START_HOUR = 8
 export const DAY_END_HOUR = 21.5
 
@@ -53,9 +54,10 @@ function getSlotStatus(
   slotStart: number,
   slotEnd: number,
   now: Date,
+  ignorePolicy: boolean,
 ): AvailabilitySlot["status"] {
   if (slotEnd <= now.getTime() / 1000) return "past"
-  if (!isWithinRoomAvailability(room, date, slotStart, slotEnd)) return "policy"
+  if (!ignorePolicy && !isWithinRoomAvailability(room, date, slotStart, slotEnd)) return "policy"
   if (overlapsReservation(reservations, slotStart, slotEnd)) return "occupied"
   return "available"
 }
@@ -65,6 +67,7 @@ export function buildLegacyAvailability(
   date: string,
   reservations: Reservation[],
   now = new Date(),
+  options: { ignorePolicy?: boolean; unlimitedDuration?: boolean } = {},
 ): AvailabilityData {
   const slots: AvailabilitySlot[] = []
   const dayStart = inputValueToTimestamp(date)
@@ -78,15 +81,24 @@ export function buildLegacyAvailability(
     slots.push({
       startTime: slotStart,
       endTime: slotEnd,
-      status: getSlotStatus(room, date, reservations, slotStart, slotEnd, now),
+      status: getSlotStatus(
+        room,
+        date,
+        reservations,
+        slotStart,
+        slotEnd,
+        now,
+        options.ignorePolicy ?? false,
+      ),
     })
   }
 
+  const slotCountMinutes = (DAY_END_HOUR - DAY_START_HOUR) * 60
   return {
     roomId: room.id,
     date,
     slotMinutes: SLOT_MINUTES,
-    maxDurationMinutes: 120,
+    maxDurationMinutes: options.unlimitedDuration ? slotCountMinutes : MAX_DURATION_MINUTES,
     slots,
   }
 }

@@ -127,13 +127,17 @@ export async function getAvailability(
     endTime: item.endTime,
     status: item.status,
   }))
-  // Priority accounts book over pending and approved reservations; those conflicts
-  // are resolved on submit. Rejected and cancelled intervals never block anyone.
+  // Priority accounts book over pending and approved reservations, and are not
+  // limited by the room's bookable hours or the two-hour cap. Conflicts are
+  // resolved on submit. Rejected and cancelled intervals never block anyone.
+  // Past slots stay closed.
   if (options?.priority) {
     return buildLegacyAvailability(
       knownRoom,
       date,
       occupied.filter((item) => item.status !== "pending" && item.status !== "approved"),
+      new Date(),
+      { ignorePolicy: true, unlimitedDuration: true },
     )
   }
   return buildLegacyAvailability(knownRoom, date, occupied)

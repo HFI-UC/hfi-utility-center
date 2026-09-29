@@ -86,6 +86,7 @@
     "timeRange": "选择开始和结束时间",
     "selectStartHint": "选择开始时间",
     "selectEndHint": "再选择结束时间，最长可预约2小时。",
+    "selectEndHintOpen": "再选择结束时间。",
     "timelineHint": "拖动两端手柄选择开始和结束时间，点击时间轴可移动开始时间，方向键每次调整15分钟。",
     "duration": "时长",
     "durationInput": "输入分钟数",
