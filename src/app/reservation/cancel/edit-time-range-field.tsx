@@ -33,7 +33,7 @@ export function EditTimeRangeField({
   const bookingT = useTranslations("booking")
 
   return (
-    <FieldSet className="min-w-0 gap-3">
+    <FieldSet className="min-w-0">
       <div className="flex min-w-0 items-start justify-between gap-2">
         <div className="min-w-0">
           <FieldLegend variant="label">{bookingT("timeRange")}</FieldLegend>

@@ -75,7 +75,7 @@ export function EditAdminDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center">
             <Pencil aria-hidden className="size-4 shrink-0" />
             {common("edit")} · {admin.name}
           </DialogTitle>

@@ -15,13 +15,7 @@ import { DateRail } from "./date-rail"
 import { TimeRangePicker, type ReservationRange } from "./time-range-picker"
 import { useRoomAvailability } from "./use-room-availability"
 
-export function DateTimeStep({
-  rooms,
-  privileged = false,
-}: {
-  rooms: Room[]
-  privileged?: boolean
-}) {
+export function DateTimeStep({ rooms, priority = false }: { rooms: Room[]; priority?: boolean }) {
   const t = useTranslations("booking")
   const locale = useLocale()
   const { control, setValue, getValues, clearErrors, formState } =
@@ -35,11 +29,11 @@ export function DateTimeStep({
   const { availability, error, loading, refresh, reportError } = useRoomAvailability({
     room,
     date,
-    privileged,
+    priority,
   })
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  const maximumDate = addDays(today, privileged ? 3650 : 30)
+  const maximumDate = addDays(today, 30)
   const dateFormatter = new Intl.DateTimeFormat(locale, {
     month: "long",
     day: "numeric",
@@ -99,7 +93,7 @@ export function DateTimeStep({
         control={control}
         name="date"
         render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid} className="min-w-0 gap-2">
+          <Field data-invalid={fieldState.invalid} className="min-w-0">
             <FieldLabel>{t("dateTitle")}</FieldLabel>
             <DateRail
               date={date}

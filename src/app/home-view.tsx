@@ -65,34 +65,36 @@ export function HomeView() {
   return (
     <AppShell>
       {announcement ? (
-        <Alert className="t-route-enter flex items-start gap-3 px-4 py-4">
-          <Megaphone aria-hidden className="mt-1 size-4 shrink-0" />
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <AlertTitle className="break-words">
-              {announcement.title || t("announcementFallbackTitle")}
-            </AlertTitle>
-            <AlertDescription className="min-w-0 break-words [&>div]:line-clamp-2">
-              <MarkdownContent content={announcement.content} />
-            </AlertDescription>
-          </div>
-          <TooltipProvider delayDuration={80}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  aria-label={t("announcementReadMore")}
-                  onClick={() => setAnnouncementOpen(true)}
-                  className="size-11 shrink-0"
-                >
-                  <Maximize2 aria-hidden />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t("announcementReadMore")}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </Alert>
+        <div className="t-route-enter">
+          <Alert className="flex items-start">
+            <Megaphone aria-hidden className="mt-1 size-4 shrink-0" />
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <AlertTitle className="break-words">
+                {announcement.title || t("announcementFallbackTitle")}
+              </AlertTitle>
+              <AlertDescription className="min-w-0 break-words">
+                <MarkdownContent content={announcement.content} className="line-clamp-2" />
+              </AlertDescription>
+            </div>
+            <TooltipProvider delayDuration={80}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    aria-label={t("announcementReadMore")}
+                    onClick={() => setAnnouncementOpen(true)}
+                    className="size-11 shrink-0"
+                  >
+                    <Maximize2 aria-hidden />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t("announcementReadMore")}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </Alert>
+        </div>
       ) : null}
 
       <section

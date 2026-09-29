@@ -2,7 +2,6 @@ const DEFAULT_REDIRECT = "/admin/reservation"
 const ADMIN_ROUTES = new Set([
   "/admin",
   "/admin/reservation",
-  "/admin/force-reservation",
   "/admin/facility",
   "/admin/announcement",
   "/admin/user",

@@ -5,20 +5,19 @@ import { useEffect, useState } from "react"
 
 import { getAvailability } from "@/lib/api/reservations"
 import type { AvailabilityData, Room } from "@/lib/api/types"
-import { buildPriorityAvailability } from "@/lib/reservations/availability"
 
 export function useRoomAvailability({
   room,
   date,
-  privileged = false,
+  priority = false,
 }: {
   room?: Room
   date: string
-  privileged?: boolean
+  priority?: boolean
 }) {
   const t = useTranslations("booking")
   const [revision, setRevision] = useState(0)
-  const requestKey = `${room?.id}-${date}-${privileged}-${revision}`
+  const requestKey = `${room?.id}-${date}-${priority}-${revision}`
   const [result, setResult] = useState<{
     key: string
     availability?: AvailabilityData
@@ -32,9 +31,9 @@ export function useRoomAvailability({
     const selectedRoom = room
     async function load() {
       try {
-        const availability = privileged
-          ? buildPriorityAvailability(selectedRoom, date)
-          : await getAvailability(selectedRoom.id, date, selectedRoom)
+        const availability = await getAvailability(selectedRoom.id, date, selectedRoom, undefined, {
+          priority,
+        })
         if (active) setResult({ key: requestKey, availability })
       } catch (error) {
         if (active)
@@ -48,7 +47,7 @@ export function useRoomAvailability({
     return () => {
       active = false
     }
-  }, [room, date, privileged, requestKey, t])
+  }, [room, date, priority, requestKey, t])
 
   const current = result?.key === requestKey ? result : undefined
   return {

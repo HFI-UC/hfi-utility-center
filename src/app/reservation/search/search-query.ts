@@ -27,9 +27,9 @@ function firstValue(params: SearchParams, key: string) {
 }
 
 function parseStatus(value: string | undefined): ReservationStatus | undefined {
+  if (value === "ai_reviewing") return "pending"
   if (
     value === "pending" ||
-    value === "ai_reviewing" ||
     value === "approved" ||
     value === "rejected" ||
     value === "cancelled"

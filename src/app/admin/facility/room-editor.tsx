@@ -85,16 +85,12 @@ export function RoomEditor({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-xs text-muted-foreground">{t("facilityName")}</TableHead>
-              <TableHead className="text-xs text-muted-foreground">{t("status")}</TableHead>
-              <TableHead className="text-xs text-muted-foreground">{t("campus")}</TableHead>
-              <TableHead className="text-xs text-muted-foreground">{t("roomPolicies")}</TableHead>
-              <TableHead className="hidden text-xs text-muted-foreground xl:table-cell">
-                {t("createdAt")}
-              </TableHead>
-              <TableHead className="w-0 text-right text-xs text-muted-foreground">
-                {t("actions")}
-              </TableHead>
+              <TableHead>{t("facilityName")}</TableHead>
+              <TableHead>{t("status")}</TableHead>
+              <TableHead>{t("campus")}</TableHead>
+              <TableHead>{t("roomPolicies")}</TableHead>
+              <TableHead className="hidden xl:table-cell">{t("createdAt")}</TableHead>
+              <TableHead className="w-0 text-right">{t("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -148,7 +144,7 @@ export function RoomEditor({
                     <PolicyEditor room={room} mutate={mutate} working={working} />
                   )}
                 </TableCell>
-                <TableCell className="hidden text-xs text-muted-foreground xl:table-cell">
+                <TableCell className="hidden xl:table-cell">
                   {formatApiTimestamp(dateFormatter, room.createdAt)}
                 </TableCell>
                 <TableCell className="w-0 text-right">

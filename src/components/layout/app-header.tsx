@@ -98,7 +98,7 @@ export function AppHeader({ actions }: { actions?: ReactNode }) {
           <DropdownMenuItem
             key={value}
             onSelect={() => setLocale(value)}
-            className={cn("justify-between gap-4", value === locale && "font-semibold")}
+            className="justify-between"
             aria-checked={value === locale}
           >
             {label}
@@ -117,7 +117,7 @@ export function AppHeader({ actions }: { actions?: ReactNode }) {
           type="button"
           variant="default"
           size="default"
-          className="size-11 shrink-0 border border-transparent hover:bg-muted hover:text-foreground aria-pressed:bg-transparent data-[state=on]:bg-transparent"
+          className="size-11 shrink-0"
           aria-label={nav("theme")}
           onClick={() => setTheme(isDark ? "light" : "dark")}
         >
@@ -179,28 +179,30 @@ export function AppHeader({ actions }: { actions?: ReactNode }) {
                   <Menu aria-hidden />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[min(20rem,88vw)] gap-0 p-0">
-                <SheetHeader className="border-b">
-                  <SheetTitle>{t("mobileNav")}</SheetTitle>
-                  <div className="mt-2 flex items-center gap-1">
-                    {localeControl}
-                    {themeControl}
-                  </div>
-                </SheetHeader>
-                <nav aria-label={t("mobileNav")} className="flex min-w-0 flex-col gap-1 p-4">
-                  {items.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      prefetch={false}
-                      aria-current={item.active ? "page" : undefined}
-                      onClick={() => setOpen(false)}
-                      className={cn(linkClasses(item.active), "py-3 text-base")}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </nav>
+              <SheetContent side="right" className="w-[min(20rem,88vw)]">
+                <div className="flex min-h-0 flex-1 flex-col px-4">
+                  <SheetHeader>
+                    <SheetTitle>{t("mobileNav")}</SheetTitle>
+                    <div className="mt-2 flex items-center gap-1">
+                      {localeControl}
+                      {themeControl}
+                    </div>
+                  </SheetHeader>
+                  <nav aria-label={t("mobileNav")} className="flex min-w-0 flex-col gap-1 py-4">
+                    {items.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        prefetch={false}
+                        aria-current={item.active ? "page" : undefined}
+                        onClick={() => setOpen(false)}
+                        className={cn(linkClasses(item.active), "py-3 text-base")}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </nav>
+                </div>
               </SheetContent>
             </Sheet>
           </div>

@@ -13,7 +13,7 @@ export function BookingActionBar({
   isFirstStep,
   isLastStep,
   isWorking,
-  isForce,
+  submitDisabled = false,
   onPrevious,
   onNext,
 }: {
@@ -23,16 +23,15 @@ export function BookingActionBar({
   isFirstStep: boolean
   isLastStep: boolean
   isWorking: boolean
-  isForce: boolean
+  submitDisabled?: boolean
   onPrevious: () => void
   onNext: () => void
 }) {
   const t = useTranslations("booking")
-  const adminT = useTranslations("admin")
   const common = useTranslations("common")
 
   return (
-    <div className="sticky bottom-0 z-20 -mx-4 mt-4 flex min-w-0 flex-wrap items-center gap-2 border-t bg-background/95 px-[max(1rem,env(safe-area-inset-left))] pt-3 pr-[max(1rem,env(safe-area-inset-right))] pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm sm:-mx-6 sm:justify-between sm:px-6 lg:-mx-8 lg:px-8">
+    <div className="sticky bottom-0 z-20 -mx-4 mt-5 flex min-w-0 flex-wrap items-center gap-2 border-t bg-background/95 px-[max(1rem,env(safe-area-inset-left))] pt-3 pr-[max(1rem,env(safe-area-inset-right))] pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm sm:-mx-6 sm:justify-between sm:px-6 lg:-mx-8 lg:px-8">
       {flowError ? (
         <p role="alert" className="w-full min-w-0 text-sm break-words text-destructive">
           {flowError}
@@ -55,11 +54,11 @@ export function BookingActionBar({
           <Button
             key="confirm"
             type="submit"
-            disabled={isWorking}
+            disabled={isWorking || submitDisabled}
             className="h-auto min-h-11 min-w-0 flex-1 whitespace-normal sm:min-w-36 sm:flex-none"
           >
             {isWorking ? <Spinner /> : null}
-            {confirmLabel ?? (isForce ? adminT("forceConfirm") : t("confirmReservation"))}
+            {confirmLabel ?? t("confirmReservation")}
           </Button>
         ) : (
           <Button

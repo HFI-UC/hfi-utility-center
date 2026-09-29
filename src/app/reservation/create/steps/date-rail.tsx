@@ -99,7 +99,7 @@ export function DateRail({
               aria-pressed={current}
               aria-current={current ? "date" : undefined}
               onClick={() => onSelect(day)}
-              className="h-11 min-w-0 flex-1 flex-col gap-0.5 px-0.5"
+              className="h-11 min-w-0 flex-1 flex-col"
             >
               <span className="text-[11px] leading-none opacity-75">{label}</span>
               <span className="text-sm leading-none font-medium tabular-nums">
@@ -133,6 +133,7 @@ export function DateRail({
             <CalendarDays aria-hidden className="size-4" />
           </Button>
         </PopoverTrigger>
+        {/* oxlint-disable-next-line shadcn/no-restyle -- calendar popover padding */}
         <PopoverContent className="w-auto p-0" align="end">
           <Calendar
             mode="single"

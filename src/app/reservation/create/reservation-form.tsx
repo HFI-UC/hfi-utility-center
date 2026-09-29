@@ -10,17 +10,19 @@ import { PageHeader } from "@/components/layout/page-header"
 import { useErrorShake } from "@/hooks/use-error-shake"
 import { RequestError } from "@/lib/api/client"
 import {
+  confirmPriorityReservation,
   createReservation,
-  forceReservation,
   getReservationPreflight,
   previewReservation,
   type CreateReservationInput,
   type CreateReservationPreview,
   type ReservationPreflight,
 } from "@/lib/api/reservations"
-import { dateToInputValue } from "@/lib/date-time"
+import { dateToInputValue, formatApiTimestamp } from "@/lib/date-time"
+import { countsTowardDailyLimit, DAILY_RESERVATION_LIMIT } from "@/lib/reservations/availability"
 import { cn } from "@/lib/utils"
 
+import { isBookableCampus } from "./bookable-campus"
 import { BookingActionBar } from "./booking-action-bar"
 import { BookingGate } from "./booking-gate"
 import { BookingStepper } from "./booking-stepper"
@@ -35,18 +37,16 @@ import { LocationStep } from "./steps/location-step"
 import { ProfileStep } from "./steps/profile-step"
 import { ReviewStep } from "./steps/review-step"
 import { SuccessStep } from "./steps/success-step"
-import { forceReservationDefaults, useBookingCatalog } from "./use-booking-catalog"
+import { useBookingCatalog } from "./use-booking-catalog"
 
 type ReservationResult = {
   reservationId?: number
 }
 
-export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminForce" }) {
+export function ReservationForm() {
   const t = useTranslations("booking")
-  const adminT = useTranslations("admin")
   const common = useTranslations("common")
   const locale = useLocale()
-  const isForce = mode === "adminForce"
   const schema = useReservationSchema()
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(schema),
@@ -66,17 +66,19 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
   const [hasSlid, setHasSlid] = useState(false)
   const currentStepIndex = bookingSteps.findIndex((step) => step.id === currentStepId)
   const currentStep = bookingSteps[currentStepIndex]
-  const { catalog, catalogLoading, catalogError, reloadCatalog, adminSessionRef } =
-    useBookingCatalog(isForce, form)
+  const dailyCount =
+    preflight?.reservations.filter((reservation) => countsTowardDailyLimit(reservation.status))
+      .length ?? 0
+  // Priority accounts (preflight mode) bypass the per-email daily reservation limit.
+  const dailyLimitReached = preflight?.mode !== "priority" && dailyCount >= DAILY_RESERVATION_LIMIT
+  const { catalog, catalogLoading, catalogError, reloadCatalog } = useBookingCatalog(form)
 
   function goToStep(nextStepId: BookingStepId) {
     const nextIndex = bookingSteps.findIndex((step) => step.id === nextStepId)
     setStepDirection(nextIndex >= currentStepIndex ? "forward" : "back")
     setHasSlid(true)
-    if (nextStepId !== "review") {
-      setPriorityPreview(undefined)
-      setPreflight(undefined)
-    }
+    if (nextStepId === "details") setPreflight(undefined)
+    if (nextStepId !== "review") setPriorityPreview(undefined)
     setCurrentStepId(nextStepId)
   }
 
@@ -113,11 +115,16 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
       return
     }
 
-    if (currentStep.id === "location") {
+    if (currentStep.id === "details" || currentStep.id === "location") {
       setIsWorking(true)
       try {
         const values = form.getValues()
-        setPreflight(await getReservationPreflight(values.email.trim(), values.date))
+        setPreflight(
+          await getReservationPreflight(
+            values.email.trim(),
+            values.date || dateToInputValue(new Date()),
+          ),
+        )
       } catch (error) {
         setPreflight(undefined)
         setFlowError(
@@ -147,7 +154,7 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
     try {
       if (priorityPreview) {
         setResult(
-          await forceReservation(
+          await confirmPriorityReservation(
             priorityPreview.input,
             priorityPreview.preview.conflicts.map((conflict) => conflict.id),
           ),
@@ -166,15 +173,16 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
         needsMultimedia: values.needsMultimedia,
       }
       const preview = await previewReservation(input)
-      if (preview.mode === "priority") {
+      if (preview.mode === "priority" && preview.cancelledCount > 0) {
         setPriorityPreview({ input, preview })
         return
       }
-      if (isForce) {
-        setFlowError(adminT("forceIdentityInvalid"))
-        return
-      }
-      setResult(await createReservation(input))
+
+      setResult(
+        preview.mode === "priority"
+          ? await confirmPriorityReservation(input)
+          : await createReservation(input),
+      )
     } catch (error) {
       if (
         priorityPreview &&
@@ -204,8 +212,8 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (isWorking) return
-    if (currentStep.id !== "review") {
-      void continueToNextStep()
+    if (currentStep.id !== "review" || dailyLimitReached) {
+      if (currentStep.id !== "review") void continueToNextStep()
       return
     }
 
@@ -225,10 +233,8 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
 
   function resetReservation() {
     form.reset({
-      ...(isForce && adminSessionRef.current
-        ? forceReservationDefaults(adminSessionRef.current)
-        : reservationDefaults),
-      bookingCampusId: catalog?.campuses[0]?.id ?? 0,
+      ...reservationDefaults,
+      bookingCampusId: catalog?.campuses.find(isBookableCampus)?.id ?? 0,
       date: dateToInputValue(new Date()),
     })
     goToStep("details")
@@ -239,20 +245,10 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
   }
 
   if (catalogLoading || catalogError || !catalog) {
-    return (
-      <BookingGate
-        isForce={isForce}
-        loading={catalogLoading}
-        error={catalogError}
-        onRetry={reloadCatalog}
-      />
-    )
+    return <BookingGate loading={catalogLoading} error={catalogError} onRetry={reloadCatalog} />
   }
 
   if (result) {
-    if (isForce) {
-      return <SuccessStep {...result} adminForce onReset={resetReservation} />
-    }
     return (
       <AppShell>
         <PageHeader title={t("success")} description={t("successDescription")} />
@@ -262,18 +258,14 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
   }
 
   const stepContent: Record<BookingStepId, ReactNode> = {
-    details: <ProfileStep adminMode={isForce} />,
-    location: <LocationStep catalog={catalog} privileged={isForce} />,
+    details: <ProfileStep />,
+    location: <LocationStep catalog={catalog} priority={preflight?.mode === "priority"} />,
     review: <ReviewStep catalog={catalog} preflight={preflight} onEdit={goToStep} />,
   }
 
   const formBody = (
     <FormProvider {...form}>
-      <form
-        noValidate
-        onSubmit={handleFormSubmit}
-        className={isForce ? "flex min-w-0 scroll-mt-20 flex-col gap-4" : "min-w-0 scroll-mt-20"}
-      >
+      <form noValidate onSubmit={handleFormSubmit} className="min-w-0 scroll-mt-20">
         <BookingStepper
           titles={{
             details: t("steps.details"),
@@ -323,66 +315,46 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
             }
           }}
         >
-          <div
-            key={currentStep.id}
-            ref={stepRef}
-            className={cn(
-              "min-w-0 pb-[calc(5.5rem+env(safe-area-inset-bottom))]",
-              hasSlid && "motion-safe:animate-page-slide",
-              hasSlid &&
-                stepDirection === "back" &&
-                "[--page-from-x:calc(var(--distance-base)*-1)]",
-            )}
-          >
-            {stepContent[currentStep.id]}
-          </div>
+          {currentStep.id === "review" && priorityPreview ? (
+            <PriorityPreview preview={priorityPreview.preview} />
+          ) : (
+            <div
+              key={currentStep.id}
+              ref={stepRef}
+              className={cn(
+                "min-w-0",
+                hasSlid && "motion-safe:animate-page-slide",
+                hasSlid &&
+                  stepDirection === "back" &&
+                  "[--page-from-x:calc(var(--distance-base)*-1)]",
+              )}
+            >
+              {stepContent[currentStep.id]}
+            </div>
+          )}
         </fieldset>
-        {currentStep.id === "review" && priorityPreview ? (
-          <section className="mx-auto mb-6 w-full max-w-3xl rounded-xl border border-amber-300 bg-amber-50 p-5 text-amber-950">
-            <h2 className="font-semibold">{t("priorityPreviewTitle")}</h2>
-            <p className="mt-2 text-sm">
-              {t("priorityPreviewDescription", {
-                count: priorityPreview.preview.cancelledCount,
-              })}
-            </p>
-            {priorityPreview.preview.conflicts.length ? (
-              <ul className="mt-4 space-y-2 text-sm">
-                {priorityPreview.preview.conflicts.map((conflict) => (
-                  <li key={conflict.id} className="rounded-lg border border-amber-200 bg-white p-3">
-                    <strong>
-                      #{conflict.id} · {conflict.studentName}
-                    </strong>
-                    <span className="block">
-                      {conflict.roomName} · {conflict.startTime} – {conflict.endTime}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </section>
-        ) : null}
         <BookingActionBar
           nextLabel={t(`continue.${currentStep.id}`)}
           confirmLabel={
             priorityPreview
-              ? t("confirmPriority")
-              : isForce
-                ? t("previewPriority")
-                : t("confirmReservation")
+              ? t(
+                  priorityPreview.preview.cancelledCount > 0
+                    ? "confirmPriority"
+                    : "confirmPriorityClear",
+                )
+              : t("confirmReservation")
           }
           flowError={flowError}
           isFirstStep={currentStepIndex === 0}
           isLastStep={currentStep.id === "review"}
           isWorking={isWorking}
-          isForce={isForce}
+          submitDisabled={currentStep.id === "review" && dailyLimitReached}
           onPrevious={returnToPreviousStep}
           onNext={() => void continueToNextStep()}
         />
       </form>
     </FormProvider>
   )
-
-  if (isForce) return formBody
 
   return (
     <AppShell>
@@ -391,5 +363,47 @@ export function ReservationForm({ mode = "public" }: { mode?: "public" | "adminF
         {formBody}
       </div>
     </AppShell>
+  )
+}
+
+function PriorityPreview({ preview }: { preview: CreateReservationPreview }) {
+  const t = useTranslations("booking")
+  const locale = useLocale()
+  const clock = new Intl.DateTimeFormat(locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })
+
+  return (
+    <section className="flex min-w-0 flex-col items-start gap-4 text-left">
+      <div className="flex min-w-0 flex-col gap-1">
+        <h2 className="text-xl font-semibold tracking-tight">{t("priorityPreviewTitle")}</h2>
+        <p className="text-sm text-muted-foreground">
+          {preview.cancelledCount > 0
+            ? t("priorityPreviewDescription", { count: preview.cancelledCount })
+            : t("priorityPreviewNone")}
+        </p>
+      </div>
+      {preview.conflicts.length ? (
+        <ol className="flex w-full max-w-xl min-w-0 flex-col gap-4">
+          {preview.conflicts.map((conflict) => (
+            <li key={conflict.id} className="min-w-0">
+              <div className="flex items-baseline justify-between gap-4">
+                <p className="min-w-0 truncate text-sm font-medium">{conflict.studentName}</p>
+                <p className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                  {formatApiTimestamp(clock, conflict.startTime)}–
+                  {formatApiTimestamp(clock, conflict.endTime)}
+                </p>
+              </div>
+              <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                <span className="mr-2 tabular-nums">#{conflict.id}</span>
+                {conflict.roomName}
+              </p>
+            </li>
+          ))}
+        </ol>
+      ) : null}
+    </section>
   )
 }

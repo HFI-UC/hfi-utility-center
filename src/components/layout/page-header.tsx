@@ -29,7 +29,7 @@ export function PageHeader({
     >
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         {breadcrumb ? (
-          <Breadcrumb className="min-w-0 text-muted-foreground">
+          <Breadcrumb className="min-w-0">
             <BreadcrumbList className="min-w-0 flex-wrap">{breadcrumb}</BreadcrumbList>
           </Breadcrumb>
         ) : null}

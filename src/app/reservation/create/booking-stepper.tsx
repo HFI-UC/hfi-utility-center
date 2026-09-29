@@ -33,7 +33,7 @@ export function BookingStepper({
           >
             <span
               aria-hidden
-              className="t-step-rail absolute inset-x-0 top-0 h-0.5 bg-border"
+              className="t-step-rail absolute inset-x-0 top-0 h-0.5 bg-foreground/25"
               data-reached=""
             />
             <span
@@ -43,18 +43,17 @@ export function BookingStepper({
             />
             <Button
               type="button"
-              variant="ghost"
+              variant="step"
               disabled={isWorking || index >= currentStepIndex}
               onClick={() => onGoToStep(step.id)}
-              className={cn(
-                "h-auto min-h-11 w-full flex-col items-start gap-1 rounded-md px-1 py-1 text-left whitespace-normal disabled:opacity-100 sm:flex-row sm:items-center sm:gap-2",
-                index > currentStepIndex && "text-muted-foreground",
-              )}
+              className="w-full text-left"
             >
               <span
                 className={cn(
                   "t-step-marker flex size-6 shrink-0 items-center justify-center rounded-full text-xs tabular-nums",
-                  index === currentStepIndex ? "bg-primary text-primary-foreground" : "bg-muted",
+                  index === currentStepIndex
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-foreground/10",
                 )}
                 data-current={index === currentStepIndex ? "" : undefined}
               >

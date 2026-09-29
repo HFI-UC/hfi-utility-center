@@ -60,6 +60,7 @@ export async function getAvailability(
   date: string,
   knownRoom?: Room,
   excludedReservationId?: number,
+  options?: { priority?: boolean },
 ) {
   const { data } = await api.get<
     ApiResponse<{
@@ -116,20 +117,26 @@ export async function getAvailability(
     )
   }
 
-  return buildLegacyAvailability(
-    knownRoom,
-    date,
-    availability.occupied.map((item, index) => ({
-      id: index,
-      roomId,
-      studentName: "",
-      email: "",
-      reason: "",
-      startTime: item.startTime,
-      endTime: item.endTime,
-      status: item.status,
-    })),
-  )
+  const occupied = availability.occupied.map((item, index) => ({
+    id: index,
+    roomId,
+    studentName: "",
+    email: "",
+    reason: "",
+    startTime: item.startTime,
+    endTime: item.endTime,
+    status: item.status,
+  }))
+  // Priority accounts book over pending and approved reservations; those conflicts
+  // are resolved on submit. Rejected and cancelled intervals never block anyone.
+  if (options?.priority) {
+    return buildLegacyAvailability(
+      knownRoom,
+      date,
+      occupied.filter((item) => item.status !== "pending" && item.status !== "approved"),
+    )
+  }
+  return buildLegacyAvailability(knownRoom, date, occupied)
 }
 
 export async function createReservation(input: CreateReservationInput) {
@@ -139,8 +146,6 @@ export async function createReservation(input: CreateReservationInput) {
   )
   return data.data!
 }
-
-export type ForceReservationInput = CreateReservationInput
 
 export interface PriorityConflict {
   id: number
@@ -165,8 +170,8 @@ export async function previewReservation(input: CreateReservationInput) {
   return data.data!
 }
 
-export async function forceReservation(
-  input: ForceReservationInput,
+export async function confirmPriorityReservation(
+  input: CreateReservationInput,
   expectedConflictIds: number[] = [],
 ) {
   const { data } = await api.post<ApiResponse<ReservationCreateResult>>("/reservation/create", {

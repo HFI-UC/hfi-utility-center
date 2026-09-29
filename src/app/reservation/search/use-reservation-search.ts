@@ -3,11 +3,45 @@ import { useEffect, useRef, useState } from "react"
 import { getCatalog } from "@/lib/api/catalog"
 import { getReservations } from "@/lib/api/reservations"
 import type { CatalogData, ReservationPage } from "@/lib/api/types"
+import { parseApiTimestamp } from "@/lib/date-time"
 
 import { reservationSearchRequest, type ReservationSearchFilters } from "./search-query"
 
+const PAGE_SIZE = 20
+const REVIEW_STATUSES = ["pending", "ai_reviewing"] as const
 const emptyResult: ReservationPage = { reservations: [], total: 0 }
 
+// The API accepts one status per request. In review covers pending and AI review,
+// so both result sets are fetched and interleaved into one page.
+async function loadReviewPage(filters: ReservationSearchFilters): Promise<ReservationPage> {
+  const request = reservationSearchRequest(filters)
+  const pages = await Promise.all(
+    REVIEW_STATUSES.map(async (status) => {
+      const first = await getReservations({ ...request, status, page: 0 })
+      const rest = await Promise.all(
+        Array.from({ length: Math.max(0, Math.ceil(first.total / PAGE_SIZE) - 1) }, (_, index) =>
+          getReservations({ ...request, status, page: index + 1 }),
+        ),
+      )
+      return [first, ...rest]
+    }),
+  )
+  const merged = pages
+    .flatMap((statusPages) => statusPages.flatMap((page) => page.reservations))
+    .sort((left, right) => {
+      const delta =
+        filters.sort === "sequence"
+          ? left.id - right.id
+          : parseApiTimestamp(left.startTime).getTime() -
+            parseApiTimestamp(right.startTime).getTime()
+      return delta || left.id - right.id
+    })
+  const start = filters.page * PAGE_SIZE
+  return {
+    reservations: merged.slice(start, start + PAGE_SIZE),
+    total: pages.reduce((sum, statusPages) => sum + statusPages[0].total, 0),
+  }
+}
 export function useReservationSearch(filters: ReservationSearchFilters) {
   const requestId = useRef(0)
   const pendingRequest = useRef<{ key: string; promise: Promise<ReservationPage> } | null>(null)
@@ -44,8 +78,9 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
     const promise =
       pendingRequest.current?.key === key
         ? pendingRequest.current.promise
-        : getReservations(JSON.parse(requestKey))
-    pendingRequest.current = { key, promise }
+        : filters.status === "pending"
+          ? loadReviewPage(filters)
+          : getReservations(JSON.parse(requestKey))
 
     async function loadReservations() {
       setLoading(true)
@@ -72,7 +107,7 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
     return () => {
       requestId.current += 1
     }
-  }, [requestKey, reloadKey])
+  }, [filters, requestKey, reloadKey])
 
   return {
     catalog,

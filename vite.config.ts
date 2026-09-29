@@ -142,6 +142,12 @@ export default defineConfig({
       "promise/no-return-wrap": "error",
       "promise/param-names": "error",
       "vite-plus/prefer-vite-plus-imports": "error",
+      "shadcn/no-restyle": [
+        "error",
+        {
+          allow: ["layout"],
+        },
+      ],
     },
     overrides: [
       {
@@ -1410,6 +1416,14 @@ export default defineConfig({
           "react/no-unstable-nested-components": "off",
         },
       },
+      {
+        // Vendored primitives own their own appearance. no-restyle only
+        // applies where those primitives are called.
+        files: ["src/components/ui/**"],
+        rules: {
+          "shadcn/no-restyle": "off",
+        },
+      },
     ],
     options: {
       typeAware: true,
@@ -1419,6 +1433,10 @@ export default defineConfig({
       {
         name: "vite-plus",
         specifier: "vite-plus/oxlint-plugin",
+      },
+      {
+        name: "shadcn",
+        specifier: "@shadcn/lint",
       },
     ],
   },

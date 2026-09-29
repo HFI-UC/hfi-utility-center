@@ -1,25 +1,38 @@
-import { Clock3, Mail, MapPin, Monitor, ShieldCheck, UserRound } from "lucide-react"
+import { Pencil } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useMemo, type ReactNode } from "react"
 import { useFormContext } from "react-hook-form"
 
-import { Button } from "@/components/ui/button"
 import type { ReservationPreflight } from "@/lib/api/reservations"
 import type { CatalogData } from "@/lib/api/types"
-import { parseApiTimestamp } from "@/lib/date-time"
+import { countsTowardDailyLimit, DAILY_RESERVATION_LIMIT } from "@/lib/reservations/availability"
 
 import type { BookingStepId, ReservationFormValues } from "../form"
 import { StepLayout } from "../step-layout"
 
 const DETAIL =
-  "grid grid-cols-[6.5rem_minmax(0,1fr)] items-baseline gap-3 py-2.5 sm:grid-cols-[8.5rem_minmax(0,1fr)]"
+  "group grid w-full cursor-pointer grid-cols-[6.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-md py-2.5 text-left transition-colors hover:bg-muted/60 sm:grid-cols-[8.5rem_minmax(0,1fr)_auto]"
 
-function ConfirmRow({ label, children }: { label: string; children: ReactNode }) {
+function ConfirmRow({
+  label,
+  editLabel,
+  onEdit,
+  children,
+}: {
+  label: string
+  editLabel: string
+  onEdit: () => void
+  children: ReactNode
+}) {
   return (
-    <div className={DETAIL}>
-      <dt className="text-sm break-words text-muted-foreground">{label}</dt>
-      <dd className="min-w-0 text-sm break-words">{children}</dd>
-    </div>
+    <button type="button" className={DETAIL} aria-label={editLabel} onClick={onEdit}>
+      <span className="text-sm break-words text-muted-foreground">{label}</span>
+      <span className="min-w-0 text-sm break-words">{children}</span>
+      <Pencil
+        aria-hidden
+        className="size-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+      />
+    </button>
   )
 }
 
@@ -33,12 +46,10 @@ export function ReviewStep({
   onEdit: (step: BookingStepId) => void
 }) {
   const t = useTranslations("booking")
-  const statusT = useTranslations("status")
   const locale = useLocale()
   const { getValues } = useFormContext<ReservationFormValues>()
   const values = getValues()
   const className = preflight?.student.className
-  const campusName = catalog.campuses.find((item) => item.id === values.bookingCampusId)?.name
   const roomName = catalog.rooms.find((item) => item.id === values.room)?.name
   const dateFormatter = useMemo(
     () =>
@@ -61,45 +72,31 @@ export function ReviewStep({
       }),
     [locale],
   )
-  const duration = Math.max(0, Math.round((values.endTime - values.startTime) / 60))
+  // Priority accounts bypass the per-email daily reservation limit.
+  const dailyCount =
+    preflight?.mode === "priority"
+      ? 0
+      : (preflight?.reservations.filter((reservation) => countsTowardDailyLimit(reservation.status))
+          .length ?? 0)
 
   return (
     <StepLayout title={t("reviewTitle")} description={t("reviewDescription")}>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          className="min-h-11"
-          onClick={() => onEdit("location")}
-        >
-          {t("editSchedule")}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="min-h-11"
-          onClick={() => onEdit("details")}
-        >
-          {t("editProfile")}
-        </Button>
-      </div>
-      <dl className="flex min-w-0 flex-col divide-y divide-border">
+      <div className="flex min-w-0 flex-col divide-y divide-border">
         {roomName ? (
-          <ConfirmRow label={t("location")}>
-            <span className="flex min-w-0 flex-wrap items-center gap-2">
-              <MapPin aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
-              <span className="font-medium break-words">{roomName}</span>
-              {campusName ? (
-                <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
-                  {campusName}
-                </span>
-              ) : null}
-            </span>
+          <ConfirmRow
+            label={t("location")}
+            editLabel={t("editSchedule")}
+            onEdit={() => onEdit("location")}
+          >
+            <span className="font-medium break-words">{roomName}</span>
           </ConfirmRow>
         ) : null}
-        <ConfirmRow label={t("dateTimeTitle")}>
+        <ConfirmRow
+          label={t("dateTimeTitle")}
+          editLabel={t("editSchedule")}
+          onEdit={() => onEdit("location")}
+        >
           <span className="flex min-w-0 flex-wrap items-center gap-2">
-            <Clock3 aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
             <span className="break-words">
               {dateFormatter.format(new Date(values.startTime * 1000))}
             </span>
@@ -107,63 +104,47 @@ export function ReviewStep({
               {timeFormatter.format(new Date(values.startTime * 1000))} –{" "}
               {timeFormatter.format(new Date(values.endTime * 1000))}
             </span>
-            <span className="text-xs text-muted-foreground">
-              {t("minutes", { count: duration })}
-            </span>
           </span>
         </ConfirmRow>
-        <ConfirmRow label={t("profileTitle")}>
-          <span className="flex min-w-0 flex-col gap-0.5">
-            <span className="flex min-w-0 items-center gap-1.5">
-              <UserRound aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
-              <span className="break-words">{preflight?.student.name}</span>
-            </span>
-            {className ? (
-              <span className="break-words text-muted-foreground">{className}</span>
-            ) : null}
-            <span className="break-words text-muted-foreground">{values.email}</span>
+        <ConfirmRow
+          label={t("profileTitle")}
+          editLabel={t("editProfile")}
+          onEdit={() => onEdit("details")}
+        >
+          <span className="break-words">
+            {[preflight?.student.name, className, values.email].filter(Boolean).join("/")}
           </span>
         </ConfirmRow>
-        <ConfirmRow label={t("reason")}>
+        <ConfirmRow
+          label={t("reason")}
+          editLabel={t("editProfile")}
+          onEdit={() => onEdit("details")}
+        >
           <span className="break-words">{values.reason}</span>
         </ConfirmRow>
-        <ConfirmRow label={t("purpose")}>
-          <span className="flex min-w-0 flex-wrap items-center gap-2">
-            <Monitor aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
-            <span className="font-medium">{t(`purposeOptions.${values.purposeType}`)}</span>
-            <span className="text-xs text-muted-foreground">
-              {values.needsMultimedia ? t("multimedia") : t("noMultimedia")}
-            </span>
+        <ConfirmRow
+          label={t("purpose")}
+          editLabel={t("editProfile")}
+          onEdit={() => onEdit("details")}
+        >
+          <span className="break-words">
+            {t(`purposeOptions.${values.purposeType}`)}/
+            {values.needsMultimedia ? t("multimedia") : t("noMultimedia")}
           </span>
         </ConfirmRow>
-      </dl>
-      <section className="mt-5 rounded-lg border border-border bg-muted/30 p-4">
-        <h3 className="text-sm font-semibold">{t("existingReservationsTitle")}</h3>
-        {preflight?.reservations.length ? (
-          <ul className="mt-3 divide-y divide-border text-sm">
-            {preflight.reservations.map((reservation) => (
-              <li key={reservation.id} className="flex flex-wrap justify-between gap-2 py-2">
-                <span>
-                  {reservation.roomName || t("unknownRoom")} ·{" "}
-                  {timeFormatter.format(parseApiTimestamp(reservation.startTime))}–
-                  {timeFormatter.format(parseApiTimestamp(reservation.endTime))}
-                </span>
-                <span className="text-muted-foreground">{statusT(reservation.status)}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-2 text-sm text-muted-foreground">{t("existingReservationsNone")}</p>
-        )}
-      </section>
-      <p className="mt-4 flex items-start gap-2 text-xs break-words text-muted-foreground">
-        <Mail aria-hidden className="mt-0.5 size-3.5 shrink-0" />
-        {t("reviewEmailNote")}
-      </p>
-      <p className="mt-2 flex items-start gap-2 text-xs break-words text-muted-foreground">
-        <ShieldCheck aria-hidden className="mt-0.5 size-3.5 shrink-0" />
-        {t("reviewValidationNote")}
-      </p>
+      </div>
+      {dailyCount > 0 ? (
+        <p className="mt-5 text-sm">
+          {t("dailyReservationCount", { count: dailyCount, limit: DAILY_RESERVATION_LIMIT })}
+        </p>
+      ) : null}
+      {dailyCount >= DAILY_RESERVATION_LIMIT ? (
+        <p role="alert" className="mt-2 text-sm text-destructive">
+          {t("dailyReservationLimit", { limit: DAILY_RESERVATION_LIMIT })}
+        </p>
+      ) : null}
+      <p className="mt-4 text-xs break-words text-muted-foreground">{t("reviewEmailNote")}</p>
+      <p className="mt-2 text-xs break-words text-muted-foreground">{t("reviewValidationNote")}</p>
     </StepLayout>
   )
 }

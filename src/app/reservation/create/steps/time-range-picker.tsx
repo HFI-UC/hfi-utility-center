@@ -270,7 +270,7 @@ export function TimeRangePicker({
   const ticks = tickMarks(window)
 
   return (
-    <FieldSet className="min-w-0 gap-3" data-invalid={invalid}>
+    <FieldSet className="min-w-0" data-invalid={invalid}>
       <div className="flex min-w-0 items-start justify-between gap-2">
         <div className="min-w-0">
           <FieldLegend variant="label">{t("timeRange")}</FieldLegend>
@@ -311,7 +311,7 @@ export function TimeRangePicker({
           value={startTime ? String(startTime) : ""}
           onValueChange={(value) => anchorStart(Number(value))}
         >
-          <SelectTrigger className="min-h-11 w-full text-base" aria-label={t("startTime")}>
+          <SelectTrigger className="min-h-11 w-full" aria-label={t("startTime")}>
             <SelectValue placeholder={t("selectStartHint")} />
           </SelectTrigger>
           <SelectContent>
@@ -333,7 +333,7 @@ export function TimeRangePicker({
           disabled={!startTime}
           onValueChange={(value) => dragEnd(Number(value))}
         >
-          <SelectTrigger className="min-h-11 w-full text-base" aria-label={t("endTime")}>
+          <SelectTrigger className="min-h-11 w-full" aria-label={t("endTime")}>
             <SelectValue placeholder={t("selectEndHint")} />
           </SelectTrigger>
           <SelectContent>
@@ -345,7 +345,7 @@ export function TimeRangePicker({
           </SelectContent>
         </Select>
       </div>
-      <div className="hidden min-w-0 pt-6 md:block">
+      <div className="hidden min-w-0 md:block">
         <div className="px-3">
           <div
             ref={track}
@@ -578,12 +578,8 @@ export function TimeRangePicker({
                     onRangeChange({ startTime, endTime: startTime + value * 60 })
                   }}
                   className={cn(
-                    "h-auto min-h-11 min-w-0 flex-1 basis-0 rounded-lg px-2 font-normal tabular-nums",
-                    "motion-safe:transition-[flex-grow] motion-safe:duration-200",
+                    "h-auto min-h-11 min-w-0 flex-1 basis-0",
                     customOpen && "grow-[0.35]",
-                    selected
-                      ? "border-primary bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary data-[state=on]:bg-primary/10 data-[state=on]:text-primary"
-                      : "border-input bg-background",
                   )}
                 >
                   {t("minutes", { count: value })}
@@ -614,7 +610,7 @@ export function TimeRangePicker({
                   variant="outline"
                   pressed={!choices.includes(minutes) && minutes > 0}
                   onPressedChange={() => setCustomOpen(true)}
-                  className="size-full rounded-none border-0 px-2 font-normal hover:bg-transparent"
+                  className="size-full"
                 >
                   {t("otherDuration")}
                 </Toggle>
@@ -814,7 +810,7 @@ function DurationInput({
           commit(event.currentTarget.value)
         }
       }}
-      className="h-11 w-full border-0 tabular-nums shadow-none focus-visible:ring-0"
+      className="h-11 w-full"
     />
   )
 }

@@ -19,7 +19,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -27,17 +30,14 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import type { CatalogData, ReservationStatus } from "@/lib/api/types"
 import { inputValueToDate } from "@/lib/date-time"
 
+import { isBookableCampus } from "../create/bookable-campus"
 import { reservationSearchHref, type ReservationSearchFilters } from "./search-query"
 
 const ALL = "all"
 
-const STATUSES = [
-  "pending",
-  "ai_reviewing",
-  "approved",
-  "rejected",
-  "cancelled",
-] as const satisfies ReadonlyArray<ReservationStatus>
+const STATUSES = ["pending", "approved", "rejected", "cancelled"] as const satisfies ReadonlyArray<
+  Exclude<ReservationStatus, "ai_reviewing">
+>
 
 const CONTROL = "w-full min-h-11 sm:min-h-8"
 
@@ -78,16 +78,23 @@ export function ReservationSearchFilterForm({
   })
   const keyword = useWatch({ control, name: "keyword" })
   const campusId = useWatch({ control, name: "campus" })
-  const visibleRooms = useMemo(
-    () =>
-      catalog?.rooms.filter((room) => campusId === ALL || room.campus === Number(campusId)) ?? [],
-    [campusId, catalog],
-  )
+  const visibleRooms = useMemo(() => {
+    const officeIds = new Set(
+      catalog?.campuses.filter((campus) => !isBookableCampus(campus)).map((campus) => campus.id),
+    )
+    return (
+      catalog?.rooms.filter(
+        (room) =>
+          !officeIds.has(room.campus ?? -1) &&
+          (campusId === ALL || room.campus === Number(campusId)),
+      ) ?? []
+    )
+  }, [campusId, catalog])
   const campuses = useMemo(
     () => [
       { value: ALL, label: t("allCampuses") },
       ...(catalog?.campuses
-        .filter((campus) => !campus.deletedAt)
+        .filter((campus) => !campus.deletedAt && isBookableCampus(campus))
         .map((campus) => ({
           value: String(campus.id),
           label:
@@ -99,6 +106,18 @@ export function ReservationSearchFilterForm({
         })) ?? []),
     ],
     [catalog, t],
+  )
+  const roomGroups = useMemo(
+    () =>
+      campuses
+        .filter((campus) => campus.value !== ALL)
+        .map((campus) => ({
+          value: campus.value,
+          label: campus.label,
+          rooms: visibleRooms.filter((room) => String(room.campus ?? "") === campus.value),
+        }))
+        .filter((group) => group.rooms.length > 0),
+    [campuses, visibleRooms],
   )
 
   const applyFilters = useCallback(
@@ -212,7 +231,7 @@ export function ReservationSearchFilterForm({
                         applyFilters({ ...values, campus: nextCampus, room })
                       }}
                     />
-                    <FieldLabel htmlFor={`search-campus-${campus.value}`} className="font-normal">
+                    <FieldLabel htmlFor={`search-campus-${campus.value}`}>
                       {campus.label}
                     </FieldLabel>
                   </Field>
@@ -234,7 +253,7 @@ export function ReservationSearchFilterForm({
                     id="search-date-range"
                     type="button"
                     variant="outline"
-                    className={`${CONTROL} justify-start font-normal`}
+                    className={`${CONTROL} justify-start`}
                     aria-expanded={calendarOpen}
                   >
                     <CalendarDays aria-hidden />
@@ -245,6 +264,7 @@ export function ReservationSearchFilterForm({
                     />
                   </Button>
                 </PopoverTrigger>
+                {/* oxlint-disable-next-line shadcn/no-restyle -- calendar popover padding */}
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="range"
@@ -273,19 +293,14 @@ export function ReservationSearchFilterForm({
                   field.onChange(value)
                   applyFilters({ ...getValues(), sort: value as SearchFormValues["sort"] })
                 }}
-                className="gap-1.5"
               >
                 <Field orientation="horizontal" className="min-h-11 sm:min-h-8">
                   <RadioGroupItem value="time" id="search-sort-time" />
-                  <FieldLabel htmlFor="search-sort-time" className="font-normal">
-                    {t("sortByReservation")}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="search-sort-time">{t("sortByReservation")}</FieldLabel>
                 </Field>
                 <Field orientation="horizontal" className="min-h-11 sm:min-h-8">
                   <RadioGroupItem value="sequence" id="search-sort-sequence" />
-                  <FieldLabel htmlFor="search-sort-sequence" className="font-normal">
-                    {t("sortBySequence")}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="search-sort-sequence">{t("sortBySequence")}</FieldLabel>
                 </Field>
               </RadioGroup>
             )}
@@ -310,10 +325,16 @@ export function ReservationSearchFilterForm({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={ALL}>{t("allRooms")}</SelectItem>
-                  {visibleRooms.map((room) => (
-                    <SelectItem key={room.id} value={String(room.id)}>
-                      {room.name}
-                    </SelectItem>
+                  {roomGroups.map((group) => (
+                    <SelectGroup key={group.value}>
+                      <SelectSeparator />
+                      <SelectLabel>{group.label}</SelectLabel>
+                      {group.rooms.map((room) => (
+                        <SelectItem key={room.id} value={String(room.id)}>
+                          {room.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
                   ))}
                 </SelectContent>
               </Select>
@@ -336,9 +357,7 @@ export function ReservationSearchFilterForm({
                       if (checked) applyStatus(ALL)
                     }}
                   />
-                  <FieldLabel htmlFor="search-status-all" className="font-normal">
-                    {t("allStatuses")}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="search-status-all">{t("allStatuses")}</FieldLabel>
                 </Field>
                 {STATUSES.map((status) => (
                   <Field key={status} orientation="horizontal" className="min-h-11 sm:min-h-8">
@@ -347,9 +366,7 @@ export function ReservationSearchFilterForm({
                       checked={field.value === status}
                       onCheckedChange={(checked) => applyStatus(checked ? status : ALL)}
                     />
-                    <FieldLabel htmlFor={`search-status-${status}`} className="font-normal">
-                      {statusT(status)}
-                    </FieldLabel>
+                    <FieldLabel htmlFor={`search-status-${status}`}>{statusT(status)}</FieldLabel>
                   </Field>
                 ))}
               </div>

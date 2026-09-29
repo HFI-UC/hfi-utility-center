@@ -6,15 +6,12 @@ import { Button } from "@/components/ui/button"
 
 export function SuccessStep({
   reservationId,
-  adminForce = false,
   onReset,
 }: {
   reservationId?: number
-  adminForce?: boolean
   onReset: () => void
 }) {
   const t = useTranslations("booking")
-  const adminT = useTranslations("admin")
   return (
     <section className="mx-auto flex w-full max-w-xl min-w-0 flex-col items-center gap-3 py-6 text-center">
       <span
@@ -23,19 +20,10 @@ export function SuccessStep({
       >
         <CheckCircle2 className="size-7" />
       </span>
-      <h2 className="text-xl font-semibold break-words">
-        {adminForce ? adminT("forceSuccessTitle") : t("success")}
-      </h2>
+      <h2 className="text-xl font-semibold break-words">{t("success")}</h2>
       <p className="max-w-md text-sm break-words text-muted-foreground">
-        {adminForce && reservationId
-          ? adminT("forceSuccessDescription", { id: reservationId })
-          : t("successDescription")}
+        {t("successDescription")}
       </p>
-      {adminForce ? (
-        <p className="max-w-md text-sm break-words text-muted-foreground">
-          {adminT("forceConflictHandled")}
-        </p>
-      ) : null}
       {reservationId ? (
         <p className="flex flex-col items-center gap-0.5">
           <span className="text-xs text-muted-foreground">{t("reservationNumberLabel")}</span>
@@ -44,23 +32,21 @@ export function SuccessStep({
       ) : null}
       <div className="mt-2 flex w-full flex-wrap items-center justify-center gap-2">
         <Button asChild className="min-h-11 sm:min-h-8">
-          <Link href={adminForce ? "/admin/reservation" : "/reservation/search"} prefetch={false}>
+          <Link href="/reservation/search" prefetch={false}>
             <ListChecks aria-hidden />
             {t("viewReservations")}
           </Link>
         </Button>
         <Button type="button" variant="outline" onClick={onReset} className="min-h-11 sm:min-h-8">
           <CalendarPlus aria-hidden />
-          {adminForce ? adminT("forceCreateAnother") : t("bookAgain")}
+          {t("bookAgain")}
         </Button>
-        {!adminForce ? (
-          <Button asChild variant="ghost" className="min-h-11 sm:min-h-8">
-            <Link href="/" prefetch={false}>
-              <ArrowLeft aria-hidden />
-              {t("home")}
-            </Link>
-          </Button>
-        ) : null}
+        <Button asChild variant="ghost" className="min-h-11 sm:min-h-8">
+          <Link href="/" prefetch={false}>
+            <ArrowLeft aria-hidden />
+            {t("home")}
+          </Link>
+        </Button>
       </div>
     </section>
   )

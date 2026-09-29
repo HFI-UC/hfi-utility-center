@@ -140,7 +140,7 @@ export function PolicyEditor({
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="break-words">
+          <DialogTitle>
             {room.name} · {t("roomPolicies")}
           </DialogTitle>
           <DialogDescription>{t("policyDialogDescription")}</DialogDescription>
@@ -154,7 +154,7 @@ export function PolicyEditor({
               variant="outline"
               value={draft.days.map(String)}
               onValueChange={toggleDays}
-              className="grid w-full grid-cols-4 gap-1.5 sm:grid-cols-7"
+              className="grid w-full grid-cols-4 sm:grid-cols-7"
             >
               {weekdays.map((weekday, day) => (
                 <ToggleGroupItem

@@ -10,9 +10,6 @@ import type { CatalogData, Room } from "@/lib/api/types"
 
 import type { EditDraft } from "./use-cancellation"
 
-const TILE_GROUP =
-  "[&>[data-state=on]]:border-primary [&>[data-state=on]]:bg-primary/10 [&>[data-state=on]]:text-primary"
-
 export function EditLocationStep({
   catalog,
   draft,
@@ -35,7 +32,7 @@ export function EditLocationStep({
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <FieldSet className="min-w-0 gap-3">
+      <FieldSet className="min-w-0">
         <FieldLegend variant="label">{t("selectLocation")}</FieldLegend>
         <FieldDescription>{t("locationHint")}</FieldDescription>
         <ToggleGroup
@@ -45,7 +42,7 @@ export function EditLocationStep({
           onValueChange={(value) => {
             if (value) onCampusChange(Number(value))
           }}
-          className={`flex w-full flex-wrap items-stretch gap-2 ${TILE_GROUP}`}
+          className="flex w-full flex-wrap items-stretch"
         >
           {catalog.campuses
             .filter((campus) => !campus.deletedAt)
@@ -61,7 +58,7 @@ export function EditLocationStep({
         </ToggleGroup>
       </FieldSet>
 
-      <FieldSet className="min-w-0 gap-3">
+      <FieldSet className="min-w-0">
         <FieldLegend variant="label">
           {bookingT("rooms")} · {t("availableSpaces", { count: roomsForCampus.length })}
         </FieldLegend>
@@ -73,13 +70,13 @@ export function EditLocationStep({
             if (value) onRoomChange(Number(value))
           }}
           aria-label={bookingT("rooms")}
-          className={`grid w-full grid-cols-1 gap-2 sm:grid-cols-2 ${TILE_GROUP}`}
+          className="grid w-full grid-cols-1 sm:grid-cols-2"
         >
           {roomsForCampus.map((room) => (
             <ToggleGroupItem
               key={room.id}
               value={String(room.id)}
-              className="min-h-11 min-w-0 justify-start gap-2 px-3 sm:min-h-12"
+              className="min-h-11 min-w-0 justify-start sm:min-h-12"
             >
               <DoorOpen aria-hidden className="size-4 shrink-0 opacity-70" />
               <span className="truncate">{room.name}</span>

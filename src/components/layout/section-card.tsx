@@ -17,7 +17,6 @@ export function SectionCard({
   actions,
   children,
   footer,
-  bordered = true,
   className,
   contentClassName,
 }: {
@@ -26,34 +25,26 @@ export function SectionCard({
   actions?: ReactNode
   children: ReactNode
   footer?: ReactNode
-  bordered?: boolean
   className?: string
   contentClassName?: string
 }) {
   return (
-    <Card
-      size="sm"
-      className={cn("min-w-0", !bordered && "border-0 bg-transparent shadow-none", className)}
-    >
+    <Card size="sm" className={cn("min-w-0", className)}>
       {title || description || actions ? (
         <CardHeader className="min-w-0">
           <div className="flex min-w-0 flex-col gap-1">
-            {title ? (
-              <CardTitle className="font-heading text-sm break-words">{title}</CardTitle>
-            ) : null}
+            {title ? <CardTitle className="break-words">{title}</CardTitle> : null}
             {description ? (
-              <CardDescription className="text-sm break-words text-muted-foreground">
-                {description}
-              </CardDescription>
+              <CardDescription className="break-words">{description}</CardDescription>
             ) : null}
           </div>
           {actions ? (
-            <CardAction className="flex flex-wrap items-center gap-2">{actions}</CardAction>
+            <CardAction className="flex flex-wrap items-center">{actions}</CardAction>
           ) : null}
         </CardHeader>
       ) : null}
       <CardContent className={cn("min-w-0", contentClassName)}>{children}</CardContent>
-      {footer ? <CardFooter className="flex-wrap gap-2">{footer}</CardFooter> : null}
+      {footer ? <CardFooter className="flex-wrap">{footer}</CardFooter> : null}
     </Card>
   )
 }

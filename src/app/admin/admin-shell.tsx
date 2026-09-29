@@ -1,14 +1,6 @@
 "use client"
 
-import {
-  Building2,
-  CalendarClock,
-  CalendarPlus,
-  LayoutDashboard,
-  LogOut,
-  Megaphone,
-  Users,
-} from "lucide-react"
+import { Building2, CalendarClock, LayoutDashboard, LogOut, Megaphone, Users } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { redirect, usePathname, useRouter } from "next/navigation"
@@ -38,7 +30,6 @@ import { logout } from "@/lib/api/auth"
 const NAVIGATION = [
   { href: "/admin", labelKey: "overview", icon: LayoutDashboard },
   { href: "/admin/reservation", labelKey: "reservations", icon: CalendarClock },
-  { href: "/admin/force-reservation", labelKey: "forceReservationTab", icon: CalendarPlus },
   { href: "/admin/facility", labelKey: "facilities", icon: Building2 },
   { href: "/admin/announcement", labelKey: "announcements", icon: Megaphone },
   { href: "/admin/user", labelKey: "users", icon: Users },
@@ -113,7 +104,7 @@ function AuthenticatedAdminShell({
       />
       <div className="flex min-h-0 flex-1">
         <Sidebar collapsible="icon" className="top-14! h-[calc(100svh-3.5rem)]!">
-          <SidebarHeader className="border-b border-sidebar-border">
+          <SidebarHeader>
             <div className="flex items-center gap-2 px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
               <Building2 aria-hidden className="size-5 shrink-0 text-primary" />
               <span className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
@@ -152,7 +143,7 @@ function AuthenticatedAdminShell({
             </SidebarGroup>
           </SidebarContent>
 
-          <SidebarFooter className="border-t border-sidebar-border">
+          <SidebarFooter>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton

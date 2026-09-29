@@ -7,46 +7,37 @@ import { ErrorState, LoadingState } from "@/components/layout/data-state"
 import { PageHeader } from "@/components/layout/page-header"
 
 export function BookingGate({
-  isForce,
   loading,
   error,
   onRetry,
 }: {
-  isForce: boolean
   loading: boolean
   error?: string
   onRetry: () => void
 }) {
   const t = useTranslations("booking")
-  const adminT = useTranslations("admin")
 
   if (loading) {
-    if (isForce) {
-      return (
-        <div className="flex min-h-40 items-center justify-center">
-          <LoadingState label={adminT("forceLoading")} />
-        </div>
-      )
-    }
     return (
       <AppShell>
-        <PageHeader title={t("loadingTitle")} />
-        <LoadingState rows={5} />
+        <div className="mx-auto max-w-5xl">
+          <PageHeader title={t("createTitle")} description={t("intro")} />
+          <LoadingState label={t("loadingTitle")} rows={5} />
+        </div>
       </AppShell>
     )
   }
 
-  if (isForce) {
-    return (
-      <div className="flex min-w-0 flex-col gap-3">
-        <ErrorState title={adminT("forceLoadError")} description={error} onRetry={onRetry} />
-      </div>
-    )
-  }
   return (
     <AppShell>
-      <PageHeader title={t("loadError")} />
-      <ErrorState description={error ?? t("connectionError")} onRetry={onRetry} />
+      <div className="mx-auto max-w-5xl">
+        <PageHeader title={t("createTitle")} description={t("intro")} />
+        <ErrorState
+          title={t("loadError")}
+          description={error ?? t("connectionError")}
+          onRetry={onRetry}
+        />
+      </div>
     </AppShell>
   )
 }

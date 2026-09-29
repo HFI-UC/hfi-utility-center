@@ -70,13 +70,9 @@ export function CampusEditor({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-xs text-muted-foreground">{t("facilityName")}</TableHead>
-              <TableHead className="hidden text-xs text-muted-foreground md:table-cell">
-                {t("createdAt")}
-              </TableHead>
-              <TableHead className="w-0 text-right text-xs text-muted-foreground">
-                {t("actions")}
-              </TableHead>
+              <TableHead>{t("facilityName")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("createdAt")}</TableHead>
+              <TableHead className="w-0 text-right">{t("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -93,7 +89,7 @@ export function CampusEditor({
                     #{campus.id}
                   </span>
                 </TableCell>
-                <TableCell className="hidden text-xs text-muted-foreground md:table-cell">
+                <TableCell className="hidden md:table-cell">
                   {formatApiTimestamp(dateFormatter, campus.createdAt)}
                 </TableCell>
                 <TableCell className="w-0 text-right">

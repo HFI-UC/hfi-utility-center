@@ -83,14 +83,10 @@ export function ClassEditor({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-xs text-muted-foreground">{t("facilityName")}</TableHead>
-              <TableHead className="text-xs text-muted-foreground">{t("campus")}</TableHead>
-              <TableHead className="hidden text-xs text-muted-foreground md:table-cell">
-                {t("createdAt")}
-              </TableHead>
-              <TableHead className="w-0 text-right text-xs text-muted-foreground">
-                {t("actions")}
-              </TableHead>
+              <TableHead>{t("facilityName")}</TableHead>
+              <TableHead>{t("campus")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("createdAt")}</TableHead>
+              <TableHead className="w-0 text-right">{t("actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -112,7 +108,7 @@ export function ClassEditor({
                     {campusNames.get(schoolClass.campus ?? -1)}
                   </span>
                 </TableCell>
-                <TableCell className="hidden text-xs text-muted-foreground md:table-cell">
+                <TableCell className="hidden md:table-cell">
                   {formatApiTimestamp(dateFormatter, schoolClass.createdAt)}
                 </TableCell>
                 <TableCell className="w-0 text-right">

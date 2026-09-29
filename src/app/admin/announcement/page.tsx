@@ -95,7 +95,7 @@ function AnnouncementForm({
     <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[1.15fr_1fr]">
       <SectionCard title={t("announcementEditor")}>
         <form className="flex min-w-0 flex-col gap-5" onSubmit={save}>
-          <Field orientation="horizontal" className="gap-3 py-1">
+          <Field orientation="horizontal">
             <Megaphone aria-hidden className="size-4 shrink-0 text-muted-foreground" />
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <FieldLabel htmlFor="announcement-enabled" className="w-full">

@@ -232,7 +232,7 @@ export function FacilityRoomBoard({
                               <span
                                 className={cn(
                                   "text-xs",
-                                  item.status === "pending" ? "text-warning" : "text-info",
+                                  item.status === "approved" ? "text-info" : "text-warning",
                                 )}
                               >
                                 {day.current?.id === item.id
@@ -248,7 +248,7 @@ export function FacilityRoomBoard({
                       <Button
                         asChild
                         variant="ghost"
-                        className="h-11 w-fit justify-self-end rounded-full px-3 lg:size-11 lg:p-0"
+                        className="h-11 w-fit justify-self-end lg:size-11"
                       >
                         <Link
                           href={dayHref}

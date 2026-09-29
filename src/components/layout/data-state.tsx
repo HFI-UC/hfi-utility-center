@@ -63,10 +63,7 @@ export function ErrorState({
   return (
     <Alert
       variant="destructive"
-      className={cn(
-        "grid-cols-1 items-start gap-3 px-4 py-4 sm:grid-cols-[auto_1fr_auto] sm:gap-x-3",
-        className,
-      )}
+      className={cn("grid-cols-1 items-start sm:grid-cols-[auto_1fr_auto]", className)}
     >
       <AlertCircle aria-hidden />
       <div className="flex min-w-0 flex-col gap-1">

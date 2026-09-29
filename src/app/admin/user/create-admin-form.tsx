@@ -42,7 +42,7 @@ export function CreateAdminForm({ mutate, working }: { mutate: AdminMutation; wo
   }
 
   return (
-    <SectionCard title={t("addAdmin")} contentClassName="flex flex-col gap-4">
+    <SectionCard title={t("addAdmin")}>
       <form
         ref={formRef}
         className="flex min-w-0 flex-col gap-4"

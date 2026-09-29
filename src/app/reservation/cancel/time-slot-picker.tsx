@@ -53,11 +53,7 @@ export function TimeSlotPicker({
               disabled={!selectable && !selected}
               aria-pressed={selected}
               variant={selected ? "default" : occupied ? "ghost" : "outline"}
-              className={
-                occupied
-                  ? "min-h-11 text-muted-foreground line-through sm:min-h-8"
-                  : "min-h-11 font-mono text-xs tabular-nums sm:min-h-8"
-              }
+              className="min-h-11 sm:min-h-8"
               onClick={() => onSelect(option)}
             >
               {formatTime(option.timestamp)}

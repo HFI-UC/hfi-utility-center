@@ -295,9 +295,7 @@ function AccountIdentity({ admin }: { admin: Admin }) {
   return (
     <div className="flex min-w-0 items-center gap-3">
       <Avatar>
-        <AvatarFallback className="text-sm">
-          {admin.name.trim().slice(0, 1).toUpperCase() || "A"}
-        </AvatarFallback>
+        <AvatarFallback>{admin.name.trim().slice(0, 1).toUpperCase() || "A"}</AvatarFallback>
       </Avatar>
       <div className="flex min-w-0 flex-col">
         <span className="truncate text-sm font-medium break-words">{admin.name}</span>

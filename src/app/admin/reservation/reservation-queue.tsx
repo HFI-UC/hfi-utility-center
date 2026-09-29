@@ -129,7 +129,7 @@ export function ReservationTable({
         <TableBody>
           {reservations.map((item) => (
             <TableRow key={item.id}>
-              <TableCell className="font-semibold text-primary tabular-nums">#{item.id}</TableCell>
+              <TableCell>#{item.id}</TableCell>
               <TableCell>
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate font-medium">{item.studentName}</span>
@@ -152,7 +152,7 @@ export function ReservationTable({
                   </span>
                 ) : null}
               </TableCell>
-              <TableCell className="tabular-nums">
+              <TableCell>
                 <div className="flex flex-col">
                   <span>{formatDateTime(item.startTime)}</span>
                   <span className="text-xs text-muted-foreground">
@@ -186,7 +186,7 @@ export function ReservationTable({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-9 text-success hover:bg-success-soft sm:h-7"
+                      className="h-9 sm:h-7"
                       disabled={working}
                       onClick={() => onApprove(item.id)}
                     >
@@ -198,7 +198,7 @@ export function ReservationTable({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-9 text-danger hover:bg-danger-soft sm:h-7"
+                      className="h-9 sm:h-7"
                       disabled={working}
                       onClick={() => onReject(item.id)}
                     >
@@ -386,7 +386,7 @@ function ReservationCard({
         {reservation.status === "pending" ? (
           <Button
             variant="outline"
-            className="h-11 flex-1 border-success-border text-success hover:bg-success-soft sm:h-8"
+            className="h-11 flex-1 sm:h-8"
             disabled={working}
             onClick={onApprove}
           >
@@ -397,7 +397,7 @@ function ReservationCard({
         {reservation.status === "pending" ? (
           <Button
             variant="ghost"
-            className="min-h-11 flex-1 text-danger hover:bg-danger-soft sm:h-8"
+            className="min-h-11 flex-1 sm:h-8"
             disabled={working}
             onClick={onReject}
           >

@@ -88,13 +88,13 @@ export function FacilityDashboard({ portrait = false }: { portrait?: boolean }) 
           <div className="flex flex-wrap items-center gap-3">
             <p className="text-xs text-muted-foreground sm:text-sm">{statusLabel}</p>
             <RefreshButton
-              className="size-11 rounded-full"
+              className="size-11"
               label={t("refresh")}
               loading={loading}
               onRefresh={() => void refresh()}
             />
             {portrait ? null : (
-              <Button asChild className="h-11 rounded-full px-5">
+              <Button asChild className="h-11">
                 <Link href="/reservation/create" prefetch={false}>
                   <CalendarPlus aria-hidden />
                   {t("newBooking")}
@@ -139,7 +139,7 @@ export function FacilityDashboard({ portrait = false }: { portrait?: boolean }) 
                   {t("showingRooms", { count: visibleDays.length, total: rooms.length })}
                 </p>
                 <div className="grid min-w-0 grid-cols-2 gap-3 sm:flex">
-                  <InputGroup className="h-11 min-w-0 bg-card sm:w-60">
+                  <InputGroup className="h-11 min-w-0 sm:w-60">
                     <InputGroupInput
                       value={query}
                       onChange={(event) => setQuery(event.target.value)}
@@ -156,7 +156,7 @@ export function FacilityDashboard({ portrait = false }: { portrait?: boolean }) 
                   <Select value={campus} onValueChange={setCampus}>
                     <SelectTrigger
                       aria-label={t("campusFilter")}
-                      className="w-full bg-card data-[size=default]:h-11 sm:w-56"
+                      className="w-full data-[size=default]:h-11 sm:w-56"
                     >
                       <SelectValue placeholder={t("allCampuses")} />
                     </SelectTrigger>
@@ -179,14 +179,10 @@ export function FacilityDashboard({ portrait = false }: { portrait?: boolean }) 
                     if (value) setStatus(value as StatusFilter)
                   }}
                   aria-label={t("statusFilter")}
-                  className="flex-wrap justify-start gap-2"
+                  className="flex-wrap justify-start"
                 >
                   {STATUS_FILTERS.map((value) => (
-                    <ToggleGroupItem
-                      key={value}
-                      value={value}
-                      className="h-11 gap-2 rounded-full border border-transparent px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                    >
+                    <ToggleGroupItem key={value} value={value} className="h-11">
                       {value === "all" ? t("allStatuses") : t(`status_${value}`)}
                       <span className="text-xs tabular-nums opacity-75">
                         {value === "all"

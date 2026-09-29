@@ -10,6 +10,15 @@ const SLOT_MINUTES = 15
 export const DAY_START_HOUR = 8
 export const DAY_END_HOUR = 21.5
 
+/** Active reservations one email may hold on a single day, including the one being booked. */
+export const DAILY_RESERVATION_LIMIT = 2
+
+const INACTIVE_STATUS: Record<string, true> = { rejected: true, cancelled: true }
+
+export function countsTowardDailyLimit(status: string) {
+  return !INACTIVE_STATUS[status]
+}
+
 function isWithinRoomAvailability(room: Room, date: string, slotStart: number, slotEnd: number) {
   const weekday = weekdayFromInputValue(date)
   if (weekday === undefined) return false
@@ -78,34 +87,6 @@ export function buildLegacyAvailability(
     date,
     slotMinutes: SLOT_MINUTES,
     maxDurationMinutes: 120,
-    slots,
-  }
-}
-
-export function buildPriorityAvailability(
-  room: Room,
-  date: string,
-  now = new Date(),
-): AvailabilityData {
-  const slots: AvailabilitySlot[] = []
-  const dayStart = inputValueToTimestamp(date)
-  if (dayStart === undefined) throw new Error("Invalid availability date")
-
-  for (let index = 0; index < 24 * 4; index += 1) {
-    const slotStart = dayStart + index * SLOT_MINUTES * 60
-    const slotEnd = slotStart + SLOT_MINUTES * 60
-    slots.push({
-      startTime: slotStart,
-      endTime: slotEnd,
-      status: slotEnd <= now.getTime() / 1000 ? "past" : "available",
-    })
-  }
-
-  return {
-    roomId: room.id,
-    date,
-    slotMinutes: SLOT_MINUTES,
-    maxDurationMinutes: 24 * 60,
     slots,
   }
 }

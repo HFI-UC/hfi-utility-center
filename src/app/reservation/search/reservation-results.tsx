@@ -24,7 +24,7 @@ const PURPOSE_LABEL = {
 const STATUS_DOT = {
   approved: "bg-success",
   pending: "bg-warning",
-  ai_reviewing: "bg-info",
+  ai_reviewing: "bg-warning",
   rejected: "bg-danger",
   cancelled: "bg-muted-foreground/40",
 } as const
@@ -103,7 +103,7 @@ export function ReservationResults({
                         </span>
                       </span>
                     </TableCell>
-                    <TableCell className="font-mono text-xs whitespace-nowrap tabular-nums">
+                    <TableCell>
                       {formatApiTimestamp(timeFormatter, reservation.startTime)} –{" "}
                       {formatApiTimestamp(timeFormatter, reservation.endTime)}
                     </TableCell>

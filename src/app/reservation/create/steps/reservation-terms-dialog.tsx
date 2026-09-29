@@ -21,11 +21,13 @@ export function ReservationTermsDialog() {
 
   return (
     <Dialog>
-      <DialogTrigger className="cursor-pointer leading-snug font-medium underline underline-offset-4">
-        {t("terms.link")}
+      <DialogTrigger asChild>
+        <span className="cursor-pointer text-sm leading-snug font-medium underline underline-offset-4">
+          {t("terms.link")}
+        </span>
       </DialogTrigger>
-      <DialogContent className="grid max-h-[calc(100svh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto] p-0 sm:max-w-3xl">
-        <DialogHeader className="border-b p-4 sm:p-6">
+      <DialogContent className="grid max-h-[calc(100svh-2rem)] grid-rows-[auto_minmax(0,1fr)_auto] sm:max-w-3xl">
+        <DialogHeader>
           <DialogTitle>{t("terms.title")}</DialogTitle>
           <DialogDescription className="sr-only">{t("terms.description")}</DialogDescription>
         </DialogHeader>
@@ -41,7 +43,7 @@ export function ReservationTermsDialog() {
             ))}
           </ol>
         </div>
-        <DialogFooter className="border-t p-4 sm:px-6">
+        <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">{t("terms.close")}</Button>
           </DialogClose>

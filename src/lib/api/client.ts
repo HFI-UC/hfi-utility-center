@@ -68,6 +68,8 @@ function rejectRequest(error: unknown, config?: AxiosRequestConfig) {
   const requestError = normalizeRequestError(error)
 
   if (typeof window !== "undefined" && !config?.suppressErrorToast && !requestError.notified) {
+    // The browser console is the only diagnostic surface for a failed API call.
+    // oxlint-disable-next-line no-console
     console.error("HFI Utility Center request failed:", requestError.message)
     requestError.notified = true
   }

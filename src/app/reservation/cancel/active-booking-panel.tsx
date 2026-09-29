@@ -16,7 +16,7 @@ import type { EditDraft, EditStep } from "./use-cancellation"
 const STATUS_DOT = {
   approved: "bg-success",
   pending: "bg-warning",
-  ai_reviewing: "bg-info",
+  ai_reviewing: "bg-warning",
   rejected: "bg-danger",
   cancelled: "bg-muted-foreground/40",
 } as const
