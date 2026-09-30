@@ -17,6 +17,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import type { Reservation, ReservationStatus } from "@/lib/api/types"
 
+import { isReapproval } from "./approval-access"
 import { STATUS_FILTERS, type StatusFilter } from "./use-reservation-filter"
 
 const STATUS_DOT: Record<ReservationStatus, string> = {
@@ -94,12 +95,14 @@ export function ReservationTable({
   reservations,
   working,
   formatDateTime,
+  canDecide,
   onApprove,
   onReject,
 }: {
   reservations: Reservation[]
   working: boolean
   formatDateTime: (value: string) => string
+  canDecide: (reservation: Reservation) => boolean
   onApprove: (id: number) => void
   onReject: (id: number) => void
 }) {
@@ -167,32 +170,15 @@ export function ReservationTable({
                 )}
               </TableCell>
               <TableCell>
-                <div className="flex justify-end gap-1">
-                  {item.status === "pending" || item.status === "ai_reviewing" ? (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-9 sm:h-7"
-                        disabled={working}
-                        onClick={() => onApprove(item.id)}
-                      >
-                        <Check />
-                        {t("approve")}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-9 sm:h-7"
-                        disabled={working}
-                        onClick={() => onReject(item.id)}
-                      >
-                        <X />
-                        {t("reject")}
-                      </Button>
-                    </>
-                  ) : null}
-                </div>
+                <ReservationActions
+                  reservation={item}
+                  working={working}
+                  canDecide={canDecide(item)}
+                  approveLabel={t("approve")}
+                  rejectLabel={t("reject")}
+                  onApprove={() => onApprove(item.id)}
+                  onReject={() => onReject(item.id)}
+                />
               </TableCell>
             </TableRow>
           ))}
@@ -214,12 +200,14 @@ export function ReservationList({
   reservations,
   working,
   formatDateTime,
+  canDecide,
   onApprove,
   onReject,
 }: {
   reservations: Reservation[]
   working: boolean
   formatDateTime: (value: string) => string
+  canDecide: (reservation: Reservation) => boolean
   onApprove: (id: number) => void
   onReject: (id: number) => void
 }) {
@@ -235,6 +223,7 @@ export function ReservationList({
             statusLabel={statusT(item.status)}
             formatDateTime={formatDateTime}
             working={working}
+            canDecide={canDecide(item)}
             approveLabel={t("approve")}
             rejectLabel={t("reject")}
             studentInformationLabel={t("studentInformation")}
@@ -278,6 +267,7 @@ function ReservationCard({
   statusLabel,
   formatDateTime,
   working,
+  canDecide,
   approveLabel,
   rejectLabel,
   studentInformationLabel,
@@ -291,6 +281,7 @@ function ReservationCard({
   statusLabel: string
   formatDateTime: (value: string) => string
   working: boolean
+  canDecide: boolean
   approveLabel: string
   rejectLabel: string
   studentInformationLabel: string
@@ -345,30 +336,16 @@ function ReservationCard({
           ))}
         </dl>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {reservation.status === "pending" || reservation.status === "ai_reviewing" ? (
-          <>
-            <Button
-              variant="outline"
-              className="h-11 flex-1 sm:h-8"
-              disabled={working}
-              onClick={onApprove}
-            >
-              <Check />
-              {approveLabel}
-            </Button>
-            <Button
-              variant="ghost"
-              className="min-h-11 flex-1 sm:h-8"
-              disabled={working}
-              onClick={onReject}
-            >
-              <X />
-              {rejectLabel}
-            </Button>
-          </>
-        ) : null}
-      </div>
+      <ReservationActions
+        reservation={reservation}
+        working={working}
+        canDecide={canDecide}
+        approveLabel={approveLabel}
+        rejectLabel={rejectLabel}
+        onApprove={onApprove}
+        onReject={onReject}
+        stretch
+      />
     </div>
   )
 }
@@ -386,6 +363,62 @@ function ReservationField({ label, value, href }: ReservationFieldData) {
           value
         )}
       </dd>
+    </div>
+  )
+}
+
+function ReservationActions({
+  reservation,
+  working,
+  canDecide,
+  approveLabel,
+  rejectLabel,
+  onApprove,
+  onReject,
+  stretch = false,
+}: {
+  reservation: Reservation
+  working: boolean
+  canDecide: boolean
+  approveLabel: string
+  rejectLabel: string
+  onApprove: () => void
+  onReject: () => void
+  stretch?: boolean
+}) {
+  if (!canDecide) return null
+
+  const changing = isReapproval(reservation)
+  const showApprove = reservation.status !== "approved"
+  const showReject = reservation.status !== "rejected"
+  const buttonClass = stretch ? "h-11 flex-1 sm:h-8" : "h-9 sm:h-7"
+
+  return (
+    <div className={stretch ? "flex flex-wrap gap-2" : "flex justify-end gap-1"}>
+      {showApprove ? (
+        <Button
+          size={stretch ? "default" : "sm"}
+          variant={stretch && !changing ? "outline" : "ghost"}
+          className={buttonClass}
+          disabled={working}
+          onClick={onApprove}
+        >
+          <Check />
+          {approveLabel}
+        </Button>
+      ) : null}
+      {showReject ? (
+        <Button
+          size={stretch ? "default" : "sm"}
+          variant="ghost"
+          className={stretch ? "min-h-11 flex-1 sm:h-8" : buttonClass}
+          disabled={working}
+          onClick={onReject}
+        >
+          <X />
+          {rejectLabel}
+        </Button>
+      ) : null}
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { Download, Inbox } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { EmptyState, ErrorState, LoadingState } from "@/components/layout/data-state"
 import { PageHeader } from "@/components/layout/page-header"
@@ -10,11 +10,14 @@ import { RefreshButton } from "@/components/layout/refresh-button"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
+import { getAdmins, getAdminPermissions } from "@/lib/api/admins"
+import { getAdminSession, type AdminSession } from "@/lib/api/auth"
 import { backendHref } from "@/lib/api/client"
 import { getFutureReservations, updateReservationApproval } from "@/lib/api/reservations"
 import type { Reservation } from "@/lib/api/types"
 import { formatApiTimestamp } from "@/lib/date-time"
 
+import { canDecideReservation, isReapproval, type ApprovalScope } from "./approval-access"
 import { RejectReservationDialog } from "./reject-reservation-dialog"
 import { ReservationFilters, ReservationList, ReservationTable } from "./reservation-queue"
 import { useReservationFilter, type StatusFilter } from "./use-reservation-filter"
@@ -28,6 +31,7 @@ export default function AdminReservationsPage() {
   const [rejectingId, setRejectingId] = useState<number>()
   const [reason, setReason] = useState("")
   const [error, setError] = useState<string>()
+  const [scope, setScope] = useState<ApprovalScope>()
   const reservationResource = useAdminResource<Reservation[]>({
     loadResource: getFutureReservations,
     initialData: [],
@@ -51,6 +55,31 @@ export default function AdminReservationsPage() {
 
   const filtered = useReservationFilter(reservationResource.data, query, statusFilter)
 
+  useEffect(() => {
+    let active = true
+
+    async function loadScope() {
+      try {
+        const next = await approvalScopeForSession(await getAdminSession())
+        if (active) setScope(next)
+      } catch {
+        if (active) setScope({ role: "room", roomIds: undefined })
+      }
+    }
+
+    void loadScope()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const decide = useCallback(
+    (reservation: Reservation) => (scope ? canDecideReservation(reservation, scope) : false),
+    [scope],
+  )
+  const rejecting = reservationResource.data.find((item) => item.id === rejectingId)
+  const changingDecision = rejecting ? isReapproval(rejecting) : false
+
   async function submitDecision(id: number, nextStatus: "approved" | "rejected") {
     const approved = nextStatus === "approved"
     const rejectionReason = reason.trim()
@@ -60,9 +89,19 @@ export default function AdminReservationsPage() {
     }
 
     setError(undefined)
+    const current = reservationResource.data.find((item) => item.id === id)
+    const changing = current ? isReapproval(current) : false
     const saved = await mutate(
       () => updateReservationApproval(id, approved, approved ? undefined : rejectionReason),
-      t(approved ? "reservationApproved" : "reservationRejected"),
+      t(
+        changing
+          ? approved
+            ? "reservationReapproved"
+            : "reservationRerejected"
+          : approved
+            ? "reservationApproved"
+            : "reservationRejected",
+      ),
     )
     if (saved) {
       setRejectingId(undefined)
@@ -141,6 +180,7 @@ export default function AdminReservationsPage() {
               reservations={filtered}
               working={working}
               formatDateTime={formatDateTime}
+              canDecide={decide}
               onApprove={(id) => void submitDecision(id, "approved")}
               onReject={startRejection}
             />
@@ -148,6 +188,7 @@ export default function AdminReservationsPage() {
               reservations={filtered}
               working={working}
               formatDateTime={formatDateTime}
+              canDecide={decide}
               onApprove={(id) => void submitDecision(id, "approved")}
               onReject={startRejection}
             />
@@ -157,6 +198,7 @@ export default function AdminReservationsPage() {
 
       <RejectReservationDialog
         open={rejectingId !== undefined}
+        changing={changingDecision}
         reason={reason}
         error={error}
         working={working}
@@ -170,4 +212,20 @@ export default function AdminReservationsPage() {
       />
     </div>
   )
+}
+
+async function approvalScopeForSession(session: AdminSession): Promise<ApprovalScope> {
+  if (session.role === "global") return { role: "global", roomIds: undefined }
+  try {
+    const [admins, permissions] = await Promise.all([getAdmins(), getAdminPermissions()])
+    const email = session.email.trim().toLowerCase()
+    const admin = admins.find((item) => item.email.trim().toLowerCase() === email)
+    const permission = admin ? permissions.find((item) => item.adminId === admin.id) : undefined
+    if (!permission || permission.role !== "room") return { role: "room", roomIds: undefined }
+    return { role: "room", roomIds: new Set(permission.roomIds) }
+  } catch {
+    // Room scope is an optimization. The approval API remains the authority
+    // when a room administrator cannot read the full permission list.
+    return { role: "room", roomIds: undefined }
+  }
 }

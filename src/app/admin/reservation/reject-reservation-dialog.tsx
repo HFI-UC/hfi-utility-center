@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea"
 
 export function RejectReservationDialog({
   open,
+  changing = false,
   reason,
   error,
   working,
@@ -27,6 +28,7 @@ export function RejectReservationDialog({
   onOpenChange,
 }: {
   open: boolean
+  changing?: boolean
   reason: string
   error?: string
   working: boolean
@@ -44,8 +46,10 @@ export function RejectReservationDialog({
           <AlertDialogMedia>
             <X />
           </AlertDialogMedia>
-          <AlertDialogTitle>{t("reject")}</AlertDialogTitle>
-          <AlertDialogDescription>{t("rejectionDialogDescription")}</AlertDialogDescription>
+          <AlertDialogTitle>{t(changing ? "changeApproval" : "reject")}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t(changing ? "changeApprovalDescription" : "rejectionDialogDescription")}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <Field data-invalid={Boolean(error)}>
           <FieldLabel htmlFor="rejection-reason">{t("reason")}</FieldLabel>
@@ -68,7 +72,7 @@ export function RejectReservationDialog({
               onConfirm()
             }}
           >
-            {t("confirmReject")}
+            {t(changing ? "confirmChangeApproval" : "confirmReject")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
