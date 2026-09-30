@@ -44,7 +44,6 @@ export function DateRail({
   const selected = inputValueToDate(date)
   const selectedOffset = selected ? Math.round((selected.getTime() - today.getTime()) / DAY_MS) : -1
   const weekday = new Intl.DateTimeFormat(locale, { weekday: "short" })
-  const dayNumber = new Intl.DateTimeFormat(locale, { day: "numeric" })
   const shortDate = new Intl.DateTimeFormat(locale, { month: "numeric", day: "numeric" })
 
   const totalDays = Math.round((maximumDate.getTime() - today.getTime()) / DAY_MS) + 1
@@ -88,9 +87,6 @@ export function DateRail({
           const offset = pageStart + index
           const label =
             offset === 0 ? t("today") : offset === 1 ? t("tomorrow") : weekday.format(day)
-          // A week strip hides the month, so the first tile of a new month
-          // carries it: 9/28, then plain day numbers until the month turns.
-          const newMonth = index === 0 || day.getMonth() !== days[index - 1].getMonth()
           return (
             <Button
               key={value}
@@ -103,7 +99,7 @@ export function DateRail({
             >
               <span className="text-[11px] leading-none opacity-75">{label}</span>
               <span className="text-sm leading-none font-medium tabular-nums">
-                {newMonth ? shortDate.format(day) : dayNumber.format(day)}
+                {shortDate.format(day)}
               </span>
             </Button>
           )

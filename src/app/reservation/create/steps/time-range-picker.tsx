@@ -514,7 +514,7 @@ export function TimeRangePicker({
                 className="pointer-events-none inset-y-0 z-20 -translate-x-1/2"
               >
                 <span className="absolute inset-y-1 left-1/2 w-px -translate-x-1/2 bg-foreground/60" />
-                <span className="absolute bottom-full left-1/2 mb-1 -translate-x-1/2 rounded-md bg-foreground px-1.5 py-0.5 font-mono text-[11px] text-background tabular-nums">
+                <span className="absolute bottom-full left-1/2 mb-1 -translate-x-1/2 rounded-md bg-foreground px-1.5 py-0.5 text-[11px] text-background tabular-nums">
                   {formatTime(hoverTime)}
                 </span>
               </PercentSpan>
@@ -527,10 +527,7 @@ export function TimeRangePicker({
             return edge ? (
               <span
                 key={mark}
-                className={cn(
-                  "absolute top-0 font-mono text-xs text-muted-foreground tabular-nums",
-                  edge,
-                )}
+                className={cn("absolute top-0 text-xs text-muted-foreground tabular-nums", edge)}
               >
                 {formatTime(mark)}
               </span>
@@ -538,7 +535,7 @@ export function TimeRangePicker({
               <PercentSpan
                 key={mark}
                 left={`${offsetPercent(mark, window)}%`}
-                className="top-0 -translate-x-1/2 font-mono text-xs text-muted-foreground tabular-nums"
+                className="top-0 -translate-x-1/2 text-xs text-muted-foreground tabular-nums"
               >
                 {formatTime(mark)}
               </PercentSpan>
@@ -730,7 +727,7 @@ function RangeHandle({
         )}
       />
       {active ? (
-        <span className="pointer-events-none absolute bottom-full left-1/2 mb-1 -translate-x-1/2 rounded-md bg-foreground px-1.5 py-0.5 font-mono text-[11px] whitespace-nowrap text-background tabular-nums">
+        <span className="pointer-events-none absolute bottom-full left-1/2 mb-1 -translate-x-1/2 rounded-md bg-foreground px-1.5 py-0.5 text-[11px] whitespace-nowrap text-background tabular-nums">
           {text}
         </span>
       ) : null}
