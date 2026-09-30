@@ -9,8 +9,7 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
+  FieldTitle,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -55,14 +54,13 @@ export function ProfileStep() {
             control={control}
             name="purposeType"
             render={({ field, fieldState }) => (
-              <FieldSet data-invalid={fieldState.invalid} className="sm:mt-[19px]">
-                <FieldLegend variant="label" className="mb-0">
-                  {t("purpose")}
-                </FieldLegend>
+              <Field data-invalid={fieldState.invalid} className="sm:w-auto">
+                <FieldTitle id="purpose-label">{t("purpose")}</FieldTitle>
                 <RadioGroup
+                  aria-labelledby="purpose-label"
                   value={field.value}
                   onValueChange={(value) => field.onChange(value)}
-                  className="flex w-auto flex-row flex-wrap items-center"
+                  className="flex min-h-11 w-auto flex-row flex-wrap items-center"
                 >
                   {PURPOSES.map((purpose) => (
                     <Field key={purpose} orientation="horizontal" className="w-auto">
@@ -74,7 +72,7 @@ export function ProfileStep() {
                   ))}
                 </RadioGroup>
                 <FieldError errors={[fieldState.error]} />
-              </FieldSet>
+              </Field>
             )}
           />
         </div>
