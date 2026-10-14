@@ -42,7 +42,6 @@ const FACTS = [
   { labelKey: "slot", valueKey: "slotDescription" },
   { labelKey: "days", valueKey: "daysDescription" },
   { labelKey: "duration", valueKey: "durationDescription" },
-  { labelKey: "validation", valueKey: "validationDescription" },
 ] as const
 
 export function HomeView() {
@@ -192,7 +191,7 @@ export function HomeView() {
         <h2 id="booking-rules-title" className="text-base font-medium lg:self-center">
           {t("factsTitle")}
         </h2>
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4">
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3">
           {FACTS.map((fact, index) => (
             <div
               key={fact.labelKey}

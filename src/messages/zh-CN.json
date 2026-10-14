@@ -28,9 +28,7 @@
     "days": "可提前预约",
     "daysDescription": "30天",
     "duration": "单次时长上限",
-    "durationDescription": "2小时",
-    "validation": "冲突校验",
-    "validationDescription": "提交时重新核对"
+    "durationDescription": "2小时"
   },
   "common": {
     "retry": "重试",

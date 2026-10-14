@@ -28,9 +28,7 @@
     "days": "Advance window",
     "daysDescription": "30 days",
     "duration": "Maximum duration",
-    "durationDescription": "2 hours",
-    "validation": "Conflict check",
-    "validationDescription": "Re-run on submit"
+    "durationDescription": "2 hours"
   },
   "common": {
     "retry": "Retry",
