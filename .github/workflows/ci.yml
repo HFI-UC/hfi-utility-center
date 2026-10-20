@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      # Version resolves from devEngines.packageManager in package.json.
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check format, lint, types
+        run: pnpm exec vp check
+
+      - name: Test
+        run: pnpm exec vp test run --passWithNoTests
+
+      - name: Build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ (github.ref_name == 'dev' || github.base_ref == 'dev') && 'https://preview-api.hfiuc.org' || 'https://api.hfiuc.org' }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+        run: pnpm build

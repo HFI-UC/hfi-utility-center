@@ -1,26 +1,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-
   "name": "hfi-utility-center",
-
   "compatibility_date": "2026-09-24",
-
   "assets": {
     "directory": "./out",
-    "html_handling": "auto-trailing-slash"
+    "html_handling": "auto-trailing-slash",
   },
-
   "routes": [
-    {
-      "pattern": "hfiuc.org",
-      "custom_domain": true,
-    },
-    {
-      "pattern": "www.hfiuc.org",
-      "custom_domain": true
-    }
+    { "pattern": "hfiuc.org", "custom_domain": true },
+    { "pattern": "www.hfiuc.org", "custom_domain": true },
   ],
-
   "workers_dev": true,
   "preview_urls": true,
   "previews": {
@@ -31,27 +20,32 @@
         "enabled": true,
         "head_sampling_rate": 1,
         "invocation_logs": true,
-        "persist": true
+        "persist": true,
       },
       "traces": {
         "enabled": true,
         "head_sampling_rate": 1,
-        "persist": true
-      }
-    }
+        "persist": true,
+      },
+    },
   },
-
   "observability": {
     "logs": {
       "enabled": true,
       "head_sampling_rate": 1,
       "invocation_logs": true,
-      "persist": true
+      "persist": true,
     },
     "traces": {
       "enabled": true,
       "head_sampling_rate": 1,
-      "persist": true
-    }
-  }
+      "persist": true,
+    },
+  },
+  "env": {
+    "dev": {
+      "name": "hfi-utility-center-dev",
+      "routes": [{ "pattern": "dev.hfiuc.org", "custom_domain": true }],
+    },
+  },
 }

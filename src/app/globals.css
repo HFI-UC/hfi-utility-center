@@ -1,0 +1,712 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  color-scheme: light;
+
+  --radius: 0.625rem;
+
+  --background: oklch(98.4% 0.004 301);
+  --foreground: oklch(29.6% 0.052 319);
+
+  --card: oklch(100% 0 0);
+  --card-foreground: oklch(29.6% 0.052 319);
+
+  --popover: oklch(100% 0 0);
+  --popover-foreground: oklch(29.6% 0.052 319);
+
+  --primary: oklch(42.6% 0.101 321);
+  --primary-foreground: oklch(100% 0 0);
+
+  --secondary: oklch(93.5% 0.018 315);
+  --secondary-foreground: oklch(37.6% 0.085 320);
+
+  --muted: oklch(95% 0.009 308);
+  --muted-foreground: oklch(52.2% 0.033 315);
+
+  --accent: oklch(93.5% 0.018 315);
+  --accent-foreground: oklch(42.6% 0.101 321);
+
+  --destructive: oklch(52% 0.176 17);
+
+  --border: oklch(88.6% 0.018 315);
+  --input: oklch(75.2% 0.037 314);
+  --ring: oklch(42.6% 0.101 321);
+
+  --chart-1: oklch(42.6% 0.101 321);
+  --chart-2: oklch(45.5% 0.171 266);
+  --chart-3: oklch(49.4% 0.105 159);
+  --chart-4: oklch(51% 0.108 74);
+  --chart-5: oklch(52% 0.176 17);
+
+  --sidebar: oklch(100% 0 0);
+  --sidebar-foreground: oklch(29.6% 0.052 319);
+  --sidebar-primary: oklch(42.6% 0.101 321);
+  --sidebar-primary-foreground: oklch(100% 0 0);
+  --sidebar-accent: oklch(95% 0.009 308);
+  --sidebar-accent-foreground: oklch(42.6% 0.101 321);
+  --sidebar-border: oklch(88.6% 0.018 315);
+  --sidebar-ring: oklch(42.6% 0.101 321);
+  --sidebar-width: 16rem;
+  --sidebar-width-icon: 3rem;
+
+  /* Semantic status ramp: tone, on-tone, soft surface, soft text, soft border. */
+  --success: oklch(49.4% 0.105 159);
+  --success-foreground: oklch(100% 0 0);
+  --success-soft: oklch(95.1% 0.02 160);
+  --success-soft-foreground: oklch(39% 0.096 160);
+  --success-border: oklch(85% 0.055 160);
+
+  --warning: oklch(51% 0.108 74);
+  --warning-foreground: oklch(100% 0 0);
+  --warning-soft: oklch(95.6% 0.037 90);
+  --warning-soft-foreground: oklch(42% 0.098 74);
+  --warning-border: oklch(86% 0.075 80);
+
+  --danger: var(--destructive);
+  --danger-foreground: oklch(100% 0 0);
+  --danger-soft: oklch(95% 0.02 2);
+  --danger-soft-foreground: oklch(44% 0.16 17);
+  --danger-border: oklch(86% 0.06 12);
+
+  --info: oklch(45.5% 0.171 266);
+  --info-foreground: oklch(100% 0 0);
+  --info-soft: oklch(95% 0.025 266);
+  --info-soft-foreground: oklch(40% 0.15 266);
+  --info-border: oklch(86% 0.06 266);
+
+  /* Typography stacks. Latin UI face first, CJK fallback immediately after. */
+  --font-ui:
+    var(--font-geist), var(--font-noto-sans-sc), "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono-stack:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Motion scale; keep ad-hoc durations out of components. */
+  --duration-stagger: 40ms;
+  --duration-micro: 80ms;
+  --duration-quick: 150ms;
+  --duration-fast: 250ms;
+  --duration-medium: 350ms;
+  --duration-slow: 400ms;
+  --duration-very-slow: 500ms;
+
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: ease-in-out;
+  --ease-out: ease-out;
+  --ease-linear: linear;
+  --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --ease-bounce-strong: cubic-bezier(0.34, 3.85, 0.64, 1);
+
+  --distance-micro: 4px;
+  --distance-small: 6px;
+  --distance-base: 8px;
+  --distance-medium: 12px;
+  --distance-large: 30px;
+
+  --scale-large: 0.96;
+  --scale-medium: 0.97;
+  --scale-small: 0.98;
+  --scale-tiny: 0.99;
+
+  --blur-small: 2px;
+  --blur-medium: 3px;
+  --blur-large: 8px;
+
+  /* Semantic duration/easing aliases. */
+  --motion-fast: var(--duration-quick);
+  --motion-base: var(--duration-fast);
+  --motion-smooth: var(--ease-smooth-out);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: oklch(23.6% 0.019 310);
+  --foreground: oklch(95.3% 0.012 318);
+
+  --card: oklch(27.7% 0.024 311);
+  --card-foreground: oklch(95.3% 0.012 318);
+
+  --popover: oklch(29.2% 0.029 309);
+  --popover-foreground: oklch(95.3% 0.012 318);
+
+  --primary: oklch(81.3% 0.092 320);
+  --primary-foreground: oklch(27.3% 0.045 317);
+
+  --secondary: oklch(35.1% 0.048 315);
+  --secondary-foreground: oklch(91.5% 0.04 319);
+
+  --muted: oklch(31.2% 0.029 309);
+  --muted-foreground: oklch(77.6% 0.036 312);
+
+  --accent: oklch(35.1% 0.048 315);
+  --accent-foreground: oklch(91.5% 0.04 319);
+
+  --destructive: oklch(81% 0.112 8);
+
+  --border: oklch(41.3% 0.048 310);
+  --input: oklch(53.6% 0.059 310);
+  --ring: oklch(81.3% 0.092 320);
+
+  --chart-1: oklch(81.3% 0.092 320);
+  --chart-2: oklch(83.4% 0.082 272);
+  --chart-3: oklch(83.7% 0.104 161);
+  --chart-4: oklch(87.4% 0.11 89);
+  --chart-5: oklch(81% 0.112 8);
+
+  --sidebar: oklch(27.7% 0.024 311);
+  --sidebar-foreground: oklch(95.3% 0.012 318);
+  --sidebar-primary: oklch(81.3% 0.092 320);
+  --sidebar-primary-foreground: oklch(27.3% 0.045 317);
+  --sidebar-accent: oklch(35.1% 0.048 315);
+  --sidebar-accent-foreground: oklch(91.5% 0.04 319);
+  --sidebar-border: oklch(41.3% 0.048 310);
+  --sidebar-ring: oklch(81.3% 0.092 320);
+
+  --success: oklch(83.7% 0.104 161);
+  --success-foreground: oklch(23% 0.05 161);
+  --success-soft: oklch(34.1% 0.041 173);
+  --success-soft-foreground: oklch(88.5% 0.09 161);
+  --success-border: oklch(46% 0.06 165);
+
+  --warning: oklch(87.4% 0.11 89);
+  --warning-foreground: oklch(27% 0.05 89);
+  --warning-soft: oklch(34.3% 0.04 92);
+  --warning-soft-foreground: oklch(90% 0.1 89);
+  --warning-border: oklch(47% 0.06 92);
+
+  --danger-foreground: oklch(23% 0.05 8);
+  --danger-soft: oklch(33.2% 0.049 355);
+  --danger-soft-foreground: oklch(87.5% 0.09 8);
+  --danger-border: oklch(46% 0.07 5);
+
+  --info: oklch(83.4% 0.082 272);
+  --info-foreground: oklch(23% 0.05 272);
+  --info-soft: oklch(35% 0.05 268);
+  --info-soft-foreground: oklch(89% 0.06 272);
+  --info-border: oklch(47% 0.06 272);
+}
+
+@theme inline {
+  --font-sans: var(--font-ui);
+  --font-heading: var(--font-ui);
+  --font-mono: var(--font-mono-stack);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-success-soft-foreground: var(--success-soft-foreground);
+  --color-success-border: var(--success-border);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-soft-foreground: var(--warning-soft-foreground);
+  --color-warning-border: var(--warning-border);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-soft-foreground: var(--danger-soft-foreground);
+  --color-danger-border: var(--danger-border);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-soft: var(--info-soft);
+  --color-info-soft-foreground: var(--info-soft-foreground);
+  --color-info-border: var(--info-border);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-page-slide: t-page-slide-in var(--duration-fast) var(--ease-smooth-out) both;
+  --animate-route-enter: t-route-enter var(--duration-fast) var(--ease-smooth-out) both;
+  --animate-content-reveal: t-content-reveal var(--duration-slow) var(--ease-in-out) both;
+  --animate-success-check: t-success-check-in var(--duration-very-slow) var(--ease-smooth-out) both;
+  --animate-success-icon: t-success-icon-in var(--duration-very-slow) var(--ease-smooth-out) both;
+  --animate-shake-x: t-shake calc(var(--duration-micro) * 4) linear;
+  --animate-digit-pop: t-digit-pop-in var(--duration-very-slow) var(--ease-bounce) both;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOTION (transitions.dev snippets)
+
+   One block per installed transition, adapted from the transitions-dev skill.
+   Every block reads its values from the motion scale in :root above via a
+   `--t-*` local alias, so the scale stays the single source of truth and no
+   duration, easing, distance, scale or blur is hardcoded here.
+
+   House rules for this section:
+     • only opacity, transform and filter are animated (never width, height,
+       inset, margin or padding to avoid horizontal overflow);
+     • exact properties are enumerated, never `transition: all`;
+     • every block ships its own prefers-reduced-motion guard.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* Page slide
+     Direction rides on data-direction and flips the sign of the translate.
+     data-animate guards against animating on initial mount. */
+  .t-page-slide {
+    --t-page-slide-distance: var(--distance-base);
+    --t-page-slide-blur: var(--blur-medium);
+    --t-page-slide-dur: var(--duration-fast);
+    --t-page-slide-ease: var(--ease-smooth-out);
+
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0);
+    will-change: opacity, transform, filter;
+  }
+
+  .t-page-slide[data-compact] {
+    --t-page-slide-distance: var(--distance-small);
+  }
+
+  .t-page-slide[data-direction="forward"] {
+    --t-page-from-x: var(--t-page-slide-distance);
+  }
+
+  .t-page-slide[data-direction="back"] {
+    --t-page-from-x: calc(var(--t-page-slide-distance) * -1);
+  }
+
+  .t-page-slide[data-animate] {
+    animation: t-page-slide-in var(--t-page-slide-dur) var(--t-page-slide-ease) both;
+  }
+
+  @keyframes t-page-slide-in {
+    from {
+      opacity: 0;
+      filter: blur(var(--blur-medium));
+      transform: translateX(var(--page-from-x, var(--distance-base)));
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateX(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-page-slide {
+      animation: none !important;
+    }
+  }
+
+  /* Error state shake */
+  .t-shake {
+    --t-shake-distance: var(--distance-base);
+    --t-shake-overshoot: var(--distance-small);
+    --t-shake-dur-a: var(--duration-micro);
+    --t-shake-dur-b: var(--duration-micro);
+    --t-shake-ease: var(--ease-smooth-out);
+
+    will-change: transform;
+  }
+
+  .t-shake.is-shaking {
+    animation: t-shake calc(var(--t-shake-dur-a) * 2 + var(--t-shake-dur-b) * 2) linear;
+  }
+
+  @keyframes t-shake {
+    0% {
+      transform: translateX(0);
+      animation-timing-function: var(--ease-smooth-out);
+    }
+    25% {
+      transform: translateX(calc(var(--t-shake-distance) * -1));
+    }
+    50% {
+      transform: translateX(var(--t-shake-distance));
+    }
+    75% {
+      transform: translateX(calc(var(--t-shake-distance) * -0.5));
+    }
+    100% {
+      transform: translateX(0);
+      animation-timing-function: var(--ease-smooth-out);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-shake {
+      animation: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Skeleton reveal
+     Opacity and filter only without layout shifts. */
+  .t-reveal {
+    --t-reveal-dur: var(--duration-slow);
+    --t-reveal-blur: var(--blur-small);
+    --t-reveal-ease: var(--ease-in-out);
+
+    animation: t-reveal-in var(--t-reveal-dur) var(--t-reveal-ease) both;
+  }
+
+  @keyframes t-reveal-in {
+    from {
+      opacity: 0;
+      filter: blur(var(--blur-small));
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+    }
+  }
+
+  @keyframes t-content-reveal {
+    from {
+      opacity: 0;
+      filter: blur(var(--blur-small));
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-reveal {
+      animation: none !important;
+    }
+  }
+
+  /* Success check */
+  .t-success-check {
+    --t-check-dur: var(--duration-very-slow);
+    --t-check-ease: var(--ease-smooth-out);
+
+    animation: t-check-in var(--t-check-dur) var(--t-check-ease) both;
+  }
+
+  .t-success-check > svg {
+    animation: t-check-icon-in var(--t-check-dur) var(--t-check-ease) both;
+  }
+
+  @keyframes t-check-in {
+    from {
+      opacity: 0;
+      filter: blur(var(--blur-large));
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1);
+    }
+  }
+
+  @keyframes t-success-check-in {
+    from {
+      opacity: 0;
+      filter: blur(var(--blur-large));
+      transform: scale(var(--scale-large));
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1);
+    }
+  }
+
+  @keyframes t-success-icon-in {
+    from {
+      opacity: 0;
+      transform: scale(var(--scale-tiny));
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .t-success-check,
+    .t-success-check > svg {
+      animation: none !important;
+      opacity: 1;
+    }
+  }
+
+  /* Number pop-in */
+  .t-digit-group {
+    --t-digit-dur: var(--duration-very-slow);
+    --t-digit-distance: var(--distance-base);
+    --t-digit-stagger: var(--duration-stagger);
+    --t-digit-blur: var(--blur-small);
+    --t-digit-ease: var(--ease-bounce);
+    --t-digit-dir-x: 0;
+    --t-digit-dir-y: 1;
+
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  .t-digit {
+    display: inline-block;
+    will-change: transform, opacity, filter;
+  }
+
+  .t-digit-group.is-animating .t-digit {
+    animation: t-digit-pop-in var(--t-digit-dur) var(--t-digit-ease) both;
+  }
+
+  .t-digit-group.is-animating .t-digit[data-stagger="1"] {
+    animation-delay: var(--t-digit-stagger);
+  }
+
+  .t-digit-group.is-animating .t-digit[data-stagger="2"] {
+    animation-delay: calc(var(--t-digit-stagger) * 2);
+  }
+
+  @keyframes t-digit-pop-in {
+    0% {
+      transform: translate(
+        calc(var(--t-digit-distance) * var(--t-digit-dir-x)),
+        calc(var(--t-digit-distance) * var(--t-digit-dir-y))
+      );
+      opacity: 0;
+      filter: blur(var(--t-digit-blur));
+    }
+    100% {
+      transform: translate(0, 0);
+      opacity: 1;
+      filter: blur(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-digit-group .t-digit {
+      animation: none !important;
+    }
+  }
+
+  /* Route enter
+     One vertical reveal when a route mounts. Header stays put. */
+  .t-route-enter {
+    --t-route-distance: var(--distance-medium);
+    --t-route-blur: var(--blur-medium);
+    --t-route-dur: var(--duration-fast);
+    --t-route-ease: var(--ease-smooth-out);
+
+    animation: t-route-enter var(--t-route-dur) var(--t-route-ease) both;
+    will-change: opacity, transform, filter;
+  }
+
+  @keyframes t-route-enter {
+    from {
+      opacity: 0;
+      filter: blur(var(--blur-medium));
+      transform: translateY(var(--distance-medium));
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-route-enter {
+      animation: none !important;
+    }
+  }
+
+  /* Step progress
+     The completed rail grows; the current marker scales in. */
+  .t-step-rail {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--duration-fast) var(--ease-smooth-out);
+  }
+
+  .t-step-rail[data-reached] {
+    transform: scaleX(1);
+  }
+
+  .t-step-marker {
+    transition:
+      transform var(--duration-fast) var(--ease-bounce),
+      background-color var(--duration-quick) var(--ease-smooth-out),
+      color var(--duration-quick) var(--ease-smooth-out);
+  }
+
+  .t-step-marker[data-current] {
+    transform: scale(1.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-step-rail,
+    .t-step-marker {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Interactive lift
+     Hover is quick; the return is slightly springier. */
+  .t-lift {
+    transition-property: transform !important;
+    transition-duration: var(--duration-fast) !important;
+    transition-timing-function: var(--ease-smooth-out) !important;
+  }
+
+  .t-lift:hover {
+    transform: translateY(calc(var(--distance-micro) * -1));
+  }
+
+  .t-lift:not(:hover) {
+    transition-timing-function: var(--ease-bounce) !important;
+  }
+
+  .t-arrow {
+    transition: transform var(--duration-fast) var(--ease-smooth-out);
+  }
+
+  .t-arrow-host:hover .t-arrow,
+  .t-arrow-host:focus-visible .t-arrow {
+    transform: translate(var(--distance-micro), calc(var(--distance-micro) * -1));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-lift,
+    .t-arrow {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Staggered reveal. data-stagger is 0–3; later items stay still. */
+  .t-stagger {
+    animation: t-content-reveal var(--duration-slow) var(--ease-in-out) both;
+    animation-delay: calc(var(--duration-stagger) * var(--stagger, 0));
+  }
+
+  .t-stagger[data-stagger="1"] {
+    --stagger: 1;
+  }
+
+  .t-stagger[data-stagger="2"] {
+    --stagger: 2;
+  }
+
+  .t-stagger[data-stagger="3"] {
+    --stagger: 3;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-stagger {
+      animation: none !important;
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply bg-background text-foreground;
+    -webkit-text-size-adjust: 100%;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    min-width: 0;
+    /* Long user-supplied strings wrap instead of widening the viewport. */
+    @apply m-0 min-w-0 wrap-break-word;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed;
+  }
+
+  a {
+    @apply no-underline;
+  }
+
+  h1,
+  h2,
+  h3,
+  p {
+    @apply m-0;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  ::selection {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

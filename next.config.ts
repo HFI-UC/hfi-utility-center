@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
         hostname: "api.hfiuc.org",
         pathname: "/assets/**",
       },
+      {
+        protocol: "https",
+        hostname: "preview-api.hfiuc.org",
+        pathname: "/assets/**",
+      },
     ],
   },
 }
