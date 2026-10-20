@@ -8,7 +8,6 @@ updates:
       npm:
         patterns:
           - "*"
-updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
