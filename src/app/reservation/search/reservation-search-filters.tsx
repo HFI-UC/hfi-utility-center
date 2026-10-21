@@ -54,7 +54,7 @@ export function ReservationSearchFilterForm({
   catalog,
   filters,
 }: {
-  catalog?: CatalogData
+  catalog?: Pick<CatalogData, "campuses" | "rooms">
   filters: ReservationSearchFilters
 }) {
   const router = useRouter()

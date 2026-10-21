@@ -55,6 +55,17 @@ The browser calls the configured backend directly. The API client targets
 the existing response and payload contracts, including the occupied-interval
 availability response.
 
+Reservation search loads only campus and room catalogs; the class catalog is not
+required for its filters. Required catalog failures remain visible with the API
+error until a successful reload.
+
+Reservation-time search is newest first, with descending reservation ID as the
+tie-breaker. The backend's `sort=time` contract is ascending in 20-row pages, so
+the search loader maps each descending page to its ascending interval and reads
+at most two data pages after obtaining the total. Combined campus/status queries
+merge all matching subsets before sorting and paging. No implicit date cutoff is
+applied; explicitly reversed date ranges are swapped.
+
 ## Quality Checks
 
 ```bash

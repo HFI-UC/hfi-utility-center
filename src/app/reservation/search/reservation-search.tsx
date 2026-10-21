@@ -39,7 +39,7 @@ export function ReservationSearch({ filters }: { filters: ReservationSearchFilte
               <div className="mb-4">
                 <ErrorState
                   title={t("catalogErrorTitle")}
-                  description={t("catalogErrorDescription")}
+                  description={`${t("catalogErrorDescription")} ${catalogError}`}
                   retryLabel={t("reloadCatalog")}
                   onRetry={retry}
                 />
