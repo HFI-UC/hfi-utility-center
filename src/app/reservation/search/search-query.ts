@@ -1,13 +1,6 @@
 import type { ReservationStatus } from "@/lib/api/types"
 import { inputValueToTimestamp } from "@/lib/date-time"
 
-const SHANGHAI_DAY_FORMATTER = new Intl.DateTimeFormat("en-US", {
-  timeZone: "Asia/Shanghai",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-})
-
 export type ReservationSearchFilters = {
   keyword: string
   campusIds: number[]
@@ -55,9 +48,13 @@ function parseDate(value: string | undefined) {
 }
 
 export function parseReservationSearchFilters(params: SearchParams): ReservationSearchFilters {
-  const startDate = parseDate(firstValue(params, "start"))
+  const parsedStartDate = parseDate(firstValue(params, "start"))
   const parsedEndDate = parseDate(firstValue(params, "end"))
-  const endDate = startDate && parsedEndDate < startDate ? "" : parsedEndDate
+  // A reversed range is swapped so the request always has startTime < endTime.
+  const [startDate, endDate] =
+    parsedStartDate && parsedEndDate && parsedEndDate < parsedStartDate
+      ? [parsedEndDate, parsedStartDate]
+      : [parsedStartDate, parsedEndDate]
 
   return {
     keyword: firstValue(params, "keyword")?.trim() ?? "",
@@ -79,12 +76,8 @@ export function parseReservationSearchFilters(params: SearchParams): Reservation
   }
 }
 
-export function reservationSearchRequest(filters: ReservationSearchFilters, now = new Date()) {
-  const selectedStartTime = inputValueToTimestamp(filters.startDate)
-  const startTime =
-    filters.sort === "time"
-      ? Math.max(selectedStartTime ?? 0, shanghaiDayStart(now))
-      : selectedStartTime
+export function reservationSearchRequest(filters: ReservationSearchFilters) {
+  const startTime = inputValueToTimestamp(filters.startDate)
 
   return {
     keyword: filters.keyword,
@@ -96,14 +89,6 @@ export function reservationSearchRequest(filters: ReservationSearchFilters, now 
     endTime: inputValueToTimestamp(filters.endDate, true),
     sort: filters.sort,
   }
-}
-
-function shanghaiDayStart(now: Date) {
-  const parts = SHANGHAI_DAY_FORMATTER.formatToParts(now)
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]))
-  return (
-    Date.UTC(Number(values.year), Number(values.month) - 1, Number(values.day)) / 1000 - 8 * 60 * 60
-  )
 }
 
 export function reservationSearchHref(filters: ReservationSearchFilters, page: number) {
