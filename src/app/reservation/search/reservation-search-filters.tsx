@@ -121,11 +121,16 @@ export function ReservationSearchFilterForm({
     (values: SearchFormValues, history: "push" | "replace" = "push") => {
       const startDate = values.dateRange?.from ? format(values.dateRange.from, "yyyy-MM-dd") : ""
       const endDate = values.dateRange?.to ? format(values.dateRange.to, "yyyy-MM-dd") : ""
+      // Every campus checked is the unfiltered query: no campus in the URL or request.
+      // Before the catalog loads, keep whatever the URL already asked for.
+      const allCampuses = campusValues
+        ? campusValues.split(",").every((value) => values.campuses.includes(value))
+        : !filters.campusesChosen
       const href = reservationSearchHref(
         {
           keyword: values.keyword.trim(),
-          campusIds: values.campuses.map(Number),
-          campusesChosen: true,
+          campusIds: allCampuses ? [] : values.campuses.map(Number),
+          campusesChosen: !allCampuses,
           roomId: values.room === ALL ? 0 : Number(values.room),
           status: values.status === ALL ? undefined : values.status,
           startDate,
@@ -141,7 +146,7 @@ export function ReservationSearchFilterForm({
       if (currentPath === targetPath && window.location.search === target.search) return
       router[history](href, { scroll: false })
     },
-    [router],
+    [campusValues, filters.campusesChosen, router],
   )
 
   const onSubmit: SubmitHandler<SearchFormValues> = (values) => applyFilters(values)
@@ -166,13 +171,6 @@ export function ReservationSearchFilterForm({
       status: filters.status ?? ALL,
     })
   }, [campusValues, filters, reset])
-
-  // No campus query means every bookable campus. Write that selection once the
-  // catalog is known so the form and the results share one URL.
-  useEffect(() => {
-    if (filters.campusesChosen || !campusValues) return
-    applyFilters(getValues(), "replace")
-  }, [campusValues, filters.campusesChosen, getValues, applyFilters])
 
   useEffect(() => {
     if (keyword === undefined || keyword.trim() === filters.keyword) return

@@ -5,7 +5,6 @@ import { getReservations, type ReservationQuery } from "@/lib/api/reservations"
 import type { CatalogData, ReservationPage } from "@/lib/api/types"
 import { parseApiTimestamp } from "@/lib/date-time"
 
-import { isBookableCampus } from "../create/bookable-campus"
 import { reservationSearchRequest, type ReservationSearchFilters } from "./search-query"
 
 const PAGE_SIZE = 20
@@ -23,9 +22,9 @@ async function loadEveryPage(request: ReservationQuery) {
   return { reservations: [first, ...rest].flatMap((page) => page.reservations), total: first.total }
 }
 
-// The API accepts one campus and one status per request. A campus subset, or the
-// in-review status that covers both pending and AI review, is fetched per value
-// and interleaved into one page.
+// The API accepts one campus and one status per request; no campus means every
+// campus. A campus subset, or the in-review status that covers both pending and
+// AI review, is fetched per value and interleaved into one page.
 async function loadCombinedPage(filters: ReservationSearchFilters): Promise<ReservationPage> {
   const request = reservationSearchRequest(filters)
   const campusIds = filters.campusIds.length > 1 ? filters.campusIds : [undefined]
@@ -51,22 +50,12 @@ async function loadCombinedPage(filters: ReservationSearchFilters): Promise<Rese
     total: pages.reduce((sum, page) => sum + page.total, 0),
   }
 }
-function selectedCampusIds(filters: ReservationSearchFilters, catalog?: CatalogData) {
-  if (filters.campusesChosen || !catalog) return filters.campusIds
-  return catalog.campuses
-    .filter((campus) => !campus.deletedAt && isBookableCampus(campus))
-    .map((campus) => campus.id)
-    .sort((left, right) => left - right)
-}
 
 export function useReservationSearch(filters: ReservationSearchFilters) {
   const requestId = useRef(0)
   const pendingRequest = useRef<{ key: string; promise: Promise<ReservationPage> } | null>(null)
   const [catalog, setCatalog] = useState<CatalogData>()
-  const campusKey = selectedCampusIds(filters, catalog).join(",")
-  const [campusIds, setCampusIds] = useState(() => selectedCampusIds(filters, catalog))
-  if (campusIds.join(",") !== campusKey) setCampusIds(selectedCampusIds(filters, catalog))
-  const requestKey = JSON.stringify(reservationSearchRequest({ ...filters, campusIds }))
+  const requestKey = JSON.stringify(reservationSearchRequest(filters))
   const [result, setResult] = useState<ReservationPage>(emptyResult)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>()
@@ -94,13 +83,19 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
 
   useEffect(() => {
     const currentRequest = ++requestId.current
-    const key = `${requestKey}:${reloadKey}`
+    // The request body alone cannot tell "no campus" from "every campus" or a
+    // multi-campus subset, so the dedup key carries the campus selection too.
+    const key = JSON.stringify([requestKey, filters.campusIds, filters.campusesChosen, reloadKey])
     const promise =
       pendingRequest.current?.key === key
         ? pendingRequest.current.promise
-        : campusIds.length > 1 || filters.status === "pending"
-          ? loadCombinedPage({ ...filters, campusIds })
-          : getReservations(JSON.parse(requestKey))
+        : filters.campusesChosen && filters.campusIds.length === 0
+          ? Promise.resolve(emptyResult)
+          : filters.campusIds.length > 1 || filters.status === "pending"
+            ? loadCombinedPage(filters)
+            : getReservations(JSON.parse(requestKey))
+    // StrictMode re-runs this effect; reuse the in-flight promise instead of refetching.
+    pendingRequest.current = { key, promise }
 
     async function loadReservations() {
       setLoading(true)
@@ -127,7 +122,7 @@ export function useReservationSearch(filters: ReservationSearchFilters) {
     return () => {
       requestId.current += 1
     }
-  }, [campusKey, filters, requestKey, reloadKey])
+  }, [filters, requestKey, reloadKey])
 
   return {
     catalog,
