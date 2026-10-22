@@ -25,6 +25,7 @@ export function RejectReservationDialog({
   onReasonChange,
   onConfirm,
   onOpenChange,
+  revokingApproval = false,
 }: {
   open: boolean
   reason: string
@@ -33,6 +34,7 @@ export function RejectReservationDialog({
   onReasonChange: (value: string) => void
   onConfirm: () => void
   onOpenChange: (open: boolean) => void
+  revokingApproval?: boolean
 }) {
   const t = useTranslations("admin")
   const common = useTranslations("common")
@@ -45,7 +47,9 @@ export function RejectReservationDialog({
             <X />
           </AlertDialogMedia>
           <AlertDialogTitle>{t("reject")}</AlertDialogTitle>
-          <AlertDialogDescription>{t("rejectionDialogDescription")}</AlertDialogDescription>
+          <AlertDialogDescription>
+            {t(revokingApproval ? "revokeApprovalDescription" : "rejectionDialogDescription")}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <Field data-invalid={Boolean(error)}>
           <FieldLabel htmlFor="rejection-reason">{t("reason")}</FieldLabel>

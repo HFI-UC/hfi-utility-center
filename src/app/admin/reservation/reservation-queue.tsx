@@ -37,6 +37,10 @@ const STATUS_TEXT: Record<ReservationStatus, string> = {
 
 const MOBILE_GRID = "grid min-w-0 grid-cols-2 gap-x-4 gap-y-2.5"
 
+function canReject(status: ReservationStatus) {
+  return status === "pending" || status === "approved"
+}
+
 interface ReservationFieldData {
   label: string
   value: string
@@ -194,7 +198,7 @@ export function ReservationTable({
                       {t("approve")}
                     </Button>
                   ) : null}
-                  {item.status === "pending" ? (
+                  {canReject(item.status) ? (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -394,7 +398,7 @@ function ReservationCard({
             {approveLabel}
           </Button>
         ) : null}
-        {reservation.status === "pending" ? (
+        {canReject(reservation.status) ? (
           <Button
             variant="ghost"
             className="min-h-11 flex-1 sm:h-8"

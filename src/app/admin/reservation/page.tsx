@@ -61,6 +61,7 @@ export default function AdminReservationsPage() {
   )
 
   const filtered = useReservationFilter(reservationResource.data, query, statusFilter)
+  const rejectingReservation = reservationResource.data.find((item) => item.id === rejectingId)
 
   async function submitDecision(id: number, nextStatus: "approved" | "rejected") {
     const approved = nextStatus === "approved"
@@ -177,6 +178,7 @@ export default function AdminReservationsPage() {
         reason={reason}
         error={error}
         working={working}
+        revokingApproval={rejectingReservation?.status === "approved"}
         onReasonChange={setReason}
         onConfirm={() => {
           if (rejectingId !== undefined) void submitDecision(rejectingId, "rejected")
