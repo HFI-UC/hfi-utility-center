@@ -386,10 +386,12 @@ function ReservationActions({
   onReject: () => void
   stretch?: boolean
 }) {
+  const t = useTranslations("admin")
   if (!canDecide) return null
 
   const changing = isReapproval(reservation)
   const showApprove = reservation.status !== "approved"
+  const cancelling = reservation.status === "approved"
   const showReject = reservation.status !== "rejected"
   const buttonClass = stretch ? "h-11 flex-1 sm:h-8" : "h-9 sm:h-7"
 
@@ -416,7 +418,7 @@ function ReservationActions({
           onClick={onReject}
         >
           <X />
-          {rejectLabel}
+          {cancelling ? t("cancelReservation") : rejectLabel}
         </Button>
       ) : null}
     </div>

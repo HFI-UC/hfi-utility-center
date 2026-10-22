@@ -1,7 +1,7 @@
 "use client"
 
 import { Download, Inbox } from "lucide-react"
-import { useLocale, useTranslations } from "next-intl"
+import { useLocale, useNow, useTranslations } from "next-intl"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { EmptyState, ErrorState, LoadingState } from "@/components/layout/data-state"
@@ -13,9 +13,13 @@ import { useAdminMutation, useAdminResource } from "@/lib/api/admin-hooks"
 import { getAdmins, getAdminPermissions } from "@/lib/api/admins"
 import { getAdminSession, type AdminSession } from "@/lib/api/auth"
 import { backendHref } from "@/lib/api/client"
-import { getFutureReservations, updateReservationApproval } from "@/lib/api/reservations"
+import {
+  cancelReservationAsAdmin,
+  getFutureReservations,
+  updateReservationApproval,
+} from "@/lib/api/reservations"
 import type { Reservation } from "@/lib/api/types"
-import { formatApiTimestamp } from "@/lib/date-time"
+import { formatApiTimestamp, parseApiTimestamp } from "@/lib/date-time"
 
 import { canDecideReservation, isReapproval, type ApprovalScope } from "./approval-access"
 import { RejectReservationDialog } from "./reject-reservation-dialog"
@@ -26,6 +30,7 @@ export default function AdminReservationsPage() {
   const t = useTranslations("admin")
   const common = useTranslations("common")
   const locale = useLocale()
+  const now = useNow({ updateInterval: 30_000 })
   const [query, setQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
   const [rejectingId, setRejectingId] = useState<number>()
@@ -74,38 +79,53 @@ export default function AdminReservationsPage() {
   }, [])
 
   const decide = useCallback(
-    (reservation: Reservation) => (scope ? canDecideReservation(reservation, scope) : false),
-    [scope],
+    (reservation: Reservation) => {
+      if (reservation.status === "approved" && parseApiTimestamp(reservation.startTime) <= now)
+        return false
+      return scope ? canDecideReservation(reservation, scope) : false
+    },
+    [scope, now],
   )
   const rejecting = reservationResource.data.find((item) => item.id === rejectingId)
+  const cancelling = rejecting?.status === "approved"
   const changingDecision = rejecting ? isReapproval(rejecting) : false
 
   async function submitDecision(id: number, nextStatus: "approved" | "rejected") {
     const approved = nextStatus === "approved"
+    const current = reservationResource.data.find((item) => item.id === id)
+    const cancellingApproved = !approved && current?.status === "approved"
     const rejectionReason = reason.trim()
     if (!approved && !rejectionReason) {
-      setError(t("rejectionRequired"))
+      setError(t(cancellingApproved ? "cancellationRequired" : "rejectionRequired"))
       return
     }
 
     setError(undefined)
-    const current = reservationResource.data.find((item) => item.id === id)
     const changing = current ? isReapproval(current) : false
-    const saved = await mutate(
-      () => updateReservationApproval(id, approved, approved ? undefined : rejectionReason),
-      t(
-        changing
-          ? approved
-            ? "reservationReapproved"
-            : "reservationRerejected"
-          : approved
-            ? "reservationApproved"
-            : "reservationRejected",
-      ),
-    )
-    if (saved) {
-      setRejectingId(undefined)
-      setReason("")
+    try {
+      const saved = await mutate(
+        () =>
+          cancellingApproved
+            ? cancelReservationAsAdmin(id, rejectionReason)
+            : updateReservationApproval(id, approved, approved ? undefined : rejectionReason),
+        t(
+          cancellingApproved
+            ? "reservationCancelled"
+            : changing
+              ? approved
+                ? "reservationReapproved"
+                : "reservationRerejected"
+              : approved
+                ? "reservationApproved"
+                : "reservationRejected",
+        ),
+      )
+      if (saved) {
+        setRejectingId(undefined)
+        setReason("")
+      }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : common("unknown"))
     }
   }
 
@@ -199,6 +219,7 @@ export default function AdminReservationsPage() {
       <RejectReservationDialog
         open={rejectingId !== undefined}
         changing={changingDecision}
+        cancelling={cancelling}
         reason={reason}
         error={error}
         working={working}
@@ -207,7 +228,7 @@ export default function AdminReservationsPage() {
           if (rejectingId !== undefined) void submitDecision(rejectingId, "rejected")
         }}
         onOpenChange={(open) => {
-          if (!open) cancelRejection()
+          if (!open && !working) cancelRejection()
         }}
       />
     </div>

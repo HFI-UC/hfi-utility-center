@@ -273,3 +273,6 @@ export const updateReservationApproval = (id: number, approved: boolean, reason?
     approved,
     reason: reason || null,
   })
+
+export const cancelReservationAsAdmin = (id: number, reason: string) =>
+  api.post("/reservation/admin-cancel", { id, reason: reason.trim() })

@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea"
 export function RejectReservationDialog({
   open,
   changing = false,
+  cancelling = false,
   reason,
   error,
   working,
@@ -29,6 +30,7 @@ export function RejectReservationDialog({
 }: {
   open: boolean
   changing?: boolean
+  cancelling?: boolean
   reason: string
   error?: string
   working: boolean
@@ -46,18 +48,29 @@ export function RejectReservationDialog({
           <AlertDialogMedia>
             <X />
           </AlertDialogMedia>
-          <AlertDialogTitle>{t(changing ? "changeApproval" : "reject")}</AlertDialogTitle>
+          <AlertDialogTitle>
+            {t(cancelling ? "cancelReservation" : changing ? "changeApproval" : "reject")}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            {t(changing ? "changeApprovalDescription" : "rejectionDialogDescription")}
+            {t(
+              cancelling
+                ? "cancellationDescription"
+                : changing
+                  ? "changeApprovalDescription"
+                  : "rejectionDialogDescription",
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Field data-invalid={Boolean(error)}>
-          <FieldLabel htmlFor="rejection-reason">{t("reason")}</FieldLabel>
+          <FieldLabel htmlFor="rejection-reason">
+            {t(cancelling ? "cancellationReason" : "reason")}
+          </FieldLabel>
           <Textarea
             id="rejection-reason"
             value={reason}
             onChange={(event) => onReasonChange(event.target.value)}
-            placeholder={t("rejectionPlaceholder")}
+            placeholder={t(cancelling ? "cancellationPlaceholder" : "rejectionPlaceholder")}
+            disabled={working}
             aria-invalid={Boolean(error)}
           />
           <FieldError>{error}</FieldError>
@@ -72,7 +85,13 @@ export function RejectReservationDialog({
               onConfirm()
             }}
           >
-            {t(changing ? "confirmChangeApproval" : "confirmReject")}
+            {t(
+              cancelling
+                ? "confirmCancelReservation"
+                : changing
+                  ? "confirmChangeApproval"
+                  : "confirmReject",
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
